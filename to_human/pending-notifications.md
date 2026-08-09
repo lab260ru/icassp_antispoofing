@@ -79,3 +79,12 @@ On the frozen parity set, the CUDA batch sweep selected initial model-specific
 settings: Spectra-AASIST batch 8 (236.32 clips/s) and AASIST batch 2 (333.44
 clips/s). These are stored as H2 inference engineering measurements; they do
 not replace the separate BF16 batch/worker sweep required if H3 training starts.
+
+## 2026-08-09 — literature and paper context checkpoint
+
+The paper now incorporates source-verified ASVspoof 2021 and cross-domain
+generalization context, with a compiled PDF and a paper-local citation ledger.
+The framing remains intentionally conservative: cross-corpus differences
+motivate this audit but do not validate any cue as causal. The ASVspoof2021-DF
+audio download is continuing; remote push and Telegram delivery remain queued
+because no runtime credentials are available.

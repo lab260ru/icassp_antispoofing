@@ -51,8 +51,9 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
   cannot score transformed audio.
 - **Paper draft:** `paper/main.tex` compiles with
   `tectonic --outdir build main.tex` from `paper/`. Track the source, citation
-  ledger, and `paper/build/main.pdf`; ignore build intermediates. The initial
-  3-page PDF reports only the first discovery observation and its limitations.
+  ledger, and `paper/build/main.pdf`; ignore build intermediates. The compiled
+  IEEE-style initial draft reports only the first discovery observation and its
+  limitations, plus source-verified cross-dataset context.
   The required three-reviewer launcher was attempted but blocked because the
   local Claude CLI is unauthenticated; see
   `paper/reviews/initial_draft/REVIEW_STATUS.md`. Do not pretend a review took
