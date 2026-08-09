@@ -102,3 +102,8 @@
 - Validation: `h2b_q1_deepvoice_001` completed all 256 × 9 = 2,304 pairs on physical GPU 3 (logical Whisper `cuda:0`). The final detector-free table and summary are hash-sealed; the selector independently verifies its complete, unique pair IDs.
 - Result: No non-control family reaches the predeclared 0.90 95%-Wilson lower retention bound and target-change condition. The closest arm is -0.5 dB/oct tilt (239/256 retained; lower bound 0.89624); the selector's `selected_arms` is empty. Keep Q2--Q4 blocked and preserve this negative feasibility result rather than tuning it.
 - Operational note: A second resumptive process was briefly started during status diagnosis and terminated immediately. The original writer completed the run; its summary records 2,304 newly written checkpoints and the final selector validates 2,304 unique pair IDs. The subsequently committed exclusive lock prevents recurrence. No detector path was involved.
+
+## 2026-08-09 - Final local build and reproducibility verification
+
+- Rebuilt `paper/main.tex` after clearing only ignored TeX intermediates. The refreshed tracked `paper/build/main.pdf` has four pages; extracted text places Table I on page 2 and References on page 3. The generated bibliography contains seven entries.
+- Validation: `PYTHONPATH=. python3 -m pytest -q` passed all 79 tests in 6.45 seconds. The durable command/output, PDF SHA-256, and delivery constraints are recorded in `verification/FINAL_VERIFICATION_20260809.md`.
