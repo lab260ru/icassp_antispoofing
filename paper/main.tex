@@ -13,8 +13,8 @@
 \newcommand{\scorepanel}{Spectra-AASIST, AASIST, Res2TCNGuard, RawTFNet,
 WhisperMFCCMesoNet, W2V2-AASIST, XLSR-SLS, and RawBMamba}
 
-\title{\studyname: A Cross-Dataset Causal Audit Protocol for Signal Cues in
-Speech Anti-Spoofing}
+\title{\studyname: A Five-Corpus Audit of Signal Associations in Speech
+Anti-Spoofing}
 
 \author{\IEEEauthorblockN{Anonymous Authors}
 \IEEEauthorblockA{Paper under active development for anonymous review}}
@@ -25,27 +25,21 @@ Speech Anti-Spoofing}
 \begin{abstract}
 Speech anti-spoofing systems can obtain convincing benchmark scores while
 responding to corpus-specific acoustic cues rather than synthesis artifacts.
-We present a locked, cross-dataset audit designed to distinguish three
-different propositions: that a waveform feature separates labels, that it
-associates with a detector score within label, and that changing it causes a
-score change under a content-preserving intervention. The study registers 28
-interpretable descriptors on three waveform views, eight published detector
-score artifacts, three discovery corpora, and two held-out confirmation
-corpora. It tests associations with multiplicity correction and clustered
-bootstrap intervals, then admits a feature to paired interventions only after a
-pre-specified portability gate. Conditional on causal evidence, a
-feature-conditioned, transformation-consistent head is evaluated against an
-equivalent training recipe. This initial draft reports three discovery screens
-in addition to input-integrity results: 71,237 published Spectra-AASIST scores
-join exactly to ASVspoof 2019 LA labels, and 4,032 within-class associations
-are screened on locked balanced subsets across eight score artifacts. Crest
-factor is negatively associated with Spectra-AASIST spoof scores in all three
-discovery screens but attenuates substantially across corpus conditions;
-AASIST reverses direction on the deepfake corpus. Five of eight score
-artifacts are negative in this fixed slice across all three discovery corpora,
-while effect sizes and remaining directions are architecture-dependent. The
-evidence motivates a constrained causal follow-up; it makes no claim that
-crest factor, or any other cue, is a portable association or a causal shortcut.
+We distinguish three propositions: that a waveform feature separates labels,
+associates with a detector score within label, and changes a score under a
+content-preserving intervention. The locked audit registers 28 descriptors on
+three waveform views, eight published detector score artifacts, three discovery
+corpora, and two held-out confirmation corpora. Across 6,720 within-class
+screen cells, a discovery-frozen crest-factor candidate is negative for
+Spectra-AASIST in all three discovery corpora but attenuates sharply. In
+In-the-Wild its adjusted association is small ($\rho=-0.0326$), while in
+ASVspoof5 it is null after the registered controls ($\rho=0.0014$), despite a
+negative unadjusted association. Thus crest factor fails the fixed five-corpus
+portability condition. Nineteen other pre-registered feature/view/class units
+meet the descriptive association rule, but are not promoted post hoc to paired
+interventions. The result is a conservative negative finding about crest
+factor, together with a reproducible association atlas and a quality-gated
+protocol for later causal tests; it makes no causal shortcut claim.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -165,7 +159,7 @@ dynamic-range compression, leading/trailing silence standardization, spectral
 tilt, stable all-pass phase perturbation, and gain and polarity negative
 controls. A transformed example is retained only if STOI is at least 0.95,
 original-to-transformed transcript WER is at most 5\%, loudness drift is at
-most 0.2 LU, and clipping is absent. An arm is dropped if fewer than 90\% of
+most 0.2 LU, and no transform-induced clipping occurs. An arm is dropped if fewer than 90\% of
 its examples pass. Causal sensitivity requires a nonzero bootstrap interval, a
 standardized paired score change of at least 0.2, and consistent direction in
 at least three datasets and three of four models.
@@ -186,18 +180,16 @@ This deliberately conservative use of frozen representations is motivated by
 recent generalization and calibration results, but it does not assume that
 feature conditioning itself is beneficial~\cite{pascu2024generalizable}.
 
-\section{Completed integrity checks and pending results}
+\section{Results}
 \label{sec:results}
 
-Table~\ref{tab:status} records the completed empirical artifacts at this
-initial-draft checkpoint. The H1 rows are discovery screens, not
-cross-dataset-confirmed conclusions: compact result artifacts and a pre-DF
-operational follow-up rule exist. No intervention effect, EER, or model ranking
-is reported before its corresponding artifact exists.
+Table~\ref{tab:status} records the completed H1 evidence. The five-corpus
+aggregate is exhaustive over the registered association matrix, but it is not a
+post-hoc intervention selector. No H2 delta, EER, or causal claim is reported.
 
 \begin{table}[t]
-  \caption{Completed evidence at the initial-draft checkpoint. The H1 row is
-  a discovery observation; it is not a portability or causal claim.}
+  \caption{Completed H1 evidence. The five-corpus association outcome is not a
+  causal result and does not select new H2 candidates.}
   \label{tab:status}
   \centering
   \small
@@ -211,17 +203,16 @@ is reported before its corresponding artifact exists.
     Feature-registry pilot on deterministic ASVspoof 2019 LA sample & 200
     utterances $\times$ 3 waveform views; non-voice descriptors complete and
     voice-quality descriptors available for 95\% of records. \\
-    H1 discovery screens on locked ASVspoof 2019 LA, 2021 LA, and 2021 DF
-    subsets & 4,032 within-class tests (3 corpora $\times$ 8 models $\times$
-    2 classes $\times$ 3 views $\times$ 28 features), with exact joins for
-    every model and corpus. \\
+    H1 screens on three discovery plus two held-out corpora & 6,720
+    within-class tests (5 corpora $\times$ 8 models $\times$ 2 classes $\times$
+    3 views $\times$ 28 features), with exact joins for every model and corpus. \\
     Fixed crest-factor slice: full waveform, spoof class & Spectra-AASIST
     partial $\rho$ is $-0.454$, $-0.099$, and $-0.065$ on 2019 LA, 2021 LA,
-    and 2021 DF, respectively; AASIST changes from positive on LA to negative
-    on DF. Figure~\ref{fig:h1-crest-discovery} shows all eight artifacts. \\
-    H1 portability, H2 paired deltas, and H3 held-out EER & Pending; the
-    explicit five-corpus criterion is not evaluable and no portability, causal,
-    or improvement conclusion is claimed. \\
+    and 2021 DF. It is $-0.0326$ in In-the-Wild but $0.0014$ in ASVspoof5
+    after registered adjustment; it therefore fails portability. \\
+    Registered five-corpus association rule & 19/168 feature/view/class units
+    meet the descriptive rule ($\geq5/8$ models); none is added post hoc to
+    H2. H2 paired deltas and H3 held-out EER remain pending. \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -251,26 +242,24 @@ access to all model internals. The conditional mitigation can establish only a
 bounded robustness result under the registered splits and transformations, not
 universal safety against new generators or post-processing pipelines.
 
-The current artifact set also has a more immediate limitation: the H1 matrix
-contains three discovery corpora but no held-out confirmation corpus. Its small
-adjusted $p$-values reflect 5,000 trials per within-class test and cannot
-substitute for effect-size, held-out, or intervention evidence. This draft
-therefore treats the observed crest-factor pattern as heterogeneous discovery
-evidence, not a conclusion about detector reliance. The final paper will
-either report the full held-out results under this protocol or clearly present
-a negative result and its scope.
+The H1 matrix now contains two held-out corpora, which expose why a repeated
+discovery direction alone is insufficient: the crest candidate is null after
+adjustment in ASVspoof5. The 19 registry-wide associations are descriptive
+screen results, so they neither identify a causal mechanism nor authorize
+post-hoc waveform transformations. The H2 crest run was frozen before those
+confirmation outcomes and is consequently reported, if completed, only as an
+exploratory paired-sensitivity result.
 
 \section{Conclusion}
 
-We present a reproducible path from an observed score-feature correlation to a
-testable claim about detector sensitivity: exact artifact joins, within-class
-and adjusted associations, quality-gated paired interventions, and a
-conditional robustness test. Three discovery screens show that crest-factor
-associations can have repeated direction within some models yet vary strongly
-in magnitude and direction across the panel, illustrating why a single-model
-correlation cannot establish shortcut reliance. The next evidence-bearing
-milestones are held-out confirmation and quality-gated H2 deltas; until then,
-the paper makes no portability or causal feature-reliance claim.
+We present a reproducible path from a score-feature correlation to a testable
+claim about detector sensitivity: exact artifact joins, within-class adjusted
+associations, quality-gated paired interventions, and a conditional robustness
+test. Five corpora show that repeated crest-factor direction in discovery data
+does not survive the registered portability condition. The result also exposes
+a broader association atlas without converting it into post-hoc interventions.
+Until paired H2 deltas are quality-gated and replicated across a complete
+scorer panel, the paper makes no causal feature-reliance claim.
 
 \bibliographystyle{template/IEEEtran/IEEEtran}
 \bibliography{references}
