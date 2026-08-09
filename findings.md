@@ -84,6 +84,12 @@ quality-frozen paired detector intervention can test that third question.
   quality-calibration source, and its balanced 256-identity calibration
   manifest is frozen from labels only. This establishes a clean score-blind
   input boundary, not waveform-quality feasibility.
+- H4 score-free label--cue atlas: all 420 locked feature--label AUROC/bootstrap
+  cells and 84 aggregations completed from revalidated feature tables only;
+  23 units meet the terminal descriptive rule. Full-waveform crest factor has
+  negative signed AUROC in the three ASVspoof corpora, positive signed AUROC in
+  InTheWild, and near-zero separation in ASVspoof5. This is corpus dependence
+  of label separation, not evidence about any detector or causal cue.
 
 ## Patterns and Insights
 
@@ -115,6 +121,8 @@ baseline reproduction.
   quality-confirmation freeze; it cannot inherit the completed H2 panel.
 - Q1 selected no H2B arm. Do not relax its Wilson threshold or tune its arm
   grid after inspection; Q2--Q4 are not licensed by this outcome.
+- H4's 23 stable label--cue units are terminal descriptive atlas entries. They
+  must not be used as new H1/H2/H2B/H3 candidates or a model-training signal.
 
 ## Open Questions
 
@@ -128,6 +136,9 @@ baseline reproduction.
 - Can a newly predeclared transformation family, on a newly frozen cohort,
   clear the quality-first gate without material collateral changes? The first
   H2B grid does not.
+- If a future study examines an H4 unit, can it declare a fresh score-independent
+  discovery/confirmation/intervention design without using the H4 atlas for
+  post-hoc cue selection?
 
 ## Optimization Trajectory
 

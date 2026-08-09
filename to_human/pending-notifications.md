@@ -192,3 +192,14 @@ scores/EER/causal effect were estimated, and Q2--Q4 will not begin from this
 loop. The result, selection table, hashes, and resumability notes are committed
 under `experiments/future_directions/results/`. Send this update when Telegram
 credentials are present.
+
+## 2026-08-09 — H4 score-free transportability result
+
+A new precommitted, score-free five-corpus feature--label atlas is complete:
+all 420 cells and 84 aggregations used only the frozen feature tables, not
+Arena scores, models, audio, or ASR. Twenty-three units meet its explicitly
+terminal descriptive rule. Crest factor itself again demonstrates corpus
+dependence: full-waveform separation reverses sign in InTheWild and is near
+null in ASVspoof5. This does not create a detector claim or a new intervention
+candidate; the run note, full tables, hashes, and protocol are preserved. Send
+this update when Telegram credentials are available.

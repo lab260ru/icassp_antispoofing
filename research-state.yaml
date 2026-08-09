@@ -52,7 +52,7 @@ hypotheses:
     priority: high
   - id: H4
     statement: "Registered waveform features may have corpus-dependent raw label separation even when no detector score is read."
-    status: input_freeze_complete_pending_score_free_analysis
+    status: complete_23_atlas_only_stable_label_associations
     motivation: "A descriptive label--cue transportability atlas can contextualize corpus dependence without reopening failed intervention loops."
     priority: medium
 
@@ -60,7 +60,7 @@ experiments:
   proxy_metric: "Cross-dataset, within-class feature-score association and causal paired score sensitivity; EER for mitigation."
   baseline_value: null
   best_value: null
-  total_runs: 21
+  total_runs: 22
   trajectory:
     - run_id: run_001
       hypothesis: H1
@@ -209,11 +209,18 @@ experiments:
       wall_time_min: 0.1
       change_summary: "Froze five exact response-free v1_28 feature tables and 50,000 deterministic source clusters (5,000 per dataset/label) with schema/path firewall and no feature statistic, score, audio, or model access."
       timestamp: "2026-08-09"
+    - run_id: h4_analysis_001
+      hypothesis: H4
+      metric_value: 23
+      delta: null
+      wall_time_min: 1.0
+      change_summary: "Completed all 420 score-free label-AUROC/bootstrap cells and 84 locked aggregations. Twenty-three units meet the terminal descriptive H4 rule; full-waveform crest reverses sign in InTheWild and is not H4-stable."
+      timestamp: "2026-08-09"
 
 outer_loop:
   cycle: 6
-  last_direction: "score_free_h4_label_cue_transportability_protocol_locked"
-  last_reflection: "The five-corpus H1 result remains a conservative negative crest-portability finding, and the original H2 panel remains blocked before scoring. The separate score-blinded H2B Q1 DeepVoice calibration completed all 2,304 pairs under its precommitted finite grid. No non-control arm clears the 0.90 lower-Wilson retention and target-change rule (the closest is -0.5 dB/oct tilt at 0.89624). The selector returns no family. This is a negative feasibility boundary, not a cue/model result. A separate H4 protocol is now locked: it reads only existing response-free H1 feature products to describe five-corpus label--cue transportability. It cannot rank features into H1/H2/H2B/H3 or read detector scores."
+  last_direction: "conclude_h4_score_free_label_cue_atlas"
+  last_reflection: "The five-corpus H1 result remains a conservative negative crest-portability finding, and the original H2 panel remains blocked before scoring. The separate score-blinded H2B Q1 DeepVoice calibration completed all 2,304 pairs under its precommitted finite grid and selected no family. H4 then completed its predeclared score-free 420-cell label--cue transportability atlas from revalidated feature products only. Twenty-three of 84 units meet its terminal descriptive rule, while full-waveform crest reverses sign in InTheWild and is near null in ASVspoof5. This neither explains detector scores nor authorizes a candidate, intervention, model, or training path. Preserve the result, do not tune it, and keep the paper's causal conclusion unchanged."
   pivot_policy: "After the first association/intervention matrix or five completed runs, choose deepen, broaden, pivot, or conclude and record the evidence."
 
 workspace:
