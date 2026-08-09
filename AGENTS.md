@@ -26,6 +26,18 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
   the locked 5,000-per-class subset. The three-input
   `results/discovery_aggregate_3datasets/` report correctly marks portability
   as not evaluable. Do not call any discovery result portable or causal.
+- **H1 held-out confirmation and aggregate are complete.** InTheWild and
+  ASVspoof5 have their own committed, 1,344-cell result directories and
+  one-row manifest-selected bootstrap outputs. The explicit five-input
+  aggregate is
+  `results/five_corpus_aggregate_20260809T214500Z/`; it is selection-free and
+  evaluates all 168 registry units. Nineteen units meet the configured
+  descriptive association rule, but the sole discovery-frozen
+  Spectra-AASIST/full-waveform/spoof/`crest_factor_db` candidate **does not**:
+  it is adjusted-negative in InTheWild but adjusted-null and direction-reversed
+  in ASVspoof5. Read `AGGREGATION_RUN_20260809.md`. This excludes a portable
+  crest-factor claim. Do not add any of the 19 units to H2 after seeing these
+  confirmation data; the existing crest H2 run is exploratory only.
 - **Association estimator safety is tested.** Use
   `PYTHONPATH=. python3 scripts/analyze_associations.py ...`; the normal
   `pytest` console entry point may omit the repository from `sys.path`, so run
@@ -40,11 +52,9 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
   Spectra-AASIST/`crest_factor_db`; see its adjacent report and
   `DISCOVERY_TO_H2_FREEZE.md`. It is exploratory, excludes confirmation data,
   and is not itself a causal or portable result. Commit it before any bootstrap
-  or H2 execution. **Active, non-duplicable jobs:** InTheWild feature
-  extraction uses 24 workers and ASVspoof5 feature extraction uses 20 workers;
-  both held-out datasets are downloaded and their candidate declarations are
-  committed. Check processes and HDD paths before relaunching; do not interpret
-  either corpus until its own scoped H1 artifacts are complete.
+  or H2 execution. The held-out feature extractions and scoped H1 artifacts are
+  now complete; do not relaunch them. Check processes and HDD paths before any
+  new H2 work.
 - **H2 has two parity-validated runners but is not ready to claim.** Read
   `experiments/h2_causal_interventions/model_capability_audit.md`,
   `H2_ONNX_PARITY.md`, and `PARITY_RUN_001.md` before any intervention work.
@@ -73,7 +83,12 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
   clipping. `h2_quality_full_002` is running on GPU 3 under the corrected
   protocol and remains pre-score quality screening only: no detector may read
   a pair and no causal claim may be made until its complete quality manifest is
-  frozen. Read `H2_QUALITY_GATE_CORRECTION.md` before resuming H2. Res2
+  frozen. After it ends, use the committed
+  `scripts/freeze_h2_quality_manifest.py` (read `H2_QUALITY_FREEZE.md`);
+  only its retained-only hash-sealed output may be passed to the committed
+  `scripts/run_h2_paired_scoring.py` (read `H2_PAIRED_SCORING.md`). That scorer
+  supports only Spectra, AASIST, and source-PyTorch Res2; no fourth scorer is
+  implied. Read `H2_QUALITY_GATE_CORRECTION.md` before resuming H2. Res2
   source-PyTorch batch 2 is the recorded initial setting (198.09 clips/s); read
   `H2_THROUGHPUT_RUN_002_RES2TCNGUARD.md`.
 - **Paper draft:** `paper/main.tex` compiles with

@@ -8,10 +8,12 @@ architectures, and can the resulting evidence improve robustness?
 
 ## Current Understanding
 
-No empirical claim has been established yet. The initial study separates three
-questions that are often conflated: a feature may distinguish labels, correlate
-with a detector score, or causally change a detector score under a matched
-transformation. Only the last supports a shortcut-sensitivity claim.
+The five-corpus H1 screen now establishes that some registered feature/view/class
+units satisfy the study's descriptive cross-corpus association rule. It also
+rules out the central frozen crest-factor candidate as a portable adjusted
+association: its ASVspoof5 adjusted estimate is null. No causal
+shortcut-sensitivity claim has been established; only a completed,
+quality-frozen paired detector intervention can test that third question.
 
 ## Key Results
 
@@ -51,6 +53,19 @@ transformation. Only the last supports a shortcut-sensitivity claim.
   (Spearman 0.999994); Spectra-AASIST matches only when external 0.97
   pre-emphasis is used (0.999971). This validates model-specific waveform
   preprocessing for later paired scoring, not feature sensitivity or causality.
+- Held-out H1 confirmation: the preregistered Spectra-AASIST spoof/full-waveform
+  crest-factor test is small and adjusted-negative on InTheWild
+  (rho=-0.032606, q=0.000523; 95% clustered CI [-0.070045, -0.001718]), but its
+  raw association is null. On ASVspoof5 the raw association is negative
+  (rho=-0.155568; 95% CI [-0.185310, -0.124442]), whereas the registered
+  adjusted estimate is null (rho=0.001383, q=0.937089; 95% CI
+  [-0.029092, 0.032219]). Neither estimator is substituted for the other.
+- Five-corpus H1 aggregation: all 168 registered units were evaluated under the
+  fixed partial-Spearman/BH rule without reselection. Nineteen units meet the
+  descriptive cross-corpus association criterion; the discovery-frozen
+  Spectra/crest/spoof candidate does not, because it fails the required
+  confirmation significance and direction conditions. These associations do
+  not justify post-hoc H2 expansion or a causal interpretation.
 
 ## Patterns and Insights
 
@@ -82,9 +97,11 @@ baseline reproduction.
 
 - Which public score artifacts expose stable sample IDs that can join audio
   manifests without heuristic matching?
-- Which candidates survive held-out confirmation and quality-gated interventions?
-- Is the strongest paper a causal-audit/fix story, an architecture-sensitivity
-  atlas, a benchmark-artifact audit, or a principled negative result?
+- Does the already-frozen exploratory crest intervention show paired score
+  sensitivity after quality gates, and is it limited to the runnable
+  three-model feasibility panel?
+- Is the strongest paper a principled negative crest-factor result plus an
+  architecture-sensitivity atlas rather than a mitigation story?
 
 ## Optimization Trajectory
 

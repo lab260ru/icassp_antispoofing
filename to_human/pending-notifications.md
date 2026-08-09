@@ -137,3 +137,15 @@ explicitly diagnostic rather than results. The protocol is corrected and
 committed (`eb6298c`); a distinct GPU-3 successor is running the pre-score
 quality screen. No causal claim or detector-score analysis will begin until a
 complete quality manifest is frozen.
+
+## 2026-08-09 — H1 held-out confirmation and paper pivot
+
+Both held-out H1 screens are complete and committed. The discovery-frozen
+Spectra/crest candidate is adjusted-negative but tiny in InTheWild
+(`rho=-0.032606`, `q=0.000523`) and adjusted-null in ASVspoof5
+(`rho=0.001383`, `q=0.937089`), despite a negative raw ASVspoof5 association.
+The explicit five-corpus aggregate is now evaluable: 19 of 168 registered
+feature/view/class units meet the descriptive association rule, but crest does
+not. The paper is pivoting toward a conservative negative crest-factor result
+and association atlas; no post-hoc H2 feature is added. H2 quality screening
+continues detector-free. Send this update when Telegram credentials are present.

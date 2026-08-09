@@ -26,12 +26,13 @@ literature:
     - "Whether score-feature correlations survive within-class, cross-dataset, and causal tests."
     - "Whether robust feature conditioning improves OOD generalization without creating a new shortcut."
   evidence_gaps:
-    - "No result is considered confirmatory until held-out datasets are evaluated."
+    - "No H2 paired detector-score result exists until the running detector-free quality panel is complete, frozen, and scored."
+    - "The three-runnable-model H2 panel remains insufficient for the registered four-model causal criterion."
 
 hypotheses:
   - id: H1
     statement: "At least one nontrivial signal cue has a directionally stable within-class association with published detector scores across datasets and architectures."
-    status: discovery_complete_confirmation_pending
+    status: five_corpus_aggregate_complete_crest_candidate_not_portable
     motivation: "Crest factor may be a shortcut, but association must be separated from class and corpus confounds."
     priority: high
   - id: H2
@@ -49,7 +50,7 @@ experiments:
   proxy_metric: "Cross-dataset, within-class feature-score association and causal paired score sensitivity; EER for mitigation."
   baseline_value: null
   best_value: null
-  total_runs: 14
+  total_runs: 17
   trajectory:
     - run_id: run_001
       hypothesis: H1
@@ -149,11 +150,32 @@ experiments:
       wall_time_min: 0.1
       change_summary: "Froze a 500-per-class ASVspoof2019 score-independent H2 input panel and exact four-arm crest-factor ledger from pinned labels only; no audio, ASR, or detector response was read."
       timestamp: "2026-08-09"
+    - run_id: run_008
+      hypothesis: H1
+      metric_value: 1344
+      delta: null
+      wall_time_min: null
+      change_summary: "Completed the held-out InTheWild screen and the one manifest-selected bootstrap: adjusted Spectra crest association is small and negative, while the raw association is null."
+      timestamp: "2026-08-09"
+    - run_id: run_009
+      hypothesis: H1
+      metric_value: 1344
+      delta: null
+      wall_time_min: null
+      change_summary: "Completed the held-out ASVspoof5 screen and the one manifest-selected bootstrap: raw Spectra crest association is negative, but the registered adjusted association is null."
+      timestamp: "2026-08-09"
+    - run_id: h1_aggregate_001
+      hypothesis: H1
+      metric_value: 19
+      delta: null
+      wall_time_min: 0.1
+      change_summary: "Evaluated the fixed five-corpus partial-Spearman portability rule without selection: 19 registry units meet it, but the frozen Spectra crest candidate fails its held-out-significance and direction requirements."
+      timestamp: "2026-08-09"
 
 outer_loop:
-  cycle: 2
-  last_direction: "deepen_conditionally"
-  last_reflection: "All three H1 discovery screens support heterogeneous, corpus-dependent detector sensitivity. The pre-DF exploratory gate freezes only Spectra-AASIST crest factor for H2. Spectra, AASIST, and source-PyTorch Res2TCNGuard have baseline parity; the Res2 ONNX export is blocked. The first detector-free H2 quality attempt was deliberately stopped after 133/4,000 checkpoints because its clipping gate treated pre-existing source clipping as transform harm; its HDD artifacts are diagnostic only. Commit eb6298c corrects the gate before the distinct GPU-3 pre-score quality run h2_quality_full_002. Do not interpret either attempt as a quality result, detector result, or causal evidence before a complete quality manifest is frozen."
+  cycle: 3
+  last_direction: "pivot_toward_negative_crest_result_and_association_atlas"
+  last_reflection: "Five explicit H1 tables now complete the configured aggregate. The discovery-frozen Spectra crest candidate is directionally negative in four of five corpora but fails both-confirmation requirements because its ASVspoof5 adjusted estimate is null. Nineteen other registered feature/view/class units meet the descriptive five-corpus association rule, but confirmation outcomes cannot trigger post-hoc H2 expansion. Preserve the already-started crest H2 run as exploratory only. It may test paired score sensitivity, but it cannot rescue the failed H1 portability claim and cannot meet the registered causal criterion until a fourth parity-validated scorer exists."
   pivot_policy: "After the first association/intervention matrix or five completed runs, choose deepen, broaden, pivot, or conclude and record the evidence."
 
 workspace:

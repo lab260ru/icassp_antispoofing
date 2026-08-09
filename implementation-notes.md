@@ -34,3 +34,11 @@
 - Decision: Keep the parity-validated panel at Spectra-AASIST (pre-emphasis 0.97, GPU 0, batch 8), AASIST (raw, GPU 1, batch 2), and source-PyTorch Res2TCNGuard (raw, GPU 2, batch 2). No fourth scorer is implied.
 - Guardrail: The score runner refuses mutable quality-run tables, incomplete or below-90%-arm freeze reports, hash/identity drift, non-pinned GPU visibility, and any uncommitted protocol/freeze/parity artifact. It does not import or read Arena score outputs.
 - Validation: Focused synthetic tests validate freeze-byte-hash rejection, regenerated-transform hash rejection before scorer construction, immutable resumability, pair delta materialization, and GPU assignment checks (`17 passed` across paired-scoring/quality-freeze/quality-runner/pre-score suites). No corpus or production detector scoring was run.
+
+## 2026-08-09 - H1 held-out confirmation and outer-loop pivot
+
+- Validation: InTheWild and ASVspoof5 each completed an explicit 1,344-cell H1 screen with exact eight-model joins, plus only their own predeclared Spectra/crest candidate bootstrap (2,000 valid clustered replicates each). The finite-value AUROC guard was committed and tested before the InTheWild rerun; source features were not changed.
+- Decision: Preserve raw and registered adjusted estimates side by side. The ASVspoof5 raw negative association does not replace its null adjusted result; the InTheWild adjusted-negative result does not replace its null raw result.
+- Decision: Apply the locked five-corpus partial-Spearman/BH aggregation once, with five explicit source tables and no candidate selection. It reports 19 qualifying registry units, but the operational H2 crest candidate fails the two-confirmation requirement.
+- Tradeoff: Continue the already-frozen crest H2 execution only as an explicitly exploratory paired-sensitivity test. Do not expand its arms/features after the five-corpus screen, and do not begin H3 mitigation training from the failed crest-portability premise.
+- Validation: The aggregation writes 1,344 model/unit and 168 feature/view/class rows, records `selection_or_freezing_performed: false`, and has a committed result note with all output hashes.
