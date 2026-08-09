@@ -65,3 +65,9 @@
 - Decision: Treat the H2 quality-gate failure as an immutable result boundary. `H2B_QUALITY_FIRST_OUTER_LOOP_PROTOCOL.md` is committed before execution and prohibits reading model scores or detector implementations during transform selection.
 - Design: Q1 is a finite, mild transform-family quality calibration on a score-blinded 256-clip manifest. It uses a lower Wilson retention bound, measured target-feature change, and WER as a lexicographic selection rule; Q2 then confirms the chosen arm on an independently frozen multi-corpus panel.
 - Guardrail: A future H2B causal score study still needs an independently declared H1 candidate and four parity-validated runners. Current H1 atlas units and the failed H2 crest candidate are background, never H2B selections.
+
+## 2026-08-09 - H2B Q0 DeepVoice input freeze
+
+- Validation: Downloaded the 550.5 MB public DeepVoice dataset at its declared Arena revision to the HDD and confirmed labels SHA-256 against `data/arena-index.yaml`. It has 5,053 label rows (628 label-0, 4,425 label-1) and no score-like file in the downloaded tree.
+- Implementation: The H2 input-CSV writer now records a byte hash for its emitted CSV. `src/h2b_score_blind_manifest.py` requires that byte-bound, label-only provenance, rechecks the declared dataset/revision, uses stable per-label SHA-256 selection, and writes non-overwritable Q0 artifacts. Focused tests (`13 passed`) cover successful freeze, substitution and provenance rejection, and output byte binding.
+- Result: `h2b_q0_deepvoice_001` froze exactly 128 DeepVoice IDs per label (`256` total) under seed 2609. It does not decode audio or authorize Q1/Q4 scoring. Its artifact note contains all compact hashes.

@@ -1,0 +1,48 @@
+{
+  "arena_index": {
+    "path": "/home/kirill/icassp_antispoofing/data/arena-index.yaml",
+    "sha256": "4c0b5e905cc9aeb96d179f21dd0c6efcbc5f5f894ea773540a89c497a03ede2a"
+  },
+  "artifact_kind": "h2_score_free_input_csv",
+  "claim_guard": "Label-derived input rows only; no audio, feature, score, ASR, or detector was read.",
+  "columns": [
+    "dataset",
+    "sample_id",
+    "source_id",
+    "label",
+    "dataset_revision"
+  ],
+  "dataset": {
+    "name": "DeepVoice",
+    "repo_id": "SpeechAntiSpoofingBenchmarks/DeepVoice",
+    "revision": "cc3bdf544cfc09bd9cc788f7f022ba1af9daf701",
+    "source_revision_resolved": "cc3bdf544cfc09bd9cc788f7f022ba1af9daf701"
+  },
+  "label_counts": {
+    "0": 628,
+    "1": 4425
+  },
+  "labels": {
+    "loader": "src.arena_io.load_labels",
+    "local_path": "/home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/datasets/DeepVoice/cc3bdf544cfc09bd9cc788f7f022ba1af9daf701/data/labels.parquet",
+    "pinned_sha256": "74efc4b38a3a678ac8246a871a1e1b6e330fa92e2b78529f3bda040c1a00cf5c",
+    "pinned_sha256_verified": true,
+    "relative_path": "data/labels.parquet",
+    "sha256": "74efc4b38a3a678ac8246a871a1e1b6e330fa92e2b78529f3bda040c1a00cf5c"
+  },
+  "n_rows": 5053,
+  "output_csv": {
+    "n_rows": 5053,
+    "path": "/home/kirill/icassp_antispoofing/experiments/future_directions/results/h2b_q0_deepvoice_input.csv",
+    "sha256": "f11f24aa9fee5f4a737c4aad553d9a2f2ddc92a83a4e9f8d054c7ab8d4d5065d"
+  },
+  "rows_sha256": "4da4d4d2bfc0ad8d60e9733b433a94b5a4bc53e4a9a55070bb0bbf856c3e85d6",
+  "source_access": {
+    "asr_loaded": false,
+    "audio_read": false,
+    "detector_loaded": false,
+    "feature_read": false,
+    "score_read": false
+  },
+  "version": "h2_score_free_input_csv_v1"
+}

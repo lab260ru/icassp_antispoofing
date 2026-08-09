@@ -47,7 +47,7 @@ hypotheses:
     priority: medium
   - id: H2B
     statement: "A separately calibrated, score-blinded waveform transformation family can meet the strict paired quality contract before any detector is allowed to score it."
-    status: protocol_locked_not_executed
+    status: q0_score_blind_deepvoice_manifest_frozen
     motivation: "The original H2 arms failed quality gates, so validity of a cue-directed perturbation must be established independently before a future causal study."
     priority: high
 
@@ -55,7 +55,7 @@ experiments:
   proxy_metric: "Cross-dataset, within-class feature-score association and causal paired score sensitivity; EER for mitigation."
   baseline_value: null
   best_value: null
-  total_runs: 18
+  total_runs: 19
   trajectory:
     - run_id: run_001
       hypothesis: H1
@@ -182,6 +182,13 @@ experiments:
       delta: null
       wall_time_min: 45.0
       change_summary: "Completed 4,000 detector-free crest/control quality pairs; the first DRC arm retained 18.1%, and three of four arms fail the locked 90% per-arm gate, so no score-eligible manifest or detector score was created."
+      timestamp: "2026-08-09"
+    - run_id: h2b_q0_deepvoice_001
+      hypothesis: H2B
+      metric_value: 256
+      delta: null
+      wall_time_min: 0.1
+      change_summary: "Froze an independent DeepVoice 128-per-label score-blind calibration manifest from pinned labels only; no audio, feature, ASR, transform, detector, or score was accessed."
       timestamp: "2026-08-09"
 
 outer_loop:

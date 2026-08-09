@@ -170,3 +170,13 @@ descriptive only and is not reused post hoc. The external reviewer runtime is
 still unauthenticated, so this is an internal evidence audit rather than peer
 review. New local commits are `79ae170`, `f1b920b`, and `0c75633`; push remains
 queued until a runtime GitHub token is available.
+
+## 2026-08-09 — H2B clean-room calibration boundary
+
+The next intervention loop is now independently reproducible without changing
+the failed H2 panel. The public DeepVoice dataset was pinned and acquired on
+the HDD; a 256-clip (128 per label) manifest was frozen from labels only,
+with byte-bound CSV/provenance hashes. No waveform was decoded and no feature,
+ASR, transform, detector, or score artifact was touched. The next task is to
+commit a finite quality-only transform calibration before it can run. This
+update and the new local commits remain queued for Telegram/GitHub credentials.

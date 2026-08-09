@@ -102,6 +102,10 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
   Do not access scores/detectors during Q0--Q2, do not reuse the current
   five-corpus atlas to choose H2B's cue, and do not run Q4 without a fourth
   parity-validated scorer.
+  Q0 is now complete: read
+  `experiments/future_directions/results/H2B_Q0_RUN_001.md` and consume only
+  its 256-row DeepVoice manifest for the next Q1 implementation. Q1 has not
+  decoded audio and no H2B quality or detector result exists.
 - **Paper draft:** `paper/main.tex` compiles with
   `tectonic --outdir build main.tex` from `paper/`. Track the source, citation
   ledger, and `paper/build/main.pdf`; ignore build intermediates. The compiled

@@ -79,6 +79,10 @@ quality-frozen paired detector intervention can test that third question.
   independent calibration source, selects only by a strict retention-bound /
   target-change / WER rule, and then confirms the selection on a new panel.
   It is a future protocol, not a result.
+- H2B Q0 input integrity: DeepVoice is now pinned as an independent
+  quality-calibration source, and its balanced 256-identity calibration
+  manifest is frozen from labels only. This establishes a clean score-blind
+  input boundary, not waveform-quality feasibility.
 
 ## Patterns and Insights
 
