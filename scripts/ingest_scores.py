@@ -22,6 +22,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--index", default="data/arena-index.yaml")
     parser.add_argument("--dataset", action="append", required=True)
+    parser.add_argument("--model", action="append", dest="models")
     parser.add_argument("--output-root", default="/home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/runs/scores")
     parser.add_argument("--summary", default="experiments/h1_feature_association/results/score_catalog.csv")
     args = parser.parse_args()
@@ -33,7 +34,9 @@ def main() -> None:
         if dataset_name not in index["datasets"]:
             raise KeyError(f"Unknown dataset: {dataset_name}")
         frames: list[pd.DataFrame] = []
-        for model_name in index["models"]:
+        for model_name in (args.models or list(index["models"])):
+            if model_name not in index["models"]:
+                raise KeyError(f"Unknown model: {model_name}")
             if dataset_name not in index["models"][model_name]["score_artifacts"]:
                 continue
             frame = load_model_scores(index, dataset_name, model_name)
