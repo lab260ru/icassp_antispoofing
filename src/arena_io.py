@@ -108,6 +108,29 @@ def _audio_bytes(audio_field: Any) -> bytes:
     return bytes(payload)
 
 
+def audio_row_identity(row: dict[str, Any]) -> tuple[str, dict[str, Any]]:
+    """Resolve an audio-row ID from explicit metadata before a storage filename.
+
+    Most Arena shards encode the stable utterance ID in ``path``. InTheWild is
+    a documented exception: paths are positional names (for example ``0.wav``)
+    while the authoritative ID is the JSON ``notes.utterance_id`` field. This
+    function never derives IDs from row order; it uses only an explicit stable
+    metadata field and falls back to the path convention when none is present.
+    """
+    notes_raw = row.get("notes")
+    notes = json.loads(notes_raw) if isinstance(notes_raw, str) and notes_raw else {}
+    if not isinstance(notes, dict):
+        raise ValueError("Audio-row notes must be a JSON object when present")
+    for key in ("utterance_id", "sample_id"):
+        value = notes.get(key)
+        if value is not None and str(value).strip():
+            return normalize_sample_id(str(value)), notes
+    path = row.get("path")
+    if path is None or not str(path).strip():
+        raise ValueError("Audio row has neither an explicit stable ID in notes nor a non-empty path")
+    return normalize_sample_id(str(path)), notes
+
+
 @dataclass(frozen=True)
 class AudioRecord:
     sample_id: str
@@ -129,14 +152,12 @@ def iter_selected_audio(dataset: dict[str, Any], selected: pd.DataFrame, batch_s
         parquet = pq.ParquetFile(shard)
         for batch in parquet.iter_batches(batch_size=batch_size, columns=["path", "audio", "label", "notes"]):
             for row in batch.to_pylist():
-                sample_id = normalize_sample_id(row["path"])
+                sample_id, notes = audio_row_identity(row)
                 if sample_id not in selected_map:
                     continue
                 selected_row = selected_map[sample_id]
                 if int(row["label"]) != int(selected_row["label"]):
                     raise ValueError(f"Label mismatch for {sample_id} in {shard}")
-                notes_raw = row.get("notes")
-                notes = json.loads(notes_raw) if isinstance(notes_raw, str) and notes_raw else {}
                 seen.add(sample_id)
                 yield AudioRecord(
                     sample_id=sample_id,
