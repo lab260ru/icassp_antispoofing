@@ -158,3 +158,15 @@ locked 90% per-arm quality requirement; polarity alone retains 99.9%. The
 formal freeze refused to create a score-eligible manifest, so no model saw a
 transformed waveform and no causal claim is possible. We will preserve this as
 a rigor-preserving negative result rather than tune thresholds after inspection.
+
+## 2026-08-09 — audited four-page paper checkpoint
+
+The ICASSP draft is now a compiled, readable four-page PDF backed by a
+five-corpus H1 result table and vector association atlas. A claim-to-artifact
+audit cross-checks the central reported quantities and makes an important
+slice distinction explicit: the failed frozen H2 candidate is spoof-class
+crest factor, while a separate bona-fide/full-waveform crest association is
+descriptive only and is not reused post hoc. The external reviewer runtime is
+still unauthenticated, so this is an internal evidence audit rather than peer
+review. New local commits are `79ae170`, `f1b920b`, and `0c75633`; push remains
+queued until a runtime GitHub token is available.
