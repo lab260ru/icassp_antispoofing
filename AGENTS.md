@@ -110,6 +110,14 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
   **Do not start a second process or inspect partial rows as a result.** Wait
   for all 2,304 immutable pair checkpoints and the Q1 summary, then run the
   committed quality-only selector. No H2B detector result exists.
+- **Fourth scorer handoff:** `experiments/h2_causal_interventions/W2V2_AASIST_READINESS.md`
+  pins the only viable future route: download just
+  `w2v2-aasist.onnx` from `SpeechAntiSpoofingBenchmarks/W2V2-AASIST` revision
+  `196128e5a5101d5cb6ac7701597891bc7de7e7b5` to HDD, require SHA-256
+  `837169def567cd68d94f7b5a6bd7ef55a7b64ea9cec61364944bcb66521e92d3`,
+  inspect its graph, then perform CUDA parity before any scorer registration.
+  Its advertised PyTorch/TensorRT wrappers are incomplete at that revision;
+  never repair or substitute them ad hoc.
 - **Paper draft:** `paper/main.tex` compiles with
   `tectonic --outdir build main.tex` from `paper/`. Track the source, citation
   ledger, and `paper/build/main.pdf`; ignore build intermediates. The compiled
