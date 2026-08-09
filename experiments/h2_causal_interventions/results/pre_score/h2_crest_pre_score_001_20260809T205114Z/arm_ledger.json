@@ -1,0 +1,48 @@
+[
+  {
+    "arm_id": "drc_cf3",
+    "definition_sha256": "cf57425e28b73c9193762cde10bef743f667479af95c474ceb9b4ba1853d9df7",
+    "negative_control": false,
+    "parameters": {
+      "target_reduction_db": 3.0
+    },
+    "target_direction": "decrease",
+    "target_feature": "crest_factor_db",
+    "target_tolerance": 0.0,
+    "transform": "drc_crest_factor"
+  },
+  {
+    "arm_id": "drc_cf6",
+    "definition_sha256": "2dfc835364522e7749942968069d13540873ae9c697223963de00bf7b37eac8d",
+    "negative_control": false,
+    "parameters": {
+      "target_reduction_db": 6.0
+    },
+    "target_direction": "decrease",
+    "target_feature": "crest_factor_db",
+    "target_tolerance": 0.0,
+    "transform": "drc_crest_factor"
+  },
+  {
+    "arm_id": "polarity",
+    "definition_sha256": "b44a67587a0fb1c74a2fc508779de522c947c53124e6cf7326cac9e47f5cfc85",
+    "negative_control": true,
+    "parameters": {},
+    "target_direction": "invariant",
+    "target_feature": "crest_factor_db",
+    "target_tolerance": 1e-06,
+    "transform": "polarity"
+  },
+  {
+    "arm_id": "small_gain_plus_0p1db",
+    "definition_sha256": "11f9cb299fee45f0df54c86c221195ffdd061e7d7ef4e1c587ce8c99732b4397",
+    "negative_control": true,
+    "parameters": {
+      "gain_db": 0.1
+    },
+    "target_direction": "invariant",
+    "target_feature": "crest_factor_db",
+    "target_tolerance": 1e-06,
+    "transform": "gain"
+  }
+]
