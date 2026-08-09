@@ -40,7 +40,10 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
   Spectra-AASIST/`crest_factor_db`; see its adjacent report and
   `DISCOVERY_TO_H2_FREEZE.md`. It is exploratory, excludes confirmation data,
   and is not itself a causal or portable result. Commit it before any bootstrap
-  or H2 execution. The next data job is the held-out confirmation download.
+  or H2 execution. **Active, non-duplicable job:** the held-out confirmation
+  downloader is acquiring InTheWild followed by ASVspoof5. Check processes and
+  HDD paths before relaunching; do not interpret either corpus until its own
+  scoped H1 artifacts are complete.
 - **H2 has two parity-validated runners but is not ready to claim.** Read
   `experiments/h2_causal_interventions/model_capability_audit.md`,
   `H2_ONNX_PARITY.md`, and `PARITY_RUN_001.md` before any intervention work.
