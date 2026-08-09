@@ -80,12 +80,16 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
   its original clipping gate rejected pre-existing source clipping; its HDD
   artifacts are preserved for diagnosis only and must not be analyzed as
   results. Commit `eb6298c` corrected the gate to assess transform-induced
-  clipping. `h2_quality_full_002` is running on GPU 3 under the corrected
-  protocol and remains pre-score quality screening only: no detector may read
-  a pair and no causal claim may be made until its complete quality manifest is
-  frozen. After it ends, use the committed
+  clipping. `h2_quality_full_002` completed all 4,000 detector-free pairs on
+  GPU 3, but its formal quality freeze refused at the first arm: DRC-3 retains
+  181/1,000 pairs (18.1%), DRC-6 6/1,000 (0.6%), and +0.1 dB gain 646/1,000
+  (64.6%); only polarity reaches 99.9%. See
+  `results/quality_runs/H2_QUALITY_RUN_002.md`. No score-eligible manifest
+  exists; no detector may read a pair and no causal claim may be made. The
+  committed
   `scripts/freeze_h2_quality_manifest.py` (read `H2_QUALITY_FREEZE.md`);
-  only its retained-only hash-sealed output may be passed to the committed
+  would create a retained-only hash-sealed output only if a future new run
+  clears every arm. Only that output may be passed to the committed
   `scripts/run_h2_paired_scoring.py` (read `H2_PAIRED_SCORING.md`). That scorer
   supports only Spectra, AASIST, and source-PyTorch Res2; no fourth scorer is
   implied. Read `H2_QUALITY_GATE_CORRECTION.md` before resuming H2. Res2

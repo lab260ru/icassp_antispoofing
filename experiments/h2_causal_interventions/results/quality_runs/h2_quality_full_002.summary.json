@@ -1,0 +1,41 @@
+{
+  "artifact_kind": "h2_detector_free_quality_summary",
+  "claim_guard": "Quality diagnostics only; no detector was imported, loaded, or run, and this summary is not causal evidence.",
+  "complete": true,
+  "completed_pairs": 4000,
+  "detector_scoring_allowed": false,
+  "expected_pairs": 4000,
+  "mode": "full_panel_pre_score_quality",
+  "newly_written_pairs": 4000,
+  "panel_gate_status": "not_frozen",
+  "per_arm": {
+    "drc_cf3": {
+      "completed_pairs": 1000,
+      "retained_fraction": 0.181,
+      "retained_pairs": 181,
+      "status": "diagnostic_only_not_panel_gate"
+    },
+    "drc_cf6": {
+      "completed_pairs": 1000,
+      "retained_fraction": 0.006,
+      "retained_pairs": 6,
+      "status": "diagnostic_only_not_panel_gate"
+    },
+    "polarity": {
+      "completed_pairs": 1000,
+      "retained_fraction": 0.999,
+      "retained_pairs": 999,
+      "status": "diagnostic_only_not_panel_gate"
+    },
+    "small_gain_plus_0p1db": {
+      "completed_pairs": 1000,
+      "retained_fraction": 0.646,
+      "retained_pairs": 646,
+      "status": "diagnostic_only_not_panel_gate"
+    }
+  },
+  "provenance_sha256": "3a238fa5518fb3ef602ec40d95c786844fa0ad7cb754cb3679268fae3d376b6b",
+  "remaining_pairs": 0,
+  "run_id": "h2_quality_full_002",
+  "version": "h2_quality_runner_v1"
+}

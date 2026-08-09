@@ -42,3 +42,9 @@
 - Decision: Apply the locked five-corpus partial-Spearman/BH aggregation once, with five explicit source tables and no candidate selection. It reports 19 qualifying registry units, but the operational H2 crest candidate fails the two-confirmation requirement.
 - Tradeoff: Continue the already-frozen crest H2 execution only as an explicitly exploratory paired-sensitivity test. Do not expand its arms/features after the five-corpus screen, and do not begin H3 mitigation training from the failed crest-portability premise.
 - Validation: The aggregation writes 1,344 model/unit and 168 feature/view/class rows, records `selection_or_freezing_performed: false`, and has a committed result note with all output hashes.
+
+## 2026-08-09 - H2 full quality gate stops before detector scoring
+
+- Validation: The corrected `h2_quality_full_002` run completed exactly 4,000 immutable checkpoints over the frozen 1,000-clip, four-arm input panel. The formal quality-freeze CLI verified completion/provenance and refused at `drc_cf3` (181/1,000 retained), before constructing a score-eligible manifest.
+- Decision: Do not relax the STOI/WER/loudness/clipping/target-direction thresholds, or alter these arms, after observing the quality diagnostics. The H2 paired scorer remains unused.
+- Tradeoff: The paper can report a stronger rigor result---the intervention could not clear its own content-preservation gate---but no score-delta or causal conclusion. Any reparameterized DRC or different feature requires an outer-loop protocol and fresh score-independent freeze.

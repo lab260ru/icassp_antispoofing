@@ -37,7 +37,7 @@ hypotheses:
     priority: high
   - id: H2
     statement: "Matched waveform interventions that alter a selected cue cause paired score changes in multiple detectors while preserving intelligibility and label-relevant content."
-    status: pre_score_quality_screening_active_no_detector_scores
+    status: quality_gate_failed_no_detector_scores
     motivation: "Causal sensitivity is needed before calling a correlation a detector shortcut."
     priority: high
   - id: H3
@@ -50,7 +50,7 @@ experiments:
   proxy_metric: "Cross-dataset, within-class feature-score association and causal paired score sensitivity; EER for mitigation."
   baseline_value: null
   best_value: null
-  total_runs: 17
+  total_runs: 18
   trajectory:
     - run_id: run_001
       hypothesis: H1
@@ -171,11 +171,18 @@ experiments:
       wall_time_min: 0.1
       change_summary: "Evaluated the fixed five-corpus partial-Spearman portability rule without selection: 19 registry units meet it, but the frozen Spectra crest candidate fails its held-out-significance and direction requirements."
       timestamp: "2026-08-09"
+    - run_id: h2_quality_full_002
+      hypothesis: H2
+      metric_value: 0.181
+      delta: null
+      wall_time_min: 45.0
+      change_summary: "Completed 4,000 detector-free crest/control quality pairs; the first DRC arm retained 18.1%, and three of four arms fail the locked 90% per-arm gate, so no score-eligible manifest or detector score was created."
+      timestamp: "2026-08-09"
 
 outer_loop:
   cycle: 3
   last_direction: "pivot_toward_negative_crest_result_and_association_atlas"
-  last_reflection: "Five explicit H1 tables now complete the configured aggregate. The discovery-frozen Spectra crest candidate is directionally negative in four of five corpora but fails both-confirmation requirements because its ASVspoof5 adjusted estimate is null. Nineteen other registered feature/view/class units meet the descriptive five-corpus association rule, but confirmation outcomes cannot trigger post-hoc H2 expansion. Preserve the already-started crest H2 run as exploratory only. It may test paired score sensitivity, but it cannot rescue the failed H1 portability claim and cannot meet the registered causal criterion until a fourth parity-validated scorer exists."
+  last_reflection: "Five explicit H1 tables complete the configured aggregate. The discovery-frozen Spectra crest candidate is directionally negative in four of five corpora but fails both-confirmation requirements because its ASVspoof5 adjusted estimate is null. Nineteen other registered feature/view/class units meet the descriptive five-corpus association rule, but confirmation outcomes cannot trigger post-hoc H2 expansion. The pre-frozen exploratory crest H2 panel is now also blocked before scoring: DRC and gain arms miss the locked 90% waveform-quality retention gate. The paper should present this as a rigor-preserving negative result, not loosen a threshold or claim causal sensitivity."
   pivot_policy: "After the first association/intervention matrix or five completed runs, choose deepen, broaden, pivot, or conclude and record the evidence."
 
 workspace:

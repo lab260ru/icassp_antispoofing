@@ -66,6 +66,13 @@ quality-frozen paired detector intervention can test that third question.
   Spectra/crest/spoof candidate does not, because it fails the required
   confirmation significance and direction conditions. These associations do
   not justify post-hoc H2 expansion or a causal interpretation.
+- H2 quality-gate result: the full 1,000-clip ASVspoof2019 LA crest/control
+  panel completed detector-free, but three frozen arms miss the 90% retained
+  threshold (DRC-3 18.1%, DRC-6 0.6%, and +0.1 dB gain 64.6%). The formal
+  quality freeze refused before any transformed waveform reached a detector.
+  This is evidence that the registered transformations are incompatible with
+  the content/loudness/clipping gate at this setting, not evidence about model
+  sensitivity.
 
 ## Patterns and Insights
 
@@ -98,8 +105,8 @@ baseline reproduction.
 - Which public score artifacts expose stable sample IDs that can join audio
   manifests without heuristic matching?
 - Does the already-frozen exploratory crest intervention show paired score
-  sensitivity after quality gates, and is it limited to the runnable
-  three-model feasibility panel?
+  sensitivity after quality gates? No: its frozen arms fail before scoring;
+  a future test would require a new, independently frozen outer-loop protocol.
 - Is the strongest paper a principled negative crest-factor result plus an
   architecture-sensitivity atlas rather than a mitigation story?
 

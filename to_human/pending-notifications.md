@@ -149,3 +149,12 @@ feature/view/class units meet the descriptive association rule, but crest does
 not. The paper is pivoting toward a conservative negative crest-factor result
 and association atlas; no post-hoc H2 feature is added. H2 quality screening
 continues detector-free. Send this update when Telegram credentials are present.
+
+## 2026-08-09 — H2 quality-gate outcome
+
+The completed detector-free crest intervention panel is blocked before scoring:
+DRC-3 retains 18.1%, DRC-6 0.6%, and the +0.1 dB control 64.6%, below the
+locked 90% per-arm quality requirement; polarity alone retains 99.9%. The
+formal freeze refused to create a score-eligible manifest, so no model saw a
+transformed waveform and no causal claim is possible. We will preserve this as
+a rigor-preserving negative result rather than tune thresholds after inspection.
