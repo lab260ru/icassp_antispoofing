@@ -1,0 +1,2 @@
+dataset,model,n_scores_joined,score_orientation,score_revision,dataset_revision
+ASVspoof2019_LA,Spectra-AASIST,71237,negated_raw_is_spoof,eb65c2662d9e646d72557b3f4bdd08b000068c7f,9492c4a85ad91508b6da03c92c98c58aeaa02424

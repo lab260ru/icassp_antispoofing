@@ -15,7 +15,10 @@ transformation. Only the last supports a shortcut-sensitivity claim.
 
 ## Key Results
 
-No completed experiment.
+- Input-integrity validation: all 71,237 published Spectra-AASIST scores joined
+  exactly to ASVspoof 2019 LA labels. The stored score is increasing bonafide
+  evidence, so analysis uses its negation as spoof evidence. This establishes a
+  valid artifact interface, not a feature or causal result.
 
 ## Patterns and Insights
 

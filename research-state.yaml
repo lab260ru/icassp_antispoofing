@@ -37,8 +37,15 @@ experiments:
   proxy_metric: "Cross-dataset, within-class feature-score association and causal paired score sensitivity; EER for mitigation."
   baseline_value: null
   best_value: null
-  total_runs: 0
-  trajectory: []
+  total_runs: 1
+  trajectory:
+    - run_id: run_001
+      hypothesis: H1
+      metric_value: 1.0
+      delta: null
+      wall_time_min: 0.1
+      change_summary: "Validated exact score-label join coverage for Spectra-AASIST on ASVspoof2019_LA."
+      timestamp: "2026-08-09"
 
 outer_loop:
   cycle: 0
