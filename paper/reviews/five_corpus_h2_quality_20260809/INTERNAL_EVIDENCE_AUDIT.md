@@ -26,6 +26,9 @@ research artifacts and that the paper does not overstate the failed H2 stage.
 
 1. The manuscript must continue to label the 19-unit atlas as *descriptive*
    and must not re-rank it into intervention candidates after confirmation.
+   This includes its separate bona-fide/full-waveform crest-factor unit: it is
+   not the frozen spoof-class crest candidate and cannot be silently
+   substituted for it.
 2. The H2 result is a quality-gate incompatibility for this frozen panel.  It
    must not be characterized as detector robustness, lack of sensitivity, or a
    causal negative result.
