@@ -81,6 +81,7 @@
 - Validation: The frozen-manifest-only analyzer rechecked input and selection hashes, then completed all 420 registered AUROC cells with 500 source-cluster bootstrap replicates and no failed cells. Its aggregation reports 23 of 84 terminal descriptive stable units.
 - Result: Full-waveform crest label separation is negative in the three ASVspoof corpora, positive in InTheWild, and near null in ASVspoof5. This independent score-free instability supports cautious corpus-dependent framing, but cannot be connected back to detector-score associations.
 - Guardrail: The H4 result is sealed. It neither adds a candidate nor alters the failed H1/H2/H2B decision boundaries; its output files are HDD-resident and hash-recorded in the run note.
+- Visualization: Applying the publication-plotting guidance, a tested validator reads only the sealed matrix/aggregation and exports a colorblind-aware three-panel signed-AUROC heatmap as vector PDF plus 300-DPI PNG. Green square markers denote only terminal descriptive units; a visual inspection passed and the figure stays supplementary.
 
 ## 2026-08-09 - H2B quality-first outer loop
 
