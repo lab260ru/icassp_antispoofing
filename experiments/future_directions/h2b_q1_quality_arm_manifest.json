@@ -1,0 +1,109 @@
+{
+  "arms": [
+    {
+      "arm_id": "allpass_abs_a005",
+      "definition_sha256": "bbea63caf017b50e229762fac4bf31ac5377437f807352e58a04e87f5afac6d4",
+      "negative_control": false,
+      "parameters": {"coefficient": 0.05, "stages": 1.0},
+      "target_direction": "absolute_change",
+      "target_feature": "group_delay_var",
+      "target_tolerance": 1e-08,
+      "transform": "allpass_phase"
+    },
+    {
+      "arm_id": "allpass_abs_a010",
+      "definition_sha256": "fe1aeaa72194c29b33afd80e9b01e8f74ed6b60653ca36cce7ffcb4afc27ccfa",
+      "negative_control": false,
+      "parameters": {"coefficient": 0.1, "stages": 1.0},
+      "target_direction": "absolute_change",
+      "target_feature": "group_delay_var",
+      "target_tolerance": 1e-08,
+      "transform": "allpass_phase"
+    },
+    {
+      "arm_id": "endpoint_zero_fixed_length",
+      "definition_sha256": "0985ed6f524e98ca021de9c788bd8fa96e4c634c89384d489897b127c162ecd5",
+      "negative_control": false,
+      "parameters": {"absolute_floor": 0.0001, "frame_ms": 25.0, "guard_ms": 20.0, "hop_ms": 10.0, "relative_threshold_db": -40.0},
+      "target_direction": "increase",
+      "target_feature": "silence_fraction",
+      "target_tolerance": 0.0,
+      "transform": "endpoint_silence_fixed_length"
+    },
+    {
+      "arm_id": "gain_plus_0p05db",
+      "definition_sha256": "a0a9198d680859536468d897d7cd8af0d8df611aecc9f626d315200b6a5f2a62",
+      "negative_control": true,
+      "parameters": {"gain_db": 0.05},
+      "target_direction": "invariant",
+      "target_feature": "crest_factor_db",
+      "target_tolerance": 1e-06,
+      "transform": "gain"
+    },
+    {
+      "arm_id": "polarity",
+      "definition_sha256": "b44a67587a0fb1c74a2fc508779de522c947c53124e6cf7326cac9e47f5cfc85",
+      "negative_control": true,
+      "parameters": {},
+      "target_direction": "invariant",
+      "target_feature": "crest_factor_db",
+      "target_tolerance": 1e-06,
+      "transform": "polarity"
+    },
+    {
+      "arm_id": "tilt_minus_0p5db_oct",
+      "definition_sha256": "f73914ac6108470ec37318c54d2193e09925835598222b6a0cf125122cd7f2a5",
+      "negative_control": false,
+      "parameters": {"tilt_db_per_octave": -0.5},
+      "target_direction": "decrease",
+      "target_feature": "spectral_slope_db_per_khz",
+      "target_tolerance": 0.0,
+      "transform": "spectral_tilt"
+    },
+    {
+      "arm_id": "tilt_minus_1p0db_oct",
+      "definition_sha256": "b6f1d7cc71717746364a327bed454421c4100284f06293b01f440f0ec66d4b3d",
+      "negative_control": false,
+      "parameters": {"tilt_db_per_octave": -1.0},
+      "target_direction": "decrease",
+      "target_feature": "spectral_slope_db_per_khz",
+      "target_tolerance": 0.0,
+      "transform": "spectral_tilt"
+    },
+    {
+      "arm_id": "tilt_plus_0p5db_oct",
+      "definition_sha256": "1b4fd58829ccede3a4347940a96efecab21228556b1d4d296cd919fd1c1a00a5",
+      "negative_control": false,
+      "parameters": {"tilt_db_per_octave": 0.5},
+      "target_direction": "increase",
+      "target_feature": "spectral_slope_db_per_khz",
+      "target_tolerance": 0.0,
+      "transform": "spectral_tilt"
+    },
+    {
+      "arm_id": "tilt_plus_1p0db_oct",
+      "definition_sha256": "ad8a24c60f4b68dd5b2bf91572d492d7522b4dceea359264d94b44a7204f9052",
+      "negative_control": false,
+      "parameters": {"tilt_db_per_octave": 1.0},
+      "target_direction": "increase",
+      "target_feature": "spectral_slope_db_per_khz",
+      "target_tolerance": 0.0,
+      "transform": "spectral_tilt"
+    }
+  ],
+  "artifact_kind": "h2b_q1_quality_arm_manifest",
+  "claim_guard": "Finite score-blinded waveform-quality calibration arms only; no detector score, feature candidate selection, EER, or causal claim is authorized.",
+  "families": [
+    {"candidate_arm_ids": ["endpoint_zero_fixed_length"], "family_id": "endpoint_fixed_length", "minimum_abs_median_target_delta": 0.005, "target_feature": "silence_fraction"},
+    {"candidate_arm_ids": ["tilt_plus_0p5db_oct", "tilt_plus_1p0db_oct"], "family_id": "spectral_tilt_positive", "minimum_abs_median_target_delta": 0.0001, "target_feature": "spectral_slope_db_per_khz"},
+    {"candidate_arm_ids": ["tilt_minus_0p5db_oct", "tilt_minus_1p0db_oct"], "family_id": "spectral_tilt_negative", "minimum_abs_median_target_delta": 0.0001, "target_feature": "spectral_slope_db_per_khz"},
+    {"candidate_arm_ids": ["allpass_abs_a005", "allpass_abs_a010"], "family_id": "allpass_phase", "minimum_abs_median_target_delta": 0.00001, "target_feature": "group_delay_var"}
+  ],
+  "negative_control_arm_ids": ["gain_plus_0p05db", "polarity"],
+  "selection_policy": {
+    "minimum_lower_wilson_retention_bound": 0.9,
+    "tie_break_order": ["largest_lower_wilson_retention_bound", "largest_abs_median_target_delta", "smallest_median_wer", "canonical_arm_id"],
+    "wilson_confidence_level": 0.95
+  },
+  "version": "h2b_q1_quality_arm_manifest_v1"
+}
