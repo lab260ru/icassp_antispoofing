@@ -54,3 +54,21 @@ this is recorded transparently and can be rerun after `claude /login`.
 
 The worktree has committed checkpoints, but remote push and this Telegram
 notification are still queued until valid runtime credentials are supplied.
+
+## 2026-08-09 — second H1 discovery corpus
+
+The unchanged H1 screen is complete on ASVspoof2021 LA. Spectra-AASIST's
+spoof-class crest association remains negative but is much weaker than in
+ASVspoof2019 LA (-0.099 vs. -0.454), and the multi-model pattern is
+heterogeneous. I also corrected an output-path bug before it could obscure
+provenance: each corpus now has immutable scoped tables and the aggregate tool
+refuses to call the five-dataset portability criterion early.
+
+## 2026-08-09 — H2 scorer parity gate
+
+Two executable GPU scorers are now validated against their published Arena
+ordering on a frozen 128-clip calibration set: AASIST uses raw waveform input
+(rho 0.999994) and Spectra-AASIST uses external pre-emphasis 0.97 (rho
+0.999971). This is only a baseline-parity gate, not an intervention result. H2
+still waits for the H1 candidate freeze, ASR WER quality gate, and a complete
+four-model scorer panel.

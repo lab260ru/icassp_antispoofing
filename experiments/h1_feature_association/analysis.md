@@ -86,3 +86,25 @@ portable or causal conclusion.
 Next: complete the two remaining discovery datasets, aggregate only under the
 pre-registered portability rule, then freeze a provenance-bearing candidate
 manifest before touching either held-out confirmation corpus or bootstrap CIs.
+
+## run_006 — second discovery association screen
+
+**Type:** exploratory discovery replication under the unchanged H1 estimator;
+not a portable or causal conclusion.
+
+- Dataset: pinned ASVspoof2021_LA, deterministic seed-2609 subset, 5,000
+  trials per class and three registered waveform views.
+- Integrity: all 8 models join exactly to all 10,000 selected trials; the
+  analysis writes immutable corpus-scoped artifacts in
+  `results/ASVspoof2021_LA/` rather than overwriting the ASVspoof2019_LA
+  output. A two-input aggregation report correctly declares the final
+  five-dataset portability criterion not evaluable.
+- Crest-factor replication (full waveform, spoof class): Spectra-AASIST
+  remains negative ($\rho=-0.099$, BH $q=4.9\times10^{-12}$), but the
+  magnitude is markedly smaller than on ASVspoof2019_LA ($-0.454$). AASIST is
+  positive in both corpora, while several other detectors change sign or
+  magnitude. This strengthens the architecture- and corpus-specific reading;
+  it does not justify candidate freezing before ASVspoof2021_DF completes.
+
+Next: complete the final discovery corpus under the same code and combine all
+three discovery artifacts without looking at the held-out datasets.

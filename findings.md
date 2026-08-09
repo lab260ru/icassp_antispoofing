@@ -40,6 +40,17 @@ transformation. Only the last supports a shortcut-sensitivity claim.
   but its signs and magnitudes vary across other architectures, class strata,
   and views. This is evidence for heterogeneous sensitivity, not a claim of a
   universal crest-factor shortcut.
+- Second H1 discovery screen: on ASVspoof2021 LA, Spectra-AASIST's spoof-class
+  full-waveform crest association has the same negative direction but attenuates
+  to partial $\rho=-0.099$ (BH $q=4.9\times10^{-12}$). Other artifacts remain
+  heterogeneous. Two corpora are therefore consistent with neither a uniform
+  effect size nor a universal detector claim; the final discovery corpus must
+  complete before candidates are frozen.
+- H2 runner-parity validation: on a frozen 128-clip, score-independent
+  calibration set, AASIST's raw ONNX path matches the published Arena ordering
+  (Spearman 0.999994); Spectra-AASIST matches only when external 0.97
+  pre-emphasis is used (0.999971). This validates model-specific waveform
+  preprocessing for later paired scoring, not feature sensitivity or causality.
 
 ## Patterns and Insights
 
@@ -61,6 +72,11 @@ baseline reproduction.
   be extremely small. Candidate selection must prioritize the fixed
   cross-corpus and cross-model portability gate, then held-out confirmation and
   interventions, rather than significance alone.
+- Corpus-scoped result paths are required for reproducibility: a rerun for one
+  dataset must never overwrite another dataset's association or score catalog.
+- H2 must retain its model-specific parity contract: raw AASIST and
+  pre-emphasized Spectra inputs are not interchangeable, and no transformed
+  waveform can be scored until the same contract is applied.
 
 ## Open Questions
 

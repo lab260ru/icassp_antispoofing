@@ -1,0 +1,18 @@
+[
+  {
+    "dataset": "ASVspoof2021_LA",
+    "n_feature_samples": 10000,
+    "n_joined_per_model": {
+      "AASIST": 30000,
+      "RawBMamba": 30000,
+      "RawTFNet": 30000,
+      "Res2TCNGuard": 30000,
+      "Spectra-AASIST": 30000,
+      "W2V2-AASIST": 30000,
+      "WhisperMFCCMesoNet": 30000,
+      "XLSR-SLS": 30000
+    },
+    "n_models": 8,
+    "n_score_rows": 1452528
+  }
+]

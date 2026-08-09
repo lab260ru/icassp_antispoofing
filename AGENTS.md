@@ -19,12 +19,13 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
 
 ## Current checkpoint — 2026-08-09
 
-- **H1 run_005 is complete on ASVspoof2019_LA.** The immutable source tables
-  are `experiments/h1_feature_association/results/association_summary.csv`,
-  `feature_label_metrics.csv`, and `association_join_report.json`. They contain
-  1,344 within-class screen rows (8 models × 2 classes × 3 views × 28
-  features) from the locked 5,000-per-class subset. Do not call this a portable
-  or causal claim: it is only the first discovery corpus.
+- **H1 runs 005--006 are complete on ASVspoof2019_LA and ASVspoof2021_LA.**
+  Their immutable source tables are under
+  `experiments/h1_feature_association/results/<dataset>/`; each has 1,344
+  within-class screen rows (8 models × 2 classes × 3 views × 28 features) from
+  the locked 5,000-per-class subset. `results/discovery_aggregate/` is an
+  explicit two-input descriptive report that correctly marks portability as
+  not evaluable. Do not call either result portable or causal.
 - **Association estimator safety is tested.** Use
   `PYTHONPATH=. python3 scripts/analyze_associations.py ...`; the normal
   `pytest` console entry point may omit the repository from `sys.path`, so run
@@ -33,17 +34,19 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
   removes a tested variable from its own controls. Bootstrap CIs require a
   frozen provenance-bearing manifest; see
   `experiments/h1_feature_association/BOOTSTRAP_CLI.md`.
-- **Active, non-duplicable jobs:** ASVspoof2021_LA full feature extraction is
-  running from the locked local dataset; ASVspoof2021_DF is downloading via the
+- **Active, non-duplicable job:** ASVspoof2021_DF is downloading via the
   resumable public-HF downloader. Check processes and the HDD paths before
-  relaunching. After their features are ready, ingest their already-downloaded
-  score panels and run H1 jointly or separately; freeze candidates only after
-  all three discovery datasets are analyzed.
-- **H2 is not ready to claim.** Read
-  `experiments/h2_causal_interventions/model_capability_audit.md` before any
-  intervention work. It requires a pre-arm 128-clip parity/orientation check,
-  a fixed ASR WER runtime, and a validated fourth model or a pre-frozen
-  XLSR-SLS fallback. Score artifacts cannot score transformed audio.
+  relaunching. After it is ready, ingest its already-downloaded score panel and
+  run H1 into its own scope; freeze candidates only after all three discovery
+  datasets are analyzed.
+- **H2 has two parity-validated runners but is not ready to claim.** Read
+  `experiments/h2_causal_interventions/model_capability_audit.md`,
+  `H2_ONNX_PARITY.md`, and `PARITY_RUN_001.md` before any intervention work.
+  Run ONNX commands through `scripts/run_h2_cuda.sh`; it exposes the active
+  environment's CUDA 13 wheel libraries. AASIST uses raw input and
+  Spectra-AASIST uses external pre-emphasis 0.97. H2 still requires a fixed
+  ASR WER runtime and a validated fourth model or a pre-frozen XLSR-SLS
+  fallback. Score artifacts cannot score transformed audio.
 - **Paper draft:** `paper/main.tex` compiles with
   `tectonic --outdir build main.tex` from `paper/`. Track the source, citation
   ledger, and `paper/build/main.pdf`; ignore build intermediates. The initial
