@@ -29,7 +29,11 @@ def process_record(record: AudioRecord) -> list[dict[str, object]]:
             "sample_id": record.sample_id,
             "source_id": record.source_id,
             "label": record.label,
-            "speaker_id": record.notes.get("speaker_id"),
+            # Arena datasets do not use one uniform metadata spelling. The
+            # InTheWild shards expose an explicit `speaker` field in notes;
+            # preserve it as the registered speaker control rather than
+            # silently degrading to an utterance-only bootstrap cluster.
+            "speaker_id": record.notes.get("speaker_id") or record.notes.get("speaker"),
             "attack_id": record.notes.get("attack_id") or record.notes.get("attack"),
             "view": view,
             "sample_rate_hz": sample_rate,
