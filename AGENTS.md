@@ -108,6 +108,17 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
   non-control family: the closest lower Wilson bound is 0.89624, below 0.90.
   **Do not change its thresholds/arms or start Q2--Q4 from this loop.** No
   H2B detector result exists.
+- **H4 score-free atlas:** Read
+  `experiments/h4_label_transportability/protocol.md`, then its input and run
+  notes in `experiments/h4_label_transportability/results/`. The five-corpus,
+  response-free `v1_28` analysis is complete: all 420 label-AUROC/bootstrap
+  cells are valid and 23 of 84 `view × feature` units meet the **terminal,
+  descriptive-only** H4 rule. Full-waveform crest reverses sign in InTheWild
+  and is near null in ASVspoof5. Do not use the 23 units to select a detector
+  cue, intervention, H1/H2/H2B/H3 candidate, or training experiment; do not
+  tune the sealed sample cap, directions, thresholds, or bootstrap count. The
+  compact hashes and the supplementary score-free heatmap are recorded in
+  `results/H4_ANALYSIS_001.md`; large source/output tables remain on the HDD.
 - **Fourth scorer handoff:** `experiments/h2_causal_interventions/W2V2_AASIST_READINESS.md`
   pins the only viable future route: download just
   `w2v2-aasist.onnx` from `SpeechAntiSpoofingBenchmarks/W2V2-AASIST` revision
@@ -128,12 +139,14 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
   must never be substituted into H2 post hoc.
   **Whenever `paper/main.tex` changes, compile it successfully and update the
   committed `paper/build/main.pdf` in the same change.**
-  The required three-reviewer launcher was attempted for both the initial and
-  updated drafts but blocked because the local Claude CLI is unauthenticated;
+  The required three-reviewer launcher was attempted for the initial draft,
+  the five-corpus update, and the current post-scope/layout draft, but was
+  blocked because the local Claude CLI is unauthenticated;
   see `paper/reviews/initial_draft/REVIEW_STATUS.md` and
-  `paper/reviews/five_corpus_h2_quality_20260809/REVIEW_STATUS.md`. Do not
-  pretend a review took place. Once authenticated, run a new timestamped
-  paper-review bundle.
+  `paper/reviews/five_corpus_h2_quality_20260809/REVIEW_STATUS.md`, and
+  `paper/reviews/post_scope_layout_20260809/REVIEW_STATUS.md`. Do not pretend
+  a review took place. Once authenticated, run a new timestamped paper-review
+  bundle.
   **Required workflow:** after every modification to `paper/main.tex`, run
   `cd paper && tectonic --outdir build main.tex`, verify a PDF was written,
   and commit the refreshed `paper/build/main.pdf` in the same paper commit.

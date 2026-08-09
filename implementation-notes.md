@@ -65,6 +65,7 @@
 - Audit: A paper-review-criteria read-only audit found that the planned four-model/multi-corpus H2 specification could be read as completed, generic crest-factor language could conflate two distinct slices, and Table I had floated after the paper text. The external reviewer runtime remains unauthenticated; this is not a peer-review verdict.
 - Correction: The paper now distinguishes planned confirmatory H2 from the completed 1,000-clip score-blind quality screen, writes DSP sensitivity as waveform-family `T_\theta(x)` rather than an isolated feature intervention, and names the failed frozen `Spectra-AASIST/full-waveform/spoof` candidate. It intentionally excludes the unrelated H2B Q1 quality-only result.
 - Validation: After every `main.tex` edit, `tectonic --outdir build main.tex` was run. The current PDF is readable, four pages, and has Table I on page 2 before the References; no overfull-box or unresolved-citation warning remains.
+- Paper-review: The required launcher was rerun against this exact post-scope/layout PDF. It correctly spawned Sonnet reviewers at the 0/10/20-second stagger, but all three returned the same unauthenticated Claude CLI error. `paper/reviews/post_scope_layout_20260809/REVIEW_STATUS.md` preserves the failed attempt; no review verdict is inferred.
 
 ## 2026-08-09 - H4 score-free label--cue transportability protocol
 
