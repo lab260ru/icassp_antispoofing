@@ -42,3 +42,15 @@ directionally uniform across the panel. This is a promising heterogeneous-
 sensitivity result, not yet a cross-dataset or causal shortcut finding. The
 two remaining discovery corpora are now the priority before any candidate is
 frozen.
+
+## 2026-08-09 — initial paper checkpoint
+
+The initial ICASSP draft is now compiled as a four-page IEEE-format PDF with
+verified citations, the full first-discovery heatmap, and explicit limits on
+what the current result can support. The H2 runner/quality-gate audit is also
+preserved. The mandated three-reviewer launch was attempted but the local Claude
+CLI is not authenticated, so all three subprocesses failed before reviewing;
+this is recorded transparently and can be rerun after `claude /login`.
+
+The worktree has committed checkpoints, but remote push and this Telegram
+notification are still queued until valid runtime credentials are supplied.
