@@ -168,7 +168,10 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
   runtime GitHub or Telegram credential exists. Keep committing locally and
   append milestones to `to_human/pending-notifications.md`; push/send only when
   environment credentials are supplied. Never recover or reuse previously
-  exposed credentials. The ICASSP page currently exposes no conference-specific
+  exposed credentials. `scripts/send_pending_telegram.py --list` is network-free;
+  with both Telegram variables present, `--send-latest` sends exactly one
+  update and prints no credential. Read `to_human/TELEGRAM_DELIVERY.md` before
+  delivery. The ICASSP page currently exposes no conference-specific
   LaTeX bundle. The official generic IEEE ZIP URL is documented in
   `paper/submission-requirements.md`, but direct download from this runtime gets
   a CloudFront HTTP-202 WAF challenge. Do not substitute an unverified mirror:

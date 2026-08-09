@@ -16,7 +16,8 @@ Initial verification passed **79 tests in 6.45s**. After adding the static PDF
 preflight, the complete suite passed **82 tests in 6.47s**; after its US-letter
 geometry extension, it again passed **82 tests in 6.48s**. After the
 single-anonymous submission-stage mode and author-block handoff, it passed
-**83 tests in 6.47s**.
+**83 tests in 6.47s**. After adding safe queued-Telegram delivery, it passed
+**87 tests in 6.47s**.
 `git diff --check` also completed without whitespace errors.
 
 ## Paper build
@@ -69,4 +70,5 @@ The local paper-review launcher was most recently executed against the
 post-author-policy PDF, but the Claude CLI was unauthenticated, so no reviewer
 verdict exists. Remote push and Telegram notifications require credentials not
 present in the environment; queued user-facing updates are in
-`to_human/pending-notifications.md`.
+`to_human/pending-notifications.md`, with a one-message delivery playbook in
+`to_human/TELEGRAM_DELIVERY.md`.

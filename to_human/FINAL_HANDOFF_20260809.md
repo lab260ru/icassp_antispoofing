@@ -36,7 +36,8 @@
 3. Provide a configured GitHub credential to push
    `research/icassp-signal-audit`; no remote state was assumed.
 4. Provide a Telegram credential through the environment if queued progress
-   updates should be sent. Never place a credential in this repository.
+   updates should be sent. `to_human/TELEGRAM_DELIVERY.md` provides an
+   explicit one-message sender; never place a credential in this repository.
 5. Provide authorized author names, affiliations, and ordering. ICASSP 2027
    uses single-anonymous review, so the current internal anonymous author block
    cannot be uploaded; see `paper/AUTHOR_BLOCK_REQUIRED.md`.

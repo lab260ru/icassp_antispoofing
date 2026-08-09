@@ -139,3 +139,9 @@
 
 - Validation: Extracted 16,288 characters from the compiled post-author-policy PDF and launched the required three-reviewer Sonnet workflow on the 0/10/20-second stagger.
 - Constraint: Alfa, bravo, and charlie each exited with `Not logged in · Please run /login` before producing any review. `paper/reviews/post_author_policy_20260809/REVIEW_STATUS.md` preserves this authentication failure; it is not a review result or meta-review.
+
+## 2026-08-09 - Safe queued Telegram delivery
+
+- Implementation: `src/telegram_delivery.py` and `scripts/send_pending_telegram.py` parse only level-two queued Markdown sections. Listing is network-free; delivery requires an explicit latest or exact-heading action plus both environment variables, and sends exactly one bounded plain-text message.
+- Validation: Pure parser/API tests cover ordering, exact selection, empty/oversized rejection, non-success API responses, and a redacted receipt. The command lists all 25 current queued milestones without credentials or a network call.
+- Boundary: The utility does not read/store/print a token or chat ID, and it must not be used to send all historical messages at once. `to_human/TELEGRAM_DELIVERY.md` is the operational handoff.
