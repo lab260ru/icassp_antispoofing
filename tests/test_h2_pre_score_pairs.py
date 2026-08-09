@@ -150,3 +150,24 @@ def test_quality_pair_preserves_asr_failure_row_and_rejects_response_columns() -
     quality["accidental_score"] = 0.7
     with pytest.raises(ValueError, match="detector-response"):
         quality_rows_frame([quality])
+
+
+def test_clipping_gate_rejects_only_transform_induced_clipping() -> None:
+    frozen = freeze_input_manifest(_input_rows(), per_label=3, seed=2609)
+    row = frozen.rows.iloc[0].to_dict()
+    polarity = next(arm for arm in registered_crest_factor_arms() if arm.arm_id == "polarity")
+    clipped_source = _speech_like_waveform()
+    clipped_source[0] = 1.0
+    quality = evaluate_quality_pair(
+        row,
+        audio=clipped_source,
+        sample_rate=SAMPLE_RATE,
+        arm=polarity,
+        transcribe=lambda _audio, _rate: "same transcript",
+        stoi_measure=lambda _original, _transformed, _rate: 0.99,
+        feature_extractor=_feature_extractor,
+    )
+    assert quality["original_clipping_fraction"] > 0.0
+    assert quality["transformed_clipping_fraction"] == pytest.approx(quality["original_clipping_fraction"])
+    assert quality["added_clipping_fraction"] == pytest.approx(0.0)
+    assert quality["pass_clipping"] is True

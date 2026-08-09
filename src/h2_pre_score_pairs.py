@@ -283,12 +283,12 @@ class QualityGateConfig:
     stoi_minimum: float = 0.95
     wer_maximum: float = 0.05
     loudness_delta_maximum_lu: float = 0.2
-    clipping_fraction_maximum: float = 0.0
+    max_added_clipping_fraction: float = 0.0
 
     def validate(self) -> None:
         if not 0.0 <= self.stoi_minimum <= 1.0:
             raise ValueError("stoi_minimum must be within [0, 1]")
-        if self.wer_maximum < 0.0 or self.loudness_delta_maximum_lu < 0.0 or self.clipping_fraction_maximum < 0.0:
+        if self.wer_maximum < 0.0 or self.loudness_delta_maximum_lu < 0.0 or self.max_added_clipping_fraction < 0.0:
             raise ValueError("WER, loudness, and clipping thresholds must be non-negative")
 
 
@@ -463,11 +463,14 @@ def evaluate_quality_pair(
         errors.append("loudness_gate_failed_or_unavailable")
     original_clipping = row.get("original_clipping_fraction")
     transformed_clipping = row.get("transformed_clipping_fraction")
+    added_clipping = (
+        transformed_clipping - original_clipping
+        if original_clipping is not None and transformed_clipping is not None
+        else None
+    )
+    row["added_clipping_fraction"] = added_clipping
     row["pass_clipping"] = bool(
-        original_clipping is not None
-        and transformed_clipping is not None
-        and original_clipping <= gates.clipping_fraction_maximum
-        and transformed_clipping <= gates.clipping_fraction_maximum
+        added_clipping is not None and added_clipping <= gates.max_added_clipping_fraction
     )
     if not row["pass_clipping"]:
         errors.append("clipping_gate_failed_or_unavailable")

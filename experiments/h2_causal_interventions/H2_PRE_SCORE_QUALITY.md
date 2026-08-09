@@ -38,7 +38,8 @@ following pass:
 - STOI >= 0.95;
 - original-to-transformed normalized WER <= 0.05;
 - absolute loudness delta <= 0.2 LU;
-- original and transformed clipping fractions are zero;
+- the transformation adds no clipping: transformed clipping fraction minus
+  source clipping fraction is <= 0 (both fractions are retained);
 - the arm's registered crest-factor condition holds.
 
 An unavailable metric is a failure, never a silently omitted field. The quality

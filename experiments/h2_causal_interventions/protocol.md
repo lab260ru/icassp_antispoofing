@@ -36,8 +36,11 @@ added after detector responses are inspected.
 ## Quality gates and metric
 
 Retain a transformed example only if STOI is at least 0.95, transcript WER
-against the original is at most 5%, loudness drift is at most 0.2 LU, and no
-clipping occurs, and the registered target-feature direction holds. Preserve a
+against the original is at most 5%, loudness drift is at most 0.2 LU, no
+**transform-induced** clipping occurs, and the registered target-feature
+direction holds. Original and transformed clipping fractions are retained; the
+gate requires their difference to be at most zero, rather than rejecting a
+source clip that was already peak-clipped before an intervention. Preserve a
 quality row for every failure. Drop an intervention arm if fewer than 90% pass.
 No detector may read a pair before the quality table is frozen. Report paired
 score deltas with clustered bootstrap intervals. Declare causal sensitivity only

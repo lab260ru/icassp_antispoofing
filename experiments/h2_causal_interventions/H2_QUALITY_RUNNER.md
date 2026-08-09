@@ -34,7 +34,7 @@ CUDA_VISIBLE_DEVICES=3 PYTHONPATH=. python3 scripts/run_h2_quality.py \
 Inside that process, physical GPU 3 is exposed as logical `cuda:0`, which is
 the pinned Whisper device.  The command receives the standard `pystoi` score,
 registered full-waveform feature extractor, registered waveform transforms,
-and the protocol's STOI/WER/loudness/clipping/target-direction gates through
+and the protocol's STOI/WER/loudness/added-clipping/target-direction gates through
 `evaluate_quality_pair`.
 
 ## Resumption and outputs
