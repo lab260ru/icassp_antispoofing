@@ -10,12 +10,19 @@ import src.paper_pdf_checks as checks
 
 
 class _FakePage(dict):
-    def __init__(self, text: str, fonts: dict[str, object]) -> None:
+    def __init__(self, text: str, fonts: dict[str, object], *, width: float = 612.0, height: float = 792.0) -> None:
         super().__init__({"/Resources": {"/Font": fonts}})
         self._text = text
+        self.mediabox = _FakeBox(width, height)
 
     def extract_text(self) -> str:
         return self._text
+
+
+class _FakeBox:
+    def __init__(self, width: float, height: float) -> None:
+        self.width = width
+        self.height = height
 
 
 class _FakeReader:
@@ -51,6 +58,8 @@ def test_audit_accepts_anonymous_four_page_pdf_with_embedded_font(monkeypatch: p
     assert report["ok"] is True
     assert report["font_count"] == 1
     assert report["forbidden_text_hits"] == {}
+    assert report["us_letter_geometry"] is True
+    assert report["page_sizes_points"] == [[612.0, 792.0]] * 4
 
 
 def test_audit_reports_identity_metadata_and_missing_font_embedding(
@@ -60,7 +69,7 @@ def test_audit_reports_identity_metadata_and_missing_font_embedding(
     pdf.write_bytes(b"%PDF-fake")
     unembedded_font = {"/BaseFont": "/Test"}
     pages = [
-        _FakePage("Kirill", {"/F1": unembedded_font}),
+        _FakePage("Kirill", {"/F1": unembedded_font}, width=595.0, height=842.0),
         _FakePage("not a table", {"/F1": unembedded_font}),
         _FakePage("not references", {"/F1": unembedded_font}),
     ]
@@ -72,6 +81,7 @@ def test_audit_reports_identity_metadata_and_missing_font_embedding(
     assert "kirill" in report["forbidden_text_hits"]
     assert any("/Author" in str(error) for error in report["errors"])
     assert any("unembedded" in str(error) for error in report["errors"])
+    assert any("US Letter" in str(error) for error in report["errors"])
 
 
 def test_audit_rejects_missing_file_and_invalid_page_expectation(tmp_path: Path) -> None:

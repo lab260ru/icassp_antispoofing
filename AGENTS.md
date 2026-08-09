@@ -140,9 +140,9 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
   **Whenever `paper/main.tex` changes, compile it successfully and update the
   committed `paper/build/main.pdf` in the same change.**
   `scripts/check_paper_pdf.py --pdf paper/build/main.pdf` is the reproducible
-  local preflight: it confirms four pages, Table I/References landmarks,
-  embedded fonts, blank `/Author` metadata, and no selected project-identity
-  strings. It is deliberately narrower than the official ICASSP template or
+  local preflight: it confirms four US-letter pages, Table I/References
+  landmarks, embedded fonts, blank `/Author` metadata, and no selected
+  project-identity strings. It is deliberately narrower than the official ICASSP template or
   IEEE PDF eXpress; read `paper/SUBMISSION_READINESS.md` before treating it as
   a compliance signal.
   The required three-reviewer launcher was attempted for the initial draft,

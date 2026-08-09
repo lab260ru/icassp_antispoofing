@@ -1,9 +1,9 @@
 # Static paper-submission readiness check
 
 The repository provides a narrow, reproducible check for the readable working
-draft. It verifies the four-page target, key layout landmarks, embedded fonts,
-empty `/Author` metadata, and the absence of selected project-identifying text
-in the rendered PDF.
+draft. It verifies the four-page US-letter target, key layout landmarks,
+embedded fonts, empty `/Author` metadata, and the absence of selected
+project-identifying text in the rendered PDF.
 
 Run it after compiling the manuscript:
 
@@ -12,10 +12,10 @@ cd /home/kirill/icassp_antispoofing
 PYTHONPATH=. python3 scripts/check_paper_pdf.py --pdf paper/build/main.pdf
 ```
 
-For the current anonymous initial draft, a passing report has four pages,
-recovers Table I from page 2 and References from page 3, and reports all fonts
-embedded. The command emits JSON so its result can be stored with a future
-submission package.
+For the current anonymous initial draft, a passing report has four US-letter
+pages, recovers Table I from page 2 and References from page 3, and reports all
+fonts embedded. The command emits JSON so its result can be stored with a
+future submission package.
 
 ## Boundaries
 

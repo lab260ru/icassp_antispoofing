@@ -16,6 +16,9 @@ from pypdf import PdfReader
 
 
 DEFAULT_FORBIDDEN_TEXT = ("lab260", "kirill", "nikita", "ivan")
+US_LETTER_WIDTH_POINTS = 612.0
+US_LETTER_HEIGHT_POINTS = 792.0
+PAGE_SIZE_TOLERANCE_POINTS = 0.5
 
 
 def _resolve(value: Any) -> Any:
@@ -59,6 +62,32 @@ def _embedded_font_summary(reader: Any) -> list[dict[str, object]]:
     return fonts
 
 
+def _page_size_points(page: Any) -> tuple[float, float]:
+    """Return a page's MediaBox width/height in PDF points."""
+    media_box = getattr(page, "mediabox", None)
+    if media_box is None:
+        media_box = _resolve(page.get("/MediaBox"))
+    if media_box is None:
+        raise ValueError("PDF page has no MediaBox")
+    width = getattr(media_box, "width", None)
+    height = getattr(media_box, "height", None)
+    if width is None or height is None:
+        lower_left = media_box.lower_left
+        upper_right = media_box.upper_right
+        width = upper_right[0] - lower_left[0]
+        height = upper_right[1] - lower_left[1]
+    return float(width), float(height)
+
+
+def _is_us_letter(size: tuple[float, float]) -> bool:
+    """Return whether a PDF MediaBox matches US Letter within conversion noise."""
+    width, height = size
+    return (
+        abs(width - US_LETTER_WIDTH_POINTS) <= PAGE_SIZE_TOLERANCE_POINTS
+        and abs(height - US_LETTER_HEIGHT_POINTS) <= PAGE_SIZE_TOLERANCE_POINTS
+    )
+
+
 def audit_working_draft_pdf(
     pdf_path: Path | str,
     *,
@@ -80,6 +109,7 @@ def audit_working_draft_pdf(
     reader = PdfReader(str(path))
     page_text = [(page.extract_text() or "") for page in reader.pages]
     lower_text = [text.casefold() for text in page_text]
+    page_sizes = [_page_size_points(page) for page in reader.pages]
     fonts = _embedded_font_summary(reader)
     metadata = {str(key): str(value) for key, value in dict(reader.metadata or {}).items()}
     errors: list[str] = []
@@ -89,6 +119,9 @@ def audit_working_draft_pdf(
         errors.append("Table I is not recoverable from extracted text on page 2")
     if len(page_text) < 3 or "references" not in lower_text[2]:
         errors.append("References are not recoverable from extracted text on page 3")
+    if not all(_is_us_letter(size) for size in page_sizes):
+        observed = ", ".join(f"{width:.1f}x{height:.1f}" for width, height in page_sizes)
+        errors.append(f"all PDF pages must have US Letter MediaBox 612.0x792.0 pt; observed {observed}")
     missing_fonts = [str(font["base_font"]) for font in fonts if not bool(font["embedded"])]
     if missing_fonts:
         errors.append(f"unembedded fonts: {', '.join(missing_fonts)}")
@@ -110,6 +143,8 @@ def audit_working_draft_pdf(
         "expected_pages": expected_pages,
         "table_i_on_page_2": len(page_text) >= 2 and "table i" in lower_text[1],
         "references_on_page_3": len(page_text) >= 3 and "references" in lower_text[2],
+        "page_sizes_points": [[width, height] for width, height in page_sizes],
+        "us_letter_geometry": all(_is_us_letter(size) for size in page_sizes),
         "font_count": len(fonts),
         "fonts": fonts,
         "metadata": metadata,

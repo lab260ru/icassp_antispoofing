@@ -47,6 +47,7 @@ ICASSP-specific author bundle is published; hash and compare it before use.
 
 `scripts/check_paper_pdf.py` supplies a reproducible, deliberately narrower
 preflight for the current anonymous working draft. It confirms the four-page
-target, Table I/References landmarks, embedded fonts, empty `/Author` metadata,
-and no selected project-identifying strings in rendered text. The current PDF
-passes this check; usage and its limits are in `SUBMISSION_READINESS.md`.
+US-letter target, Table I/References landmarks, embedded fonts, empty `/Author`
+metadata, and no selected project-identifying strings in rendered text. The
+current PDF passes this check; usage and its limits are in
+`SUBMISSION_READINESS.md`.

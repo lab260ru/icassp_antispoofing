@@ -13,7 +13,8 @@ PYTHONPATH=. python3 -m pytest -q
 ```
 
 Initial verification passed **79 tests in 6.45s**. After adding the static PDF
-preflight, the complete suite passed **82 tests in 6.47s**.
+preflight, the complete suite passed **82 tests in 6.47s**; after its US-letter
+geometry extension, it again passed **82 tests in 6.48s**.
 `git diff --check` also completed without whitespace errors.
 
 ## Paper build
@@ -42,8 +43,8 @@ PDF eXpress or official ICASSP-template replacement.
 PYTHONPATH=. python3 scripts/check_paper_pdf.py --pdf paper/build/main.pdf
 ```
 
-The passing report records 16 embedded font resources, no forbidden-text hit,
-and no local readiness error.
+The passing report records four US-letter MediaBoxes, 16 embedded font
+resources, no forbidden-text hit, and no local readiness error.
 
 ## Research boundary checks
 

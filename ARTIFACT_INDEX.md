@@ -42,7 +42,7 @@ committed to this repository.
 |---|---|---|
 | Anonymous source / readable PDF | `paper/main.tex`, `paper/build/main.pdf` | Current initial draft is four pages. Whenever `main.tex` changes, compile it and commit the refreshed PDF in the same change. |
 | Requirements and template status | `paper/submission-requirements.md` | The official ICASSP page limit is recorded. The official generic IEEE ZIP is known but this runtime receives a CloudFront WAF challenge; no unverified replacement was made. |
-| Static local PDF preflight | `paper/SUBMISSION_READINESS.md`, `scripts/check_paper_pdf.py` | Current PDF passes page/layout/font/anonymous-metadata checks. This is not IEEE PDF eXpress or an official template check. |
+| Static local PDF preflight | `paper/SUBMISSION_READINESS.md`, `scripts/check_paper_pdf.py` | Current PDF passes four-page US-letter, layout, font, and anonymous-metadata checks. This is not IEEE PDF eXpress or an official template check. |
 | Citation ledger | `paper/citation-verification.md` | Seven cited records are mapped to bounded claims. |
 | External paper-review attempts | `paper/reviews/*/REVIEW_STATUS.md` | Three timestamped panels were launched, but all stopped before review because the local Claude CLI is unauthenticated. No review verdict exists. |
 | Internal audits | `paper/reviews/five_corpus_h2_quality_20260809/` | Claim-to-artifact and scope/layout audits only; never call them peer review. |

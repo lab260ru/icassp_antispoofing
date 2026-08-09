@@ -123,3 +123,8 @@
 
 - Implementation: `ARTIFACT_INDEX.md` centralizes the authoritative protocol, result, stop rule, HDD ledger owner, paper status, and external handoff condition for H1, H2, H2B, H3, and H4. It deliberately links to existing ledgers rather than duplicating hashes or results.
 - Rationale: A future agent can now establish the experiment boundary and exact evidence path before starting work, reducing the risk of duplicated jobs, accidental score access, or post-result threshold changes.
+
+## 2026-08-09 - US-letter geometry check
+
+- Implementation: The static paper preflight now reads each PDF MediaBox and fails if any page differs from 612 × 792 points (US Letter), complementing the existing count, landmark, font, metadata, and identity checks.
+- Validation: Synthetic failure coverage includes an A4-sized page; the current working PDF passes all four US-letter page checks. The boundary remains unchanged: only the official ICASSP template and submission checker can certify conference compliance.
