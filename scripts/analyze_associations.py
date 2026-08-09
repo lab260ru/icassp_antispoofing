@@ -298,12 +298,19 @@ def main() -> None:
     args = parser.parse_args()
 
     feature_root, score_root, output_dir = Path(args.feature_root), Path(args.score_root), Path(args.output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
+    requested_datasets = list(dict.fromkeys(args.dataset))
+    if len(requested_datasets) != len(args.dataset):
+        raise ValueError("Each --dataset may be requested at most once per invocation")
+    # Flat result names caused a later single-dataset run to overwrite an
+    # earlier corpus. Keep each corpus immutable by default; a combined view is
+    # written only when the caller explicitly requests multiple datasets.
+    run_output_dir = output_dir / ("combined" if len(requested_datasets) > 1 else requested_datasets[0])
+    run_output_dir.mkdir(parents=True, exist_ok=True)
     all_associations: list[pd.DataFrame] = []
     all_labels: list[pd.DataFrame] = []
     reports: list[dict[str, object]] = []
     inputs: dict[str, tuple[pd.DataFrame, pd.DataFrame]] = {}
-    for dataset in args.dataset:
+    for dataset in requested_datasets:
         features, scores = load_inputs(feature_root, score_root, dataset)
         inputs[dataset] = (features, scores)
         associations, labels, report = analyze_dataset(dataset, features, scores)
@@ -312,9 +319,9 @@ def main() -> None:
         reports.append(report)
     association_output = pd.concat(all_associations, ignore_index=True)
     label_output = pd.concat(all_labels, ignore_index=True)
-    association_output.to_csv(output_dir / "association_summary.csv", index=False)
-    label_output.to_csv(output_dir / "feature_label_metrics.csv", index=False)
-    (output_dir / "association_join_report.json").write_text(json.dumps(reports, indent=2, sort_keys=True))
+    association_output.to_csv(run_output_dir / "association_summary.csv", index=False)
+    label_output.to_csv(run_output_dir / "feature_label_metrics.csv", index=False)
+    (run_output_dir / "association_join_report.json").write_text(json.dumps(reports, indent=2, sort_keys=True))
     if args.bootstrap_candidates is not None:
         candidates = load_frozen_candidates(args.bootstrap_candidates)
         confirmation_output = run_bootstrap_confirmation(
@@ -325,10 +332,10 @@ def main() -> None:
             seed=args.bootstrap_seed,
             candidate_manifest=args.bootstrap_candidates,
         )
-        confirmation_path = output_dir / "association_confirmation_bootstrap.csv"
+        confirmation_path = run_output_dir / "association_confirmation_bootstrap.csv"
         confirmation_output.to_csv(confirmation_path, index=False)
         print(f"wrote {confirmation_path} ({len(confirmation_output)} manifest-selected rows)")
-    print(f"wrote {output_dir / 'association_summary.csv'} ({len(association_output)} rows)")
+    print(f"wrote {run_output_dir / 'association_summary.csv'} ({len(association_output)} rows)")
 
 
 if __name__ == "__main__":

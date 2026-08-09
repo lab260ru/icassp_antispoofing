@@ -23,7 +23,10 @@ if str(REPO_ROOT) not in sys.path:
 from src.audio_features import FEATURE_NAMES
 
 
-INPUT = REPO_ROOT / "experiments/h1_feature_association/results/association_summary.csv"
+INPUT = (
+    REPO_ROOT
+    / "experiments/h1_feature_association/results/ASVspoof2019_LA/association_summary.csv"
+)
 OUTPUT_DIR = Path(__file__).resolve().parent
 MODEL_ORDER = [
     "Spectra-AASIST",
