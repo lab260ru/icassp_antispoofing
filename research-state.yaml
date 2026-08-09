@@ -47,7 +47,7 @@ hypotheses:
     priority: medium
   - id: H2B
     statement: "A separately calibrated, score-blinded waveform transformation family can meet the strict paired quality contract before any detector is allowed to score it."
-    status: q1_detector_free_quality_calibration_running
+    status: q1_complete_no_transform_family_eligible
     motivation: "The original H2 arms failed quality gates, so validity of a cue-directed perturbation must be established independently before a future causal study."
     priority: high
 
@@ -55,7 +55,7 @@ experiments:
   proxy_metric: "Cross-dataset, within-class feature-score association and causal paired score sensitivity; EER for mitigation."
   baseline_value: null
   best_value: null
-  total_runs: 19
+  total_runs: 20
   trajectory:
     - run_id: run_001
       hypothesis: H1
@@ -190,11 +190,18 @@ experiments:
       wall_time_min: 0.1
       change_summary: "Froze an independent DeepVoice 128-per-label score-blind calibration manifest from pinned labels only; no audio, feature, ASR, transform, detector, or score was accessed."
       timestamp: "2026-08-09"
+    - run_id: h2b_q1_deepvoice_001
+      hypothesis: H2B
+      metric_value: 0
+      delta: null
+      wall_time_min: 28.5
+      change_summary: "Completed the 256-clip × 9-arm detector-free DeepVoice quality calibration (2,304 pairs). No non-control family clears the predeclared 0.90 lower-Wilson retention bound and target-change gate; no detector is authorized."
+      timestamp: "2026-08-09"
 
 outer_loop:
-  cycle: 5
-  last_direction: "quality_first_h2b_protocol_locked"
-  last_reflection: "Five explicit H1 tables complete the configured aggregate. The discovery-frozen Spectra/spoof crest candidate fails both-confirmation requirements because its ASVspoof5 adjusted estimate is null. A different bona-fide/full-waveform crest unit is descriptive only and must not be substituted into H2. Nineteen other registered feature/view/class units meet the descriptive five-corpus association rule, but confirmation outcomes cannot trigger post-hoc H2 expansion. The pre-frozen exploratory crest H2 panel is blocked before scoring: DRC and gain arms miss the locked 90% waveform-quality retention gate. H2B is now protocol-locked as a score-blinded quality-first feasibility loop with a disjoint calibration/confirmation design; it is not executed and cannot yet change the paper's causal conclusion."
+  cycle: 6
+  last_direction: "conclude_h2b_q1_no_eligible_quality_family"
+  last_reflection: "The five-corpus H1 result remains a conservative negative crest-portability finding, and the original H2 panel remains blocked before scoring. The separate score-blinded H2B Q1 DeepVoice calibration completed all 2,304 pairs under its precommitted finite grid. No non-control arm clears the 0.90 lower-Wilson retention and target-change rule (the closest is -0.5 dB/oct tilt at 0.89624). The selector returns no family. This is a negative feasibility boundary, not a cue/model result: do not tune thresholds or arms, do not start Q2--Q4, and do not change the paper's causal conclusion."
   pivot_policy: "After the first association/intervention matrix or five completed runs, choose deepen, broaden, pivot, or conclude and record the evidence."
 
 workspace:

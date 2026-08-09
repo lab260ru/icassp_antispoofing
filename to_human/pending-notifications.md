@@ -180,3 +180,15 @@ with byte-bound CSV/provenance hashes. No waveform was decoded and no feature,
 ASR, transform, detector, or score artifact was touched. The next task is to
 commit a finite quality-only transform calibration before it can run. This
 update and the new local commits remain queued for Telegram/GitHub credentials.
+
+## 2026-08-09 — H2B Q1 negative feasibility result
+
+The precommitted, detector-free DeepVoice Q1 calibration completed all 2,304
+waveform/ASR quality pairs (256 frozen clips × 9 arms). It selected no
+non-control transformation family: the closest, -0.5 dB/oct spectral tilt,
+has a 95% Wilson lower retention bound of 0.89624, below the locked 0.90 gate;
+endpoint zeroing retains 15/256 pairs. No detector was imported or run, no
+scores/EER/causal effect were estimated, and Q2--Q4 will not begin from this
+loop. The result, selection table, hashes, and resumability notes are committed
+under `experiments/future_directions/results/`. Send this update when Telegram
+credentials are present.

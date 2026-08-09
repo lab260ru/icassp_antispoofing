@@ -1,0 +1,8 @@
+family_id,arm,target_feature,n_pairs,retained_pairs,retained_fraction,lower_wilson_95,minimum_lower_wilson_95,median_abs_target_delta,minimum_abs_median_target_delta,median_wer,eligible,selected,status
+allpass_phase,allpass_abs_a005,group_delay_var,256,226,0.8828125,0.8376373983055787,0.9,2.460285961877252e-07,1e-05,0.0,False,False,not_eligible
+allpass_phase,allpass_abs_a010,group_delay_var,256,228,0.890625,0.8464641652332503,0.9,2.4581427572769156e-07,1e-05,0.0,False,False,not_eligible
+endpoint_fixed_length,endpoint_zero_fixed_length,silence_fraction,256,15,0.05859375,0.03582660763317509,0.9,0.0,0.005,0.0,False,False,not_eligible
+spectral_tilt_negative,tilt_minus_0p5db_oct,spectral_slope_db_per_khz,256,239,0.93359375,0.896237847364858,0.9,0.26274599316577685,0.0001,0.0,False,False,not_eligible
+spectral_tilt_negative,tilt_minus_1p0db_oct,spectral_slope_db_per_khz,256,224,0.875,0.8288639408674391,0.9,0.5255245746433892,0.0001,0.0,False,False,not_eligible
+spectral_tilt_positive,tilt_plus_0p5db_oct,spectral_slope_db_per_khz,256,236,0.921875,0.8824167617091012,0.9,0.26274722989765353,0.0001,0.0,False,False,not_eligible
+spectral_tilt_positive,tilt_plus_1p0db_oct,spectral_slope_db_per_khz,256,225,0.87890625,0.8332442794764336,0.9,0.5254887394927976,0.0001,0.0,False,False,not_eligible

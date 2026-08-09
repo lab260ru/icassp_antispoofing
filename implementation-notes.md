@@ -72,7 +72,9 @@
 - Implementation: The H2 input-CSV writer now records a byte hash for its emitted CSV. `src/h2b_score_blind_manifest.py` requires that byte-bound, label-only provenance, rechecks the declared dataset/revision, uses stable per-label SHA-256 selection, and writes non-overwritable Q0 artifacts. Focused tests (`13 passed`) cover successful freeze, substitution and provenance rejection, and output byte binding.
 - Result: `h2b_q0_deepvoice_001` froze exactly 128 DeepVoice IDs per label (`256` total) under seed 2609. It does not decode audio or authorize Q1/Q4 scoring. Its artifact note contains all compact hashes.
 
-## 2026-08-09 - H2B Q1 active detector-free quality calibration
+## 2026-08-09 - H2B Q1 detector-free quality calibration
 
 - Protocol/implementation: The Q1 arm manifest was committed before execution: fixed-length endpoint zeroing, mild signed spectral tilts, mild all-pass cascades, and two controls. The runner validates Q0/Q1 hashes, has no detector callback, and writes immutable pair/transcript checkpoints on the HDD. A subsequent lock fix prevents any future duplicate Q1 writer.
-- Runtime: `h2b_q1_deepvoice_001` is executing the complete 256 × 9 = 2,304 pair calibration on physical GPU 3 (logical Whisper `cuda:0`). Treat all current partial checkpoint rows as in-progress runtime state only. Do not derive an arm rate or run the selector until the full table and its finalized detector-free summary exist.
+- Validation: `h2b_q1_deepvoice_001` completed all 256 × 9 = 2,304 pairs on physical GPU 3 (logical Whisper `cuda:0`). The final detector-free table and summary are hash-sealed; the selector independently verifies its complete, unique pair IDs.
+- Result: No non-control family reaches the predeclared 0.90 95%-Wilson lower retention bound and target-change condition. The closest arm is -0.5 dB/oct tilt (239/256 retained; lower bound 0.89624); the selector's `selected_arms` is empty. Keep Q2--Q4 blocked and preserve this negative feasibility result rather than tuning it.
+- Operational note: A second resumptive process was briefly started during status diagnosis and terminated immediately. The original writer completed the run; its summary records 2,304 newly written checkpoints and the final selector validates 2,304 unique pair IDs. The subsequently committed exclusive lock prevents recurrence. No detector path was involved.

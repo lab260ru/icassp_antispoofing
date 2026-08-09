@@ -97,19 +97,17 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
   `H2_THROUGHPUT_RUN_002_RES2TCNGUARD.md`.
 - **Next H2 direction:** Read
   `experiments/future_directions/H2B_QUALITY_FIRST_OUTER_LOOP_PROTOCOL.md`
-  before starting a new intervention. It is a protocol-locked, **unexecuted**
-  score-blinded quality-feasibility study, not a repair of the failed H2 panel.
-  Do not access scores/detectors during Q0--Q2, do not reuse the current
-  five-corpus atlas to choose H2B's cue, and do not run Q4 without a fourth
-  parity-validated scorer.
-  Q0 is now complete: read
-  `experiments/future_directions/results/H2B_Q0_RUN_001.md` and consume only
-  its 256-row DeepVoice manifest for the next Q1 implementation. The
-  detector-free Q1 run `h2b_q1_deepvoice_001` is currently active under
-  `/home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/runs/h2b_quality_calibration/`.
-  **Do not start a second process or inspect partial rows as a result.** Wait
-  for all 2,304 immutable pair checkpoints and the Q1 summary, then run the
-  committed quality-only selector. No H2B detector result exists.
+  before starting a new intervention. H2B is a separate score-blinded
+  quality-feasibility study, not a repair of the failed H2 panel. Do not access
+  scores/detectors during Q0--Q2, do not reuse the current five-corpus atlas
+  to choose H2B's cue, and do not run Q4 without a fourth parity-validated
+  scorer. Q0 and Q1 are complete: read
+  `experiments/future_directions/results/H2B_Q0_RUN_001.md` and
+  `experiments/future_directions/results/H2B_Q1_RUN_001.md`. Q1 completed all
+  2,304 DeepVoice waveform/ASR-quality pairs but its locked selector chose no
+  non-control family: the closest lower Wilson bound is 0.89624, below 0.90.
+  **Do not change its thresholds/arms or start Q2--Q4 from this loop.** No
+  H2B detector result exists.
 - **Fourth scorer handoff:** `experiments/h2_causal_interventions/W2V2_AASIST_READINESS.md`
   pins the only viable future route: download just
   `w2v2-aasist.onnx` from `SpeechAntiSpoofingBenchmarks/W2V2-AASIST` revision
@@ -128,6 +126,8 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
   spoof-class frozen crest candidate fails portability; a separate
   bona-fide/full-waveform crest slice appears in the descriptive atlas and
   must never be substituted into H2 post hoc.
+  **Whenever `paper/main.tex` changes, compile it successfully and update the
+  committed `paper/build/main.pdf` in the same change.**
   The required three-reviewer launcher was attempted for both the initial and
   updated drafts but blocked because the local Claude CLI is unauthenticated;
   see `paper/reviews/initial_draft/REVIEW_STATUS.md` and

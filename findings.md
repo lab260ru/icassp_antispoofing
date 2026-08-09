@@ -73,12 +73,13 @@ quality-frozen paired detector intervention can test that third question.
   This is evidence that the registered transformations are incompatible with
   the content/loudness/clipping gate at this setting, not evidence about model
   sensitivity.
-- H2B protocol: a separate outer loop is committed to establish transform
-  feasibility before detector scoring. It score-blinds a finite mild
-  endpoint-silence, spectral-tilt, all-pass, and negative-control grid on an
-  independent calibration source, selects only by a strict retention-bound /
-  target-change / WER rule, and then confirms the selection on a new panel.
-  It is a future protocol, not a result.
+- H2B Q1 quality result: the independent DeepVoice 256-clip × 9-arm,
+  detector-free calibration completed all 2,304 pairs. The precommitted
+  selection rule returns no non-control family. The closest arm,
+  -0.5 dB/oct spectral tilt, has a 95% lower Wilson retention bound of
+  0.89624, below the locked 0.90 threshold; endpoint zeroing retains only
+  15/256 pairs. This is a negative transform-feasibility result, not a
+  detector, feature, EER, score-delta, or causal result.
 - H2B Q0 input integrity: DeepVoice is now pinned as an independent
   quality-calibration source, and its balanced 256-identity calibration
   manifest is frozen from labels only. This establishes a clean score-blind
@@ -112,6 +113,8 @@ baseline reproduction.
 - A failed quality gate is an experiment boundary. A revised arm family needs
   a new protocol, a disjoint score-blinded calibration cohort, and a fresh
   quality-confirmation freeze; it cannot inherit the completed H2 panel.
+- Q1 selected no H2B arm. Do not relax its Wilson threshold or tune its arm
+  grid after inspection; Q2--Q4 are not licensed by this outcome.
 
 ## Open Questions
 
@@ -122,9 +125,9 @@ baseline reproduction.
   a future test would require a new, independently frozen outer-loop protocol.
 - Is the strongest paper a principled negative crest-factor result plus an
   architecture-sensitivity atlas rather than a mitigation story?
-- Can any mild, cue-directed transformation family clear the quality-first H2B
-  gate on a disjoint public waveform source without causing material collateral
-  feature changes?
+- Can a newly predeclared transformation family, on a newly frozen cohort,
+  clear the quality-first gate without material collateral changes? The first
+  H2B grid does not.
 
 ## Optimization Trajectory
 
