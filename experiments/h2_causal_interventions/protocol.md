@@ -15,6 +15,9 @@ Use H1-frozen candidate cues, 500 examples per class per core dataset, and the
 four-model intervention panel in `configs/study.yaml`. Do not choose examples
 after viewing detector responses. The explicit score-independent input-freeze
 and quality contracts are in `H2_PRE_SCORE_QUALITY.md`.
+Build the label-derived candidate pool first with the score-free
+[`H2_INPUT_CSV_BUILDER.md`](H2_INPUT_CSV_BUILDER.md); that step is not an H2
+execution or result.
 
 ## Transformations
 
