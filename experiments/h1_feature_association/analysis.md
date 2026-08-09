@@ -108,3 +108,35 @@ not a portable or causal conclusion.
 
 Next: complete the final discovery corpus under the same code and combine all
 three discovery artifacts without looking at the held-out datasets.
+
+## run_007 — final discovery screen and explicit H2 follow-up freeze
+
+**Type:** exploratory third discovery screen and operational follow-up freeze;
+not a portable, causal, or confirmation conclusion.
+
+- Dataset: pinned ASVspoof2021_DF, deterministic seed-2609 5,000-per-class
+  subset, with 30,000 feature-view rows and exact 30,000-row joins for each of
+  the eight published score artifacts.
+- Screen: 1,344 unchanged within-class tests. The three explicit discovery
+  source tables combine to 4,032 rows; the input-only aggregate correctly
+  records that the five-dataset portability rule is still not evaluable.
+- Crest-factor result (full waveform, spoof class): Spectra-AASIST remains
+  negative across the three discovery corpora, but attenuates from
+  $\rho=-0.454$ (2019 LA) to $-0.099$ (2021 LA) and $-0.065$ (2021 DF).
+  AASIST changes from positive in both LA corpora to $-0.043$ in DF. Five of
+  eight score artifacts are negative in this fixed slice across all three
+  discovery corpora, but magnitudes and the remaining directions are
+  architecture-dependent. This is evidence for heterogeneous sensitivity, not
+  a claim of portability or causal reliance.
+- Freeze: the explicitly disclosed, post-two-screen exploratory rule in
+  `DISCOVERY_TO_H2_FREEZE.md` was locked before the DF result. Its provenance
+  report at
+  `results/frozen_discovery_to_h2_20260809T201711Z/freeze_report.json` admits
+  one feature family: `crest_factor_db` for Spectra-AASIST, represented by its
+  three discovery cells. Silence, spectral-slope, and phase-feature families,
+  and all AASIST cells, fail at least one fixed sign, significance, or
+  effect-size gate. The manifest is not an H2 result.
+
+Next: commit the result/freeze artifacts, acquire held-out audio without
+interpreting it until its own source tables are complete, and resolve the H2
+ASR/fourth-scorer gates before attempting any paired score claim.

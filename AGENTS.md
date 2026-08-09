@@ -19,13 +19,13 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
 
 ## Current checkpoint — 2026-08-09
 
-- **H1 runs 005--006 are complete on ASVspoof2019_LA and ASVspoof2021_LA.**
+- **H1 runs 005--007 are complete on all three discovery corpora.**
   Their immutable source tables are under
   `experiments/h1_feature_association/results/<dataset>/`; each has 1,344
   within-class screen rows (8 models × 2 classes × 3 views × 28 features) from
-  the locked 5,000-per-class subset. `results/discovery_aggregate/` is an
-  explicit two-input descriptive report that correctly marks portability as
-  not evaluable. Do not call either result portable or causal.
+  the locked 5,000-per-class subset. The three-input
+  `results/discovery_aggregate_3datasets/` report correctly marks portability
+  as not evaluable. Do not call any discovery result portable or causal.
 - **Association estimator safety is tested.** Use
   `PYTHONPATH=. python3 scripts/analyze_associations.py ...`; the normal
   `pytest` console entry point may omit the repository from `sys.path`, so run
@@ -34,11 +34,13 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
   removes a tested variable from its own controls. Bootstrap CIs require a
   frozen provenance-bearing manifest; see
   `experiments/h1_feature_association/BOOTSTRAP_CLI.md`.
-- **Active, non-duplicable job:** ASVspoof2021_DF's pinned 85-file corpus is
-  complete and its 28-worker H1 feature extraction is live. Check processes
-  and the HDD paths before relaunching. After it finishes, ingest its
-  already-downloaded score panel and run H1 into its own scope; freeze
-  candidates only after all three discovery datasets are analyzed.
+- **H1 operational freeze:**
+  `results/frozen_discovery_to_h2_20260809T201711Z/frozen_candidates.csv` is
+  immutable and contains only three discovery provenance rows for
+  Spectra-AASIST/`crest_factor_db`; see its adjacent report and
+  `DISCOVERY_TO_H2_FREEZE.md`. It is exploratory, excludes confirmation data,
+  and is not itself a causal or portable result. Commit it before any bootstrap
+  or H2 execution. The next data job is the held-out confirmation download.
 - **H2 has two parity-validated runners but is not ready to claim.** Read
   `experiments/h2_causal_interventions/model_capability_audit.md`,
   `H2_ONNX_PARITY.md`, and `PARITY_RUN_001.md` before any intervention work.

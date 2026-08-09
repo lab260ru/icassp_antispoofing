@@ -88,3 +88,14 @@ The framing remains intentionally conservative: cross-corpus differences
 motivate this audit but do not validate any cue as causal. The ASVspoof2021-DF
 audio download is continuing; remote push and Telegram delivery remain queued
 because no runtime credentials are available.
+
+## 2026-08-09 — third discovery corpus and H2 candidate freeze
+
+ASVspoof2021-DF is complete despite a recoverable Hub decoder error on its
+final protocol file. The locked 10,000-sample H1 screen adds 1,344 tests and
+shows Spectra-AASIST's crest-factor association remains negative but attenuates
+to -0.065, whereas AASIST reverses direction. The explicit five-dataset
+portable rule remains unevaluable without held-out data. A disclosure-marked
+exploratory freeze admits only the Spectra-AASIST crest-factor family for H2;
+it is not a causal or portability conclusion. Telegram and GitHub push remain
+queued pending runtime credentials.
