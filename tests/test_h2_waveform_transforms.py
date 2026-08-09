@@ -8,6 +8,7 @@ from src.h2_waveform_transforms import (
     apply_spectral_tilt,
     compress_crest_factor,
     standardize_endpoint_silence,
+    zero_vad_endpoint_regions,
 )
 
 
@@ -56,6 +57,26 @@ def test_endpoint_silence_replaces_only_endpoints_around_energy_vad_core() -> No
     assert result.diagnostics["target_trailing_samples"] == target
     with pytest.raises(ValueError, match="no speech-like"):
         standardize_endpoint_silence(np.zeros(2_000, dtype=np.float32), SAMPLE_RATE, 0.05, 0.05)
+
+
+def test_fixed_length_endpoint_zeroing_keeps_speech_core_and_duration() -> None:
+    core = _tone(seconds=0.15)
+    waveform = np.concatenate((np.full(800, 0.002, dtype=np.float32), core, np.full(400, -0.002, dtype=np.float32)))
+    result = zero_vad_endpoint_regions(
+        waveform,
+        SAMPLE_RATE,
+        frame_ms=10.0,
+        hop_ms=10.0,
+        guard_ms=0.0,
+    )
+    start = int(result.diagnostics["speech_start_sample"])
+    end = int(result.diagnostics["speech_end_sample"])
+    assert result.waveform.shape == waveform.shape
+    assert np.array_equal(result.waveform[start:end], waveform[start:end])
+    assert np.array_equal(result.waveform[:start], np.zeros(start, dtype=np.float32))
+    assert np.array_equal(result.waveform[end:], np.zeros(len(waveform) - end, dtype=np.float32))
+    assert result.diagnostics["duration_preserved"] is True
+    assert result.diagnostics["speech_core_exactly_preserved"] is True
 
 
 def test_drc_reduces_crest_factor_and_preserves_loudness_diagnostics() -> None:

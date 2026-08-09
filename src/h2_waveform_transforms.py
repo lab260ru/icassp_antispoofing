@@ -199,6 +199,52 @@ def standardize_endpoint_silence(
     return _result("endpoint_silence", waveform, transformed, rate, extra)
 
 
+def zero_vad_endpoint_regions(
+    audio: np.ndarray,
+    sample_rate: int,
+    *,
+    frame_ms: float = 25.0,
+    hop_ms: float = 10.0,
+    relative_threshold_db: float = -40.0,
+    absolute_floor: float = 1e-4,
+    guard_ms: float = 20.0,
+) -> TransformResult:
+    """Zero only energy-VAD endpoint regions while preserving length and speech samples.
+
+    Unlike :func:`standardize_endpoint_silence`, this transform never moves
+    the detected speech core or changes duration.  It is suitable for a
+    quality-first endpoint-noise/silence calibration, but remains a
+    waveform-family transformation rather than a pure silence intervention.
+    """
+    waveform = _validate_waveform(audio)
+    rate = _validate_sample_rate(sample_rate)
+    speech_start, speech_end, vad = _energy_vad_bounds(
+        waveform,
+        rate,
+        frame_ms,
+        hop_ms,
+        relative_threshold_db,
+        absolute_floor,
+        guard_ms,
+    )
+    transformed = waveform.copy()
+    transformed[:speech_start] = 0.0
+    transformed[speech_end:] = 0.0
+    core = waveform[speech_start:speech_end]
+    extra: dict[str, Any] = {
+        **vad,
+        "speech_start_sample": speech_start,
+        "speech_end_sample": speech_end,
+        "speech_core_samples": int(core.size),
+        "zeroed_leading_samples": speech_start,
+        "zeroed_trailing_samples": int(waveform.size - speech_end),
+        "position_changed": False,
+        "duration_preserved": True,
+        "speech_core_exactly_preserved": bool(np.array_equal(transformed[speech_start:speech_end], core)),
+    }
+    return _result("endpoint_silence_fixed_length", waveform, transformed, rate, extra)
+
+
 def _block_envelope(waveform: np.ndarray, sample_rate: int, frame_ms: float) -> tuple[np.ndarray, np.ndarray]:
     frame = max(1, int(round(sample_rate * frame_ms / 1000.0)))
     starts = np.arange(0, waveform.size, frame, dtype=np.int64)

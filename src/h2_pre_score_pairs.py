@@ -22,7 +22,15 @@ import pandas as pd
 
 from src.audio_features import FEATURE_NAMES, compute_features, waveform_views
 from src.h2_asr_wer import WordErrorResult, normalized_word_error
-from src.h2_waveform_transforms import TransformResult, apply_gain, apply_polarity, compress_crest_factor
+from src.h2_waveform_transforms import (
+    TransformResult,
+    apply_first_order_allpass_cascade,
+    apply_gain,
+    apply_polarity,
+    apply_spectral_tilt,
+    compress_crest_factor,
+    zero_vad_endpoint_regions,
+)
 
 
 PRE_SCORE_MANIFEST_VERSION = "h2_pre_score_pairs_v1"
@@ -273,6 +281,25 @@ def apply_registered_arm(audio: np.ndarray, sample_rate: int, arm: ArmDefinition
         return apply_gain(audio, sample_rate, gain_db=float(arm.parameters["gain_db"]))
     if arm.transform == "polarity":
         return apply_polarity(audio, sample_rate)
+    if arm.transform == "spectral_tilt":
+        return apply_spectral_tilt(audio, sample_rate, tilt_db_per_octave=float(arm.parameters["tilt_db_per_octave"]))
+    if arm.transform == "allpass_phase":
+        coefficient = float(arm.parameters["coefficient"])
+        stages_value = float(arm.parameters["stages"])
+        stages = int(stages_value)
+        if stages <= 0 or stages != stages_value:
+            raise ValueError("allpass_phase parameter stages must be a positive integer")
+        return apply_first_order_allpass_cascade(audio, sample_rate, coefficients=(coefficient,) * stages)
+    if arm.transform == "endpoint_silence_fixed_length":
+        return zero_vad_endpoint_regions(
+            audio,
+            sample_rate,
+            frame_ms=float(arm.parameters.get("frame_ms", 25.0)),
+            hop_ms=float(arm.parameters.get("hop_ms", 10.0)),
+            relative_threshold_db=float(arm.parameters.get("relative_threshold_db", -40.0)),
+            absolute_floor=float(arm.parameters.get("absolute_floor", 1e-4)),
+            guard_ms=float(arm.parameters.get("guard_ms", 20.0)),
+        )
     raise ValueError(f"Unsupported pre-registered H2 transform: {arm.transform}")
 
 
@@ -331,6 +358,8 @@ def _target_direction_pass(before: float | None, after: float | None, arm: ArmDe
         return after > before
     if arm.target_direction == "invariant":
         return abs(after - before) <= arm.target_tolerance
+    if arm.target_direction == "absolute_change":
+        return abs(after - before) >= arm.target_tolerance
     raise ValueError(f"Unsupported H2 target direction: {arm.target_direction}")
 
 

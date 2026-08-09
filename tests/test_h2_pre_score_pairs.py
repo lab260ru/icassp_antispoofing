@@ -10,12 +10,14 @@ import pytest
 from src.audio_features import FEATURE_NAMES
 from src.h2_pre_score_pairs import (
     QualityGateConfig,
+    apply_registered_arm,
     arm_definitions_frame,
     assert_score_independent_columns,
     evaluate_quality_pair,
     freeze_input_manifest,
     quality_rows_frame,
     registered_crest_factor_arms,
+    ArmDefinition,
 )
 from scripts.freeze_h2_pre_score_manifest import _new_path
 
@@ -171,3 +173,52 @@ def test_clipping_gate_rejects_only_transform_induced_clipping() -> None:
     assert quality["transformed_clipping_fraction"] == pytest.approx(quality["original_clipping_fraction"])
     assert quality["added_clipping_fraction"] == pytest.approx(0.0)
     assert quality["pass_clipping"] is True
+
+
+def test_generic_quality_only_arm_dispatch_supports_h2b_transform_families() -> None:
+    waveform = _speech_like_waveform()
+    arms = (
+        ArmDefinition(
+            arm_id="tilt_plus",
+            transform="spectral_tilt",
+            parameters={"tilt_db_per_octave": 0.5},
+            negative_control=False,
+            target_feature="spectral_slope_db_per_khz",
+            target_direction="increase",
+            target_tolerance=0.0,
+        ),
+        ArmDefinition(
+            arm_id="allpass",
+            transform="allpass_phase",
+            parameters={"coefficient": 0.1, "stages": 1.0},
+            negative_control=False,
+            target_feature="group_delay_var",
+            target_direction="absolute_change",
+            target_tolerance=1e-8,
+        ),
+        ArmDefinition(
+            arm_id="endpoint",
+            transform="endpoint_silence_fixed_length",
+            parameters={"frame_ms": 10.0, "hop_ms": 10.0, "guard_ms": 0.0},
+            negative_control=False,
+            target_feature="silence_fraction",
+            target_direction="increase",
+            target_tolerance=0.0,
+        ),
+    )
+    for arm in arms:
+        transformed = apply_registered_arm(waveform, SAMPLE_RATE, arm)
+        assert transformed.waveform.shape == waveform.shape
+        assert transformed.waveform.dtype == np.float32
+        assert np.isfinite(transformed.waveform).all()
+    malformed = ArmDefinition(
+        arm_id="bad-allpass",
+        transform="allpass_phase",
+        parameters={"coefficient": 0.1, "stages": 1.5},
+        negative_control=False,
+        target_feature="group_delay_var",
+        target_direction="absolute_change",
+        target_tolerance=1e-8,
+    )
+    with pytest.raises(ValueError, match="positive integer"):
+        apply_registered_arm(waveform, SAMPLE_RATE, malformed)
