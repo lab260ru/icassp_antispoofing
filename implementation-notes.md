@@ -71,6 +71,11 @@
 - Decision: After H2 and H2B quality feasibility failures, broaden only into a classifier-free descriptive question. H4 reads the five existing `v1_28` feature tables and computes feature--label AUROCs, never detector scores or a new H2 candidate.
 - Guardrail: The pre-analysis freeze hashes the exact feature inputs, allows only identity/label/view/feature fields, caps deterministic source IDs by class, and rejects response-like paths and columns. The full 420-cell matrix and 84-unit aggregation are terminal; no post-result ranking or downstream selection is permitted.
 
+## 2026-08-09 - H4 score-free input freeze
+
+- Validation: `h4_input_freeze_001` validated the exact five HDD feature Parquets against the H4 firewall, preserving their SHA-256 hashes, schemas, binary labels, and three-view completeness. It then froze 5,000 source IDs per label in every corpus (50,000 clusters total) using seed 2609.
+- Guardrail: The compact repository note contains the manifest/provenance hashes, but the selected source IDs remain in the HDD Parquet. The freeze authorizes only the analyzer that rechecks those hashes and has no detector/model/audio interface.
+
 ## 2026-08-09 - H2B quality-first outer loop
 
 - Decision: Treat the H2 quality-gate failure as an immutable result boundary. `H2B_QUALITY_FIRST_OUTER_LOOP_PROTOCOL.md` is committed before execution and prohibits reading model scores or detector implementations during transform selection.

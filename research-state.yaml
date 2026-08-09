@@ -52,7 +52,7 @@ hypotheses:
     priority: high
   - id: H4
     statement: "Registered waveform features may have corpus-dependent raw label separation even when no detector score is read."
-    status: protocol_locked_pending_score_free_input_freeze
+    status: input_freeze_complete_pending_score_free_analysis
     motivation: "A descriptive label--cue transportability atlas can contextualize corpus dependence without reopening failed intervention loops."
     priority: medium
 
@@ -60,7 +60,7 @@ experiments:
   proxy_metric: "Cross-dataset, within-class feature-score association and causal paired score sensitivity; EER for mitigation."
   baseline_value: null
   best_value: null
-  total_runs: 20
+  total_runs: 21
   trajectory:
     - run_id: run_001
       hypothesis: H1
@@ -201,6 +201,13 @@ experiments:
       delta: null
       wall_time_min: 28.5
       change_summary: "Completed the 256-clip × 9-arm detector-free DeepVoice quality calibration (2,304 pairs). No non-control family clears the predeclared 0.90 lower-Wilson retention bound and target-change gate; no detector is authorized."
+      timestamp: "2026-08-09"
+    - run_id: h4_input_freeze_001
+      hypothesis: H4
+      metric_value: 50000
+      delta: null
+      wall_time_min: 0.1
+      change_summary: "Froze five exact response-free v1_28 feature tables and 50,000 deterministic source clusters (5,000 per dataset/label) with schema/path firewall and no feature statistic, score, audio, or model access."
       timestamp: "2026-08-09"
 
 outer_loop:
