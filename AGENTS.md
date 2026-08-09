@@ -139,6 +139,12 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
   must never be substituted into H2 post hoc.
   **Whenever `paper/main.tex` changes, compile it successfully and update the
   committed `paper/build/main.pdf` in the same change.**
+  `scripts/check_paper_pdf.py --pdf paper/build/main.pdf` is the reproducible
+  local preflight: it confirms four pages, Table I/References landmarks,
+  embedded fonts, blank `/Author` metadata, and no selected project-identity
+  strings. It is deliberately narrower than the official ICASSP template or
+  IEEE PDF eXpress; read `paper/SUBMISSION_READINESS.md` before treating it as
+  a compliance signal.
   The required three-reviewer launcher was attempted for the initial draft,
   the five-corpus update, and the current post-scope/layout draft, but was
   blocked because the local Claude CLI is unauthenticated;
@@ -154,7 +160,11 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
   runtime GitHub or Telegram credential exists. Keep committing locally and
   append milestones to `to_human/pending-notifications.md`; push/send only when
   environment credentials are supplied. Never recover or reuse previously
-  exposed credentials.
+  exposed credentials. The ICASSP page currently exposes no conference-specific
+  LaTeX bundle. The official generic IEEE ZIP URL is documented in
+  `paper/submission-requirements.md`, but direct download from this runtime gets
+  a CloudFront HTTP-202 WAF challenge. Do not substitute an unverified mirror:
+  obtain an approved archive, hash/compare it, then reconcile and rebuild.
 
 ## Artifact locations
 
