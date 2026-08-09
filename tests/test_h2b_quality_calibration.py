@@ -8,7 +8,7 @@ import pandas as pd
 import pytest
 import yaml
 
-from src.h2b_quality_calibration import h2b_q1_quality_paths, validate_h2b_q1_inputs
+from src.h2b_quality_calibration import h2b_q1_quality_paths, h2b_q1_run_lock, validate_h2b_q1_inputs
 
 
 def _write_q0(tmp_path: Path) -> tuple[Path, Path, Path, Path]:
@@ -91,3 +91,12 @@ def test_paths_are_h2b_namespaced_and_reject_invalid_id(tmp_path: Path) -> None:
     assert "future_directions" in str(paths.repo_summary_path)
     with pytest.raises(ValueError, match="run ID"):
         h2b_q1_quality_paths(tmp_path, "bad/id", tmp_path)
+
+
+def test_per_run_lock_refuses_concurrent_checkpoint_writer(tmp_path: Path) -> None:
+    paths = h2b_q1_quality_paths(tmp_path / "hdd", "q1", tmp_path / "repo")
+    with h2b_q1_run_lock(paths, "q1"):
+        with pytest.raises(RuntimeError, match="already active"):
+            with h2b_q1_run_lock(paths, "q1"):
+                pass
+    assert not (paths.run_root / ".h2b_q1_run.lock").exists()

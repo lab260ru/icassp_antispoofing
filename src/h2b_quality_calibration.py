@@ -9,6 +9,8 @@ detector callback or response field.
 from __future__ import annotations
 
 from collections.abc import Mapping
+from contextlib import contextmanager
+import fcntl
 import hashlib
 import json
 from pathlib import Path
@@ -208,6 +210,36 @@ def h2b_q1_quality_paths(hdd_root: str | Path, run_id: str, repo_root: str | Pat
         provenance_path=root / "quality_provenance.json",
         repo_summary_path=repo / "experiments" / "future_directions" / "results" / "q1_quality_runs" / f"{run_id}.summary.json",
     )
+
+
+@contextmanager
+def h2b_q1_run_lock(paths: QualityRunPaths, run_id: str):
+    """Hold an exclusive per-run lock, preventing competing checkpoint writers.
+
+    Q1 checkpoints are individually immutable, but concurrent ASR processes
+    can still waste GPU time and race transcript-cache creation.  A lock is
+    therefore required around the entire runner invocation.  The lock file is
+    removed after release; it is never a scientific artifact.
+    """
+    paths.run_root.mkdir(parents=True, exist_ok=True)
+    target = paths.run_root / ".h2b_q1_run.lock"
+    handle = target.open("a+", encoding="utf-8")
+    try:
+        try:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError as error:
+            raise RuntimeError(f"H2B Q1 run is already active: {paths.run_root}") from error
+        handle.seek(0)
+        handle.truncate()
+        handle.write(f"run_id={run_id}\n")
+        handle.flush()
+        yield
+    finally:
+        try:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+        finally:
+            handle.close()
+            target.unlink(missing_ok=True)
 
 
 def validate_h2b_q1_inputs(
