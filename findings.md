@@ -28,6 +28,11 @@ transformation. Only the last supports a shortcut-sensitivity claim.
   has exactly one score for each of the 71,237 published trials and the stored
   analysis variable is normalized to increasing spoof evidence. This is input
   validation, not a score-feature result.
+- Full-feature validation: the locked ASVspoof 2019 LA discovery subset is
+  balanced (5,000 trials per class), complete across three waveform views, and
+  has no duplicate utterance–view keys. The manifest does not provide attack
+  IDs; the analysis records that control as a single explicit missing category
+  instead of synthesizing attack metadata.
 
 ## Patterns and Insights
 
@@ -42,6 +47,9 @@ baseline reproduction.
   inference merely to reproduce them.
 - All material claims require a protocol, pinned inputs, and an analysis note.
 - The first draft must not contain invented or placeholder numerical findings.
+- A tested feature cannot also be treated as an independent control in its own
+  partial correlation. The analysis removes that impossible self-control before
+  computing any estimate.
 
 ## Open Questions
 

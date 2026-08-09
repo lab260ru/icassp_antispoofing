@@ -37,7 +37,7 @@ experiments:
   proxy_metric: "Cross-dataset, within-class feature-score association and causal paired score sensitivity; EER for mitigation."
   baseline_value: null
   best_value: null
-  total_runs: 3
+  total_runs: 4
   trajectory:
     - run_id: run_001
       hypothesis: H1
@@ -60,11 +60,18 @@ experiments:
       wall_time_min: null
       change_summary: "Ingested all eight pinned Arena score artifacts for ASVspoof2019_LA; 71,237 unique trials per model, no duplicate model–sample keys."
       timestamp: "2026-08-09"
+    - run_id: run_004
+      hypothesis: H1
+      metric_value: 1.0
+      delta: null
+      wall_time_min: null
+      change_summary: "Completed locked 10,000-utterance ASVspoof2019_LA feature extraction over three waveform views; balanced labels and unique utterance–view keys."
+      timestamp: "2026-08-09"
 
 outer_loop:
   cycle: 0
   last_direction: null
-  last_reflection: "The full ASVspoof2019_LA score panel is validated; feature extraction is the remaining prerequisite for association screening."
+  last_reflection: "Locked ASVspoof2019_LA features and scores are ready. Association screening is blocked only by a detected self-control bug, which must be fixed and tested before results are generated."
   pivot_policy: "After the first association/intervention matrix or five completed runs, choose deepen, broaden, pivot, or conclude and record the evidence."
 
 workspace:

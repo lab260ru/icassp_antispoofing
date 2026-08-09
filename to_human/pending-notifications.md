@@ -23,3 +23,11 @@ eight detectors and 71,237 ASVspoof2019 LA trials per detector (569,896 score
 rows); the CPU feature extraction is the remaining prerequisite for the first
 association result. Delivery remains queued because the Telegram credentials
 are not present in the runtime environment.
+
+## 2026-08-09 — H1 discovery data ready
+
+The locked ASVspoof2019 LA discovery subset is fully extracted: 10,000 balanced
+utterances and three reproducible views (30,000 rows). Before creating any
+association table, the analysis caught and stopped on a self-control edge case
+for the loudness feature. The correction is under test; no provisional result
+was kept from that failed invocation.
