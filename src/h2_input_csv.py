@@ -201,4 +201,13 @@ def write_score_free_input_artifacts(
     csv_path.parent.mkdir(parents=True, exist_ok=True)
     provenance_path.parent.mkdir(parents=True, exist_ok=True)
     rows.to_csv(csv_path, index=False)
-    provenance_path.write_text(json.dumps(dict(provenance), indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    finalized_provenance = dict(provenance)
+    # Bind the provenance JSON to the exact emitted CSV bytes.  This is needed
+    # by downstream score-blind panel freezes; a logical row hash alone cannot
+    # detect a later textual CSV substitution.
+    finalized_provenance["output_csv"] = {
+        "path": str(csv_path),
+        "sha256": sha256_file(csv_path),
+        "n_rows": int(len(rows)),
+    }
+    provenance_path.write_text(json.dumps(finalized_provenance, indent=2, sort_keys=True) + "\n", encoding="utf-8")
