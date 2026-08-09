@@ -51,8 +51,11 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
   environment's CUDA 13 wheel libraries. AASIST uses raw input and
   Spectra-AASIST uses external pre-emphasis 0.97. Initial frozen-workload
   sweeps select AASIST batch 2 (GPU 1) and Spectra batch 8 (GPU 0); see
-  `H2_THROUGHPUT_RUN_001.md`. H2 still requires a fixed ASR WER runtime and a
-  validated fourth model or a pre-frozen XLSR-SLS fallback. Score artifacts
+  `H2_THROUGHPUT_RUN_001.md`. The fixed ASR/WER runtime is now pinned in
+  `H2_ASR_WER_RUNTIME.md` (OpenAI Whisper `small.en`, FP16 on physical GPU 3
+  exposed as logical `cuda:0`); it has not transcribed or cleared a waveform
+  quality gate. H2 still requires execution of that gate and a validated fourth
+  model or a pre-frozen XLSR-SLS fallback. Score artifacts
   cannot score transformed audio. The waveform-only registered arms are in
   `src/h2_waveform_transforms.py`; they emit diagnostics but do not decide
   gates or supply any causal evidence.

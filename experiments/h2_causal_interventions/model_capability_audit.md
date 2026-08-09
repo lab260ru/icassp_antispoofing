@@ -165,11 +165,16 @@ The H2 protocol already requires, per paired waveform: STOI >= 0.95,
 original-versus-transformed ASR WER <= 5%, absolute loudness drift <= 0.2 LU,
 and no clipping; an arm is dropped below 90% pass rate. The environment has
 `pystoi`, `pyloudnorm`, `jiwer`, `scipy`, `soundfile`, and `ffmpeg`
-(including `acompressor`, `loudnorm`, and `alimiter`). It currently has
-**no ASR runtime**: `whisper`, `faster_whisper`, `transformers`,
-`speechbrain`, and `vosk` are all absent. H2 cannot claim those quality
-gates have passed until a fixed ASR model and its revision are installed and
-recorded.
+(including `acompressor`, `loudnorm`, and `alimiter`).
+
+### Runtime update — 2026-08-09
+
+The original environment snapshot above has been superseded for ASR only:
+`openai-whisper==20250625` and the checked `small.en` checkpoint are now
+pinned in `H2_ASR_WER_RUNTIME.md`. `src/h2_asr_wer.py` lazily verifies the
+package and checkpoint SHA-256 before FP16 CUDA transcription (physical GPU 3
+is exposed as logical `cuda:0`). This is runtime provenance and a deterministic
+WER implementation, **not** a transcription run or a passed quality gate.
 
 For each proposed pair, retain a quality row even when it fails:
 
@@ -211,9 +216,10 @@ does not alter its intended cue is a failed manipulation, not an H2 sample.
 ## Blocking items before a confirmatory H2 result
 
 1. Freeze H1 candidate features and exact arm set before viewing H2 scores.
-2. Finish the active ASVspoof2021_DF acquisition; download the confirmation
-   datasets only according to the H1 result plan.
-3. Implement the fixed ASR WER gate and pin its model/runtime revision.
+2. Finish the active confirmation-data acquisition and create each corpus's
+   scoped H1 artifacts before interpreting it.
+3. Execute the already pinned ASR WER gate jointly with STOI, loudness,
+   clipping, and target-cue checks on a frozen pair manifest.
 4. Acquire the tiny Res2TCNGuard inference bundle and validate score parity.
 5. Implement the generic fixed-window ONNX scorer and validate Spectra/AASIST
    parity. Do not assume external pre-emphasis for Spectra's ONNX graph.

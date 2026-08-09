@@ -99,3 +99,11 @@ portable rule remains unevaluable without held-out data. A disclosure-marked
 exploratory freeze admits only the Spectra-AASIST crest-factor family for H2;
 it is not a causal or portability conclusion. Telegram and GitHub push remain
 queued pending runtime credentials.
+
+## 2026-08-09 — H2 quality-gate runtime
+
+The H2 ASR/WER component is now reproducibly pinned: OpenAI Whisper `small.en`
+with a verified checkpoint hash, deterministic normalized WER, and FP16 GPU
+mapping documented. This is only infrastructure; no audio has been transcribed
+and no quality gate or causal conclusion has passed. Held-out audio processing
+continues, while the multi-model transformed-audio panel is still incomplete.
