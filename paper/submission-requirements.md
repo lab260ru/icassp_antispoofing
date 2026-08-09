@@ -23,6 +23,15 @@ copy with the official archive if IEEE posts one, then compile and visually
 check the final PDF again. This is an external submission-readiness condition,
 not evidence that the working IEEEtran copy is the eventual conference kit.
 
+The generic official IEEE conference-template ZIP is linked from IEEE's
+template page at
+`https://www.ieee.org/content/dam/ieee-org/ieee/web/org/conferences/conference-latex-template.zip`.
+On 2026-08-09, a direct authenticated-free download attempt from this runtime
+received an HTTP 202 CloudFront WAF challenge (`x-amzn-waf-action: challenge`),
+so no ZIP was saved and the pinned files were not silently replaced. Retry from
+an approved browser/network or obtain the archive from the conference when its
+ICASSP-specific author bundle is published; hash and compare it before use.
+
 ## Current compliance target
 
 - Keep technical material within four pages; do not rely on a fifth page for

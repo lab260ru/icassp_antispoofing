@@ -30,7 +30,9 @@
 1. Authenticate the local Claude CLI, then rerun the timestamped three-reviewer
    workflow documented in `paper/reviews/post_scope_layout_20260809/`.
 2. Obtain/reconcile the eventual official ICASSP 2027 LaTeX archive and run the
-   current IEEE/ICASSP submission checker before submission.
+   current IEEE/ICASSP submission checker before submission. The official
+   generic IEEE ZIP link currently receives a CloudFront WAF challenge from
+   this runtime, so it could not be fetched for comparison.
 3. Provide a configured GitHub credential to push
    `research/icassp-signal-audit`; no remote state was assumed.
 4. Provide a Telegram credential through the environment if queued progress

@@ -215,3 +215,13 @@ negative-result boundaries, and safe continuation conditions. The required
 paper-review launcher was executed but remains unauthenticated, so no review
 verdict is claimed. Send this update only after Telegram credentials are
 configured in the environment.
+
+## 2026-08-09 — official template access blocker
+
+The ICASSP author page currently specifies the paper limit but does not expose
+an ICASSP-2027-specific LaTeX archive. Its linked generic IEEE conference ZIP
+was located, but a direct download from this runtime receives a CloudFront WAF
+challenge (HTTP 202), so no template was downloaded or substituted silently.
+Please provide an approved archive or access path if template reconciliation is
+needed before submission; the exact URL and condition are in
+`paper/submission-requirements.md`.
