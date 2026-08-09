@@ -24,6 +24,8 @@ paper/*.fls
 paper/*.log
 paper/*.out
 paper/*.synctex.gz
+paper/build/*
+!paper/build/main.pdf
 
 # Large assets always live on the HDD volume
 data/raw/

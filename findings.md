@@ -33,6 +33,13 @@ transformation. Only the last supports a shortcut-sensitivity claim.
   has no duplicate utterance–view keys. The manifest does not provide attack
   IDs; the analysis records that control as a single explicit missing category
   instead of synthesizing attack metadata.
+- First H1 discovery screen: 1,344 exact-join, within-class associations across
+  eight architectures and three waveform views have been computed. Crest factor
+  has large negative adjusted associations with spoof evidence for
+  Spectra-AASIST on all three views (partial $\rho$: -0.454, -0.445, -0.327),
+  but its signs and magnitudes vary across other architectures, class strata,
+  and views. This is evidence for heterogeneous sensitivity, not a claim of a
+  universal crest-factor shortcut.
 
 ## Patterns and Insights
 
@@ -50,6 +57,10 @@ baseline reproduction.
 - A tested feature cannot also be treated as an independent control in its own
   partial correlation. The analysis removes that impossible self-control before
   computing any estimate.
+- With 5,000 samples per within-class test, multiplicity-adjusted p-values can
+  be extremely small. Candidate selection must prioritize the fixed
+  cross-corpus and cross-model portability gate, then held-out confirmation and
+  interventions, rather than significance alone.
 
 ## Open Questions
 

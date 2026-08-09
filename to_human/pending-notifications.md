@@ -31,3 +31,14 @@ utterances and three reproducible views (30,000 rows). Before creating any
 association table, the analysis caught and stopped on a self-control edge case
 for the loudness feature. The correction is under test; no provisional result
 was kept from that failed invocation.
+
+## 2026-08-09 — first H1 discovery result
+
+The corrected ASVspoof2019 LA screen completed 1,344 within-class association
+tests across eight published detectors, 28 signal descriptors, and three
+waveform views. Crest factor is strongly negatively associated with spoof
+evidence in Spectra-AASIST (and some other architectures), but it is not
+directionally uniform across the panel. This is a promising heterogeneous-
+sensitivity result, not yet a cross-dataset or causal shortcut finding. The
+two remaining discovery corpora are now the priority before any candidate is
+frozen.
