@@ -175,7 +175,7 @@ def test_clipping_gate_rejects_only_transform_induced_clipping() -> None:
     assert quality["pass_clipping"] is True
 
 
-def test_generic_quality_only_arm_dispatch_supports_h2b_transform_families() -> None:
+def test_generic_quality_only_arm_dispatch_supports_h2b_transform_families(tmp_path) -> None:
     waveform = _speech_like_waveform()
     arms = (
         ArmDefinition(
@@ -211,6 +211,25 @@ def test_generic_quality_only_arm_dispatch_supports_h2b_transform_families() -> 
         assert transformed.waveform.shape == waveform.shape
         assert transformed.waveform.dtype == np.float32
         assert np.isfinite(transformed.waveform).all()
+    rows = [
+        evaluate_quality_pair(
+            freeze_input_manifest(_input_rows(), per_label=3, seed=2609).rows.iloc[0].to_dict(),
+            audio=waveform,
+            sample_rate=SAMPLE_RATE,
+            arm=arm,
+            transcribe=lambda _audio, _rate: "same transcript",
+            stoi_measure=lambda _original, _transformed, _rate: 0.99,
+            feature_extractor=_feature_extractor,
+        )
+        for arm in arms[1:]
+    ]
+    # The all-pass coefficients are list-like diagnostics while endpoint rows
+    # omit them. This guards the mixed diagnostic schema used by H2B Q1's final
+    # Parquet materialization.
+    table = quality_rows_frame(rows)
+    parquet_path = tmp_path / "h2b_generic_arms.parquet"
+    table.to_parquet(parquet_path, index=False)
+    assert parquet_path.is_file()
     malformed = ArmDefinition(
         arm_id="bad-allpass",
         transform="allpass_phase",
