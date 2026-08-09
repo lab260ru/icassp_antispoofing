@@ -24,13 +24,17 @@ def main() -> None:
     parser.add_argument("--dataset", action="append", required=True)
     parser.add_argument("--model", action="append", dest="models")
     parser.add_argument("--output-root", default="/home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/runs/scores")
-    parser.add_argument("--summary", default="experiments/h1_feature_association/results/score_catalog.csv")
+    parser.add_argument("--summary-root", default="experiments/h1_feature_association/results")
     args = parser.parse_args()
 
     index = yaml.safe_load(Path(args.index).read_text())
     output_root = Path(args.output_root)
+    summary_root = Path(args.summary_root)
+    requested_datasets = list(dict.fromkeys(args.dataset))
+    if len(requested_datasets) != len(args.dataset):
+        raise ValueError("Each --dataset may be requested at most once per invocation")
     summaries: list[dict[str, object]] = []
-    for dataset_name in args.dataset:
+    for dataset_name in requested_datasets:
         if dataset_name not in index["datasets"]:
             raise KeyError(f"Unknown dataset: {dataset_name}")
         frames: list[pd.DataFrame] = []
@@ -41,27 +45,29 @@ def main() -> None:
                 continue
             frame = load_model_scores(index, dataset_name, model_name)
             frames.append(frame)
-            summaries.append({
+            dataset_summary = {
                 "dataset": dataset_name,
                 "model": model_name,
                 "n_scores_joined": len(frame),
                 "score_orientation": frame["orientation"].iloc[0],
                 "score_revision": index["models"][model_name]["revision"],
                 "dataset_revision": index["datasets"][dataset_name]["revision"],
-            })
+            }
+            summaries.append(dataset_summary)
         if not frames:
             raise RuntimeError(f"No downloaded score artifacts for {dataset_name}")
         output = pd.concat(frames, ignore_index=True)
         dataset_dir = output_root / dataset_name
         dataset_dir.mkdir(parents=True, exist_ok=True)
         output.to_parquet(dataset_dir / "score_panel.parquet", index=False)
-        (dataset_dir / "summary.json").write_text(json.dumps([row for row in summaries if row["dataset"] == dataset_name], indent=2))
+        dataset_summaries = [row for row in summaries if row["dataset"] == dataset_name]
+        (dataset_dir / "summary.json").write_text(json.dumps(dataset_summaries, indent=2))
+        catalog_dir = summary_root / dataset_name
+        catalog_dir.mkdir(parents=True, exist_ok=True)
+        catalog_path = catalog_dir / "score_catalog.csv"
+        pd.DataFrame(dataset_summaries).to_csv(catalog_path, index=False)
         print(f"wrote {dataset_dir / 'score_panel.parquet'} ({len(output)} rows)")
-    summary = pd.DataFrame(summaries)
-    summary_path = Path(args.summary)
-    summary_path.parent.mkdir(parents=True, exist_ok=True)
-    summary.to_csv(summary_path, index=False)
-    print(f"wrote {summary_path}")
+        print(f"wrote {catalog_path}")
 
 
 if __name__ == "__main__":

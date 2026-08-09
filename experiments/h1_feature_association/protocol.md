@@ -57,6 +57,10 @@ mismatch halts analysis for that artifact until catalogue metadata resolves it.
 
 ## Outputs
 
-`results/association_summary.csv`, `results/feature_label_metrics.csv`,
-`results/association_join_report.json`, optional
-`results/association_confirmation_bootstrap.csv`, plots, and `analysis.md`.
+`results/<dataset>/association_summary.csv`,
+`results/<dataset>/feature_label_metrics.csv`,
+`results/<dataset>/association_join_report.json`, optional
+`results/<dataset>/association_confirmation_bootstrap.csv`, explicit
+multi-dataset `results/combined/` tables, plots, and `analysis.md`. Flat result
+paths are intentionally not used because a later single-dataset run must never
+overwrite an earlier corpus.
