@@ -37,9 +37,10 @@ ASVspoof5 it is null after the registered controls ($\rho=0.0014$), despite a
 negative unadjusted association. Thus crest factor fails the fixed five-corpus
 portability condition. Nineteen other pre-registered feature/view/class units
 meet the descriptive association rule, but are not promoted post hoc to paired
-interventions. The result is a conservative negative finding about crest
-factor, together with a reproducible association atlas and a quality-gated
-protocol for later causal tests; it makes no causal shortcut claim.
+interventions. The frozen crest/control panel also fails its 90\% per-arm
+quality-retention gate before detector scoring. The result is a conservative
+negative finding about crest factor, together with a reproducible association
+atlas; it makes no causal shortcut claim.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -211,8 +212,10 @@ post-hoc intervention selector. No H2 delta, EER, or causal claim is reported.
     and 2021 DF. It is $-0.0326$ in In-the-Wild but $0.0014$ in ASVspoof5
     after registered adjustment; it therefore fails portability. \\
     Registered five-corpus association rule & 19/168 feature/view/class units
-    meet the descriptive rule ($\geq5/8$ models); none is added post hoc to
-    H2. H2 paired deltas and H3 held-out EER remain pending. \\
+    meet the descriptive rule ($\geq5/8$ models); none is added post hoc to H2. \\
+    Frozen H2 crest/control quality panel & DRC-3, DRC-6, and gain retain
+    18.1\%, 0.6\%, and 64.6\%, respectively, below 90\%; no detector scores,
+    paired deltas, or H3 training are produced. \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -247,8 +250,8 @@ discovery direction alone is insufficient: the crest candidate is null after
 adjustment in ASVspoof5. The 19 registry-wide associations are descriptive
 screen results, so they neither identify a causal mechanism nor authorize
 post-hoc waveform transformations. The H2 crest run was frozen before those
-confirmation outcomes and is consequently reported, if completed, only as an
-exploratory paired-sensitivity result.
+confirmation outcomes, but three of its four arms fail the 90\% retention gate
+before detector scoring. It therefore supplies no paired-sensitivity estimate.
 
 \section{Conclusion}
 
@@ -258,8 +261,8 @@ associations, quality-gated paired interventions, and a conditional robustness
 test. Five corpora show that repeated crest-factor direction in discovery data
 does not survive the registered portability condition. The result also exposes
 a broader association atlas without converting it into post-hoc interventions.
-Until paired H2 deltas are quality-gated and replicated across a complete
-scorer panel, the paper makes no causal feature-reliance claim.
+The pre-frozen crest transformations fail their own quality gate before score
+measurement. The paper therefore makes no causal feature-reliance claim.
 
 \bibliographystyle{template/IEEEtran/IEEEtran}
 \bibliography{references}
