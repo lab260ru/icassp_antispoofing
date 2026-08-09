@@ -11,4 +11,5 @@
 - Validation: Installed the public audio/analysis runtime; CUDA ONNX Runtime exposes TensorRT, CUDA, and CPU providers. The 28-feature synthetic-signal test passes after fixing the registry emission order.
 - Validation: The first authoritative score artifact joined 100% of ASVspoof2019 LA trials by utterance ID; model-score polarity is normalized from labels and retained in the result metadata.
 - Validation: The 200-utterance feature pilot produced three views per sample with no duplicate keys. Voice-quality measures are genuinely unavailable on some unvoiced examples, so downstream analysis preserves a missingness indicator.
-- Follow-up: Run the H1 feature-extraction pilot against the first complete pinned dataset, then lock full confirmatory extraction after the code path validates.
+- Validation: The score downloader now uses byte-validated `curl` range-resume transfers after the Hub client's compressed-transfer path failed. It completed all 72 score/result artifacts for the locked five-dataset, eight-model core panel. The ASVspoof2019_LA parquet panel has 569,896 rows and no duplicate `(model, sample_id)` keys.
+- Follow-up: Complete the locked 10,000-utterance ASVspoof2019_LA feature extraction, then run the association screen and the separately implemented bootstrap confirmation stage.

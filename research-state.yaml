@@ -37,7 +37,7 @@ experiments:
   proxy_metric: "Cross-dataset, within-class feature-score association and causal paired score sensitivity; EER for mitigation."
   baseline_value: null
   best_value: null
-  total_runs: 2
+  total_runs: 3
   trajectory:
     - run_id: run_001
       hypothesis: H1
@@ -53,11 +53,18 @@ experiments:
       wall_time_min: null
       change_summary: "Validated 28-feature extraction over three waveform views; 95% voice-quality feature availability."
       timestamp: "2026-08-09"
+    - run_id: run_003
+      hypothesis: H1
+      metric_value: 1.0
+      delta: null
+      wall_time_min: null
+      change_summary: "Ingested all eight pinned Arena score artifacts for ASVspoof2019_LA; 71,237 unique trials per model, no duplicate model–sample keys."
+      timestamp: "2026-08-09"
 
 outer_loop:
   cycle: 0
   last_direction: null
-  last_reflection: "Bootstrap pending dataset and Arena score catalogue."
+  last_reflection: "The full ASVspoof2019_LA score panel is validated; feature extraction is the remaining prerequisite for association screening."
   pivot_policy: "After the first association/intervention matrix or five completed runs, choose deepen, broaden, pivot, or conclude and record the evidence."
 
 workspace:

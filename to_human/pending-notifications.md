@@ -14,3 +14,12 @@ downloaded at its Arena revision; all 71,237 published Spectra-AASIST scores
 joined exactly to labels. The ongoing work is the audio-feature pilot and the
 remaining model/dataset downloads. GitHub pushing remains queued until a valid
 runtime token is available.
+
+## 2026-08-09 — complete first score panel
+
+All 72 pinned Arena score/result artifacts for the five core datasets are now
+downloaded with byte-size validation. The first full analysis panel covers
+eight detectors and 71,237 ASVspoof2019 LA trials per detector (569,896 score
+rows); the CPU feature extraction is the remaining prerequisite for the first
+association result. Delivery remains queued because the Telegram credentials
+are not present in the runtime environment.

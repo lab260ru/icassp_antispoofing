@@ -23,6 +23,11 @@ transformation. Only the last supports a shortcut-sensitivity claim.
   non-voice descriptors and 95% voice-quality coverage over 200 balanced
   ASVspoof 2019 LA samples and three views. Missing unvoiced measures will be
   modeled explicitly rather than filled with zeros.
+- Score-panel validation: the ASVspoof 2019 LA analysis panel now covers all
+  eight prespecified architectures (569,896 model–utterance rows). Every model
+  has exactly one score for each of the 71,237 published trials and the stored
+  analysis variable is normalized to increasing spoof evidence. This is input
+  validation, not a score-feature result.
 
 ## Patterns and Insights
 
