@@ -184,9 +184,11 @@ feature conditioning itself is beneficial~\cite{pascu2024generalizable}.
 \section{Results}
 \label{sec:results}
 
-Table~\ref{tab:status} records the completed H1 evidence. The five-corpus
-aggregate is exhaustive over the registered association matrix, but it is not a
-post-hoc intervention selector. No H2 delta, EER, or causal claim is reported.
+Table~\ref{tab:status} records the completed H1 evidence, and
+Fig.~\ref{fig:h1-association-atlas} visualizes the registry-wide associations
+that satisfy the fixed rule. The aggregate is exhaustive over the registered
+matrix, but it is not a post-hoc intervention selector. No H2 delta, EER, or
+causal claim is reported.
 
 \begin{table}[t]
   \caption{Completed H1 evidence. The five-corpus association outcome is not a
@@ -222,15 +224,14 @@ post-hoc intervention selector. No H2 delta, EER, or causal claim is reported.
 
 \begin{figure*}[t]
   \centering
-  \includegraphics[width=\textwidth]{figures/fig_h1_discovery_crest_factor.pdf}
-  \caption{Fixed crest-factor discovery slice: full-waveform, spoof-class
-  duration-, loudness-, and metadata-adjusted partial Spearman association to
-  the published canonical spoof-evidence score. Each model has one bar per
-  discovery corpus. Spectra-AASIST is negative in all three corpora but
-  attenuates sharply after 2019; AASIST reverses sign in 2021 DF. The figure is
-  discovery-only and cannot establish a portable association, causal reliance,
-  or a candidate-selection conclusion.}
-  \label{fig:h1-crest-discovery}
+  \includegraphics[width=\textwidth]{figures/fig_h1_portable_association_atlas.pdf}
+  \caption{Five-corpus association atlas. Each bar is a registered
+  feature/view/class unit meeting the fixed partial-Spearman/BH rule in at
+  least five of eight score artifacts; colors identify the waveform view.
+  These 19 descriptive associations were not re-ranked or promoted to H2 after
+  confirmation data were inspected. The frozen crest candidate is absent
+  because it fails the same rule.}
+  \label{fig:h1-association-atlas}
 \end{figure*}
 
 \section{Limitations and responsible reporting}

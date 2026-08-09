@@ -1,0 +1,12 @@
+{
+  "input": "experiments/h1_feature_association/results/five_corpus_aggregate_20260809T214500Z/portable_association_feature_report.csv",
+  "input_sha256": "153a08438ee08c6ffb52159569dd33a593314fd78f6bc01aec89da9d70c3d356",
+  "outputs": {
+    "pdf": "fig_h1_portable_association_atlas.pdf",
+    "png": "fig_h1_portable_association_atlas.png"
+  },
+  "rule": "same direction in >=4/5 core datasets, significant in both confirmation datasets, and present in >=5/8 models",
+  "selection_guard": "The plot visualizes already-evaluated registered units; it does not select or freeze H2 candidates.",
+  "statistic": "partial_spearman with per-corpus BH q",
+  "units_plotted": 19
+}
