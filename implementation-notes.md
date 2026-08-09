@@ -7,4 +7,6 @@
 - Decision: Use one independent job per RTX 6000 Ada GPU; newly trained models use BF16 and per-backbone throughput measurement.
 - Tradeoff: The current ICASSP 2027-specific kit is not yet available, so the initial manuscript will use the generic IEEE conference template and be migrated once the official kit is published.
 - Constraint: Telegram, GitHub, and Hugging Face runtime credentials are not currently configured. Sensitive values are intentionally not retained here.
-- Follow-up: Build the pinned Hub catalogue, validate public download access, and lock H1 feature extraction before result generation.
+- Changed: The live Arena manifest pins dataset revisions that differ from the current heads of several dataset repositories. The catalogue therefore uses Arena-pinned revisions, not repository heads, for every audio/score join.
+- Validation: Installed the public audio/analysis runtime; CUDA ONNX Runtime exposes TensorRT, CUDA, and CPU providers. The 28-feature synthetic-signal test passes after fixing the registry emission order.
+- Follow-up: Run the H1 feature-extraction pilot against the first complete pinned dataset, then lock full confirmatory extraction after the code path validates.
