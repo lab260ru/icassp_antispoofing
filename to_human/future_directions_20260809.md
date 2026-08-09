@@ -30,5 +30,9 @@ most one parameter point per family only by a predeclared retention-bound /
 target-change / WER rule, then confirm it on a newly frozen 1,000-clip panel.
 No detector or Arena score artifact will be read during these stages.
 
+The locked public calibration source is the 5,053-trial DeepVoice corpus at
+its Arena-pinned revision. It is independent of the five completed H1 corpora
+and can be downloaded directly to the designated HDD location.
+
 The full protocol and stop rules are in
 `experiments/future_directions/H2B_QUALITY_FIRST_OUTER_LOOP_PROTOCOL.md`.

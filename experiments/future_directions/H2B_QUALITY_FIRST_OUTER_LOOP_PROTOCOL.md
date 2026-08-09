@@ -54,6 +54,17 @@ commit its manifest, revision, labels/source metadata, and SHA-256 hashes.
 **Gate Q0:** the manifest builder rejects response-like fields, detector files,
 and score paths.  It must be committed before decoding a clip.
 
+### Q0 source declaration (locked)
+
+Q0 uses `SpeechAntiSpoofingBenchmarks/DeepVoice` at immutable revision
+`cc3bdf544cfc09bd9cc788f7f022ba1af9daf701` (5,053 binary trials).  It is
+not one of the five corpora used by the completed H1 study.  Download exactly
+its labels, two `data/test-*.parquet` audio shards, and provenance files under
+`/home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/datasets/DeepVoice/`.
+The Q0/Q1 code must consume the labels and audio only; it must not resolve,
+open, or copy any Arena score artifact.  DeepVoice is a quality-calibration
+source, not an H2B H1-selection or H2B detector-scoring corpus.
+
 ### Q1 — quality-only transform-family calibration
 
 The candidate families are intentionally selected before calibration:
