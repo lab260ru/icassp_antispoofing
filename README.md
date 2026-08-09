@@ -15,6 +15,10 @@ datasets, models, checkpoints, and full logs live under
 `/home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/` and are referenced by pinned
 manifests and checksums.
 
+For a compact map from every research loop to its protocol, result note, HDD
+ledger, paper artifact, and external continuation condition, read
+`ARTIFACT_INDEX.md`.
+
 ## Current objective
 
 By 2026-08-10 18:03 UTC, deliver an evidence-backed ICASSP-format initial

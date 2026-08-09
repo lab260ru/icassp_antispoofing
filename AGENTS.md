@@ -174,6 +174,7 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
 - Dataset/model provenance: `data/arena-index.yaml` and `data/README.md`
 - Paper source and reviews: `paper/`
 - Human updates and queued notifications: `to_human/`
+- Cross-loop artifact map: `ARTIFACT_INDEX.md`
 
 Do not commit raw audio, downloaded model weights, checkpoints, secrets, or
 large runtime logs. Commit manifests, checksums, compact result tables, plots,

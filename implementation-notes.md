@@ -118,3 +118,8 @@
 
 - Discovery: The ICASSP author page is still not exposing a conference-specific source archive. The linked generic IEEE 2024 conference-template ZIP was resolved from an official IEEE conference-template page.
 - Access outcome: A direct download received `HTTP/2 202` with `x-amzn-waf-action: challenge`. No archive was persisted under the HDD and no local template was overwritten. Keep the pinned IEEEtran working copy intact until a fetched official package can be hash-compared and reconciled.
+
+## 2026-08-09 - Cross-loop artifact index
+
+- Implementation: `ARTIFACT_INDEX.md` centralizes the authoritative protocol, result, stop rule, HDD ledger owner, paper status, and external handoff condition for H1, H2, H2B, H3, and H4. It deliberately links to existing ledgers rather than duplicating hashes or results.
+- Rationale: A future agent can now establish the experiment boundary and exact evidence path before starting work, reducing the risk of duplicated jobs, accidental score access, or post-result threshold changes.
