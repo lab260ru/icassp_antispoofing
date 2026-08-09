@@ -60,6 +60,12 @@
 - Correction: The draft no longer says held-out confirmation is pending. It now distinguishes the frozen spoof/full-waveform crest candidate (not portable and blocked before H2 scoring) from the different bona-fide/full-waveform crest-factor unit that meets only the descriptive H1 rule. The latter must not be retroactively substituted into H2.
 - Validation: Every `main.tex` revision is compiled with the repository-pinned template. The current `paper/build/main.pdf` is readable and four pages; Tectonic only reports known underfull-box and bibliography-rerun warnings.
 
+## 2026-08-09 - Paper scope and layout correction
+
+- Audit: A paper-review-criteria read-only audit found that the planned four-model/multi-corpus H2 specification could be read as completed, generic crest-factor language could conflate two distinct slices, and Table I had floated after the paper text. The external reviewer runtime remains unauthenticated; this is not a peer-review verdict.
+- Correction: The paper now distinguishes planned confirmatory H2 from the completed 1,000-clip score-blind quality screen, writes DSP sensitivity as waveform-family `T_\theta(x)` rather than an isolated feature intervention, and names the failed frozen `Spectra-AASIST/full-waveform/spoof` candidate. It intentionally excludes the unrelated H2B Q1 quality-only result.
+- Validation: After every `main.tex` edit, `tectonic --outdir build main.tex` was run. The current PDF is readable, four pages, and has Table I on page 2 before the References; no overfull-box or unresolved-citation warning remains.
+
 ## 2026-08-09 - H2B quality-first outer loop
 
 - Decision: Treat the H2 quality-gate failure as an immutable result boundary. `H2B_QUALITY_FIRST_OUTER_LOOP_PROTOCOL.md` is committed before execution and prohibits reading model scores or detector implementations during transform selection.

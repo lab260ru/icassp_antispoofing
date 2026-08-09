@@ -1,8 +1,10 @@
 # H2B: Quality-first cue-intervention outer loop
 
-**Status:** protocol only; no H2B audio, ASR, detector, or training run has
-been launched.  This is a new outer loop, not a modification, rerun, or rescue
-of `h2_quality_full_002`.
+**Status:** Q0 metadata freeze and Q1 detector-free waveform/ASR quality
+calibration are complete; no H2B detector or training run has been launched.
+Q1 selected no transform family under its precommitted rule; see
+`results/H2B_Q1_RUN_001.md`. This is a new outer loop, not a modification,
+rerun, or rescue of `h2_quality_full_002`.
 
 ## Why a new outer loop is necessary
 
@@ -72,7 +74,7 @@ The candidate families are intentionally selected before calibration:
 | Family | Calibration grid | Registered target | Collateral checks |
 |---|---|---|---|
 | Endpoint silence, fixed length | energy/VAD threshold and zeroed endpoint extent | `silence_fraction` | interior speech-core byte hash unchanged; duration/position unchanged |
-| Spectral tilt | $\pm0.5$, $\pm1.0$, $\pm1.5$ dB/oct fixed-phase tilt | `spectral_slope_db_per_khz` and `low_high_energy_ratio_db` | crest, integrated LUFS, F0, phase, duration |
+| Spectral tilt | candidate grid: $\pm0.5$, $\pm1.0$, $\pm1.5$ dB/oct fixed-phase tilt | `spectral_slope_db_per_khz` and `low_high_energy_ratio_db` | crest, integrated LUFS, F0, phase, duration |
 | All-pass phase | predeclared stable first-order coefficient cascades with $|a|\leq0.15$ | `group_delay_var` or `inst_freq_dispersion` | spectral-magnitude tolerance, LUFS, duration |
 | Negative controls | polarity and a bounded gain whose *actual* LUFS drift is within 0.2 LU | invariance as appropriate | all v1_28 deltas and exact waveform/hash diagnostics |
 
@@ -83,6 +85,12 @@ target-direction check.  Record all failures; an unavailable metric fails.
 The implementation must reuse `src/h2_waveform_transforms.py`,
 `src/h2_asr_wer.py`, `src/audio_features.py`, and the current transform-induced
 clipping definition rather than fork incompatible metrics.
+
+**Executed-Q1 record:** the exact, pre-execution
+`h2b_q1_quality_arm_manifest.json` narrowed the tilt grid to $\pm0.5$ and
+$\pm1.0$ dB/oct, two all-pass coefficients, endpoint zeroing, and two controls.
+It is the authoritative executed-arm list; no $\pm1.5$ tilt was run. The
+completed negative selection is recorded in `results/H2B_Q1_RUN_001.md`.
 
 **Selection rule, locked before Q1:** for each family retain at most one grid
 point only if its *lower* Wilson 95% confidence bound for retained-pair rate is
