@@ -63,6 +63,9 @@ with the target label in ASVspoof data and that this cue alone can yield strong
 discrimination~\cite{muller2021silence}. More generally, controlled shortcut
 conditions can produce near-perfect or worse-than-chance countermeasures
 without a reliable signal of the intended task competence~\cite{shim2023shortcut}.
+Recent cross-domain evidence further indicates that audio-deepfake
+generalization gaps can reflect distributional difference, rather than only a
+harder version of the same task~\cite{muller2024harder}.
 
 The present study begins with a practical observation: an interpretable
 feature---including crest factor---may be label-discriminative, correlated with
@@ -119,6 +122,9 @@ three hypotheses below.
 All datasets, model revisions, and published score artifacts are pinned in the
 repository manifest. Discovery uses ASVspoof 2019 LA, ASVspoof 2021 LA, and
 ASVspoof 2021 DF; In-the-Wild and ASVspoof 5 are held out for confirmation.
+The 2021 challenge adds channel/compression variation and unmatched evaluation
+conditions, so these corpora are not treated as interchangeable replications
+of the 2019 setting~\cite{yamagishi2021asvspoof}.
 The score panel consists of \scorepanel. Where a published score artifact is
 absent, the cell is reported as missing and is never imputed. This design uses
 the Arena score artifacts as published evidence, rather than spending
@@ -173,6 +179,9 @@ independently measured fastest batch/worker setting on one RTX 6000 Ada GPU.
 Success requires at least 10\% relative macro held-out EER improvement on two
 or more datasets, a paired interval excluding zero, and no more than a
 0.2-point in-domain EER degradation.
+This deliberately conservative use of frozen representations is motivated by
+recent generalization and calibration results, but it does not assume that
+feature conditioning itself is beneficial~\cite{pascu2024generalizable}.
 
 \section{Completed integrity checks and pending results}
 \label{sec:results}
