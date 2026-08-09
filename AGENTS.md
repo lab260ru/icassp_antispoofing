@@ -34,11 +34,11 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
   removes a tested variable from its own controls. Bootstrap CIs require a
   frozen provenance-bearing manifest; see
   `experiments/h1_feature_association/BOOTSTRAP_CLI.md`.
-- **Active, non-duplicable job:** ASVspoof2021_DF is downloading via the
-  resumable public-HF downloader. Check processes and the HDD paths before
-  relaunching. After it is ready, ingest its already-downloaded score panel and
-  run H1 into its own scope; freeze candidates only after all three discovery
-  datasets are analyzed.
+- **Active, non-duplicable job:** ASVspoof2021_DF's pinned 85-file corpus is
+  complete and its 28-worker H1 feature extraction is live. Check processes
+  and the HDD paths before relaunching. After it finishes, ingest its
+  already-downloaded score panel and run H1 into its own scope; freeze
+  candidates only after all three discovery datasets are analyzed.
 - **H2 has two parity-validated runners but is not ready to claim.** Read
   `experiments/h2_causal_interventions/model_capability_audit.md`,
   `H2_ONNX_PARITY.md`, and `PARITY_RUN_001.md` before any intervention work.
@@ -48,7 +48,9 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
   sweeps select AASIST batch 2 (GPU 1) and Spectra batch 8 (GPU 0); see
   `H2_THROUGHPUT_RUN_001.md`. H2 still requires a fixed ASR WER runtime and a
   validated fourth model or a pre-frozen XLSR-SLS fallback. Score artifacts
-  cannot score transformed audio.
+  cannot score transformed audio. The waveform-only registered arms are in
+  `src/h2_waveform_transforms.py`; they emit diagnostics but do not decide
+  gates or supply any causal evidence.
 - **Paper draft:** `paper/main.tex` compiles with
   `tectonic --outdir build main.tex` from `paper/`. Track the source, citation
   ledger, and `paper/build/main.pdf`; ignore build intermediates. The compiled
