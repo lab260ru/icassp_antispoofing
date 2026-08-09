@@ -152,11 +152,13 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
   eXpress; read `paper/SUBMISSION_READINESS.md` before treating it as a
   compliance signal.
   The required three-reviewer launcher was attempted for the initial draft,
-  the five-corpus update, and the current post-scope/layout draft, but was
-  blocked because the local Claude CLI is unauthenticated;
+  the five-corpus update, the post-scope/layout draft, and the current
+  post-author-policy draft, but was blocked because the local Claude CLI is
+  unauthenticated;
   see `paper/reviews/initial_draft/REVIEW_STATUS.md` and
   `paper/reviews/five_corpus_h2_quality_20260809/REVIEW_STATUS.md`, and
-  `paper/reviews/post_scope_layout_20260809/REVIEW_STATUS.md`. Do not pretend
+  `paper/reviews/post_scope_layout_20260809/REVIEW_STATUS.md`, and
+  `paper/reviews/post_author_policy_20260809/REVIEW_STATUS.md`. Do not pretend
   a review took place. Once authenticated, run a new timestamped paper-review
   bundle.
   **Required workflow:** after every modification to `paper/main.tex`, run

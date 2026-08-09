@@ -44,7 +44,7 @@ committed to this repository.
 | Requirements and template status | `paper/submission-requirements.md` | The official ICASSP page limit is recorded. The official generic IEEE ZIP is known but this runtime receives a CloudFront WAF challenge; no unverified replacement was made. |
 | Static local PDF preflight | `paper/SUBMISSION_READINESS.md`, `scripts/check_paper_pdf.py` | Current internal PDF passes four-page US-letter, layout, font, and anonymous-draft checks. Submission mode retains the geometry/layout/font checks after authors are added. This is not IEEE PDF eXpress or an official template check. |
 | Citation ledger | `paper/citation-verification.md` | Seven cited records are mapped to bounded claims. |
-| External paper-review attempts | `paper/reviews/*/REVIEW_STATUS.md` | Three timestamped panels were launched, but all stopped before review because the local Claude CLI is unauthenticated. No review verdict exists. |
+| External paper-review attempts | `paper/reviews/*/REVIEW_STATUS.md` | Four timestamped panels were launched, including against the current author-policy draft, but all stopped before review because the local Claude CLI is unauthenticated. No review verdict exists. |
 | Internal audits | `paper/reviews/five_corpus_h2_quality_20260809/` | Claim-to-artifact and scope/layout audits only; never call them peer review. |
 
 ## Reproduce the current local handoff

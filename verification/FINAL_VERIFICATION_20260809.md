@@ -65,7 +65,8 @@ considered upload-ready until real author information is inserted.
 
 The official ICASSP page limit/dates, single-anonymous author requirement, and
 generic working-template caveat are recorded in `paper/submission-requirements.md`.
-The local paper-review launcher was executed but the Claude CLI was
-unauthenticated, so no reviewer verdict exists. Remote push and Telegram
-notifications require credentials not present in the environment; queued
-user-facing updates are in `to_human/pending-notifications.md`.
+The local paper-review launcher was most recently executed against the
+post-author-policy PDF, but the Claude CLI was unauthenticated, so no reviewer
+verdict exists. Remote push and Telegram notifications require credentials not
+present in the environment; queued user-facing updates are in
+`to_human/pending-notifications.md`.

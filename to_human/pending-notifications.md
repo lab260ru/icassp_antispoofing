@@ -234,3 +234,13 @@ internal draft placeholder and must not be uploaded. Please provide the
 authorized author names, affiliations, and ordering; the exact replacement and
 rebuild/preflight steps are in `paper/AUTHOR_BLOCK_REQUIRED.md`. This does not
 alter any research result.
+
+## 2026-08-09 — current paper-review runtime blocker
+
+After correcting the author-policy status and rebuilding the PDF, the mandated
+three-reviewer paper-review launcher was run again on the exact current draft.
+All reviewers launched on schedule but exited before reviewing because the
+local Claude CLI is not authenticated. The current bundle is preserved in
+`paper/reviews/post_author_policy_20260809/`; no peer-review verdict is
+claimed. Authenticate the local reviewer runtime to unblock a substantive
+review.

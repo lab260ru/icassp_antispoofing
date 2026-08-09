@@ -134,3 +134,8 @@
 - Discovery: The official ICASSP 2027 editorial policy specifies single-anonymous review: reviewers know author names. The previous anonymous label was an internal-draft convention, not the conference's review rule.
 - Correction: `main.tex` now tells readers that author information is required before submission. `paper/AUTHOR_BLOCK_REQUIRED.md` provides a no-inference replacement handoff. The static PDF checker keeps strong identity checks only in `anonymous-working-draft` mode and supports `single-anonymous-submission` mode after authorized author insertion.
 - Boundary: Do not invent author identity, affiliation, email, or order. The current PDF remains readable evidence for the research draft but is deliberately not upload-ready until that information is supplied.
+
+## 2026-08-09 - Current-version paper-review attempt
+
+- Validation: Extracted 16,288 characters from the compiled post-author-policy PDF and launched the required three-reviewer Sonnet workflow on the 0/10/20-second stagger.
+- Constraint: Alfa, bravo, and charlie each exited with `Not logged in · Please run /login` before producing any review. `paper/reviews/post_author_policy_20260809/REVIEW_STATUS.md` preserves this authentication failure; it is not a review result or meta-review.
