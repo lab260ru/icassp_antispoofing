@@ -11,6 +11,16 @@ lists the full-paper submission deadline as **2026-09-16**, with notification
 on 2027-01-13, final-paper submission on 2027-01-27, and author registration
 by 2027-02-10.
 
+## Review and author information
+
+ICASSP 2027's official editorial policy states that papers use
+**single-anonymous review**: reviewers know the author names, but reviewers
+are anonymous to authors and other reviewers. The current `main.tex` author
+block is an intentionally anonymous internal placeholder because no authorized
+author metadata has been supplied. It must be replaced with the confirmed names,
+affiliations, and order before upload; see `AUTHOR_BLOCK_REQUIRED.md`. Do not
+upload the present anonymous working PDF as an ICASSP 2027 submission.
+
 ## Template status
 
 `paper/template/IEEEtran/` contains the pinned IEEE conference class and
@@ -36,7 +46,9 @@ ICASSP-specific author bundle is published; hash and compare it before use.
 
 - Keep technical material within four pages; do not rely on a fifth page for
   anything other than references.
-- Keep the review version anonymous and verify author metadata before upload.
+- Replace the internal placeholder with verified author names, affiliations,
+  and order before upload; check those fields against the submission-system
+  metadata.
 - Preserve the exact class/BST sources used for every paper build in this
   repository.
 - Run the final PDF through the then-current IEEE/ICASSP compliance checker;
@@ -46,8 +58,9 @@ ICASSP-specific author bundle is published; hash and compare it before use.
 ## Local static readiness check
 
 `scripts/check_paper_pdf.py` supplies a reproducible, deliberately narrower
-preflight for the current anonymous working draft. It confirms the four-page
-US-letter target, Table I/References landmarks, embedded fonts, empty `/Author`
-metadata, and no selected project-identifying strings in rendered text. The
-current PDF passes this check; usage and its limits are in
+preflight for both the current anonymous working draft and a future
+single-anonymous submission. It confirms the four-page US-letter target, Table
+I/References landmarks, and embedded fonts; its anonymous-working-draft mode
+also checks empty `/Author` metadata and selected project-identifying strings.
+The current PDF passes the internal mode; usage and its limits are in
 `SUBMISSION_READINESS.md`.

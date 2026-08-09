@@ -40,9 +40,9 @@ committed to this repository.
 
 | Item | Location | Status |
 |---|---|---|
-| Anonymous source / readable PDF | `paper/main.tex`, `paper/build/main.pdf` | Current initial draft is four pages. Whenever `main.tex` changes, compile it and commit the refreshed PDF in the same change. |
+| Internal placeholder source / readable PDF | `paper/main.tex`, `paper/build/main.pdf` | Current initial draft is four pages, but its anonymous block is not upload-ready: ICASSP 2027 uses single-anonymous review. An authorized author must follow `paper/AUTHOR_BLOCK_REQUIRED.md`, then compile and commit the refreshed PDF. |
 | Requirements and template status | `paper/submission-requirements.md` | The official ICASSP page limit is recorded. The official generic IEEE ZIP is known but this runtime receives a CloudFront WAF challenge; no unverified replacement was made. |
-| Static local PDF preflight | `paper/SUBMISSION_READINESS.md`, `scripts/check_paper_pdf.py` | Current PDF passes four-page US-letter, layout, font, and anonymous-metadata checks. This is not IEEE PDF eXpress or an official template check. |
+| Static local PDF preflight | `paper/SUBMISSION_READINESS.md`, `scripts/check_paper_pdf.py` | Current internal PDF passes four-page US-letter, layout, font, and anonymous-draft checks. Submission mode retains the geometry/layout/font checks after authors are added. This is not IEEE PDF eXpress or an official template check. |
 | Citation ledger | `paper/citation-verification.md` | Seven cited records are mapped to bounded claims. |
 | External paper-review attempts | `paper/reviews/*/REVIEW_STATUS.md` | Three timestamped panels were launched, but all stopped before review because the local Claude CLI is unauthenticated. No review verdict exists. |
 | Internal audits | `paper/reviews/five_corpus_h2_quality_20260809/` | Claim-to-artifact and scope/layout audits only; never call them peer review. |
@@ -53,10 +53,12 @@ committed to this repository.
 cd /home/kirill/icassp_antispoofing
 PYTHONPATH=. python3 -m pytest -q
 cd paper && tectonic --outdir build main.tex && cd ..
-PYTHONPATH=. python3 scripts/check_paper_pdf.py --pdf paper/build/main.pdf
+PYTHONPATH=. python3 scripts/check_paper_pdf.py \
+  --pdf paper/build/main.pdf \
+  --review-stage anonymous-working-draft
 ```
 
-The most recent recorded full suite is 82 passed. `verification/FINAL_VERIFICATION_20260809.md` records the PDF hash and the full local build/test evidence; rerun the commands after any relevant source change.
+The most recent recorded full suite is 83 passed. `verification/FINAL_VERIFICATION_20260809.md` records the PDF hash and the full local build/test evidence; rerun the commands after any relevant source change.
 
 ## External delivery and resume blockers
 
@@ -64,6 +66,7 @@ The most recent recorded full suite is 82 passed. `verification/FINAL_VERIFICATI
 - Telegram milestone delivery: requires `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID`; messages are queued in `to_human/pending-notifications.md`.
 - Paper review: authenticate the local Claude CLI, then launch a new timestamped three-reviewer bundle and address any findings.
 - Template reconciliation: obtain an approved ICASSP-2027 or official generic IEEE archive from an accessible route, hash/compare it to the pinned files, rebuild, rerun the static preflight, and use the official conference checker.
+- Author information: provide authorized author names, affiliations, and order; replace the internal placeholder, then use `--review-stage single-anonymous-submission` before upload.
 
 `to_human/FINAL_HANDOFF_20260809.md` supplies the concise user-facing
 continuation plan. No external action should weaken or bypass the H1/H2/H2B/H4

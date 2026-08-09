@@ -128,3 +128,9 @@
 
 - Implementation: The static paper preflight now reads each PDF MediaBox and fails if any page differs from 612 × 792 points (US Letter), complementing the existing count, landmark, font, metadata, and identity checks.
 - Validation: Synthetic failure coverage includes an A4-sized page; the current working PDF passes all four US-letter page checks. The boundary remains unchanged: only the official ICASSP template and submission checker can certify conference compliance.
+
+## 2026-08-09 - ICASSP author-visibility correction
+
+- Discovery: The official ICASSP 2027 editorial policy specifies single-anonymous review: reviewers know author names. The previous anonymous label was an internal-draft convention, not the conference's review rule.
+- Correction: `main.tex` now tells readers that author information is required before submission. `paper/AUTHOR_BLOCK_REQUIRED.md` provides a no-inference replacement handoff. The static PDF checker keeps strong identity checks only in `anonymous-working-draft` mode and supports `single-anonymous-submission` mode after authorized author insertion.
+- Boundary: Do not invent author identity, affiliation, email, or order. The current PDF remains readable evidence for the research draft but is deliberately not upload-ready until that information is supplied.

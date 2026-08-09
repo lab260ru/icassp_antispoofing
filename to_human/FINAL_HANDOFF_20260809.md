@@ -5,9 +5,9 @@
 - Readable four-page ICASSP working draft: `paper/build/main.pdf`, rebuilt
   from `paper/main.tex` and tracked with its source.
 - Reproducible static PDF preflight: it confirms four US-letter pages, Table
-  I/References landmarks, embedded fonts, anonymous `/Author` metadata, and no
-  selected project-identifying strings. It is not a substitute for the official
-  conference template or PDF eXpress.
+  I/References landmarks, embedded fonts, internal-draft anonymous metadata,
+  and no selected project-identifying strings. It is not a substitute for the
+  official conference template or PDF eXpress.
 - Complete five-corpus H1 association audit: the pre-frozen crest candidate
   is not portable in confirmation, while 19 fixed-rule registry entries remain
   descriptive rather than new candidates.
@@ -37,6 +37,9 @@
    `research/icassp-signal-audit`; no remote state was assumed.
 4. Provide a Telegram credential through the environment if queued progress
    updates should be sent. Never place a credential in this repository.
+5. Provide authorized author names, affiliations, and ordering. ICASSP 2027
+   uses single-anonymous review, so the current internal anonymous author block
+   cannot be uploaded; see `paper/AUTHOR_BLOCK_REQUIRED.md`.
 
 ## Safe continuation
 

@@ -1,10 +1,12 @@
-"""Static, reproducible checks for the anonymous ICASSP working-draft PDF.
+"""Static, reproducible checks for the ICASSP working-draft PDF.
 
 This module is intentionally a *local readiness check*, not a replacement for
 an ICASSP-provided template, PDF eXpress, or conference submission checker.
 It verifies only properties that can be recovered from a built PDF: expected
-page count, essential layout landmarks, embedded fonts, metadata, and a small
-set of project-identifying strings that must not appear in an anonymous draft.
+page count, essential layout landmarks, embedded fonts, and metadata. Identity
+checks are enabled only for the repository's anonymous *internal* draft. ICASSP
+2027 itself uses single-anonymous review, so a final submission must include
+the real author block and should use the submission-stage mode.
 """
 
 from __future__ import annotations
@@ -93,6 +95,7 @@ def audit_working_draft_pdf(
     *,
     expected_pages: int = 4,
     forbidden_text: tuple[str, ...] = DEFAULT_FORBIDDEN_TEXT,
+    anonymous_working_draft: bool = True,
 ) -> dict[str, object]:
     """Inspect a built anonymous working draft and return a serializable report.
 
@@ -125,17 +128,18 @@ def audit_working_draft_pdf(
     missing_fonts = [str(font["base_font"]) for font in fonts if not bool(font["embedded"])]
     if missing_fonts:
         errors.append(f"unembedded fonts: {', '.join(missing_fonts)}")
-    author_metadata = metadata.get("/Author", "").strip()
-    if author_metadata:
-        errors.append("PDF /Author metadata must be empty for anonymous review")
     text_hits = {
         token: [index + 1 for index, text in enumerate(lower_text) if token.casefold() in text]
         for token in forbidden_text
     }
     text_hits = {token: pages for token, pages in text_hits.items() if pages}
-    if text_hits:
-        compact = "; ".join(f"{token} on page(s) {pages}" for token, pages in text_hits.items())
-        errors.append(f"project-identifying text recovered from PDF: {compact}")
+    if anonymous_working_draft:
+        author_metadata = metadata.get("/Author", "").strip()
+        if author_metadata:
+            errors.append("PDF /Author metadata must be empty for anonymous working-draft review")
+        if text_hits:
+            compact = "; ".join(f"{token} on page(s) {pages}" for token, pages in text_hits.items())
+            errors.append(f"project-identifying text recovered from anonymous working draft: {compact}")
 
     return {
         "pdf": str(path.resolve()),
@@ -148,8 +152,13 @@ def audit_working_draft_pdf(
         "font_count": len(fonts),
         "fonts": fonts,
         "metadata": metadata,
+        "anonymous_working_draft": anonymous_working_draft,
+        "identity_checks_applied": anonymous_working_draft,
         "forbidden_text_hits": text_hits,
         "errors": errors,
         "ok": not errors,
-        "scope_note": "Local static readiness check only; not an official ICASSP template or PDF eXpress validation.",
+        "scope_note": (
+            "Local static readiness check only; not an official ICASSP template or PDF eXpress validation. "
+            "ICASSP 2027 uses single-anonymous review, so final submissions require real author information."
+        ),
     }

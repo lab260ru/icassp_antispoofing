@@ -84,6 +84,26 @@ def test_audit_reports_identity_metadata_and_missing_font_embedding(
     assert any("US Letter" in str(error) for error in report["errors"])
 
 
+def test_single_anonymous_submission_stage_does_not_require_anonymous_authors(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    pdf = tmp_path / "main.pdf"
+    pdf.write_bytes(b"%PDF-fake")
+    pages = [
+        _FakePage("Kirill Author", {"/F1": _embedded_font()}),
+        _FakePage("TABLE I results", {"/F1": _embedded_font()}),
+        _FakePage("References", {"/F1": _embedded_font()}),
+        _FakePage("continued", {"/F1": _embedded_font()}),
+    ]
+    monkeypatch.setattr(checks, "PdfReader", _reader_factory(_FakeReader(pages, {"/Author": "Kirill Author"})))
+
+    report = checks.audit_working_draft_pdf(pdf, anonymous_working_draft=False)
+
+    assert report["ok"] is True
+    assert report["identity_checks_applied"] is False
+    assert report["forbidden_text_hits"] == {"kirill": [1]}
+
+
 def test_audit_rejects_missing_file_and_invalid_page_expectation(tmp_path: Path) -> None:
     with pytest.raises(FileNotFoundError):
         checks.audit_working_draft_pdf(tmp_path / "missing.pdf")

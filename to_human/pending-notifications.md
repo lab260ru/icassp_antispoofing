@@ -208,8 +208,8 @@ this update when Telegram credentials are available.
 
 The current working draft was rebuilt from clean TeX intermediates and is a
 readable four-page US-letter PDF (Table I page 2; References begin page 3); all
-82 local tests passed. The static preflight also verifies embedded fonts and
-anonymous PDF metadata. `to_human/FINAL_HANDOFF_20260809.md` and
+83 local tests passed. The static preflight also verifies embedded fonts and
+internal-draft anonymous PDF metadata. `to_human/FINAL_HANDOFF_20260809.md` and
 `verification/FINAL_VERIFICATION_20260809.md` identify the exact evidence,
 negative-result boundaries, and safe continuation conditions. The required
 paper-review launcher was executed but remains unauthenticated, so no review
@@ -225,3 +225,12 @@ challenge (HTTP 202), so no template was downloaded or substituted silently.
 Please provide an approved archive or access path if template reconciliation is
 needed before submission; the exact URL and condition are in
 `paper/submission-requirements.md`.
+
+## 2026-08-09 — author-block requirement discovered
+
+The official ICASSP 2027 editorial policy specifies **single-anonymous**
+review: reviewers see author names. The present anonymous author block is an
+internal draft placeholder and must not be uploaded. Please provide the
+authorized author names, affiliations, and ordering; the exact replacement and
+rebuild/preflight steps are in `paper/AUTHOR_BLOCK_REQUIRED.md`. This does not
+alter any research result.

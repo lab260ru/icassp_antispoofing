@@ -20,8 +20,21 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--pdf", type=Path, default=REPO_ROOT / "paper" / "build" / "main.pdf")
     parser.add_argument("--expected-pages", type=int, default=4)
+    parser.add_argument(
+        "--review-stage",
+        choices=("anonymous-working-draft", "single-anonymous-submission"),
+        default="anonymous-working-draft",
+        help=(
+            "Apply identity checks only to the internal anonymous draft. ICASSP 2027 is single-anonymous, "
+            "so use single-anonymous-submission after real authors are inserted."
+        ),
+    )
     args = parser.parse_args()
-    report = audit_working_draft_pdf(args.pdf, expected_pages=args.expected_pages)
+    report = audit_working_draft_pdf(
+        args.pdf,
+        expected_pages=args.expected_pages,
+        anonymous_working_draft=args.review_stage == "anonymous-working-draft",
+    )
     print(json.dumps(report, indent=2, sort_keys=True))
     if not report["ok"]:
         raise SystemExit("Paper PDF static readiness check failed")
