@@ -19,10 +19,11 @@ artifacts:
 The revision-pinned Res2TCNGuard bundle is now present under the HDD model
 store. Its `res2tcnguard.onnx` signature is independently verified as
 `float32[batch,64600] -> float32[batch,2]`, matching its model card's
-first-window/tile-repeat contract. It is an *admitted parity candidate*, not a
-validated H2 scorer, until an explicit `--model Res2TCNGuard` calibration run
-passes the locked orientation and ordering gates. It deliberately remains out
-of the default two-model command below.
+first-window/tile-repeat contract. The completed raw and pre-emphasis parity
+checks fail the locked ordering gate, so this **ONNX** artifact is blocked. The
+same bundle's source PyTorch evaluator passes a separately preserved raw
+parity gate; see `RES2TCNGUARD_ONNX_DIAGNOSIS.md`. It remains out of the
+default ONNX command below.
 
 Their model paths, model revisions, and source score files are resolved solely
 from `data/arena-index.yaml`.

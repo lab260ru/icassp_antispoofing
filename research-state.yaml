@@ -49,7 +49,7 @@ experiments:
   proxy_metric: "Cross-dataset, within-class feature-score association and causal paired score sensitivity; EER for mitigation."
   baseline_value: null
   best_value: null
-  total_runs: 10
+  total_runs: 12
   trajectory:
     - run_id: run_001
       hypothesis: H1
@@ -121,11 +121,25 @@ experiments:
       wall_time_min: null
       change_summary: "Pinned a lazy OpenAI Whisper small.en FP16 CUDA runtime and deterministic normalized WER utility; no audio was transcribed and no quality gate was evaluated."
       timestamp: "2026-08-09"
+    - run_id: h2_res2_onnx_parity_001
+      hypothesis: H2
+      metric_value: 0.911686
+      delta: null
+      wall_time_min: 1.0
+      change_summary: "Preserved blocked Res2TCNGuard ONNX raw and pre-emphasis baseline parity runs on the frozen 128-clip manifest; neither reaches the predeclared 0.999 ordering threshold."
+      timestamp: "2026-08-09"
+    - run_id: h2_res2_pytorch_parity_001
+      hypothesis: H2
+      metric_value: 0.9999942776
+      delta: null
+      wall_time_min: 1.0
+      change_summary: "Validated the exact pinned Res2TCNGuard PyTorch evaluate.py plus checkpoint path against Arena baseline ordering on the frozen 128-clip manifest; it replaces the blocked ONNX export only."
+      timestamp: "2026-08-09"
 
 outer_loop:
   cycle: 2
   last_direction: "deepen_conditionally"
-  last_reflection: "All three H1 discovery screens support heterogeneous, corpus-dependent detector sensitivity. The pre-DF exploratory gate freezes only Spectra-AASIST crest factor for H2. The ASR/WER runtime is pinned but pair-level quality gates and a multi-model scorer panel remain unevaluated; acquire confirmation audio but do not interpret it before source tables are complete."
+  last_reflection: "All three H1 discovery screens support heterogeneous, corpus-dependent detector sensitivity. The pre-DF exploratory gate freezes only Spectra-AASIST crest factor for H2. Spectra, AASIST, and source-PyTorch Res2TCNGuard have baseline parity; the Res2 ONNX export is blocked. Pair-level quality gates and a fourth scorer remain unevaluated; acquire confirmation audio but do not interpret it before source tables are complete."
   pivot_policy: "After the first association/intervention matrix or five completed runs, choose deepen, broaden, pivot, or conclude and record the evidence."
 
 workspace:

@@ -1,0 +1,29 @@
+{
+  "arena_orientation": "negated_raw_is_spoof",
+  "batch_size": 4,
+  "created_at_utc": "2026-08-09T20:44:47.333679+00:00",
+  "dataset": "ASVspoof2019_LA",
+  "dataset_revision": "9492c4a85ad91508b6da03c92c98c58aeaa02424",
+  "device": "cuda:2",
+  "manifest_path": "experiments/h2_causal_interventions/results/parity_calibration/ASVspoof2019_LA/calibration_manifest.parquet",
+  "manifest_sha256": "0a1918b15fc972f9ffb2b40c2150099d097cc2daff38372673a6e15dbd0cbbd1",
+  "min_spearman": 0.999,
+  "model": "Res2TCNGuard",
+  "model_revision": "4624265fa5e88c0abe425e37c278f3a9288aa914",
+  "n_bonafide": 64,
+  "n_clips": 128,
+  "n_spoof": 64,
+  "observed_raw_label_spearman": -0.8660518339922417,
+  "ordering_gate_pass": true,
+  "purpose": "H2 pre-intervention exact-PyTorch baseline parity gate; not an intervention result",
+  "raw_scalar": "logit_1",
+  "raw_vs_arena_mae": 0.0024391003367603323,
+  "raw_vs_arena_max_absdiff": 0.01696377783203218,
+  "raw_vs_arena_spearman": 0.9999942776048343,
+  "runner": "pinned_pytorch_evaluate_py",
+  "runner_provenance": {
+    "_net.py_sha256": "a26eba9b6ba3b2a1be1284f94b31c96d5fd7158582eb86ff4028515d53fed837",
+    "best_1.495.pth_sha256": "c2eb1f6aa03f1f5c3feb582be9e2a6a4c97e5834befc659047fb6f79826ff2f9",
+    "evaluate.py_sha256": "34b626dd1df48e058bb6abd3846ca9b16526ddef232750bf0ad8576ca173a5d4"
+  }
+}

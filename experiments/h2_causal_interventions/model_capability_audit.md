@@ -220,7 +220,9 @@ does not alter its intended cue is a failed manipulation, not an H2 sample.
    scoped H1 artifacts before interpreting it.
 3. Execute the already pinned ASR WER gate jointly with STOI, loudness,
    clipping, and target-cue checks on a frozen pair manifest.
-4. Acquire the tiny Res2TCNGuard inference bundle and validate score parity.
+4. **Resolved for the source PyTorch path:** the tiny Res2TCNGuard bundle now
+   has exact baseline parity through its pinned `evaluate.py`; its separate
+   ONNX export remains blocked and must not be substituted.
 5. Implement the generic fixed-window ONNX scorer and validate Spectra/AASIST
    parity. Do not assume external pre-emphasis for Spectra's ONNX graph.
 6. Acquire and validate W2V2 ONNX only after the three-model path works, or

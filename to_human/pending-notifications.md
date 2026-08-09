@@ -107,3 +107,12 @@ with a verified checkpoint hash, deterministic normalized WER, and FP16 GPU
 mapping documented. This is only infrastructure; no audio has been transcribed
 and no quality gate or causal conclusion has passed. Held-out audio processing
 continues, while the multi-model transformed-audio panel is still incomplete.
+
+## 2026-08-09 — Res2TCNGuard parity diagnosis
+
+The downloadable Res2TCNGuard ONNX export failed the strict published-score
+parity check, so it is blocked and its failure artifacts are retained. The
+exact source PyTorch evaluator and checkpoint passed the same frozen 128-clip
+check (rho 0.999994), which isolates an ONNX export/runtime divergence rather
+than an input/window error. This adds a third parity-validated scorer but is
+not transformed-audio or causal evidence.

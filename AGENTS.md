@@ -54,8 +54,11 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
   `H2_THROUGHPUT_RUN_001.md`. The fixed ASR/WER runtime is now pinned in
   `H2_ASR_WER_RUNTIME.md` (OpenAI Whisper `small.en`, FP16 on physical GPU 3
   exposed as logical `cuda:0`); it has not transcribed or cleared a waveform
-  quality gate. H2 still requires execution of that gate and a validated fourth
-  model or a pre-frozen XLSR-SLS fallback. Score artifacts
+  quality gate. The source PyTorch Res2TCNGuard evaluator is additionally
+  parity-validated; its bundled ONNX export is explicitly blocked (read
+  `RES2TCNGUARD_ONNX_DIAGNOSIS.md`). H2 still requires execution of the
+  pair-quality gate and a validated fourth model or a pre-frozen XLSR-SLS
+  fallback. Score artifacts
   cannot score transformed audio. The waveform-only registered arms are in
   `src/h2_waveform_transforms.py`; they emit diagnostics but do not decide
   gates or supply any causal evidence.
