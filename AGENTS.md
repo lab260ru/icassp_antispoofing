@@ -100,10 +100,12 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
   ledger, and `paper/build/main.pdf`; ignore build intermediates. The compiled
   IEEE-style initial draft reports only the first discovery observation and its
   limitations, plus source-verified cross-dataset context.
-  The required three-reviewer launcher was attempted but blocked because the
-  local Claude CLI is unauthenticated; see
-  `paper/reviews/initial_draft/REVIEW_STATUS.md`. Do not pretend a review took
-  place. Once authenticated, run a new timestamped paper-review bundle.
+  The required three-reviewer launcher was attempted for both the initial and
+  updated drafts but blocked because the local Claude CLI is unauthenticated;
+  see `paper/reviews/initial_draft/REVIEW_STATUS.md` and
+  `paper/reviews/five_corpus_h2_quality_20260809/REVIEW_STATUS.md`. Do not
+  pretend a review took place. Once authenticated, run a new timestamped
+  paper-review bundle.
   **Required workflow:** after every modification to `paper/main.tex`, run
   `cd paper && tectonic --outdir build main.tex`, verify a PDF was written,
   and commit the refreshed `paper/build/main.pdf` in the same paper commit.

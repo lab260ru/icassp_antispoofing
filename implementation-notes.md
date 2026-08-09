@@ -48,3 +48,8 @@
 - Validation: The corrected `h2_quality_full_002` run completed exactly 4,000 immutable checkpoints over the frozen 1,000-clip, four-arm input panel. The formal quality-freeze CLI verified completion/provenance and refused at `drc_cf3` (181/1,000 retained), before constructing a score-eligible manifest.
 - Decision: Do not relax the STOI/WER/loudness/clipping/target-direction thresholds, or alter these arms, after observing the quality diagnostics. The H2 paired scorer remains unused.
 - Tradeoff: The paper can report a stronger rigor result---the intervention could not clear its own content-preservation gate---but no score-delta or causal conclusion. Any reparameterized DRC or different feature requires an outer-loop protocol and fresh score-independent freeze.
+
+## 2026-08-09 - Updated paper-review attempt
+
+- Validation: Extracted 16,337 characters from the compiled four-page PDF and launched the mandatory three-reviewer `paper-review` panel with the requested stagger (0/10/20 seconds).
+- Constraint: Every reviewer exited with `Not logged in · Please run /login`; the bundle contains only these authentication failures, no verdicts or review content. Do not represent the updated paper as peer reviewed.
