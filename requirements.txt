@@ -1,0 +1,11 @@
+# Runtime dependencies beyond the preinstalled CUDA PyTorch stack.
+datasets>=3.0
+soundfile>=0.12
+librosa>=0.10
+pyloudnorm>=0.1.1
+pystoi>=0.4.1
+jiwer>=3.0
+onnxruntime-gpu>=1.20
+tqdm>=4.66
+arxiv>=2.1
+semanticscholar>=0.10

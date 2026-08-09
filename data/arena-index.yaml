@@ -1,0 +1,1155 @@
+schema_version: 1
+generated_at_utc: '2026-08-09T18:51:07.928153+00:00'
+arena_manifest:
+  repo_id: SpeechAntiSpoofingBenchmarks/arena-manifest
+  revision: 0a7f027ca9227c270851258309a90dbc20d4e04f
+  ranking_version: v4
+  ranking_metric: eer_percent
+  source_manifest_revision: manifest.yaml at current Arena repository head
+datasets:
+  ASVspoof2019_LA:
+    repo_id: SpeechAntiSpoofingBenchmarks/ASVspoof2019_LA
+    revision: 9492c4a85ad91508b6da03c92c98c58aeaa02424
+    n_trials: 71237
+    category: binary
+    metric: eer_percent
+    paper_url: null
+    local_dir: /home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/datasets/ASVspoof2019_LA/9492c4a85ad91508b6da03c92c98c58aeaa02424
+    files:
+      labels: data/labels.parquet
+      audio_glob: data/test-*.parquet
+      eval: eval.yaml
+    pinned_files:
+    - path: LICENSE.txt
+      size_bytes: 19941
+      sha256: null
+    - path: README.md
+      size_bytes: 4263
+      sha256: null
+    - path: data/labels.parquet
+      size_bytes: 653667
+      sha256: 5c84b975aae34ee05edad15f48dc847e28f52a38f6ded5b417b6604e9e1ad9d7
+    - path: eval.yaml
+      size_bytes: 474
+      sha256: null
+    source_revision_resolved: 9492c4a85ad91508b6da03c92c98c58aeaa02424
+  ASVspoof2021_DF:
+    repo_id: SpeechAntiSpoofingBenchmarks/ASVspoof2021_DF
+    revision: 16d4f7d6c68694ac9b0bd43b83df322d1bc5102e
+    n_trials: 611829
+    category: binary
+    metric: eer_percent
+    paper_url: null
+    local_dir: /home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/datasets/ASVspoof2021_DF/16d4f7d6c68694ac9b0bd43b83df322d1bc5102e
+    files:
+      labels: data/labels.parquet
+      audio_glob: data/test-*.parquet
+      eval: eval.yaml
+    pinned_files:
+    - path: LICENSE.txt
+      size_bytes: 2374
+      sha256: null
+    - path: README.md
+      size_bytes: 4141
+      sha256: null
+    - path: data/labels.parquet
+      size_bytes: 3173131
+      sha256: 7476fca63ea30e910a153909537ce17df9f951542e12d606965887344f70eb9e
+    - path: eval.yaml
+      size_bytes: 480
+      sha256: null
+    source_revision_resolved: 16d4f7d6c68694ac9b0bd43b83df322d1bc5102e
+  ASVspoof2021_LA:
+    repo_id: SpeechAntiSpoofingBenchmarks/ASVspoof2021_LA
+    revision: dc119733697c946fcd17fe7c1541d7f26b4bbe07
+    n_trials: 181566
+    category: binary
+    metric: eer_percent
+    paper_url: null
+    local_dir: /home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/datasets/ASVspoof2021_LA/dc119733697c946fcd17fe7c1541d7f26b4bbe07
+    files:
+      labels: data/labels.parquet
+      audio_glob: data/test-*.parquet
+      eval: eval.yaml
+    pinned_files:
+    - path: LICENSE.txt
+      size_bytes: 19941
+      sha256: null
+    - path: README.md
+      size_bytes: 3507
+      sha256: null
+    - path: data/labels.parquet
+      size_bytes: 1184653
+      sha256: f6427353a9de83c2d02d1843488b75c8b1b183df8213f0e7075670162012d0a5
+    - path: eval.yaml
+      size_bytes: 536
+      sha256: null
+    source_revision_resolved: dc119733697c946fcd17fe7c1541d7f26b4bbe07
+  ASVspoof5:
+    repo_id: SpeechAntiSpoofingBenchmarks/ASVspoof5
+    revision: 9937de5e630b137bb31e9f5901209b2705ddef63
+    n_trials: 680774
+    category: binary
+    metric: eer_percent
+    paper_url: null
+    local_dir: /home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/datasets/ASVspoof5/9937de5e630b137bb31e9f5901209b2705ddef63
+    files:
+      labels: data/labels.parquet
+      audio_glob: data/test-*.parquet
+      eval: eval.yaml
+    pinned_files:
+    - path: LICENSE.txt
+      size_bytes: 19941
+      sha256: null
+    - path: README.md
+      size_bytes: 2616
+      sha256: null
+    - path: data/labels.parquet
+      size_bytes: 3806210
+      sha256: 540fcce5092545a8ec7bc73611a1297663c2e9da32e6ee017ebf079ae52d639e
+    - path: eval.yaml
+      size_bytes: 534
+      sha256: null
+    source_revision_resolved: 9937de5e630b137bb31e9f5901209b2705ddef63
+  CFAD:
+    repo_id: SpeechAntiSpoofingBenchmarks/CFAD
+    revision: 53d7855c1c378524f7b7b1030bcb6b2caa327fe6
+    n_trials: 62999
+    category: binary
+    metric: eer_percent
+    paper_url: https://arxiv.org/abs/2207.12308
+    local_dir: /home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/datasets/CFAD/53d7855c1c378524f7b7b1030bcb6b2caa327fe6
+    files:
+      labels: data/labels.parquet
+      audio_glob: data/test-*.parquet
+      eval: eval.yaml
+    pinned_files:
+    - path: LICENSE.txt
+      size_bytes: 18657
+      sha256: null
+    - path: README.md
+      size_bytes: 3746
+      sha256: null
+    - path: data/labels.parquet
+      size_bytes: 383110
+      sha256: aa70d6b75e86da0d60fdaff033d21372f76c2e476c2e8b670fecbc146a8b48ed
+    - path: eval.yaml
+      size_bytes: 709
+      sha256: null
+    source_revision_resolved: 53d7855c1c378524f7b7b1030bcb6b2caa327fe6
+  CVoiceFake_small:
+    repo_id: SpeechAntiSpoofingBenchmarks/CVoiceFake_small
+    revision: eb60cf4d13993b583e9515db3d14c040d2404cf7
+    n_trials: 138136
+    category: binary
+    metric: eer_percent
+    paper_url: https://arxiv.org/abs/2409.09272
+    local_dir: /home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/datasets/CVoiceFake_small/eb60cf4d13993b583e9515db3d14c040d2404cf7
+    files:
+      labels: data/labels.parquet
+      audio_glob: data/test-*.parquet
+      eval: eval.yaml
+    pinned_files:
+    - path: LICENSE.txt
+      size_bytes: 18657
+      sha256: null
+    - path: README.md
+      size_bytes: 4381
+      sha256: null
+    - path: data/labels.parquet
+      size_bytes: 986181
+      sha256: 1613cf0063916e88a2d1c4b2577f1a34efb762e1b06fcc4c6a8a1b014831a884
+    - path: eval.yaml
+      size_bytes: 758
+      sha256: null
+    source_revision_resolved: eb60cf4d13993b583e9515db3d14c040d2404cf7
+  DeepVoice:
+    repo_id: SpeechAntiSpoofingBenchmarks/DeepVoice
+    revision: cc3bdf544cfc09bd9cc788f7f022ba1af9daf701
+    n_trials: 5053
+    category: binary
+    metric: eer_percent
+    paper_url: https://arxiv.org/abs/2308.12734
+    local_dir: /home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/datasets/DeepVoice/cc3bdf544cfc09bd9cc788f7f022ba1af9daf701
+    files:
+      labels: data/labels.parquet
+      audio_glob: data/test-*.parquet
+      eval: eval.yaml
+    pinned_files:
+    - path: LICENSE.txt
+      size_bytes: 1084
+      sha256: null
+    - path: README.md
+      size_bytes: 3444
+      sha256: null
+    - path: data/labels.parquet
+      size_bytes: 32426
+      sha256: 74efc4b38a3a678ac8246a871a1e1b6e330fa92e2b78529f3bda040c1a00cf5c
+    - path: eval.yaml
+      size_bytes: 699
+      sha256: null
+    source_revision_resolved: cc3bdf544cfc09bd9cc788f7f022ba1af9daf701
+  InTheWild:
+    repo_id: SpeechAntiSpoofingBenchmarks/InTheWild
+    revision: a957f2582802cdb5964e118818c2e46b3d61aa35
+    n_trials: 31779
+    category: binary
+    metric: eer_percent
+    paper_url: null
+    local_dir: /home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/datasets/InTheWild/a957f2582802cdb5964e118818c2e46b3d61aa35
+    files:
+      labels: data/labels.parquet
+      audio_glob: data/test-*.parquet
+      eval: eval.yaml
+    pinned_files:
+    - path: LICENSE.txt
+      size_bytes: 11707
+      sha256: null
+    - path: README.md
+      size_bytes: 1870
+      sha256: null
+    - path: data/labels.parquet
+      size_bytes: 219185
+      sha256: b243114b126e1a223c9b6bb6c1f3c6dd294698728af83894cae15beb8ace2d7f
+    - path: eval.yaml
+      size_bytes: 662
+      sha256: null
+    source_revision_resolved: a957f2582802cdb5964e118818c2e46b3d61aa35
+  LibriSeVoc:
+    repo_id: SpeechAntiSpoofingBenchmarks/LibriSeVoc
+    revision: 13d69268a57afc7ebba2421d2a31730a390f1ff2
+    n_trials: 18487
+    category: binary
+    metric: eer_percent
+    paper_url: https://arxiv.org/abs/2304.13085
+    local_dir: /home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/datasets/LibriSeVoc/13d69268a57afc7ebba2421d2a31730a390f1ff2
+    files:
+      labels: data/labels.parquet
+      audio_glob: data/test-*.parquet
+      eval: eval.yaml
+    pinned_files:
+    - path: LICENSE.txt
+      size_bytes: 20138
+      sha256: null
+    - path: README.md
+      size_bytes: 3381
+      sha256: null
+    - path: data/labels.parquet
+      size_bytes: 178976
+      sha256: 283f20cd6a9b6064afb84c759e99e036a3a21230da0e18233d61baeb976289ac
+    - path: eval.yaml
+      size_bytes: 706
+      sha256: null
+    source_revision_resolved: 13d69268a57afc7ebba2421d2a31730a390f1ff2
+  DECRO:
+    repo_id: SpeechAntiSpoofingBenchmarks/DECRO
+    revision: e54c29df5b81bac75e5cc294d1ab0d4db72a5c71
+    n_trials: 37314
+    category: binary
+    metric: eer_percent
+    paper_url: https://dl.acm.org/doi/abs/10.1145/3543507.3583222
+    local_dir: /home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/datasets/DECRO/e54c29df5b81bac75e5cc294d1ab0d4db72a5c71
+    files:
+      labels: data/labels.parquet
+      audio_glob: data/test-*.parquet
+      eval: eval.yaml
+    pinned_files:
+    - path: LICENSE.txt
+      size_bytes: 18657
+      sha256: null
+    - path: README.md
+      size_bytes: 3861
+      sha256: null
+    - path: data/labels.parquet
+      size_bytes: 305937
+      sha256: 696e58af8ad4dda1f6b20d814b1c1191bca8f50c08abf95115d432444b646673
+    - path: eval.yaml
+      size_bytes: 616
+      sha256: null
+    source_revision_resolved: e54c29df5b81bac75e5cc294d1ab0d4db72a5c71
+  XMAD:
+    repo_id: SpeechAntiSpoofingBenchmarks/XMAD
+    revision: fc1412809b875e1c5c102a2f615f30ffd09eda3d
+    n_trials: 368085
+    category: binary
+    metric: eer_percent
+    paper_url: https://arxiv.org/abs/2506.00462
+    local_dir: /home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/datasets/XMAD/fc1412809b875e1c5c102a2f615f30ffd09eda3d
+    files:
+      labels: data/labels.parquet
+      audio_glob: data/test-*.parquet
+      eval: eval.yaml
+    pinned_files:
+    - path: LICENSE.txt
+      size_bytes: 1345
+      sha256: null
+    - path: README.md
+      size_bytes: 4116
+      sha256: null
+    - path: data/labels.parquet
+      size_bytes: 2036985
+      sha256: 7c0f61e7a683a091660e66a9c79485e4128d4b6818099f941ca1e4665f64af10
+    - path: eval.yaml
+      size_bytes: 774
+      sha256: null
+    source_revision_resolved: fc1412809b875e1c5c102a2f615f30ffd09eda3d
+models:
+  Spectra-AASIST:
+    repo_id: lab260/Spectra-AASIST
+    revision: eb65c2662d9e646d72557b3f4bdd08b000068c7f
+    local_dir: /home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/models/Spectra-AASIST/eb65c2662d9e646d72557b3f4bdd08b000068c7f
+    runtime_files:
+    - path: README.md
+      size_bytes: 13016
+      sha256: null
+    - path: config.json
+      size_bytes: 3
+      sha256: null
+    - path: model.py
+      size_bytes: 26608
+      sha256: null
+    - path: spectra-aasist.onnx
+      size_bytes: 1265496989
+      sha256: 85b217c72cf2ff1fc820827fa65e3dc49891fba49746931b06f1a5ad8a336a9b
+    score_artifacts:
+      ASVspoof2019_LA:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2019_LA/scores.txt
+          size_bytes: 1630514
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2019_LA/result.yaml
+          size_bytes: 677
+          sha256: null
+      ASVspoof2021_DF:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2021_DF/scores.txt
+          size_bytes: 14046508
+          sha256: 6bc318941c4e018248c54285d214d5a9e7d83d321a96f84103e19f6f39780cee
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2021_DF/result.yaml
+          size_bytes: 679
+          sha256: null
+      ASVspoof2021_LA:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2021_LA/scores.txt
+          size_bytes: 4148981
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2021_LA/result.yaml
+          size_bytes: 678
+          sha256: null
+      ASVspoof5:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof5/scores.txt
+          size_bytes: 15517199
+          sha256: ffc1eb4be74e781e4ae44cac6d425458f84bab83c098237268898f11b6ce262a
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof5/result.yaml
+          size_bytes: 667
+          sha256: null
+      CFAD:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/CFAD/scores.txt
+          size_bytes: 4479118
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/CFAD/result.yaml
+          size_bytes: 657
+          sha256: null
+      CVoiceFake_small:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/CVoiceFake_small/scores.txt
+          size_bytes: 9829598
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/CVoiceFake_small/result.yaml
+          size_bytes: 681
+          sha256: null
+      DeepVoice:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/DeepVoice/scores.txt
+          size_bytes: 236074
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/DeepVoice/result.yaml
+          size_bytes: 665
+          sha256: null
+      InTheWild:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/InTheWild/scores.txt
+          size_bytes: 604870
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/InTheWild/result.yaml
+          size_bytes: 665
+          sha256: null
+      LibriSeVoc:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/LibriSeVoc/scores.txt
+          size_bytes: 813007
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/LibriSeVoc/result.yaml
+          size_bytes: 653
+          sha256: null
+      DECRO:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/DECRO/scores.txt
+          size_bytes: 1110508
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/DECRO/result.yaml
+          size_bytes: 659
+          sha256: null
+      XMAD:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/XMAD/scores.txt
+          size_bytes: 22045082
+          sha256: ba07940428ce85c8fc13bc730f7c2c02d38779d9bdf5a428dfb0283bb79cc5e1
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/XMAD/result.yaml
+          size_bytes: 659
+          sha256: null
+  AASIST:
+    repo_id: SpeechAntiSpoofingBenchmarks/AASIST
+    revision: 16774d458d86d2a021ae31646c1bf66a5331b53e
+    local_dir: /home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/models/AASIST/16774d458d86d2a021ae31646c1bf66a5331b53e
+    runtime_files:
+    - path: README.md
+      size_bytes: 7578
+      sha256: null
+    - path: meta.yaml
+      size_bytes: 1513
+      sha256: null
+    - path: aasist.onnx
+      size_bytes: 1615195
+      sha256: 130e536266b7c537f9a13029e1612a9f392fd1cc827783683b6d1c062a3db5e1
+    score_artifacts:
+      ASVspoof2019_LA:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2019_LA/scores.txt
+          size_bytes: 1632563
+          sha256: null
+        result: null
+      ASVspoof2021_DF:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2021_DF/scores.txt
+          size_bytes: 14014630
+          sha256: 2662b21dd99a7f3b61063f54a451dd128128d0750ebd9130848f47a2109607f9
+        result: null
+      ASVspoof2021_LA:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2021_LA/scores.txt
+          size_bytes: 4169463
+          sha256: null
+        result: null
+      ASVspoof5:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof5/scores.txt
+          size_bytes: 15629185
+          sha256: 363b9cb12c76470fa7db135b2141508693493b7487ddbd5e1349423ae73d1e5d
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof5/result.yaml
+          size_bytes: 496
+          sha256: null
+      CFAD:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/CFAD/scores.txt
+          size_bytes: 4460924
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/CFAD/result.yaml
+          size_bytes: 490
+          sha256: null
+      CVoiceFake_small:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/CVoiceFake_small/scores.txt
+          size_bytes: 9773562
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/CVoiceFake_small/result.yaml
+          size_bytes: 504
+          sha256: null
+      DeepVoice:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/DeepVoice/scores.txt
+          size_bytes: 234697
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/DeepVoice/result.yaml
+          size_bytes: 690
+          sha256: null
+      InTheWild:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/InTheWild/scores.txt
+          size_bytes: 614179
+          sha256: null
+        result: null
+      LibriSeVoc:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/LibriSeVoc/scores.txt
+          size_bytes: 813629
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/LibriSeVoc/result.yaml
+          size_bytes: 497
+          sha256: null
+      DECRO:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/DECRO/scores.txt
+          size_bytes: 1101760
+          sha256: null
+        result: null
+      XMAD:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/XMAD/scores.txt
+          size_bytes: 22056145
+          sha256: 5961deac63128d4c6d0f5a4415c20f9249280b77aac7880839911b4ba7c7e4ac
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/XMAD/result.yaml
+          size_bytes: 683
+          sha256: null
+  Res2TCNGuard:
+    repo_id: SpeechAntiSpoofingBenchmarks/Res2TCNGuard
+    revision: 4624265fa5e88c0abe425e37c278f3a9288aa914
+    local_dir: /home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/models/Res2TCNGuard/4624265fa5e88c0abe425e37c278f3a9288aa914
+    runtime_files:
+    - path: README.md
+      size_bytes: 11520
+      sha256: null
+    - path: meta.yaml
+      size_bytes: 1294
+      sha256: null
+    score_artifacts:
+      ASVspoof2019_LA:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2019_LA/scores.txt
+          size_bytes: 1660979
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2019_LA/result.yaml
+          size_bytes: 734
+          sha256: null
+      ASVspoof2021_DF:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2021_DF/scores.txt
+          size_bytes: 14330545
+          sha256: 029a5743244c4c544ee43fea7b9e6067a5d785d4ba4ac60e216d9564149b2bf5
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2021_DF/result.yaml
+          size_bytes: 736
+          sha256: null
+      ASVspoof2021_LA:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2021_LA/scores.txt
+          size_bytes: 4261752
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2021_LA/result.yaml
+          size_bytes: 736
+          sha256: null
+      ASVspoof5:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof5/scores.txt
+          size_bytes: 16029390
+          sha256: fda6f9883dc6e2d9c3a66c596df0ec6ef3e5547d2c5096807b50a3df6aebf230
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof5/result.yaml
+          size_bytes: 503
+          sha256: null
+      CFAD:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/CFAD/scores.txt
+          size_bytes: 4476033
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/CFAD/result.yaml
+          size_bytes: 496
+          sha256: null
+      CVoiceFake_small:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/CVoiceFake_small/scores.txt
+          size_bytes: 9797447
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/CVoiceFake_small/result.yaml
+          size_bytes: 508
+          sha256: null
+      DeepVoice:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/DeepVoice/scores.txt
+          size_bytes: 236443
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/DeepVoice/result.yaml
+          size_bytes: 721
+          sha256: null
+      InTheWild:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/InTheWild/scores.txt
+          size_bytes: 622598
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/InTheWild/result.yaml
+          size_bytes: 722
+          sha256: null
+      LibriSeVoc:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/LibriSeVoc/scores.txt
+          size_bytes: 816246
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/LibriSeVoc/result.yaml
+          size_bytes: 502
+          sha256: null
+      DECRO:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/DECRO/scores.txt
+          size_bytes: 1108529
+          sha256: null
+        result: null
+      XMAD:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/XMAD/scores.txt
+          size_bytes: 22240773
+          sha256: 17105b919728edffacd93520529cc0f9f834e0db8dc55d9ef58fec62d170f626
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/XMAD/result.yaml
+          size_bytes: 711
+          sha256: null
+  RawTFNet:
+    repo_id: SpeechAntiSpoofingBenchmarks/RawTFNet
+    revision: e557893c73cf341216036eece0eccf6e233a58b7
+    local_dir: /home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/models/RawTFNet/e557893c73cf341216036eece0eccf6e233a58b7
+    runtime_files:
+    - path: README.md
+      size_bytes: 10802
+      sha256: null
+    - path: meta.yaml
+      size_bytes: 1070
+      sha256: null
+    - path: rawtfnet.onnx
+      size_bytes: 867404
+      sha256: 77504888d575cb4789dc05a7b65ae2e19638a165326eecb872fd40bd8dc66d2d
+    score_artifacts:
+      ASVspoof2019_LA:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2019_LA/scores.txt
+          size_bytes: 1629294
+          sha256: null
+        result: null
+      ASVspoof2021_DF:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2021_DF/scores.txt
+          size_bytes: 14039468
+          sha256: 43f615e0284a00aa9b5e25be002e57a03acf88c855588b28cc904218d10ceedd
+        result: null
+      ASVspoof2021_LA:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2021_LA/scores.txt
+          size_bytes: 4156882
+          sha256: null
+        result: null
+      ASVspoof5:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof5/scores.txt
+          size_bytes: 15649648
+          sha256: 8229fc9c4b113568921b4788d35739718f54817d5f588a220aa7d233bd9626c7
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof5/result.yaml
+          size_bytes: 700
+          sha256: null
+      CFAD:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/CFAD/scores.txt
+          size_bytes: 4488892
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/CFAD/result.yaml
+          size_bytes: 688
+          sha256: null
+      CVoiceFake_small:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/CVoiceFake_small/scores.txt
+          size_bytes: 9785565
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/CVoiceFake_small/result.yaml
+          size_bytes: 714
+          sha256: null
+      DeepVoice:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/DeepVoice/scores.txt
+          size_bytes: 236007
+          sha256: null
+        result: null
+      InTheWild:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/InTheWild/scores.txt
+          size_bytes: 623028
+          sha256: null
+        result: null
+      LibriSeVoc:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/LibriSeVoc/scores.txt
+          size_bytes: 815589
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/LibriSeVoc/result.yaml
+          size_bytes: 701
+          sha256: null
+      DECRO:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/DECRO/scores.txt
+          size_bytes: 1108993
+          sha256: null
+        result: null
+      XMAD:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/XMAD/scores.txt
+          size_bytes: 22065075
+          sha256: 2f30c796c1ae29460d49d03ad12237ad3e3e8c730ae5a5077611b04885f4a446
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/XMAD/result.yaml
+          size_bytes: 691
+          sha256: null
+  WhisperMFCCMesoNet:
+    repo_id: SpeechAntiSpoofingBenchmarks/WhisperMFCCMesoNet
+    revision: a7b299a090c5b698977fe246aa47b46d97503be2
+    local_dir: /home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/models/WhisperMFCCMesoNet/a7b299a090c5b698977fe246aa47b46d97503be2
+    runtime_files:
+    - path: README.md
+      size_bytes: 10303
+      sha256: null
+    - path: meta.yaml
+      size_bytes: 1420
+      sha256: null
+    score_artifacts:
+      ASVspoof2019_LA:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2019_LA/scores.txt
+          size_bytes: 1634534
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2019_LA/result.yaml
+          size_bytes: 757
+          sha256: null
+      ASVspoof2021_DF:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2021_DF/scores.txt
+          size_bytes: 14148204
+          sha256: 8c18a4d3054bfc7e3c7f2674801c45d8f04342e04007ea1fbf8ee480ee5f4938
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2021_DF/result.yaml
+          size_bytes: 760
+          sha256: null
+      ASVspoof2021_LA:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2021_LA/scores.txt
+          size_bytes: 4170018
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2021_LA/result.yaml
+          size_bytes: 759
+          sha256: null
+      ASVspoof5:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof5/scores.txt
+          size_bytes: 15697632
+          sha256: 33ca52366804db307b17c53c8c4279b139bb83bf20b11ab66269595e91efdf7c
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof5/result.yaml
+          size_bytes: 511
+          sha256: null
+      CFAD:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/CFAD/scores.txt
+          size_bytes: 4481457
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/CFAD/result.yaml
+          size_bytes: 505
+          sha256: null
+      CVoiceFake_small:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/CVoiceFake_small/scores.txt
+          size_bytes: 9825996
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/CVoiceFake_small/result.yaml
+          size_bytes: 516
+          sha256: null
+      DeepVoice:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/DeepVoice/scores.txt
+          size_bytes: 234729
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/DeepVoice/result.yaml
+          size_bytes: 744
+          sha256: null
+      InTheWild:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/InTheWild/scores.txt
+          size_bytes: 607043
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/InTheWild/result.yaml
+          size_bytes: 745
+          sha256: null
+      LibriSeVoc:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/LibriSeVoc/scores.txt
+          size_bytes: 811632
+          sha256: null
+        result: null
+      DECRO:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/DECRO/scores.txt
+          size_bytes: 1104711
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/DECRO/result.yaml
+          size_bytes: 737
+          sha256: null
+      XMAD:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/XMAD/scores.txt
+          size_bytes: 22041164
+          sha256: e9757f9c4a893f4491498d49b3c71eae48d746d3b3cc292ea919edbc44f6d909
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/XMAD/result.yaml
+          size_bytes: 737
+          sha256: null
+  W2V2-AASIST:
+    repo_id: SpeechAntiSpoofingBenchmarks/W2V2-AASIST
+    revision: 196128e5a5101d5cb6ac7701597891bc7de7e7b5
+    local_dir: /home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/models/W2V2-AASIST/196128e5a5101d5cb6ac7701597891bc7de7e7b5
+    runtime_files:
+    - path: README.md
+      size_bytes: 11137
+      sha256: null
+    - path: meta.yaml
+      size_bytes: 1752
+      sha256: null
+    score_artifacts:
+      ASVspoof2019_LA:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2019_LA/scores.txt
+          size_bytes: 1630819
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2019_LA/result.yaml
+          size_bytes: 725
+          sha256: null
+      ASVspoof2021_DF:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2021_DF/scores.txt
+          size_bytes: 14053884
+          sha256: b7e6df04da86a6e2df3bd815939e9f382a6f7611bbd3ee6a7111a488ca4016a6
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2021_DF/result.yaml
+          size_bytes: 723
+          sha256: null
+      ASVspoof2021_LA:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2021_LA/scores.txt
+          size_bytes: 4159201
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2021_LA/result.yaml
+          size_bytes: 724
+          sha256: null
+      ASVspoof5:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof5/scores.txt
+          size_bytes: 15641361
+          sha256: e8acb32f9b5558a7d5e90aca933b9497f76c2d06bf1c868f2bd68b582e75b1fd
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof5/result.yaml
+          size_bytes: 711
+          sha256: null
+      CFAD:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/CFAD/scores.txt
+          size_bytes: 4485677
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/CFAD/result.yaml
+          size_bytes: 701
+          sha256: null
+      CVoiceFake_small:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/CVoiceFake_small/scores.txt
+          size_bytes: 9809297
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/CVoiceFake_small/result.yaml
+          size_bytes: 727
+          sha256: null
+      DeepVoice:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/DeepVoice/scores.txt
+          size_bytes: 235269
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/DeepVoice/result.yaml
+          size_bytes: 710
+          sha256: null
+      InTheWild:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/InTheWild/scores.txt
+          size_bytes: 615424
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/InTheWild/result.yaml
+          size_bytes: 712
+          sha256: null
+      LibriSeVoc:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/LibriSeVoc/scores.txt
+          size_bytes: 815159
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/LibriSeVoc/result.yaml
+          size_bytes: 714
+          sha256: null
+      DECRO:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/DECRO/scores.txt
+          size_bytes: 1109270
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/DECRO/result.yaml
+          size_bytes: 703
+          sha256: null
+      XMAD:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/XMAD/scores.txt
+          size_bytes: 22035805
+          sha256: 1b5ad499ee087915757990da5bd86d25bd6bbc4c96716e5f2767ed875fd8edb8
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/XMAD/result.yaml
+          size_bytes: 702
+          sha256: null
+  XLSR-SLS:
+    repo_id: SpeechAntiSpoofingBenchmarks/XLSR-SLS
+    revision: 6b99ebc9d9240571c4fe21b364d49845ce9b6bd9
+    local_dir: /home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/models/XLSR-SLS/6b99ebc9d9240571c4fe21b364d49845ce9b6bd9
+    runtime_files:
+    - path: README.md
+      size_bytes: 11419
+      sha256: null
+    - path: meta.yaml
+      size_bytes: 2088
+      sha256: null
+    score_artifacts:
+      ASVspoof2019_LA:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2019_LA/scores.txt
+          size_bytes: 1699030
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2019_LA/result.yaml
+          size_bytes: 724
+          sha256: null
+      ASVspoof2021_DF:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2021_DF/scores.txt
+          size_bytes: 14652575
+          sha256: 5793cb1d49daa4fecde2fd5855913a65a9cc1a4ddc2ae8eac1eaa3e6711d7da9
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2021_DF/result.yaml
+          size_bytes: 724
+          sha256: null
+      ASVspoof2021_LA:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2021_LA/scores.txt
+          size_bytes: 4334463
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2021_LA/result.yaml
+          size_bytes: 724
+          sha256: null
+      ASVspoof5:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof5/scores.txt
+          size_bytes: 16242879
+          sha256: f361fc2222f69e3671a24d48540d396d63b0ce838a019ad6947a6c0290020533
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof5/result.yaml
+          size_bytes: 499
+          sha256: null
+      CFAD:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/CFAD/scores.txt
+          size_bytes: 4543763
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/CFAD/result.yaml
+          size_bytes: 493
+          sha256: null
+      CVoiceFake_small:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/CVoiceFake_small/scores.txt
+          size_bytes: 9957421
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/CVoiceFake_small/result.yaml
+          size_bytes: 506
+          sha256: null
+      DeepVoice:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/DeepVoice/scores.txt
+          size_bytes: 239079
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/DeepVoice/result.yaml
+          size_bytes: 710
+          sha256: null
+      InTheWild:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/InTheWild/scores.txt
+          size_bytes: 638437
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/InTheWild/result.yaml
+          size_bytes: 710
+          sha256: null
+      LibriSeVoc:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/LibriSeVoc/scores.txt
+          size_bytes: 831435
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/LibriSeVoc/result.yaml
+          size_bytes: 499
+          sha256: null
+      DECRO:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/DECRO/scores.txt
+          size_bytes: 1142470
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/DECRO/result.yaml
+          size_bytes: 702
+          sha256: null
+      XMAD:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/XMAD/scores.txt
+          size_bytes: 22390595
+          sha256: c9ae46f29f8919b1a126c789754aa6cbff74476825b80e788aa0c5479f06c3fd
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/XMAD/result.yaml
+          size_bytes: 702
+          sha256: null
+  RawBMamba:
+    repo_id: SpeechAntiSpoofingBenchmarks/RawBMamba
+    revision: b9c01b62db2dcaed4dc36dc410da3721064b89ad
+    local_dir: /home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/models/RawBMamba/b9c01b62db2dcaed4dc36dc410da3721064b89ad
+    runtime_files: []
+    score_artifacts:
+      ASVspoof2019_LA:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2019_LA/scores.txt
+          size_bytes: 1680829
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2019_LA/result.yaml
+          size_bytes: 505
+          sha256: null
+      ASVspoof2021_DF:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2021_DF/scores.txt
+          size_bytes: 14567233
+          sha256: fdbeae1aa774e83b09272dfa2bb781c15d25d423af2f15cc00745a18802c35ba
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2021_DF/result.yaml
+          size_bytes: 506
+          sha256: null
+      ASVspoof2021_LA:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2021_LA/scores.txt
+          size_bytes: 4287592
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof2021_LA/result.yaml
+          size_bytes: 504
+          sha256: null
+      ASVspoof5:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof5/scores.txt
+          size_bytes: 16276083
+          sha256: 5f2cd987bb8b776aa1c21005cc6ab2c229b04f85fefef7cfaff0ef08070970ab
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/ASVspoof5/result.yaml
+          size_bytes: 499
+          sha256: null
+      CFAD:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/CFAD/scores.txt
+          size_bytes: 4513168
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/CFAD/result.yaml
+          size_bytes: 493
+          sha256: null
+      CVoiceFake_small:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/CVoiceFake_small/scores.txt
+          size_bytes: 9798796
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/CVoiceFake_small/result.yaml
+          size_bytes: 507
+          sha256: null
+      DeepVoice:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/DeepVoice/scores.txt
+          size_bytes: 238296
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/DeepVoice/result.yaml
+          size_bytes: 498
+          sha256: null
+      InTheWild:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/InTheWild/scores.txt
+          size_bytes: 638539
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/InTheWild/result.yaml
+          size_bytes: 497
+          sha256: null
+      LibriSeVoc:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/LibriSeVoc/scores.txt
+          size_bytes: 831739
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/LibriSeVoc/result.yaml
+          size_bytes: 497
+          sha256: null
+      DECRO:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/DECRO/scores.txt
+          size_bytes: 1131078
+          sha256: null
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/DECRO/result.yaml
+          size_bytes: 495
+          sha256: null
+      XMAD:
+        scores:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/XMAD/scores.txt
+          size_bytes: 22236441
+          sha256: e6eaec052f74fda028be185622c44c6b02a4252e5b4f4f086e3dacc68bffe9b6
+        result:
+          path: .eval_results/SpeechAntiSpoofingBenchmarks/XMAD/result.yaml
+          size_bytes: 495
+          sha256: null
+join_policy: Join only by exact utterance/sample identifier after documented normalization;
+  never use ordinal row position or filename heuristics.
+score_policy: Arena per-sample scores and published metrics are authoritative. This
+  project does not rerun baseline inference to reproduce them.
