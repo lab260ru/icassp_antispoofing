@@ -100,6 +100,7 @@ class FixedWindowOnnxRunner:
         raw_scalar_index: int = 1,
         cuda_device_id: int = 0,
         force_cpu: bool = False,
+        allow_cpu_fallback: bool = True,
         session: Any | None = None,
     ) -> None:
         if preprocessing not in PREPROCESSING_CHOICES:
@@ -111,6 +112,7 @@ class FixedWindowOnnxRunner:
         self.raw_scalar_index = raw_scalar_index
         self.cuda_device_id = int(cuda_device_id)
         self.force_cpu = bool(force_cpu)
+        self.allow_cpu_fallback = bool(allow_cpu_fallback)
         self._session = session
         self._using_cpu_fallback = force_cpu
         if self._session is None:
@@ -189,7 +191,7 @@ class FixedWindowOnnxRunner:
             # CUDA can initialise successfully but fail only on first use.  A
             # one-time CPU retry makes the calibration runnable while retaining
             # an explicit provider/fallback record in its compact report.
-            if self.force_cpu or self.provider != "CUDAExecutionProvider":
+            if self.force_cpu or not self.allow_cpu_fallback or self.provider != "CUDAExecutionProvider":
                 raise
             self._using_cpu_fallback = True
             self._session = self._create_session(prefer_cuda=False)
