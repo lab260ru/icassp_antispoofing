@@ -320,6 +320,125 @@ def compress_crest_factor(
     )
 
 
+def _global_spectral_slope_db_per_octave(
+    waveform: np.ndarray,
+    sample_rate: int,
+    minimum_frequency_hz: float,
+    reference_hz: float,
+) -> float:
+    """Estimate a global magnitude slope for tilt diagnostics, not H1 statistics."""
+    spectrum = np.abs(np.fft.rfft(waveform.astype(np.float64))) + EPS
+    frequencies = np.fft.rfftfreq(waveform.size, d=1.0 / sample_rate)
+    mask = (frequencies >= minimum_frequency_hz) & (frequencies <= sample_rate / 2.0)
+    if int(mask.sum()) < 2:
+        return float("nan")
+    positions = np.log2(frequencies[mask] / reference_hz)
+    magnitudes_db = 20.0 * np.log10(spectrum[mask])
+    return float(np.polyfit(positions, magnitudes_db, deg=1)[0])
+
+
+def apply_spectral_tilt(
+    audio: np.ndarray,
+    sample_rate: int,
+    tilt_db_per_octave: float,
+    *,
+    reference_hz: float = 1_000.0,
+    minimum_frequency_hz: float = 125.0,
+    maximum_gain_db: float = 24.0,
+    n_fft: int = 1_024,
+    hop_length: int | None = None,
+    match_integrated_loudness: bool = True,
+) -> TransformResult:
+    """Apply deterministic fixed-phase STFT tilt without resampling.
+
+    Each STFT bin receives a positive real gain proportional to log2(f/ref),
+    so bin phase is retained. Integrated-loudness restoration is scalar and
+    limiter-free; later H2 quality gates remain responsible for rejecting clips
+    with clipping or unacceptable loudness drift.
+    """
+    waveform = _validate_waveform(audio)
+    rate = _validate_sample_rate(sample_rate)
+    tilt = float(tilt_db_per_octave)
+    if not np.isfinite(tilt) or abs(tilt) > 12.0:
+        raise ValueError("tilt_db_per_octave must be finite and within [-12, 12]")
+    if n_fft < 32 or n_fft % 2:
+        raise ValueError("n_fft must be an even integer of at least 32")
+    hop = n_fft // 4 if hop_length is None else int(hop_length)
+    if hop <= 0 or hop > n_fft:
+        raise ValueError("hop_length must be in [1, n_fft]")
+    nyquist = rate / 2.0
+    if not (0.0 < minimum_frequency_hz <= reference_hz < nyquist):
+        raise ValueError("Require 0 < minimum_frequency_hz <= reference_hz < Nyquist")
+    if not np.isfinite(maximum_gain_db) or maximum_gain_db <= 0.0:
+        raise ValueError("maximum_gain_db must be finite and positive")
+    if tilt == 0.0:
+        transformed = waveform.copy()
+    else:
+        # Padding avoids scipy shortening nperseg for short clips and leaves
+        # detector-facing sample count unchanged after the final trim.
+        analysis = waveform if waveform.size >= n_fft else np.pad(waveform, (0, n_fft - waveform.size))
+        frequencies, _, spectrum = signal.stft(
+            analysis.astype(np.float64),
+            fs=rate,
+            window="hann",
+            nperseg=n_fft,
+            noverlap=n_fft - hop,
+            nfft=n_fft,
+            boundary="zeros",
+            padded=True,
+            return_onesided=True,
+        )
+        bounded_frequency = np.maximum(frequencies, minimum_frequency_hz)
+        gain_db = tilt * np.log2(bounded_frequency / reference_hz)
+        gain_db = np.clip(gain_db, -maximum_gain_db, maximum_gain_db)
+        weighted = spectrum * (10.0 ** (gain_db[:, None] / 20.0))
+        _, reconstructed = signal.istft(
+            weighted,
+            fs=rate,
+            window="hann",
+            nperseg=n_fft,
+            noverlap=n_fft - hop,
+            nfft=n_fft,
+            input_onesided=True,
+            boundary=True,
+        )
+        transformed = np.asarray(reconstructed[: waveform.size], dtype=np.float32)
+        if transformed.size != waveform.size:
+            transformed = np.pad(transformed, (0, waveform.size - transformed.size)).astype(np.float32)
+    before = waveform_diagnostics(waveform, rate)
+    unscaled_lufs = _integrated_lufs(transformed, rate)
+    reference_lufs = float(before["integrated_lufs"])
+    loudness_gain_db = 0.0
+    loudness_matched = False
+    if match_integrated_loudness and np.isfinite(reference_lufs) and np.isfinite(unscaled_lufs):
+        loudness_gain_db = float(reference_lufs - unscaled_lufs)
+        transformed = (transformed * (10.0 ** (loudness_gain_db / 20.0))).astype(np.float32)
+        loudness_matched = True
+    input_slope = _global_spectral_slope_db_per_octave(waveform, rate, minimum_frequency_hz, reference_hz)
+    output_slope = _global_spectral_slope_db_per_octave(transformed, rate, minimum_frequency_hz, reference_hz)
+    return _result(
+        "spectral_tilt",
+        waveform,
+        transformed,
+        rate,
+        {
+            "tilt_db_per_octave": tilt,
+            "tilt_reference_hz": float(reference_hz),
+            "tilt_minimum_frequency_hz": float(minimum_frequency_hz),
+            "tilt_maximum_gain_db": float(maximum_gain_db),
+            "tilt_n_fft": int(n_fft),
+            "tilt_hop_length": hop,
+            "tilt_window": "hann",
+            "input_global_spectral_slope_db_per_octave": input_slope,
+            "output_global_spectral_slope_db_per_octave": output_slope,
+            "achieved_global_spectral_tilt_db_per_octave": float(output_slope - input_slope),
+            "loudness_matching_requested": bool(match_integrated_loudness),
+            "loudness_matched": loudness_matched,
+            "loudness_restore_gain_db": loudness_gain_db,
+        },
+    )
+
+
 def apply_first_order_allpass_cascade(
     audio: np.ndarray,
     sample_rate: int,

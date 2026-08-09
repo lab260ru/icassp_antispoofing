@@ -5,6 +5,7 @@ from src.h2_waveform_transforms import (
     apply_first_order_allpass_cascade,
     apply_gain,
     apply_polarity,
+    apply_spectral_tilt,
     compress_crest_factor,
     standardize_endpoint_silence,
 )
@@ -70,6 +71,25 @@ def test_drc_reduces_crest_factor_and_preserves_loudness_diagnostics() -> None:
     assert "loudness_delta_lu" in result.diagnostics
     identity = compress_crest_factor(waveform, SAMPLE_RATE, target_reduction_db=0.0)
     assert np.array_equal(identity.waveform, waveform)
+
+
+def test_spectral_tilt_is_deterministic_float32_and_moves_slope_in_requested_direction() -> None:
+    waveform = np.random.default_rng(2609).normal(0.0, 0.03, size=2 * SAMPLE_RATE).astype(np.float32)
+    plus = apply_spectral_tilt(waveform, SAMPLE_RATE, tilt_db_per_octave=3.0)
+    minus = apply_spectral_tilt(waveform, SAMPLE_RATE, tilt_db_per_octave=-3.0)
+    assert plus.waveform.dtype == np.float32
+    assert plus.waveform.shape == waveform.shape
+    assert np.isfinite(plus.waveform).all()
+    assert plus.diagnostics["tilt_n_fft"] == 1024
+    assert plus.diagnostics["tilt_hop_length"] == 256
+    assert plus.diagnostics["achieved_global_spectral_tilt_db_per_octave"] > 1.5
+    assert minus.diagnostics["achieved_global_spectral_tilt_db_per_octave"] < -1.5
+    identity = apply_spectral_tilt(waveform, SAMPLE_RATE, tilt_db_per_octave=0.0)
+    assert np.array_equal(identity.waveform, waveform)
+    with pytest.raises(ValueError, match="within"):
+        apply_spectral_tilt(waveform, SAMPLE_RATE, tilt_db_per_octave=13.0)
+    with pytest.raises(ValueError, match="Nyquist"):
+        apply_spectral_tilt(waveform, SAMPLE_RATE, tilt_db_per_octave=3.0, reference_hz=8_000.0)
 
 
 def test_allpass_is_stable_and_rejects_unstable_coefficients() -> None:
