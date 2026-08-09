@@ -100,6 +100,9 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
   local Claude CLI is unauthenticated; see
   `paper/reviews/initial_draft/REVIEW_STATUS.md`. Do not pretend a review took
   place. Once authenticated, run a new timestamped paper-review bundle.
+  **Required workflow:** after every modification to `paper/main.tex`, run
+  `cd paper && tectonic --outdir build main.tex`, verify a PDF was written,
+  and commit the refreshed `paper/build/main.pdf` in the same paper commit.
 - **Remote and Telegram:** a credential-free remote is configured, but no
   runtime GitHub or Telegram credential exists. Keep committing locally and
   append milestones to `to_human/pending-notifications.md`; push/send only when
