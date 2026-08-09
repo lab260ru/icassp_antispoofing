@@ -66,6 +66,11 @@
 - Correction: The paper now distinguishes planned confirmatory H2 from the completed 1,000-clip score-blind quality screen, writes DSP sensitivity as waveform-family `T_\theta(x)` rather than an isolated feature intervention, and names the failed frozen `Spectra-AASIST/full-waveform/spoof` candidate. It intentionally excludes the unrelated H2B Q1 quality-only result.
 - Validation: After every `main.tex` edit, `tectonic --outdir build main.tex` was run. The current PDF is readable, four pages, and has Table I on page 2 before the References; no overfull-box or unresolved-citation warning remains.
 
+## 2026-08-09 - H4 score-free label--cue transportability protocol
+
+- Decision: After H2 and H2B quality feasibility failures, broaden only into a classifier-free descriptive question. H4 reads the five existing `v1_28` feature tables and computes feature--label AUROCs, never detector scores or a new H2 candidate.
+- Guardrail: The pre-analysis freeze hashes the exact feature inputs, allows only identity/label/view/feature fields, caps deterministic source IDs by class, and rejects response-like paths and columns. The full 420-cell matrix and 84-unit aggregation are terminal; no post-result ranking or downstream selection is permitted.
+
 ## 2026-08-09 - H2B quality-first outer loop
 
 - Decision: Treat the H2 quality-gate failure as an immutable result boundary. `H2B_QUALITY_FIRST_OUTER_LOOP_PROTOCOL.md` is committed before execution and prohibits reading model scores or detector implementations during transform selection.

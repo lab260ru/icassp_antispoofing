@@ -50,6 +50,11 @@ hypotheses:
     status: q1_complete_no_transform_family_eligible
     motivation: "The original H2 arms failed quality gates, so validity of a cue-directed perturbation must be established independently before a future causal study."
     priority: high
+  - id: H4
+    statement: "Registered waveform features may have corpus-dependent raw label separation even when no detector score is read."
+    status: protocol_locked_pending_score_free_input_freeze
+    motivation: "A descriptive label--cue transportability atlas can contextualize corpus dependence without reopening failed intervention loops."
+    priority: medium
 
 experiments:
   proxy_metric: "Cross-dataset, within-class feature-score association and causal paired score sensitivity; EER for mitigation."
@@ -200,8 +205,8 @@ experiments:
 
 outer_loop:
   cycle: 6
-  last_direction: "conclude_h2b_q1_no_eligible_quality_family"
-  last_reflection: "The five-corpus H1 result remains a conservative negative crest-portability finding, and the original H2 panel remains blocked before scoring. The separate score-blinded H2B Q1 DeepVoice calibration completed all 2,304 pairs under its precommitted finite grid. No non-control arm clears the 0.90 lower-Wilson retention and target-change rule (the closest is -0.5 dB/oct tilt at 0.89624). The selector returns no family. This is a negative feasibility boundary, not a cue/model result: do not tune thresholds or arms, do not start Q2--Q4, and do not change the paper's causal conclusion."
+  last_direction: "score_free_h4_label_cue_transportability_protocol_locked"
+  last_reflection: "The five-corpus H1 result remains a conservative negative crest-portability finding, and the original H2 panel remains blocked before scoring. The separate score-blinded H2B Q1 DeepVoice calibration completed all 2,304 pairs under its precommitted finite grid. No non-control arm clears the 0.90 lower-Wilson retention and target-change rule (the closest is -0.5 dB/oct tilt at 0.89624). The selector returns no family. This is a negative feasibility boundary, not a cue/model result. A separate H4 protocol is now locked: it reads only existing response-free H1 feature products to describe five-corpus label--cue transportability. It cannot rank features into H1/H2/H2B/H3 or read detector scores."
   pivot_policy: "After the first association/intervention matrix or five completed runs, choose deepen, broaden, pivot, or conclude and record the evidence."
 
 workspace:
