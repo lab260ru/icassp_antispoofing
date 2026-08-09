@@ -1,0 +1,2 @@
+dataset,model,view,feature,class_label,selection_status,selection_split,selection_basis,frozen_at_utc
+ASVspoof5,Spectra-AASIST,full_waveform,crest_factor_db,1,frozen,discovery,experiments/h1_feature_association/DISCOVERY_TO_H2_FREEZE.md,2026-08-09T20:17:11Z
