@@ -19,6 +19,10 @@ transformation. Only the last supports a shortcut-sensitivity claim.
   exactly to ASVspoof 2019 LA labels. The stored score is increasing bonafide
   evidence, so analysis uses its negation as spoof evidence. This establishes a
   valid artifact interface, not a feature or causal result.
+- Feature-pipeline validation: the v1_28 registry extracted complete
+  non-voice descriptors and 95% voice-quality coverage over 200 balanced
+  ASVspoof 2019 LA samples and three views. Missing unvoiced measures will be
+  modeled explicitly rather than filled with zeros.
 
 ## Patterns and Insights
 

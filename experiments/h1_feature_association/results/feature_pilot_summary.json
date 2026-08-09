@@ -1,0 +1,12 @@
+{
+  "dataset": "ASVspoof2019_LA",
+  "dataset_revision": "9492c4a85ad91508b6da03c92c98c58aeaa02424",
+  "feature_version": "v1_28",
+  "sample_mode": "pilot",
+  "n_selected_samples": 200,
+  "n_feature_rows": 600,
+  "views": ["full_waveform", "deterministic_crop", "preemphasized_crop"],
+  "label_counts": {"bonafide": 100, "spoof": 100},
+  "max_voice_quality_missing_fraction": 0.05,
+  "duplicate_sample_view_keys": 0
+}

@@ -37,7 +37,7 @@ experiments:
   proxy_metric: "Cross-dataset, within-class feature-score association and causal paired score sensitivity; EER for mitigation."
   baseline_value: null
   best_value: null
-  total_runs: 1
+  total_runs: 2
   trajectory:
     - run_id: run_001
       hypothesis: H1
@@ -45,6 +45,13 @@ experiments:
       delta: null
       wall_time_min: 0.1
       change_summary: "Validated exact score-label join coverage for Spectra-AASIST on ASVspoof2019_LA."
+      timestamp: "2026-08-09"
+    - run_id: run_002
+      hypothesis: H1
+      metric_value: 0.95
+      delta: null
+      wall_time_min: null
+      change_summary: "Validated 28-feature extraction over three waveform views; 95% voice-quality feature availability."
       timestamp: "2026-08-09"
 
 outer_loop:

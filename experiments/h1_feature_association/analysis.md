@@ -18,3 +18,19 @@ Spectra-AASIST. It does not yet support a feature-reliance or causal claim.
 
 Next: complete the 200-utterance audio-feature pipeline pilot, then ingest the
 remaining published score panel and run the locked full H1 extraction.
+
+## run_002 — feature-pipeline pilot
+
+**Type:** implementation validation; not a test of H1.
+
+- Input: deterministic 100-per-class ASVspoof 2019 LA sample selected solely
+  from the pinned labels table.
+- Output: 600 feature rows, covering all 200 samples across the full-waveform,
+  deterministic-crop, and pre-emphasized-crop views.
+- Integrity: no duplicate `(sample_id, view)` keys; all non-voice features had
+  zero missingness; voice-quality features were missing on 5% of records, which
+  is retained as missing rather than imputed.
+
+The data schema, FLAC decoding, resampling, view generation, and frozen
+feature registry are operational. Full confirmatory ASVspoof 2019 LA extraction
+can begin without changing H1 definitions.
