@@ -78,3 +78,36 @@ in batches of 32 rather than creating 210,000 pandas resample frames. With the
 maximum 5,000 source clusters per label, expect the complete run to take
 minutes to hours depending on finite rows and number of recordings per source.
 It does not use GPU, ASR, audio decoding, model inference, or training.
+
+## 3. Render the completed atlas heatmap
+
+Only after a complete H4 analysis has materialized all 420 successful cells
+and 84 aggregation units, render the supplementary figure from those two CSV
+outputs. The plotting command does not accept a feature table, audio location,
+score catalog, model path, or source-data directory.
+
+```bash
+PYTHONPATH=. python3 scripts/plot_h4_label_cue_heatmap.py \
+  --matrix /home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/runs/h4_label_transportability/h4_analysis_001/h4_label_cue_matrix.csv \
+  --aggregation /home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/runs/h4_label_transportability/h4_analysis_001/h4_label_cue_aggregation.csv \
+  --output-dir /home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/runs/h4_label_transportability/h4_analysis_001/figures
+```
+
+The plotting validator requires the exact compact filenames, absolute safe
+paths, all 420 unique `dataset × view × feature` cells with `cell_status=ok`,
+finite `delta_auc` values, and the exact matching 84 aggregation units. It
+reads only the plotting columns after rejecting response-like CSV headers.
+Failures are refused rather than drawn as values.
+
+It exports:
+
+- `h4_label_cue_delta_auc_heatmap.pdf` — vector heatmap suitable for the
+  supplementary material;
+- `h4_label_cue_delta_auc_heatmap.png` — 300-DPI raster copy.
+
+The three panels contain every registered feature in each waveform view and
+the five corpora. A fixed blue--neutral--orange, colorblind-aware diverging
+scale depicts signed raw-orientation `delta_auc`; small green squares mark
+only units meeting the locked **atlas-only stable label association** rule.
+That marker is descriptive and explicitly not a detector candidate, ranking,
+or feature-selection signal.
