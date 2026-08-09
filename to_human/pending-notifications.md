@@ -72,3 +72,10 @@ ordering on a frozen 128-clip calibration set: AASIST uses raw waveform input
 0.999971). This is only a baseline-parity gate, not an intervention result. H2
 still waits for the H1 candidate freeze, ASR WER quality gate, and a complete
 four-model scorer panel.
+
+## 2026-08-09 — validated H2 inference settings
+
+On the frozen parity set, the CUDA batch sweep selected initial model-specific
+settings: Spectra-AASIST batch 8 (236.32 clips/s) and AASIST batch 2 (333.44
+clips/s). These are stored as H2 inference engineering measurements; they do
+not replace the separate BF16 batch/worker sweep required if H3 training starts.
