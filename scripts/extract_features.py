@@ -8,9 +8,14 @@ import json
 from collections.abc import Iterable
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
+import sys
 
 import pandas as pd
 import yaml
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 from src.arena_io import AudioRecord, decode_audio, deterministic_balanced_subset, iter_selected_audio, load_labels
 from src.audio_features import FEATURE_NAMES, FEATURE_VERSION, compute_features, waveform_views
@@ -66,7 +71,8 @@ def main() -> None:
         else:
             selected = deterministic_balanced_subset(labels, 0, args.pilot_per_label, config["study"]["seed"])
             sample_mode = "pilot"
-        target_dir = output_root / FEATURE_VERSION / dataset_name
+        artifact_version = FEATURE_VERSION if args.pilot_per_label is None else f"{FEATURE_VERSION}_pilot_{args.pilot_per_label}_per_label"
+        target_dir = output_root / artifact_version / dataset_name
         target_dir.mkdir(parents=True, exist_ok=True)
         selected.to_parquet(target_dir / "selected_manifest.parquet", index=False)
         records = iter_selected_audio(dataset, selected)
