@@ -185,7 +185,15 @@ def analyze_dataset(dataset: str, features: pd.DataFrame, scores: pd.DataFrame) 
     association_rows: list[dict[str, object]] = []
     for view, view_features in features.groupby("view", sort=True):
         for feature in FEATURE_NAMES:
-            data = view_features[["sample_id", "label", feature]].dropna()
+            # Some ratios are mathematically unbounded for a silent or
+            # zero-energy band.  Keep the diagnostic AUROC aligned with the
+            # association estimators below: use only finite feature values,
+            # while preserving the resulting finite-row count in ``n``.
+            data = (
+                view_features[["sample_id", "label", feature]]
+                .replace([np.inf, -np.inf], np.nan)
+                .dropna()
+            )
             if data["label"].nunique() == 2:
                 auc = roc_auc_score(data["label"], data[feature])
                 label_rows.append({
