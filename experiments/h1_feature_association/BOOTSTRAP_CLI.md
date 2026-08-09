@@ -26,3 +26,8 @@ rtk python3 scripts/analyze_associations.py \
 The manifest-selected output is
 `association_confirmation_bootstrap.csv`; its valid and invalid replicate
 counts are reported separately for raw and partial Spearman estimates.
+
+For the registered held-out corpora, do not copy or edit discovery candidate
+rows manually. Use `CONFIRMATION_CANDIDATE_DECLARATION.md` to create a
+declaration-only target manifest with a source-manifest hash before reading or
+interpreting the target screen.
