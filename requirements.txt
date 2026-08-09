@@ -11,3 +11,4 @@ tqdm>=4.66
 arxiv>=2.1
 semanticscholar>=0.10
 pytest>=8.0
+pypdf>=6.0

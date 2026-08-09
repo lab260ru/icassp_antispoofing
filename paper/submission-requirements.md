@@ -33,3 +33,11 @@ not evidence that the working IEEEtran copy is the eventual conference kit.
 - Run the final PDF through the then-current IEEE/ICASSP compliance checker;
   the conference editorial policy says submissions receive template and
   paper-length checks.
+
+## Local static readiness check
+
+`scripts/check_paper_pdf.py` supplies a reproducible, deliberately narrower
+preflight for the current anonymous working draft. It confirms the four-page
+target, Table I/References landmarks, embedded fonts, empty `/Author` metadata,
+and no selected project-identifying strings in rendered text. The current PDF
+passes this check; usage and its limits are in `SUBMISSION_READINESS.md`.

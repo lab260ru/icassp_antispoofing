@@ -4,6 +4,10 @@
 
 - Readable four-page ICASSP working draft: `paper/build/main.pdf`, rebuilt
   from `paper/main.tex` and tracked with its source.
+- Reproducible static PDF preflight: it confirms four pages, Table I/References
+  landmarks, embedded fonts, anonymous `/Author` metadata, and no selected
+  project-identifying strings. It is not a substitute for the official
+  conference template or PDF eXpress.
 - Complete five-corpus H1 association audit: the pre-frozen crest candidate
   is not portable in confirmation, while 19 fixed-rule registry entries remain
   descriptive rather than new candidates.

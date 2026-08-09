@@ -12,8 +12,9 @@ Executed from the repository root:
 PYTHONPATH=. python3 -m pytest -q
 ```
 
-Result: **79 passed in 6.45s**. `git diff --check` also completed without
-whitespace errors.
+Initial verification passed **79 tests in 6.45s**. After adding the static PDF
+preflight, the complete suite passed **82 tests in 6.47s**.
+`git diff --check` also completed without whitespace errors.
 
 ## Paper build
 
@@ -31,6 +32,18 @@ Result: success. The refreshed, tracked readable artifact is
 `pypdf` extraction verifies four pages, Table I on page 2, and References
 starting on page 3. The generated bibliography has seven `\bibitem` entries;
 the build has no unresolved-citation marker.
+
+The reproducible static check below passes on the same PDF. It verifies
+embedded fonts, an empty `/Author` field, and no selected project-identifying
+text in addition to the page/layout landmarks; it is explicitly not an IEEE
+PDF eXpress or official ICASSP-template replacement.
+
+```bash
+PYTHONPATH=. python3 scripts/check_paper_pdf.py --pdf paper/build/main.pdf
+```
+
+The passing report records 16 embedded font resources, no forbidden-text hit,
+and no local readiness error.
 
 ## Research boundary checks
 

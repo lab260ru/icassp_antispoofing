@@ -107,3 +107,9 @@
 
 - Rebuilt `paper/main.tex` after clearing only ignored TeX intermediates. The refreshed tracked `paper/build/main.pdf` has four pages; extracted text places Table I on page 2 and References on page 3. The generated bibliography contains seven entries.
 - Validation: `PYTHONPATH=. python3 -m pytest -q` passed all 79 tests in 6.45 seconds. The durable command/output, PDF SHA-256, and delivery constraints are recorded in `verification/FINAL_VERIFICATION_20260809.md`.
+
+## 2026-08-09 - Static anonymous-PDF readiness preflight
+
+- Implementation: `src/paper_pdf_checks.py` and `scripts/check_paper_pdf.py` make the current working-draft handoff independently checkable without relying on absent `pdfinfo`/`pdffonts` binaries. The test suite covers passing, identity/metadata/font failures, missing files, and invalid page targets.
+- Validation: The refreshed PDF passes with four pages, Table I on page 2, References on page 3, 16 embedded font resources, empty `/Author` metadata, and no selected identity-string hit. The full repository suite is now 82 passed in 6.47 seconds.
+- Boundary: This preflight is not a substitute for the official ICASSP 2027 archive, submission portal, or IEEE PDF eXpress; those remain external final-submission steps.

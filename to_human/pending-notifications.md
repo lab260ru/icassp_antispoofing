@@ -207,8 +207,9 @@ this update when Telegram credentials are available.
 ## 2026-08-09 — final local initial-package handoff
 
 The current working draft was rebuilt from clean TeX intermediates and is a
-readable four-page PDF (Table I page 2; References begin page 3); all 79 local
-tests passed. `to_human/FINAL_HANDOFF_20260809.md` and
+readable four-page PDF (Table I page 2; References begin page 3); all 82 local
+tests passed. The new static preflight also verifies embedded fonts and
+anonymous PDF metadata. `to_human/FINAL_HANDOFF_20260809.md` and
 `verification/FINAL_VERIFICATION_20260809.md` identify the exact evidence,
 negative-result boundaries, and safe continuation conditions. The required
 paper-review launcher was executed but remains unauthenticated, so no review
