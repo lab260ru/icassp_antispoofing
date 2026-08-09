@@ -26,8 +26,8 @@ literature:
     - "Whether score-feature correlations survive within-class, cross-dataset, and causal tests."
     - "Whether robust feature conditioning improves OOD generalization without creating a new shortcut."
   evidence_gaps:
-    - "No H2 paired detector-score result exists until the running detector-free quality panel is complete, frozen, and scored."
-    - "The three-runnable-model H2 panel remains insufficient for the registered four-model causal criterion."
+    - "The original H2 panel completed quality screening but failed its locked 90% per-arm retention gate; it has no score-eligible manifest or paired detector-score result."
+    - "Any future H2 study requires a new outer-loop protocol, score-independent freeze, validated quality-preserving arm family, and a fourth runnable scorer for the registered four-model causal criterion."
 
 hypotheses:
   - id: H1
@@ -180,9 +180,9 @@ experiments:
       timestamp: "2026-08-09"
 
 outer_loop:
-  cycle: 3
-  last_direction: "pivot_toward_negative_crest_result_and_association_atlas"
-  last_reflection: "Five explicit H1 tables complete the configured aggregate. The discovery-frozen Spectra crest candidate is directionally negative in four of five corpora but fails both-confirmation requirements because its ASVspoof5 adjusted estimate is null. Nineteen other registered feature/view/class units meet the descriptive five-corpus association rule, but confirmation outcomes cannot trigger post-hoc H2 expansion. The pre-frozen exploratory crest H2 panel is now also blocked before scoring: DRC and gain arms miss the locked 90% waveform-quality retention gate. The paper should present this as a rigor-preserving negative result, not loosen a threshold or claim causal sensitivity."
+  cycle: 4
+  last_direction: "conclude_current_h2_panel_and_preserve_future_outer_loop"
+  last_reflection: "Five explicit H1 tables complete the configured aggregate. The discovery-frozen Spectra/spoof crest candidate fails both-confirmation requirements because its ASVspoof5 adjusted estimate is null. A different bona-fide/full-waveform crest unit is descriptive only and must not be substituted into H2. Nineteen other registered feature/view/class units meet the descriptive five-corpus association rule, but confirmation outcomes cannot trigger post-hoc H2 expansion. The pre-frozen exploratory crest H2 panel is blocked before scoring: DRC and gain arms miss the locked 90% waveform-quality retention gate. The paper should report this as a rigor-preserving negative result, not loosen a threshold or claim causal sensitivity. A subsequent H2 requires a new protocol and an independently score-frozen quality-preserving arm family."
   pivot_policy: "After the first association/intervention matrix or five completed runs, choose deepen, broaden, pivot, or conclude and record the evidence."
 
 workspace:

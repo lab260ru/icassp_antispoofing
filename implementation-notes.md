@@ -53,3 +53,9 @@
 
 - Validation: Extracted 16,337 characters from the compiled four-page PDF and launched the mandatory three-reviewer `paper-review` panel with the requested stagger (0/10/20 seconds).
 - Constraint: Every reviewer exited with `Not logged in · Please run /login`; the bundle contains only these authentication failures, no verdicts or review content. Do not represent the updated paper as peer reviewed.
+
+## 2026-08-09 - Evidence-conservative paper audit
+
+- Validation: An internal claim-to-artifact audit in `paper/reviews/five_corpus_h2_quality_20260809/INTERNAL_EVIDENCE_AUDIT.md` maps the paper's central matrix count, crest estimates, 19-unit registry count, and H2 quality-gate disposition to committed result files and their recorded hashes. It is not an external review or an ARA Seal assessment.
+- Correction: The draft no longer says held-out confirmation is pending. It now distinguishes the frozen spoof/full-waveform crest candidate (not portable and blocked before H2 scoring) from the different bona-fide/full-waveform crest-factor unit that meets only the descriptive H1 rule. The latter must not be retroactively substituted into H2.
+- Validation: Every `main.tex` revision is compiled with the repository-pinned template. The current `paper/build/main.pdf` is readable and four pages; Tectonic only reports known underfull-box and bibliography-rerun warnings.

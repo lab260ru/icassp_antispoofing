@@ -98,8 +98,13 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
 - **Paper draft:** `paper/main.tex` compiles with
   `tectonic --outdir build main.tex` from `paper/`. Track the source, citation
   ledger, and `paper/build/main.pdf`; ignore build intermediates. The compiled
-  IEEE-style initial draft reports only the first discovery observation and its
-  limitations, plus source-verified cross-dataset context.
+  IEEE-style initial draft reports the completed five-corpus H1 analysis, its
+  descriptive association atlas, and the H2 quality-gate failure, without a
+  causal score claim. `paper/reviews/five_corpus_h2_quality_20260809/`
+  contains an internal claim-to-artifact audit, not peer review. The
+  spoof-class frozen crest candidate fails portability; a separate
+  bona-fide/full-waveform crest slice appears in the descriptive atlas and
+  must never be substituted into H2 post hoc.
   The required three-reviewer launcher was attempted for both the initial and
   updated drafts but blocked because the local Claude CLI is unauthenticated;
   see `paper/reviews/initial_draft/REVIEW_STATUS.md` and
