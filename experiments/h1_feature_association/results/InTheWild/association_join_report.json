@@ -1,0 +1,18 @@
+[
+  {
+    "dataset": "InTheWild",
+    "n_feature_samples": 31779,
+    "n_joined_per_model": {
+      "AASIST": 95337,
+      "RawBMamba": 95337,
+      "RawTFNet": 95337,
+      "Res2TCNGuard": 95337,
+      "Spectra-AASIST": 95337,
+      "W2V2-AASIST": 95337,
+      "WhisperMFCCMesoNet": 95337,
+      "XLSR-SLS": 95337
+    },
+    "n_models": 8,
+    "n_score_rows": 254232
+  }
+]
