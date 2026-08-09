@@ -59,3 +59,9 @@
 - Validation: An internal claim-to-artifact audit in `paper/reviews/five_corpus_h2_quality_20260809/INTERNAL_EVIDENCE_AUDIT.md` maps the paper's central matrix count, crest estimates, 19-unit registry count, and H2 quality-gate disposition to committed result files and their recorded hashes. It is not an external review or an ARA Seal assessment.
 - Correction: The draft no longer says held-out confirmation is pending. It now distinguishes the frozen spoof/full-waveform crest candidate (not portable and blocked before H2 scoring) from the different bona-fide/full-waveform crest-factor unit that meets only the descriptive H1 rule. The latter must not be retroactively substituted into H2.
 - Validation: Every `main.tex` revision is compiled with the repository-pinned template. The current `paper/build/main.pdf` is readable and four pages; Tectonic only reports known underfull-box and bibliography-rerun warnings.
+
+## 2026-08-09 - H2B quality-first outer loop
+
+- Decision: Treat the H2 quality-gate failure as an immutable result boundary. `H2B_QUALITY_FIRST_OUTER_LOOP_PROTOCOL.md` is committed before execution and prohibits reading model scores or detector implementations during transform selection.
+- Design: Q1 is a finite, mild transform-family quality calibration on a score-blinded 256-clip manifest. It uses a lower Wilson retention bound, measured target-feature change, and WER as a lexicographic selection rule; Q2 then confirms the chosen arm on an independently frozen multi-corpus panel.
+- Guardrail: A future H2B causal score study still needs an independently declared H1 candidate and four parity-validated runners. Current H1 atlas units and the failed H2 crest candidate are background, never H2B selections.

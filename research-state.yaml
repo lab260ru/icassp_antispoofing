@@ -45,6 +45,11 @@ hypotheses:
     status: pending
     motivation: "The audit should yield an actionable robustness intervention when evidence supports one."
     priority: medium
+  - id: H2B
+    statement: "A separately calibrated, score-blinded waveform transformation family can meet the strict paired quality contract before any detector is allowed to score it."
+    status: protocol_locked_not_executed
+    motivation: "The original H2 arms failed quality gates, so validity of a cue-directed perturbation must be established independently before a future causal study."
+    priority: high
 
 experiments:
   proxy_metric: "Cross-dataset, within-class feature-score association and causal paired score sensitivity; EER for mitigation."
@@ -180,9 +185,9 @@ experiments:
       timestamp: "2026-08-09"
 
 outer_loop:
-  cycle: 4
-  last_direction: "conclude_current_h2_panel_and_preserve_future_outer_loop"
-  last_reflection: "Five explicit H1 tables complete the configured aggregate. The discovery-frozen Spectra/spoof crest candidate fails both-confirmation requirements because its ASVspoof5 adjusted estimate is null. A different bona-fide/full-waveform crest unit is descriptive only and must not be substituted into H2. Nineteen other registered feature/view/class units meet the descriptive five-corpus association rule, but confirmation outcomes cannot trigger post-hoc H2 expansion. The pre-frozen exploratory crest H2 panel is blocked before scoring: DRC and gain arms miss the locked 90% waveform-quality retention gate. The paper should report this as a rigor-preserving negative result, not loosen a threshold or claim causal sensitivity. A subsequent H2 requires a new protocol and an independently score-frozen quality-preserving arm family."
+  cycle: 5
+  last_direction: "quality_first_h2b_protocol_locked"
+  last_reflection: "Five explicit H1 tables complete the configured aggregate. The discovery-frozen Spectra/spoof crest candidate fails both-confirmation requirements because its ASVspoof5 adjusted estimate is null. A different bona-fide/full-waveform crest unit is descriptive only and must not be substituted into H2. Nineteen other registered feature/view/class units meet the descriptive five-corpus association rule, but confirmation outcomes cannot trigger post-hoc H2 expansion. The pre-frozen exploratory crest H2 panel is blocked before scoring: DRC and gain arms miss the locked 90% waveform-quality retention gate. H2B is now protocol-locked as a score-blinded quality-first feasibility loop with a disjoint calibration/confirmation design; it is not executed and cannot yet change the paper's causal conclusion."
   pivot_policy: "After the first association/intervention matrix or five completed runs, choose deepen, broaden, pivot, or conclude and record the evidence."
 
 workspace:

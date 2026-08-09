@@ -95,6 +95,13 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
   implied. Read `H2_QUALITY_GATE_CORRECTION.md` before resuming H2. Res2
   source-PyTorch batch 2 is the recorded initial setting (198.09 clips/s); read
   `H2_THROUGHPUT_RUN_002_RES2TCNGUARD.md`.
+- **Next H2 direction:** Read
+  `experiments/future_directions/H2B_QUALITY_FIRST_OUTER_LOOP_PROTOCOL.md`
+  before starting a new intervention. It is a protocol-locked, **unexecuted**
+  score-blinded quality-feasibility study, not a repair of the failed H2 panel.
+  Do not access scores/detectors during Q0--Q2, do not reuse the current
+  five-corpus atlas to choose H2B's cue, and do not run Q4 without a fourth
+  parity-validated scorer.
 - **Paper draft:** `paper/main.tex` compiles with
   `tectonic --outdir build main.tex` from `paper/`. Track the source, citation
   ledger, and `paper/build/main.pdf`; ignore build intermediates. The compiled

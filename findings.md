@@ -73,6 +73,12 @@ quality-frozen paired detector intervention can test that third question.
   This is evidence that the registered transformations are incompatible with
   the content/loudness/clipping gate at this setting, not evidence about model
   sensitivity.
+- H2B protocol: a separate outer loop is committed to establish transform
+  feasibility before detector scoring. It score-blinds a finite mild
+  endpoint-silence, spectral-tilt, all-pass, and negative-control grid on an
+  independent calibration source, selects only by a strict retention-bound /
+  target-change / WER rule, and then confirms the selection on a new panel.
+  It is a future protocol, not a result.
 
 ## Patterns and Insights
 
@@ -99,6 +105,9 @@ baseline reproduction.
 - H2 must retain its model-specific parity contract: raw AASIST and
   pre-emphasized Spectra inputs are not interchangeable, and no transformed
   waveform can be scored until the same contract is applied.
+- A failed quality gate is an experiment boundary. A revised arm family needs
+  a new protocol, a disjoint score-blinded calibration cohort, and a fresh
+  quality-confirmation freeze; it cannot inherit the completed H2 panel.
 
 ## Open Questions
 
@@ -109,6 +118,9 @@ baseline reproduction.
   a future test would require a new, independently frozen outer-loop protocol.
 - Is the strongest paper a principled negative crest-factor result plus an
   architecture-sensitivity atlas rather than a mitigation story?
+- Can any mild, cue-directed transformation family clear the quality-first H2B
+  gate on a disjoint public waveform source without causing material collateral
+  feature changes?
 
 ## Optimization Trajectory
 
