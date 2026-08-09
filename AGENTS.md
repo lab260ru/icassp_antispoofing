@@ -104,8 +104,12 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
   parity-validated scorer.
   Q0 is now complete: read
   `experiments/future_directions/results/H2B_Q0_RUN_001.md` and consume only
-  its 256-row DeepVoice manifest for the next Q1 implementation. Q1 has not
-  decoded audio and no H2B quality or detector result exists.
+  its 256-row DeepVoice manifest for the next Q1 implementation. The
+  detector-free Q1 run `h2b_q1_deepvoice_001` is currently active under
+  `/home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/runs/h2b_quality_calibration/`.
+  **Do not start a second process or inspect partial rows as a result.** Wait
+  for all 2,304 immutable pair checkpoints and the Q1 summary, then run the
+  committed quality-only selector. No H2B detector result exists.
 - **Paper draft:** `paper/main.tex` compiles with
   `tectonic --outdir build main.tex` from `paper/`. Track the source, citation
   ledger, and `paper/build/main.pdf`; ignore build intermediates. The compiled

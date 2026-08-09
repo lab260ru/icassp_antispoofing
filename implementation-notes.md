@@ -71,3 +71,8 @@
 - Validation: Downloaded the 550.5 MB public DeepVoice dataset at its declared Arena revision to the HDD and confirmed labels SHA-256 against `data/arena-index.yaml`. It has 5,053 label rows (628 label-0, 4,425 label-1) and no score-like file in the downloaded tree.
 - Implementation: The H2 input-CSV writer now records a byte hash for its emitted CSV. `src/h2b_score_blind_manifest.py` requires that byte-bound, label-only provenance, rechecks the declared dataset/revision, uses stable per-label SHA-256 selection, and writes non-overwritable Q0 artifacts. Focused tests (`13 passed`) cover successful freeze, substitution and provenance rejection, and output byte binding.
 - Result: `h2b_q0_deepvoice_001` froze exactly 128 DeepVoice IDs per label (`256` total) under seed 2609. It does not decode audio or authorize Q1/Q4 scoring. Its artifact note contains all compact hashes.
+
+## 2026-08-09 - H2B Q1 active detector-free quality calibration
+
+- Protocol/implementation: The Q1 arm manifest was committed before execution: fixed-length endpoint zeroing, mild signed spectral tilts, mild all-pass cascades, and two controls. The runner validates Q0/Q1 hashes, has no detector callback, and writes immutable pair/transcript checkpoints on the HDD. A subsequent lock fix prevents any future duplicate Q1 writer.
+- Runtime: `h2b_q1_deepvoice_001` is executing the complete 256 × 9 = 2,304 pair calibration on physical GPU 3 (logical Whisper `cuda:0`). Treat all current partial checkpoint rows as in-progress runtime state only. Do not derive an arm rate or run the selector until the full table and its finalized detector-free summary exist.

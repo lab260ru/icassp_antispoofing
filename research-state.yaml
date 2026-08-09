@@ -47,7 +47,7 @@ hypotheses:
     priority: medium
   - id: H2B
     statement: "A separately calibrated, score-blinded waveform transformation family can meet the strict paired quality contract before any detector is allowed to score it."
-    status: q0_score_blind_deepvoice_manifest_frozen
+    status: q1_detector_free_quality_calibration_running
     motivation: "The original H2 arms failed quality gates, so validity of a cue-directed perturbation must be established independently before a future causal study."
     priority: high
 
