@@ -34,7 +34,9 @@
    generic IEEE ZIP link currently receives a CloudFront WAF challenge from
    this runtime, so it could not be fetched for comparison.
 3. Provide a configured GitHub credential to push
-   `research/icassp-signal-audit`; no remote state was assumed.
+   `research/icassp-signal-audit`; no remote state was assumed. A verified,
+   complete-history HDD Git-bundle backup is recorded in
+   `to_human/GIT_BUNDLE_HANDOFF_20260809.md`, but it is not a remote push.
 4. Provide a Telegram credential through the environment if queued progress
    updates should be sent. `to_human/TELEGRAM_DELIVERY.md` provides an
    explicit one-message sender; never place a credential in this repository.

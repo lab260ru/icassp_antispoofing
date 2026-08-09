@@ -71,4 +71,6 @@ post-author-policy PDF, but the Claude CLI was unauthenticated, so no reviewer
 verdict exists. Remote push and Telegram notifications require credentials not
 present in the environment; queued user-facing updates are in
 `to_human/pending-notifications.md`, with a one-message delivery playbook in
-`to_human/TELEGRAM_DELIVERY.md`.
+`to_human/TELEGRAM_DELIVERY.md`. A verified complete-history Git-bundle backup
+exists on the HDD; its SHA-256 and restore command are in
+`to_human/GIT_BUNDLE_HANDOFF_20260809.md`. It is not a remote push.

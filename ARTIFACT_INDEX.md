@@ -63,6 +63,7 @@ The most recent recorded full suite is 87 passed. `verification/FINAL_VERIFICATI
 ## External delivery and resume blockers
 
 - GitHub push: requires `GH_TOKEN` or `GITHUB_TOKEN` in the environment; do not put a credential in files, history, or commands.
+- Portable backup while push is blocked: `to_human/GIT_BUNDLE_HANDOFF_20260809.md` records the verified complete-history HDD bundle and restoration command. It is not a GitHub delivery.
 - Telegram milestone delivery: requires `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID`; messages are queued in `to_human/pending-notifications.md` and can be listed/sent one-at-a-time through `to_human/TELEGRAM_DELIVERY.md`.
 - Paper review: authenticate the local Claude CLI, then launch a new timestamped three-reviewer bundle and address any findings.
 - Template reconciliation: obtain an approved ICASSP-2027 or official generic IEEE archive from an accessible route, hash/compare it to the pinned files, rebuild, rerun the static preflight, and use the official conference checker.

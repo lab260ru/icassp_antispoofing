@@ -176,6 +176,9 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
   `paper/submission-requirements.md`, but direct download from this runtime gets
   a CloudFront HTTP-202 WAF challenge. Do not substitute an unverified mirror:
   obtain an approved archive, hash/compare it, then reconcile and rebuild.
+  A complete-history Git bundle is available on the HDD for offline recovery;
+  its hash and restore command are in `to_human/GIT_BUNDLE_HANDOFF_20260809.md`.
+  It does not replace the required eventual normal push.
 
 ## Artifact locations
 

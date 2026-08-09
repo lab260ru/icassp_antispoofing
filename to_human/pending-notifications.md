@@ -244,3 +244,11 @@ local Claude CLI is not authenticated. The current bundle is preserved in
 `paper/reviews/post_author_policy_20260809/`; no peer-review verdict is
 claimed. Authenticate the local reviewer runtime to unblock a substantive
 review.
+
+## 2026-08-09 — portable repository backup
+
+While GitHub authentication remains unavailable, a complete-history Git bundle
+of `research/icassp-signal-audit` was created and verified on the HDD. Its
+SHA-256, exact head, and restore command are in
+`to_human/GIT_BUNDLE_HANDOFF_20260809.md`. This is a resilience backup only;
+the branch still needs a normal authorized GitHub push.

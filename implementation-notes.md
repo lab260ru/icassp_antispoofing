@@ -145,3 +145,8 @@
 - Implementation: `src/telegram_delivery.py` and `scripts/send_pending_telegram.py` parse only level-two queued Markdown sections. Listing is network-free; delivery requires an explicit latest or exact-heading action plus both environment variables, and sends exactly one bounded plain-text message.
 - Validation: Pure parser/API tests cover ordering, exact selection, empty/oversized rejection, non-success API responses, and a redacted receipt. The command lists all 25 current queued milestones without credentials or a network call.
 - Boundary: The utility does not read/store/print a token or chat ID, and it must not be used to send all historical messages at once. `to_human/TELEGRAM_DELIVERY.md` is the operational handoff.
+
+## 2026-08-09 - Offline Git delivery backup
+
+- Execution: Created `/home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/handoffs/git-bundles/icassp_antispoofing_20260809T235303Z.bundle` from the local research branch. `git bundle verify` reports complete history at `55e50e8427a7bb845bfc8ecda0d2194878d76bd6`; SHA-256 is `80ce7fc0954c83202b4c5a1ac493c19e3894d68b180201686238328e8dbe9777`.
+- Boundary: The bundle is stored on the designated HDD, not Git, and is only a portable recovery artifact. It neither contacts GitHub nor satisfies the requested remote push. The restoration/push steps are in `to_human/GIT_BUNDLE_HANDOFF_20260809.md`.
