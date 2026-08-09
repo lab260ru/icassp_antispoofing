@@ -65,8 +65,17 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
   gates or supply any causal evidence. The first 1,000-row ASVspoof2019
   score-blind pair panel and its four-arm ledger are frozen in
   `results/pre_score/h2_crest_pre_score_001_20260809T205114Z/`; quality rows
-  have not yet been generated. Res2 source-PyTorch batch 2 is the recorded
-  initial setting (198.09 clips/s); read `H2_THROUGHPUT_RUN_002_RES2TCNGUARD.md`.
+  from a complete valid panel do not yet exist. `h2_quality_full_001` was
+  deliberately stopped after 133/4,000 detector-free pair checkpoints because
+  its original clipping gate rejected pre-existing source clipping; its HDD
+  artifacts are preserved for diagnosis only and must not be analyzed as
+  results. Commit `eb6298c` corrected the gate to assess transform-induced
+  clipping. `h2_quality_full_002` is running on GPU 3 under the corrected
+  protocol and remains pre-score quality screening only: no detector may read
+  a pair and no causal claim may be made until its complete quality manifest is
+  frozen. Read `H2_QUALITY_GATE_CORRECTION.md` before resuming H2. Res2
+  source-PyTorch batch 2 is the recorded initial setting (198.09 clips/s); read
+  `H2_THROUGHPUT_RUN_002_RES2TCNGUARD.md`.
 - **Paper draft:** `paper/main.tex` compiles with
   `tectonic --outdir build main.tex` from `paper/`. Track the source, citation
   ledger, and `paper/build/main.pdf`; ignore build intermediates. The compiled

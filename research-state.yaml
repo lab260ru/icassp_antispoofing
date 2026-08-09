@@ -36,7 +36,7 @@ hypotheses:
     priority: high
   - id: H2
     statement: "Matched waveform interventions that alter a selected cue cause paired score changes in multiple detectors while preserving intelligibility and label-relevant content."
-    status: blocked_on_pair_quality_execution_and_panel_completion
+    status: pre_score_quality_screening_active_no_detector_scores
     motivation: "Causal sensitivity is needed before calling a correlation a detector shortcut."
     priority: high
   - id: H3
@@ -153,7 +153,7 @@ experiments:
 outer_loop:
   cycle: 2
   last_direction: "deepen_conditionally"
-  last_reflection: "All three H1 discovery screens support heterogeneous, corpus-dependent detector sensitivity. The pre-DF exploratory gate freezes only Spectra-AASIST crest factor for H2. Spectra, AASIST, and source-PyTorch Res2TCNGuard have baseline parity; the Res2 ONNX export is blocked. A score-blind ASV2019 intervention panel and four-arm ledger are frozen, but pair-level quality gates and a fourth scorer remain unevaluated; do not interpret confirmation data before their source tables are complete."
+  last_reflection: "All three H1 discovery screens support heterogeneous, corpus-dependent detector sensitivity. The pre-DF exploratory gate freezes only Spectra-AASIST crest factor for H2. Spectra, AASIST, and source-PyTorch Res2TCNGuard have baseline parity; the Res2 ONNX export is blocked. The first detector-free H2 quality attempt was deliberately stopped after 133/4,000 checkpoints because its clipping gate treated pre-existing source clipping as transform harm; its HDD artifacts are diagnostic only. Commit eb6298c corrects the gate before the distinct GPU-3 pre-score quality run h2_quality_full_002. Do not interpret either attempt as a quality result, detector result, or causal evidence before a complete quality manifest is frozen."
   pivot_policy: "After the first association/intervention matrix or five completed runs, choose deepen, broaden, pivot, or conclude and record the evidence."
 
 workspace:

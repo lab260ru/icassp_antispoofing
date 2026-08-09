@@ -16,3 +16,19 @@ pair manifest, apply only the candidate-relevant crest-factor arms plus the
 registered controls, evaluate all waveform quality gates, and retain the
 failures. Detector scoring may begin only after that immutable quality manifest
 exists.
+
+## 2026-08-09 — interrupted quality screen and corrected successor
+
+The detector-free `h2_quality_full_001` run was intentionally stopped after
+133 of 4,000 pair checkpoints. It exposed a gate implementation error: requiring
+both source and transformed clipping fractions to be zero rejected source clips
+that were already peak-clipped, even when the registered polarity or +0.1 dB
+control added no clipping. No detector was loaded or scored. The preserved HDD
+checkpoints and transcript cache for this run are diagnostic artifacts only and
+must not enter pass-rate, paired-score, or causal analysis.
+
+Commit `eb6298c` corrects the condition to allow only non-positive
+transform-induced clipping while retaining both raw fractions. The separate
+`h2_quality_full_002` run on GPU 3 now performs the same detector-free,
+pre-score quality screening under that corrected protocol. It is not a quality
+result until the complete manifest is frozen; detector scoring remains barred.

@@ -126,3 +126,14 @@ the recorded fastest safe setting. Both held-out data sets are downloaded;
 their no-reselection candidate declarations are committed, and their CPU
 feature extractions are in progress. Telegram/GitHub delivery remains queued
 until runtime credentials are available.
+
+## 2026-08-09 — H2 quality-screen correction
+
+The first detector-free H2 pair-quality run was intentionally stopped after
+133 of 4,000 checkpoints: its clipping rule wrongly rejected recordings that
+were already peak-clipped before a registered control transformation. No
+detector was loaded or scored, and the preserved partial HDD artifacts are
+explicitly diagnostic rather than results. The protocol is corrected and
+committed (`eb6298c`); a distinct GPU-3 successor is running the pre-score
+quality screen. No causal claim or detector-score analysis will begin until a
+complete quality manifest is frozen.
