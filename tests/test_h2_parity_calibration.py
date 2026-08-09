@@ -2,7 +2,16 @@ from __future__ import annotations
 
 import pandas as pd
 
-from scripts.calibrate_h2_onnx_parity import choose_preprocessing, load_or_create_manifest, merge_resumable_summaries
+from scripts.calibrate_h2_onnx_parity import (
+    ONNX_FILENAMES,
+    choose_preprocessing,
+    load_or_create_manifest,
+    merge_resumable_summaries,
+)
+
+
+def test_audited_res2_onnx_contract_is_explicit_not_a_default_expansion() -> None:
+    assert ONNX_FILENAMES["Res2TCNGuard"] == "res2tcnguard.onnx"
 
 
 def _dataset(tmp_path):

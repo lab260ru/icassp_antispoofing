@@ -37,7 +37,14 @@ from src.onnx_fixed_window import (
 MANIFEST_SCHEMA_VERSION = 1
 DEFAULT_DATASET = "ASVspoof2019_LA"
 DEFAULT_MODELS = ("Spectra-AASIST", "AASIST")
-ONNX_FILENAMES = {"Spectra-AASIST": "spectra-aasist.onnx", "AASIST": "aasist.onnx"}
+# A model enters this map only after its pinned local ONNX graph signature has
+# been checked. Keeping the default panel unchanged makes a new runner an
+# explicit, reviewable parity action rather than an automatic expansion.
+ONNX_FILENAMES = {
+    "Spectra-AASIST": "spectra-aasist.onnx",
+    "AASIST": "aasist.onnx",
+    "Res2TCNGuard": "res2tcnguard.onnx",
+}
 
 
 def sha256_bytes(value: bytes | np.ndarray) -> str:
