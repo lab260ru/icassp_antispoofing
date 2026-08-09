@@ -1,0 +1,80 @@
+{
+  "artifact_kind": "h1_confirmation_candidate_declaration",
+  "claim_guard": "Declaration-only projection of a frozen discovery identity; it is not a confirmation result, a new selection, a ranking, a portability finding, or a causal claim.",
+  "construction": {
+    "identity_projection": "Each unique (model, view, feature, class_label) from the complete discovery freeze is copied to every explicitly named target dataset.",
+    "ranks_filters_or_reselects_candidates": false,
+    "reads_confirmation_association_or_bootstrap_output": false,
+    "reads_confirmation_features_scores_or_audio": false
+  },
+  "declared_at_utc": "2026-08-09T20:40:04Z",
+  "manifest": {
+    "path": "/home/kirill/icassp_antispoofing/experiments/h1_feature_association/results/declared_confirmation_candidates_20260809T204004Z/InTheWild_candidates.csv",
+    "row_count": 1,
+    "schema": [
+      "dataset",
+      "model",
+      "view",
+      "feature",
+      "class_label",
+      "selection_status",
+      "selection_split",
+      "selection_basis",
+      "frozen_at_utc"
+    ],
+    "sha256": "b28fcee887e59b479a58ea3c0d6f1bb84912fd192dcea8ae6d285ed67fe59bfc"
+  },
+  "source_candidate_identities": [
+    {
+      "class_label": 1,
+      "feature": "crest_factor_db",
+      "model": "Spectra-AASIST",
+      "source_discovery_keys": [
+        {
+          "class_label": 1,
+          "dataset": "ASVspoof2019_LA",
+          "feature": "crest_factor_db",
+          "model": "Spectra-AASIST",
+          "view": "full_waveform"
+        },
+        {
+          "class_label": 1,
+          "dataset": "ASVspoof2021_DF",
+          "feature": "crest_factor_db",
+          "model": "Spectra-AASIST",
+          "view": "full_waveform"
+        },
+        {
+          "class_label": 1,
+          "dataset": "ASVspoof2021_LA",
+          "feature": "crest_factor_db",
+          "model": "Spectra-AASIST",
+          "view": "full_waveform"
+        }
+      ],
+      "view": "full_waveform"
+    }
+  ],
+  "source_discovery_manifest": {
+    "path": "/home/kirill/icassp_antispoofing/experiments/h1_feature_association/results/frozen_discovery_to_h2_20260809T201711Z/frozen_candidates.csv",
+    "row_count": 3,
+    "schema": [
+      "dataset",
+      "model",
+      "view",
+      "feature",
+      "class_label",
+      "selection_status",
+      "selection_split",
+      "selection_basis",
+      "frozen_at_utc"
+    ],
+    "selection_basis_sha256_if_available": {
+      "experiments/h1_feature_association/DISCOVERY_TO_H2_FREEZE.md": "12ebc866473605bfcb00c4712180996800c455d66379e3a4d166b40d438f3d3c"
+    },
+    "sha256": "041b38d6430efcd9dab3f0dee3726881b14f74f5074008b4ef2ed335710425d6"
+  },
+  "target_datasets": [
+    "InTheWild"
+  ]
+}
