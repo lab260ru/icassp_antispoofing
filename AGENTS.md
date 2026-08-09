@@ -40,10 +40,11 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
   Spectra-AASIST/`crest_factor_db`; see its adjacent report and
   `DISCOVERY_TO_H2_FREEZE.md`. It is exploratory, excludes confirmation data,
   and is not itself a causal or portable result. Commit it before any bootstrap
-  or H2 execution. **Active, non-duplicable job:** the held-out confirmation
-  downloader is acquiring InTheWild followed by ASVspoof5. Check processes and
-  HDD paths before relaunching; do not interpret either corpus until its own
-  scoped H1 artifacts are complete.
+  or H2 execution. **Active, non-duplicable jobs:** InTheWild feature
+  extraction uses 24 workers and ASVspoof5 feature extraction uses 20 workers;
+  both held-out datasets are downloaded and their candidate declarations are
+  committed. Check processes and HDD paths before relaunching; do not interpret
+  either corpus until its own scoped H1 artifacts are complete.
 - **H2 has two parity-validated runners but is not ready to claim.** Read
   `experiments/h2_causal_interventions/model_capability_audit.md`,
   `H2_ONNX_PARITY.md`, and `PARITY_RUN_001.md` before any intervention work.
@@ -61,7 +62,11 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
   fallback. Score artifacts
   cannot score transformed audio. The waveform-only registered arms are in
   `src/h2_waveform_transforms.py`; they emit diagnostics but do not decide
-  gates or supply any causal evidence.
+  gates or supply any causal evidence. The first 1,000-row ASVspoof2019
+  score-blind pair panel and its four-arm ledger are frozen in
+  `results/pre_score/h2_crest_pre_score_001_20260809T205114Z/`; quality rows
+  have not yet been generated. Res2 source-PyTorch batch 2 is the recorded
+  initial setting (198.09 clips/s); read `H2_THROUGHPUT_RUN_002_RES2TCNGUARD.md`.
 - **Paper draft:** `paper/main.tex` compiles with
   `tectonic --outdir build main.tex` from `paper/`. Track the source, citation
   ledger, and `paper/build/main.pdf`; ignore build intermediates. The compiled

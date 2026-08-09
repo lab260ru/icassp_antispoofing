@@ -49,7 +49,7 @@ experiments:
   proxy_metric: "Cross-dataset, within-class feature-score association and causal paired score sensitivity; EER for mitigation."
   baseline_value: null
   best_value: null
-  total_runs: 12
+  total_runs: 14
   trajectory:
     - run_id: run_001
       hypothesis: H1
@@ -135,11 +135,25 @@ experiments:
       wall_time_min: 1.0
       change_summary: "Validated the exact pinned Res2TCNGuard PyTorch evaluate.py plus checkpoint path against Arena baseline ordering on the frozen 128-clip manifest; it replaces the blocked ONNX export only."
       timestamp: "2026-08-09"
+    - run_id: h2_res2_throughput_002
+      hypothesis: H2
+      metric_value: 198.09
+      delta: null
+      wall_time_min: 1.0
+      change_summary: "Measured the parity-validated Res2TCNGuard source-PyTorch scorer on frozen original clips; all batches 1--32 were safe and batch 2 had the highest median throughput."
+      timestamp: "2026-08-09"
+    - run_id: h2_pre_score_manifest_001
+      hypothesis: H2
+      metric_value: 1000
+      delta: null
+      wall_time_min: 0.1
+      change_summary: "Froze a 500-per-class ASVspoof2019 score-independent H2 input panel and exact four-arm crest-factor ledger from pinned labels only; no audio, ASR, or detector response was read."
+      timestamp: "2026-08-09"
 
 outer_loop:
   cycle: 2
   last_direction: "deepen_conditionally"
-  last_reflection: "All three H1 discovery screens support heterogeneous, corpus-dependent detector sensitivity. The pre-DF exploratory gate freezes only Spectra-AASIST crest factor for H2. Spectra, AASIST, and source-PyTorch Res2TCNGuard have baseline parity; the Res2 ONNX export is blocked. Pair-level quality gates and a fourth scorer remain unevaluated; acquire confirmation audio but do not interpret it before source tables are complete."
+  last_reflection: "All three H1 discovery screens support heterogeneous, corpus-dependent detector sensitivity. The pre-DF exploratory gate freezes only Spectra-AASIST crest factor for H2. Spectra, AASIST, and source-PyTorch Res2TCNGuard have baseline parity; the Res2 ONNX export is blocked. A score-blind ASV2019 intervention panel and four-arm ledger are frozen, but pair-level quality gates and a fourth scorer remain unevaluated; do not interpret confirmation data before their source tables are complete."
   pivot_policy: "After the first association/intervention matrix or five completed runs, choose deepen, broaden, pivot, or conclude and record the evidence."
 
 workspace:

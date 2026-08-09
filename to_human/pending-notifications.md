@@ -116,3 +116,13 @@ exact source PyTorch evaluator and checkpoint passed the same frozen 128-clip
 check (rho 0.999994), which isolates an ONNX export/runtime divergence rather
 than an input/window error. This adds a third parity-validated scorer but is
 not transformed-audio or causal evidence.
+
+## 2026-08-09 — H2 pre-score panel and held-out extraction
+
+The first H2 cohort is frozen from ASVspoof2019 labels only: 500 bona fide and
+500 spoof clips, with two crest-factor DRC arms and two registered controls.
+No waveform or detector was used to choose it. Res2 source-PyTorch batch 2 is
+the recorded fastest safe setting. Both held-out data sets are downloaded;
+their no-reselection candidate declarations are committed, and their CPU
+feature extractions are in progress. Telegram/GitHub delivery remains queued
+until runtime credentials are available.
