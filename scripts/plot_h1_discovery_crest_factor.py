@@ -183,8 +183,18 @@ def render_plot(rows: pd.DataFrame, models: tuple[str, ...], output_dir: Path, i
     axis.set_xticks(positions)
     axis.set_xticklabels(models, rotation=28, ha="right")
     axis.set_ylabel("Partial Spearman $\\rho$ with score$_{spoof}$")
-    axis.set_title("Crest factor vs. published detector scores: discovery screen")
-    axis.legend(loc="upper right", ncol=3, bbox_to_anchor=(1.0, 1.14), columnspacing=0.8)
+    figure.suptitle(
+        "Crest factor vs. published detector scores: discovery screen",
+        y=0.99,
+        fontsize=10,
+        fontweight="bold",
+    )
+    figure.legend(
+        loc="upper center",
+        ncol=3,
+        bbox_to_anchor=(0.55, 0.95),
+        columnspacing=0.8,
+    )
     axis.set_axisbelow(True)
     figure.text(
         0.5,
@@ -195,7 +205,7 @@ def render_plot(rows: pd.DataFrame, models: tuple[str, ...], output_dir: Path, i
         fontsize=7.4,
         color="#4A4A4A",
     )
-    figure.subplots_adjust(left=0.09, right=0.99, top=0.82, bottom=0.32)
+    figure.subplots_adjust(left=0.09, right=0.99, top=0.76, bottom=0.32)
     output_dir.mkdir(parents=True, exist_ok=True)
     stem = output_dir / "h1_discovery_crest_factor_fullwave_spoof"
     pdf_path = stem.with_suffix(".pdf")
