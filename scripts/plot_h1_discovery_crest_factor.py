@@ -137,7 +137,14 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def render_plot(rows: pd.DataFrame, models: tuple[str, ...], output_dir: Path, input_paths: Mapping[str, Path]) -> dict[str, Path]:
+def render_plot(
+    rows: pd.DataFrame,
+    models: tuple[str, ...],
+    output_dir: Path,
+    input_paths: Mapping[str, Path],
+    *,
+    output_stem: str = "h1_discovery_crest_factor_fullwave_spoof",
+) -> dict[str, Path]:
     """Render vector and raster versions plus a provenance sidecar."""
     matrix = rows.pivot(index="model", columns="dataset", values=RHO_COLUMN).reindex(
         index=models, columns=EXPECTED_DISCOVERY
@@ -207,7 +214,9 @@ def render_plot(rows: pd.DataFrame, models: tuple[str, ...], output_dir: Path, i
     )
     figure.subplots_adjust(left=0.09, right=0.99, top=0.76, bottom=0.32)
     output_dir.mkdir(parents=True, exist_ok=True)
-    stem = output_dir / "h1_discovery_crest_factor_fullwave_spoof"
+    if not output_stem or Path(output_stem).name != output_stem:
+        raise ValueError("output_stem must be a non-empty filename stem without path components.")
+    stem = output_dir / output_stem
     pdf_path = stem.with_suffix(".pdf")
     png_path = stem.with_suffix(".png")
     metadata_path = stem.with_suffix(".metadata.json")
@@ -236,6 +245,7 @@ def main() -> None:
     parser.add_argument("--asvspoof2021-la", required=True, type=Path)
     parser.add_argument("--asvspoof2021-df", required=True, type=Path)
     parser.add_argument("--output-dir", required=True, type=Path)
+    parser.add_argument("--output-stem", default="h1_discovery_crest_factor_fullwave_spoof")
     parser.add_argument("--config", default="configs/study.yaml", type=Path)
     args = parser.parse_args()
     inputs = {
@@ -245,7 +255,7 @@ def main() -> None:
     }
     rows, paths = load_fixed_discovery_slice(inputs, args.config)
     models = load_discovery_models(args.config)
-    outputs = render_plot(rows, models, args.output_dir, paths)
+    outputs = render_plot(rows, models, args.output_dir, paths, output_stem=args.output_stem)
     for kind, path in outputs.items():
         print(f"wrote {kind}: {path}")
 

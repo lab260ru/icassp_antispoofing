@@ -35,14 +35,17 @@ corpora. It tests associations with multiplicity correction and clustered
 bootstrap intervals, then admits a feature to paired interventions only after a
 pre-specified portability gate. Conditional on causal evidence, a
 feature-conditioned, transformation-consistent head is evaluated against an
-equivalent training recipe. This initial draft reports a first discovery screen
+equivalent training recipe. This initial draft reports three discovery screens
 in addition to input-integrity results: 71,237 published Spectra-AASIST scores
-join exactly to ASVspoof 2019 LA labels, and 1,344 within-class associations
-are screened on a locked balanced subset across eight score artifacts. Crest
-factor is strongly associated with Spectra-AASIST spoof scores, but its sign
-and size are heterogeneous across architectures. The evidence therefore
-motivates the cross-dataset audit; it makes no claim that crest factor, or any
-other cue, is a portable association or a causal shortcut.
+join exactly to ASVspoof 2019 LA labels, and 4,032 within-class associations
+are screened on locked balanced subsets across eight score artifacts. Crest
+factor is negatively associated with Spectra-AASIST spoof scores in all three
+discovery screens but attenuates substantially across corpus conditions;
+AASIST reverses direction on the deepfake corpus. Five of eight score
+artifacts are negative in this fixed slice across all three discovery corpora,
+while effect sizes and remaining directions are architecture-dependent. The
+evidence motivates a constrained causal follow-up; it makes no claim that
+crest factor, or any other cue, is a portable association or a causal shortcut.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -89,7 +92,7 @@ This paper makes the following methodological contributions.
 
 The manuscript is intentionally an initial, evidence-conservative draft.
 Sections~\ref{sec:study}--\ref{sec:results} distinguish locked methodology,
-the first discovery screen, and pending confirmation. The title and narrative
+three discovery screens, and pending confirmation. The title and narrative
 will be updated only after the documented outer-loop evidence gate.
 
 \section{Background and audit target}
@@ -187,10 +190,10 @@ feature conditioning itself is beneficial~\cite{pascu2024generalizable}.
 \label{sec:results}
 
 Table~\ref{tab:status} records the completed empirical artifacts at this
-initial-draft checkpoint. The first H1 row is a discovery screen, not a
-cross-dataset conclusion: it is included because it has a compact result
-artifact and analysis note. No intervention effect, EER, or model ranking is
-reported before its corresponding artifact exists.
+initial-draft checkpoint. The H1 rows are discovery screens, not
+cross-dataset-confirmed conclusions: compact result artifacts and a pre-DF
+operational follow-up rule exist. No intervention effect, EER, or model ranking
+is reported before its corresponding artifact exists.
 
 \begin{table}[t]
   \caption{Completed evidence at the initial-draft checkpoint. The H1 row is
@@ -208,29 +211,32 @@ reported before its corresponding artifact exists.
     Feature-registry pilot on deterministic ASVspoof 2019 LA sample & 200
     utterances $\times$ 3 waveform views; non-voice descriptors complete and
     voice-quality descriptors available for 95\% of records. \\
-    H1 discovery screen on locked ASVspoof 2019 LA subset & 1,344
-    within-class tests (8 models $\times$ 2 classes $\times$ 3 views $\times$
-    28 features). For spoof trials, Spectra-AASIST crest-factor partial
-    $\rho$ is $-0.454$, $-0.445$, and $-0.327$ by view; signs and magnitudes
-    differ across the panel. \\
-    Cross-dataset H1 portability, H2 paired deltas, and H3 held-out EER &
-    Pending; no portability, causal, or improvement conclusion is claimed. \\
+    H1 discovery screens on locked ASVspoof 2019 LA, 2021 LA, and 2021 DF
+    subsets & 4,032 within-class tests (3 corpora $\times$ 8 models $\times$
+    2 classes $\times$ 3 views $\times$ 28 features), with exact joins for
+    every model and corpus. \\
+    Fixed crest-factor slice: full waveform, spoof class & Spectra-AASIST
+    partial $\rho$ is $-0.454$, $-0.099$, and $-0.065$ on 2019 LA, 2021 LA,
+    and 2021 DF, respectively; AASIST changes from positive on LA to negative
+    on DF. Figure~\ref{fig:h1-crest-discovery} shows all eight artifacts. \\
+    H1 portability, H2 paired deltas, and H3 held-out EER & Pending; the
+    explicit five-corpus criterion is not evaluable and no portability, causal,
+    or improvement conclusion is claimed. \\
     \bottomrule
   \end{tabular}
 \end{table}
 
 \begin{figure*}[t]
   \centering
-  \includegraphics[width=\textwidth]{figures/fig_h1_fullwave_spoof_heatmap.pdf}
-  \caption{Complete first-discovery association screen for spoof trials on the
-  locked ASVspoof2019 LA subset. Each cell is a duration-, loudness-, and
-  metadata-adjusted partial Spearman association between a frozen waveform
-  descriptor and the published detector's canonical spoof-evidence score. All
-  28 descriptors and all eight available score artifacts are shown; the orange
-  outline marks crest factor. The heterogeneity across columns is the result:
-  this one-corpus discovery plot does not support a universal cue-reliance
-  claim.}
-  \label{fig:h1-heatmap}
+  \includegraphics[width=\textwidth]{figures/fig_h1_discovery_crest_factor.pdf}
+  \caption{Fixed crest-factor discovery slice: full-waveform, spoof-class
+  duration-, loudness-, and metadata-adjusted partial Spearman association to
+  the published canonical spoof-evidence score. Each model has one bar per
+  discovery corpus. Spectra-AASIST is negative in all three corpora but
+  attenuates sharply after 2019; AASIST reverses sign in 2021 DF. The figure is
+  discovery-only and cannot establish a portable association, causal reliance,
+  or a candidate-selection conclusion.}
+  \label{fig:h1-crest-discovery}
 \end{figure*}
 
 \section{Limitations and responsible reporting}
@@ -245,26 +251,26 @@ access to all model internals. The conditional mitigation can establish only a
 bounded robustness result under the registered splits and transformations, not
 universal safety against new generators or post-processing pipelines.
 
-The current artifact set also has a more immediate limitation: the sole H1
-screen comes from one discovery corpus. Its extremely small adjusted
-$p$-values reflect 5,000 trials per within-class test and cannot substitute for
-effect-size, cross-corpus, and held-out evidence. This draft therefore treats
-the observed crest-factor association as a heterogeneous discovery pattern,
-not a conclusion about detector reliance. The final paper will either report
-the full held-out results under this protocol or clearly present a negative
-result and its scope.
+The current artifact set also has a more immediate limitation: the H1 matrix
+contains three discovery corpora but no held-out confirmation corpus. Its small
+adjusted $p$-values reflect 5,000 trials per within-class test and cannot
+substitute for effect-size, held-out, or intervention evidence. This draft
+therefore treats the observed crest-factor pattern as heterogeneous discovery
+evidence, not a conclusion about detector reliance. The final paper will
+either report the full held-out results under this protocol or clearly present
+a negative result and its scope.
 
 \section{Conclusion}
 
 We present a reproducible path from an observed score-feature correlation to a
 testable claim about detector sensitivity: exact artifact joins, within-class
 and adjusted associations, quality-gated paired interventions, and a
-conditional robustness test. The first discovery screen shows that crest-factor
-associations can be strong yet architecture-specific, illustrating why a
-single-model correlation cannot establish shortcut reliance. The next
-evidence-bearing milestone is the locked H1 matrix across the remaining
-discovery and held-out corpora; until then, the paper makes no portability or
-causal feature-reliance claim.
+conditional robustness test. Three discovery screens show that crest-factor
+associations can have repeated direction within some models yet vary strongly
+in magnitude and direction across the panel, illustrating why a single-model
+correlation cannot establish shortcut reliance. The next evidence-bearing
+milestones are held-out confirmation and quality-gated H2 deltas; until then,
+the paper makes no portability or causal feature-reliance claim.
 
 \bibliographystyle{template/IEEEtran/IEEEtran}
 \bibliography{references}
