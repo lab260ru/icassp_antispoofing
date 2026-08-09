@@ -9,7 +9,19 @@ project:
   narrative_status: provisional
 
 literature:
-  key_papers: []
+  key_papers:
+    - id: yamagishi2021asvspoof
+      doi: "10.21437/ASVSPOOF.2021-8"
+      role: "Challenge conditions and unmatched 2021 evaluation context."
+    - id: muller2024harder
+      doi: "10.21437/Interspeech.2024-247"
+      role: "Motivates multi-corpus generalization analysis."
+    - id: pascu2024generalizable
+      doi: "10.21437/Interspeech.2024-1302"
+      role: "Motivates the conditional frozen-SSL mitigation direction."
+    - id: pan2022speaker
+      doi: "10.21437/Interspeech.2022-72"
+      role: "Motivates evaluating environmental-cue sensitivity causally."
   open_problems:
     - "Whether score-feature correlations survive within-class, cross-dataset, and causal tests."
     - "Whether robust feature conditioning improves OOD generalization without creating a new shortcut."
