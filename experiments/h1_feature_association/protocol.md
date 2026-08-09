@@ -31,6 +31,24 @@ Benjamini-Hochberg-adjusted q-values. A portable association requires the exact
 criterion in `configs/study.yaml`; models/datasets absent from Arena artifacts
 are reported as missing, never imputed.
 
+### Execution guardrails
+
+The partial rank design controls duration, integrated loudness, and available
+speaker/attack metadata. A tested feature or response variable is removed from
+its own control set before construction of the design matrix: conditioning a
+variable on itself is undefined. This clarification was validated after a
+pre-output implementation stop and before the first successful H1 screen; it
+does not change the registered estimand or acceptance criterion.
+
+Bootstrap intervals are a distinct confirmation stage. The screen always emits
+the complete matrix; it never silently promotes its strongest rows. Any
+bootstrap request must supply an explicit, frozen CSV or Parquet candidate
+manifest recording candidate key, selection split, selection basis, and freeze
+time. The manifest is hashed into its output. It may be constructed only after
+the three discovery datasets and the selection rule are frozen, and before the
+held-out confirmation scores are interpreted. See `BOOTSTRAP_CLI.md` for the
+required schema and deterministic 2,000-replicate procedure.
+
 ## Exclusions and failure conditions
 
 Exclude only samples lacking a stable ID, a readable waveform, required labels,
@@ -39,5 +57,6 @@ mismatch halts analysis for that artifact until catalogue metadata resolves it.
 
 ## Outputs
 
-`results/association_long.parquet`, `results/association_summary.csv`,
-`results/join_report.json`, plots, and `analysis.md`.
+`results/association_summary.csv`, `results/feature_label_metrics.csv`,
+`results/association_join_report.json`, optional
+`results/association_confirmation_bootstrap.csv`, plots, and `analysis.md`.
