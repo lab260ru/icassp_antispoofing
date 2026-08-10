@@ -20,43 +20,41 @@ protocol supplies the missing evidence.
 4. Record each material decision in `implementation-notes.md` and append the
    result to the active experiment's `analysis.md`.
 
-## Current checkpoint — 2026-08-10 — H8-SF positive-pivot protocol
+## Current checkpoint — 2026-08-10 — H9-PCR paired-counterfactual protocol
 
-This section supersedes all earlier continuation constraints only for the new
-H8-SF study. It does not reopen or reinterpret H1--H7.
+This section supersedes the earlier H8-SF positive-pivot checkpoint. It does
+not reopen or reinterpret H1--H8.
 
 - **Objective and deadline:** The user authorized a new positive-result search
-  through **2026-08-11 13:00 UTC**. The active question is whether a single,
-  source-trained robust fusion of frozen anti-spoofing systems transfers to an
-  untouched external corpus panel. Read `experiments/h8_positive_pivot/PLAN.md`
-  and `DATA.md` before loading an H8 input or writing H8 code/results.
-- **Strict roles:** H8 sources are `ASVspoof2019_LA`, `ASVspoof2021_LA`, and
-  `ASVspoof2021_DF`. Blind primary targets are `CFAD`, `CVoiceFake_small`,
-  `DECRO`, `LibriSeVoc`, and `XMAD`. Do not read target labels, target metrics,
-  or target score values before the committed protocol's label-free integrity
-  and frozen-source stages have completed. Never use the earlier inspected
-  `ASVspoof5`, `InTheWild`, or `DeepVoice` results for H8 selection.
-- **Frozen H8 roster/method:** The roster is eight named published systems and
-  the only primary method is corpus-by-class GroupDRO over label-free,
-  within-corpus rank/probit scores. B0 single expert, B1 uniform rank mean,
-  B2 balanced ERM, and A1 V-REx are mandatory comparators. No target label may
-  pick a model, hyperparameter, seed, transform, or roster. The positive gate
-  is fixed in `PLAN.md`; a failure stops H8-SF rather than licensing tuning.
-- **H8-SF result:** The complete target run is terminal. P improves weak
-  fusion baselines (mean EER 9.309% versus B1 19.936% and B2 11.911%), but the
-  source-selected Spectra-AASIST B0 baseline is 0.185% mean EER. The B0
-  falsification cell in `PLAN.md` is therefore violated; read
-  `experiments/h8_positive_pivot/results/H8_SF_ANALYSIS_001.md`. Do not use
-  the generated narrower B1/B2 Boolean as a positive claim and do not retune
-  H8 with a model subset, gate, transform, target, or hyperparameter.
-- **Storage and reproducibility:** Keep all H8 raw score inputs, source/target
-  panels, models, and large outputs below
+  through **2026-08-11 13:00 UTC**. The active question is whether
+  content-matched natural/synthetic pair ranking improves transfer of a
+  transparent compact detector relative to equal-budget BCE and random-pair
+  controls. Read all four documents in `experiments/h9_paired_counterfactual/`
+  before accessing any H9 input or writing H9 code/results.
+- **Strict roles:** source development is only ODSS revision
+  `1968e6d0ef141c4572073695bdc1d17a8706177f`; blind H9 primary targets are
+  SONAR revision `eca7c72ebdf0f7936a644605a56735ac8564dbd9` and ArAD revision
+  `350184966eeb5b46ff2acdabd8f4d12e41e582da`. Target labels/audio cannot
+  select a source hyperparameter, epoch, seed, model, augmentation, loss
+  weight, or source split. The final evaluator is their first permitted H9
+  label load and must evaluate all frozen methods and both targets together.
+- **Frozen H9 method:** Res2TCNGuard, BF16 training, four seeds, ODSS
+  group-disjoint source selection, BCE (B1), random-pair ranking (B2), and
+  paired counterfactual ranking (P) are fixed in `PLAN.md`. The source must
+  expose a conservative paired-content and voice grouping; otherwise H9-PCR
+  stops rather than inferring a new pairing scheme or source dataset.
+- **H8-SF remains terminal:** it improves B1/B2 fusion but fails its
+  source-selected Spectra-AASIST B0 comparison (9.309% versus 0.185% mean
+  EER). Read `experiments/h8_positive_pivot/results/H8_SF_ANALYSIS_001.md`.
+  Do not tune or reuse H8 as a H9 comparator.
+- **Storage and reproducibility:** Keep all H9 raw source/target inputs,
+  checkpoints, waveforms, and full outputs below
   `/home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/`. Commit only protocols,
   code, compact hash ledgers, and summaries. Write material decisions in
   `implementation-notes.md`, append outcomes in `research-log.md`, and update
-  this guide and `ARTIFACT_INDEX.md` at each H8 milestone.
+  this guide and `ARTIFACT_INDEX.md` at each H9 milestone.
 - **Paper rule:** Do not edit `paper/main.tex` until a result passes the full
-  locked H8 gate and an internal claim review. If it is edited, immediately
+  locked H9 gate and an internal claim review. If it is edited, immediately
   run `cd paper && tectonic --outdir build main.tex`, update the tracked PDF,
   and commit both in the same paper change.
 
