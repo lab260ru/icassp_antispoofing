@@ -180,3 +180,7 @@
 - Boundary: Protocols are committed before their input freeze or rendering. H5
   omits labels, scores, models, audio, and prior-result tables; the figure can
   read only prelisted sealed compact quantities.
+- Clarification: The shared raw feature Parquets retain label/source metadata
+  for other completed studies. H5 therefore permits their presence in the raw
+  schema but strictly projects only sample_id, view, and feature columns; labels
+  and source IDs must never enter its API, manifest, matrix, or summary.
