@@ -220,6 +220,11 @@
   core corpus and revalidated all five label tables plus 40 raw-score byte
   identities. It sealed a 50,000-row label-only manifest while recording that
   no raw score value was read; the compact result note pins both freeze hashes.
+- Result: The sealed analyzer revalidated the freeze before parsing score text,
+  produced every one of the 280 registered corpus/class/model-pair cells, and
+  emitted no raw score values. The 28 summaries display broad fixed-registry
+  rank-agreement heterogeneity. This remains a descriptive panel audit and
+  cannot rank models, select a score artifact, or alter causal/feature gates.
 
 ## 2026-08-10 - Supplementary S1 crest evidence boundary
 
