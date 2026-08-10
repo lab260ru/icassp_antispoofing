@@ -310,3 +310,13 @@
   suite now has 134 passing tests. The final caption states the fixed
   model-level portability boundary, absent score-eligible manifest, and no
   cross-panel/causal inference.
+
+## 2026-08-10 - H1 covariate-availability reporting audit
+
+- Decision: Address the remaining partial-adjustment reproducibility concern
+  with a score-free reporting audit of the exact five existing feature cohorts,
+  rather than starting another score-dependent hypothesis or re-opening any
+  candidate gate.
+- Boundary: The protocol permits metadata availability counts and the sealed
+  bootstrap description only. It forbids score/model/audio/ASR reads and any
+  association, bootstrap, ranking, or intervention calculation.
