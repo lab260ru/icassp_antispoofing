@@ -252,3 +252,14 @@ of `research/icassp-signal-audit` was created and verified on the HDD. Its
 SHA-256, exact head, and restore command are in
 `to_human/GIT_BUNDLE_HANDOFF_20260809.md`. This is a resilience backup only;
 the branch still needs a normal authorized GitHub push.
+
+## 2026-08-10 — named-author paper checkpoint and GitHub access needed
+
+The ICASSP draft now uses the supplied ICASSP-2026 spconf/IEEEbib template,
+includes the authorized Kirill Borodin dual affiliation, and has a rebuilt
+four-technical-page plus references-only-fifth-page PDF. It passes 87 tests
+and the local layout/font preflight; three fresh Codex-only internal reviews
+are preserved and their actionable corrections are applied. The local commit
+is `78a79e9`. A single normal GitHub push using the current local .env was
+rejected as an invalid credential; please replace it with a repository-write
+token for lab260ru/icassp_antispoofing. No token was exposed or retried.
