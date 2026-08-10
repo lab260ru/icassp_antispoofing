@@ -335,3 +335,13 @@
   corpus--class adjustment and bootstrap disclosure without introducing a new
   quantitative claim. `main.tex` was immediately rebuilt; the five-page local
   preflight remains clean.
+
+## 2026-08-10 - Pre-submission archival readiness
+
+- Decision: Prepare citation metadata and a disclosure-safe release checklist,
+  but do not create an external release, DOI, or permanent availability claim
+  without owner authorization and license review.
+- Boundary: The archive plan explicitly excludes raw audio, model weights,
+  full HDD products, and every credential. It preserves only compact,
+  hash-bound evidence and the path/hash manifests needed to reconstruct the
+  environment.
