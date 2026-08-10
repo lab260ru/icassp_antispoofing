@@ -63,9 +63,9 @@ The most recent full suite is 87 passed. `verification/PAPER_TEMPLATE_AND_REVIEW
 
 ## External delivery and resume blockers
 
-- GitHub push: requires `GH_TOKEN` or `GITHUB_TOKEN` in the environment; do not put a credential in files, history, or commands.
+- GitHub push: the current local `.env` token and pre-existing GitHub CLI credential were both rejected as invalid on 2026-08-10. Replace the local repository-write token, then push normally without force; see `to_human/GITHUB_PUSH_BLOCKER_20260810.md`.
 - Portable backup while push is blocked: `to_human/GIT_BUNDLE_HANDOFF_20260809.md` records the verified complete-history HDD bundle and restoration command. It is not a GitHub delivery.
-- Telegram milestone delivery: requires `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID`; messages are queued in `to_human/pending-notifications.md` and can be listed/sent one-at-a-time through `to_human/TELEGRAM_DELIVERY.md`.
+- Telegram milestone delivery: the latest paper/push-blocker update was delivered on 2026-08-10; its redacted receipt is in `to_human/TELEGRAM_DELIVERY_LOG_20260810.md`. Historical messages remain queued and can be listed/sent one-at-a-time through `to_human/TELEGRAM_DELIVERY.md`.
 - Paper review: use the user-requested Codex-only timestamped review bundle and address its findings; do not retry the unauthenticated external reviewer runtime.
 - Template reconciliation: obtain an approved ICASSP-2027 or official generic IEEE archive from an accessible route, hash/compare it to the pinned files, rebuild, rerun the static preflight, and use the official conference checker.
 - Author information: confirm the authorized working metadata and any portal-required email fields, then use `--review-stage single-anonymous-submission` before upload.

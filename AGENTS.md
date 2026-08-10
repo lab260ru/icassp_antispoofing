@@ -169,9 +169,13 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
   **Required workflow:** after every modification to `paper/main.tex`, run
   `cd paper && tectonic --outdir build main.tex`, verify a PDF was written,
   and commit the refreshed `paper/build/main.pdf` in the same paper commit.
-- **Remote and Telegram:** local ignored `.env` may provide runtime GitHub and
-  Telegram credentials. Never print, commit, recover, or reuse credentials from
-  chat. Source only the current `.env` to push/send. Append milestones to
+- **Remote and Telegram:** the local ignored `.env` can provide runtime
+  credentials. As of 2026-08-10, its GitHub token and the existing GitHub CLI
+  credential are invalid; see `to_human/GITHUB_PUSH_BLOCKER_20260810.md` and
+  do not retry until a replacement is supplied. The latest Telegram milestone
+  was delivered successfully (receipt: `to_human/TELEGRAM_DELIVERY_LOG_20260810.md`).
+  Never print, commit, recover, or reuse credentials from chat. Source only the
+  current `.env` to push/send. Append milestones to
   `to_human/pending-notifications.md`; `scripts/send_pending_telegram.py --list` is network-free;
   with both Telegram variables present, `--send-latest` sends exactly one
   update and prints no credential. Read `to_human/TELEGRAM_DELIVERY.md` before
