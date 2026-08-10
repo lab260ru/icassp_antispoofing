@@ -9,7 +9,7 @@ import pytest
 
 import src.h7_feature_transfer as h7
 from src.audio_features import FEATURE_NAMES
-from src.h7_feature_transfer import CORPORA, FREEZE_COLUMNS, freeze_inputs, run_analysis, write_analysis, write_freeze
+from src.h7_feature_transfer import CORPORA, FREEZE_COLUMNS, _eer, freeze_inputs, run_analysis, write_analysis, write_freeze
 
 
 def _fixture_paths(tmp_path: Path, *, rows_per_label: int = 20, bad_column: str | None = None) -> dict[str, Path]:
@@ -49,6 +49,14 @@ def test_freeze_rejects_unlocked_parameters(tmp_path: Path) -> None:
 
 def test_production_bootstrap_constant_is_locked() -> None:
     assert h7.BOOTSTRAP_REPLICATES == 500
+
+
+def test_eer_handles_vertical_roc_crossing() -> None:
+    # The FPR/FNR difference changes sign across two positive-score thresholds
+    # with the same FPR; linear interpolation must return that shared FPR.
+    labels = np.array([0, 1, 1, 1, 0])
+    scores = np.array([5.0, 4.0, 3.0, 2.0, 1.0])
+    assert _eer(labels, scores) == pytest.approx(0.5)
 
 
 def test_freeze_rejects_response_schema(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

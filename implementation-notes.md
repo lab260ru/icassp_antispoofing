@@ -373,3 +373,8 @@
   2 labels × 5,000) from five hash-bound metadata projections. The post-write
   check confirmed unique source IDs and the provenance records no score,
   feature-value, audio, ASR, or model read.
+- Changed: The first analysis pass exposed a valid vertical-ROC EER crossing
+  that the root-bracketing implementation treated as an error. The corrected
+  deterministic interpolation returns the shared FPR for a zero-width ROC
+  segment; a focused regression test covers this case. No H7 result file was
+  written before the correction.
