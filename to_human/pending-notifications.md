@@ -395,3 +395,14 @@ is made. The new score-free H7 transfer supplement, full notes, future roadmap,
 and a verified complete-history HDD Git bundle are preserved. The next causal
 or training study must start from the independently frozen protocol in
 `experiments/future_directions/POST_20260810_RESEARCH_PLAN.md`.
+
+## 2026-08-10 — H8 positive-result pivot protocol locked
+
+I have started a clean positive-result pivot rather than extending the crest
+study. H8-SF tests a source-only, corpus-robust fusion of eight frozen
+anti-spoofing systems. The method, source corpora, five previously untouched
+target corpora, baselines, and success gate are now committed and pushed at
+`e9ae8a2` before any target score or label is read. Next I will acquire only
+the pinned score artifacts, run integrity checks, then evaluate the frozen
+methods blind. If it does not beat fixed and ordinary learned fusion under the
+locked rule, I will stop it rather than tune on the targets.
