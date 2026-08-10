@@ -526,3 +526,7 @@
   This bounds the twelve source-lambda fits and twelve final fits while keeping
   the exact training budget equal across methods. The probe uses synthetic
   inputs only and reads no source/target corpus value or checkpoint.
+- Optimizer freeze: Before source audio materialization, H9 fixes AdamW at
+  `lr=1e-4`, `weight_decay=1e-2`, no scheduler, no gradient accumulation, and
+  deterministic first-64,600/tile-short waveform windows. No augmentation or
+  random crop is allowed, so the loss condition is the only method difference.
