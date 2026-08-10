@@ -1,6 +1,6 @@
 # Pre-deadline goal audit — 2026-08-10
 
-**Audit time:** 2026-08-10 15:30 UTC.
+**Audit time:** 2026-08-10 15:53 UTC.
 **Scope:** the active autonomous research objective through 20:00 UTC. This is
 a live audit, not a claim that the time-bound objective has ended.
 
@@ -13,10 +13,10 @@ a live audit, not a claim that the time-bound objective has ended.
 | Establish whether the crest observation is portable | Discovery-frozen Spectra-AASIST/full-waveform/spoof crest fails the fixed five-corpus rule; Figure 1 and the sealed aggregate record exact estimates | Satisfied with a negative portability result. |
 | Test causal waveform sensitivity carefully | H2 completed detector-free quality screening, but three arms fail the frozen 90% retained-pair gate; no detector received a transformed waveform | Satisfied as a quality-gated stop; no causal effect is claimed. |
 | Consider feature-conditioned training with efficient BF16/GPU settings | H3 is explicitly not authorized because valid H2 causal sensitivity is absent. Parity/throughput artifacts exist, but no unsupported training run was started | Intentionally not run; this is required by the locked evidence boundary. |
-| Strengthen the paper with review and additional evidence | Codex-only internal review bundles, H4/H5/H6 descriptive extensions, H1 covariate disclosure, canonical ASVspoof5 citation, and the evidence-boundary Figure 1 are preserved | Satisfied for an initial evidence-conservative draft. |
+| Strengthen the paper with review and additional evidence | Codex-only internal review bundles, H4/H5/H6 descriptive extensions, H1 covariate disclosure, canonical ASVspoof5 citation, the evidence-boundary Figure 1, and sealed H7 feature-transfer supplement are preserved | Satisfied for an initial evidence-conservative draft. |
 | Compile after each `main.tex` edit | The tracked current PDF hash and local five-page static preflight are in `verification/FINAL_VERIFICATION_20260810.md` | Satisfied for every recorded main-source revision. |
 | Explore requirements and use a template | `paper/submission-requirements.md` records the official ICASSP 2027 policy/deadline; the supplied ICASSP-2026 template inputs are hash-pinned under `paper/template/ICASSP2026/` | Working draft satisfied; official 2027 kit remains an external final-submission prerequisite. |
-| Push checkpoints and communicate material milestones | `origin/research/icassp-signal-audit` receives normal non-force pushes; redacted Telegram receipts are in `to_human/TELEGRAM_DELIVERY_LOG_20260810.md` | Satisfied through message 145 at audit time. |
+| Push checkpoints and communicate material milestones | `origin/research/icassp-signal-audit` receives normal non-force pushes; redacted Telegram receipts are in `to_human/TELEGRAM_DELIVERY_LOG_20260810.md` | Satisfied through H7 message 146 at audit time. |
 | Make work resumable | `AGENTS.md` names the current sealed gates, latest remote/delivery state, artifact boundaries, and safe continuation rules | Satisfied. |
 
 ## Explicit non-completions that must not be misrepresented
