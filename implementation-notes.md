@@ -407,3 +407,9 @@
   encodings are unchanged; only the final axes-anchored annotation is
   authoritative. See
   `experiments/h7_feature_transfer/results/h7_analysis_001/H7_SUPPLEMENTARY_FIGURE_001.md`.
+- Review: A final Codex-only claim-integrity audit accepted the figure as a
+  supplementary-only artifact. It rechecked the four sealed input hashes,
+  output hashes, provenance links, and legibility; the only implemented
+  clarification is that singleton source IDs make the reported clustered
+  bootstrap utterance-level. See
+  `paper/reviews/codex_h7_supplement_20260810/review.md`.

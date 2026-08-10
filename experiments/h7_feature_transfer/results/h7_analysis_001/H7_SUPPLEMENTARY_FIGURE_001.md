@@ -24,6 +24,8 @@ All five cells use the frozen 40,000-row leave-one-corpus-out training pool,
 10,000 held-out rows, and 500/500 valid source-ID bootstrap replicates. This
 is feature-only label-transfer context; it does not establish detector
 reliance, causality, cue selection, model ranking, or mitigation performance.
+The sealed cohorts have singleton source IDs, so these are utterance-level
+cluster bootstrap intervals rather than repeated-source dependence estimates.
 
 ## Hash-validated inputs
 
