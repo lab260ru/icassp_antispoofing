@@ -282,3 +282,16 @@ transparently rather than repaired. This helps delimit which feature
 measurements are view-sensitive, but it does not claim detector reliance,
 causality, or a preferred preprocessing method. The full hash-bound ledger is
 in `experiments/h5_view_invariance/results/H5_ANALYSIS_001.md`.
+
+## 2026-08-10 — H6 score-agreement atlas and H5 supplement
+
+Two bounded follow-ups are complete. H6 used a newly frozen label-only panel
+and the original published score artifacts: all 280 planned within-class
+model-pair cells completed with 5,000 exact joins each, and their agreement
+ranges from -0.629 to 0.869 across the fixed corpus/class registry. This is
+descriptive architecture-diversity context, not a model ranking or causal
+claim. I also rendered a hash-bound H5 supplementary heatmap showing all 84
+predeclared feature/view units; it makes the 17 terminal descriptive stable
+units and six unavailable cells explicit without selecting a cue. Both ledgers
+are committed; the H6 result is in
+`experiments/h6_score_agreement/results/H6_ANALYSIS_001.md`.

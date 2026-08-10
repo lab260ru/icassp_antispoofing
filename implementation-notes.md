@@ -207,6 +207,11 @@
   17 terminal descriptive view-stable units. The registered result note binds
   the two result CSV hashes to the input-freeze ledger; no rerun, threshold
   adjustment, or downstream feature selection is authorized.
+- Visualization: A separate post-result display contract hash-validates only
+  the compact H5 matrix and aggregation before rendering their fixed three-panel
+  concordance view. Visual inspection identified a panel-title collision in the
+  preserved first rendering; the non-overwriting v2 display corrects layout
+  only, with source hashes, values, markers, ordering, and scale unchanged.
 
 ## 2026-08-10 - H6 published-score agreement atlas
 
