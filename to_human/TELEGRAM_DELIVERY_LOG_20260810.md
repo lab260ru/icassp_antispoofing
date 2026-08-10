@@ -97,3 +97,14 @@ historical notifications.
 This is the ninth explicitly selected message in this log. The sender used the
 environment only for delivery and did not expose a credential or bulk-send
 historical notifications.
+
+## Reproducibility release-candidate confirmation
+
+- Heading: 2026-08-10 — reproducibility release candidate prepared
+- Delivery status: success
+- Telegram message ID: 144
+- Text length: 487
+
+This is the tenth explicitly selected message in this log. The sender used the
+environment only for delivery and did not expose a credential or bulk-send
+historical notifications.
