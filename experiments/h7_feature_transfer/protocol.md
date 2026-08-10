@@ -62,6 +62,8 @@ rate (EER), feature count after missing indicators, fit convergence, and a
 500 held-out source-cluster resamples per cell using cell-specific SHA-256
 derived seeds. If every source ID is singleton, this is explicitly reported as
 an utterance-level cluster bootstrap; no alternate grouping is inferred.
+EER is the linear interpolation of the FPR/FNR crossing on the empirical ROC
+curve; no test-set threshold is fitted or reused.
 
 The primary descriptive summary is the unweighted median held-out AUROC across
 the five cells. It has no acceptance threshold and cannot rank/select a
