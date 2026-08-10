@@ -104,9 +104,9 @@ AGGREGATION_COLUMNS = (
     "aggregation_status",
 )
 PAIR_LABELS = {
-    ("deterministic_crop", "full_waveform"): "Deterministic crop / full waveform",
-    ("deterministic_crop", "preemphasized_crop"): "Deterministic crop / pre-emphasized crop",
-    ("full_waveform", "preemphasized_crop"): "Full waveform / pre-emphasized crop",
+    ("deterministic_crop", "full_waveform"): "Deterministic crop /\nfull waveform",
+    ("deterministic_crop", "preemphasized_crop"): "Deterministic crop /\npre-emphasized crop",
+    ("full_waveform", "preemphasized_crop"): "Full waveform /\npre-emphasized crop",
 }
 
 
@@ -456,7 +456,7 @@ def _render_h5_median_concordance_heatmap(
     cmap = plt.get_cmap("viridis").copy()
     cmap.set_bad("#D9D9D9")
     norm = Normalize(vmin=0.0, vmax=1.0, clip=True)
-    fig, axes = plt.subplots(1, len(VIEW_PAIRS), figsize=(7.25, 8.4), sharey=True, constrained_layout=False)
+    fig, axes = plt.subplots(1, len(VIEW_PAIRS), figsize=(8.8, 8.4), sharey=True, constrained_layout=False)
     if not isinstance(axes, np.ndarray):  # fixed three-panel layout
         axes = np.asarray([axes])
     mappable = None
@@ -498,7 +498,7 @@ def _render_h5_median_concordance_heatmap(
         for spine in axis.spines.values():
             spine.set_visible(False)
     assert mappable is not None
-    fig.subplots_adjust(left=0.26, right=0.97, bottom=0.20, top=0.90, wspace=0.82)
+    fig.subplots_adjust(left=0.23, right=0.98, bottom=0.20, top=0.90, wspace=0.82)
     colorbar_axis = fig.add_axes([0.34, 0.112, 0.40, 0.017])
     colorbar = fig.colorbar(mappable, cax=colorbar_axis, orientation="horizontal")
     colorbar.set_ticks([0.0, 0.5, 1.0])
