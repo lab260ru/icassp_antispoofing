@@ -320,3 +320,6 @@
 - Boundary: The protocol permits metadata availability counts and the sealed
   bootstrap description only. It forbids score/model/audio/ASR reads and any
   association, bootstrap, ranking, or intervention calculation.
+- Tradeoff: The pinned H1 Parquets necessarily retain their 28 feature columns.
+  The audit therefore uses strict Parquet column projection rather than
+  rejecting the source schema; feature values are never loaded.
