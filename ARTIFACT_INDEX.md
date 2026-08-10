@@ -51,6 +51,7 @@ committed to this repository.
 | Codex-only internal reviews | `paper/reviews/codex_post_template_20260810/` | Three fresh methods/template/presentation reviews and a resolution record for the named-author ICASSP-2026-template draft. This is internal technical review, not conference peer review. |
 | Final Codex-only audit | `paper/reviews/codex_final_audit_20260810/` | Three independent review perspectives, meta-review, concern matrix, and evidence-safe resolution for the current compiled working draft. H5/H6/S1 remain supplementary-only. |
 | Codex-only Figure 1 review | `paper/reviews/codex_main_figure_20260810/` | Three independent reviews plus a v2 layout verification. The resolved main figure uses only H1/H2 hash-pinned inputs and makes no causal or cross-panel claim. |
+| H1 adjustment disclosure | `experiments/h1_feature_association/results/covariate_availability_audit_001/` | Score-free table of exact duration/loudness/speaker/attack/source metadata coverage for the five H1 cohorts, plus sealed held-out bootstrap context. It computes no association or new selection decision. |
 | Supplementary crest evidence boundary | `experiments/paper_extension/results/crest_evidence_boundary_s1_001/` | Fixed-input S1 PDF/PNG shows the sealed H1 crest slice, H2 quality stop, and score-free H4 label context. It is descriptive only and does not alter any research gate. |
 | Supplementary H5 concordance heatmap | `experiments/h5_view_invariance/H5_SUPPLEMENTARY_CONCORDANCE_FIGURE_PROTOCOL.md` | `experiments/h5_view_invariance/results/H5_SUPPLEMENTARY_CONCORDANCE_FIGURE_001.md` | Hash-validated display of all 84 sealed H5 aggregates. The v2 layout is visually approved; unavailable/stable markers remain descriptive only. |
 | Supplementary H6 agreement heatmap | `experiments/h6_score_agreement/H6_SUPPLEMENTARY_FIGURE_PROTOCOL.md` | `experiments/h6_score_agreement/results/H6_SUPPLEMENTARY_FIGURE_001.md` | Hash-validated fixed-order display of all 280 sealed H6 agreement cells. It is descriptive only and cannot rank/select models or revise a research gate. |
@@ -67,7 +68,7 @@ PYTHONPATH=. python3 scripts/check_paper_pdf.py \
   --review-stage single-anonymous-submission
 ```
 
-The most recent full suite is 134 passed. `verification/FINAL_VERIFICATION_20260810.md` records the current PDF hash, static preflight, full test suite, reviewed main-figure revision, H6 supplementary display, and complete-history bundle evidence; rerun the commands after any relevant source change.
+The most recent full suite is 139 passed. `verification/FINAL_VERIFICATION_20260810.md` records the current PDF hash, static preflight, full test suite, reviewed main-figure revision, H6 supplementary display, and complete-history bundle evidence; rerun the commands after any relevant source change.
 
 ## External delivery and resume blockers
 

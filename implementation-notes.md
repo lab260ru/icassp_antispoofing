@@ -326,3 +326,8 @@
 - Changed: The Markdown renderer avoids the unavailable optional `tabulate`
   package and formats the compact table directly, preserving the dependency
   footprint of the existing analysis environment.
+- Validation: The fixed run wrote all 10 corpus-by-label rows from five
+  byte-hashed inputs and recorded the sealed 2,000-replicate confirmation
+  context. A post-write structural check verified unique cells, five source
+  hashes, and the forbidden-operation ledger; no score or feature value was
+  loaded.
