@@ -26,6 +26,16 @@ every target, but it fails its stronger source-selected single-expert
 falsification: Spectra-AASIST has 0.185% mean target EER while GroupDRO has
 9.309%. H8-SF is terminal and cannot support the paper.
 
+## H9 paired-counterfactual status
+
+H9-PCR is a new, protocolled training study, not a reinterpretation of any
+earlier detector-score or feature result. It asks whether content-matched
+natural/synthetic ranking on ODSS transfers better than same-data BCE and a
+random-pair margin control to two fixed external corpora, SONAR and ArAD. No
+H9 source/target waveform, label, model-fit, or target metric has yet been
+read. The source-pairing contract, provenance audit, and two-target success
+gate are in `experiments/h9_paired_counterfactual/PLAN.md`.
+
 ## Key Results
 
 - Input-integrity validation: all 71,237 published Spectra-AASIST scores joined

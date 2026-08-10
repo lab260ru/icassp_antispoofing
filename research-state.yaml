@@ -75,12 +75,17 @@ hypotheses:
     status: complete_failed_dominant_single_model_falsification
     motivation: "The completed association/quality-gate paper is not sufficient as the primary ICASSP contribution; H8 permits a clean pivot rather than post-hoc repair."
     priority: highest
+  - id: H9
+    statement: "Content-matched natural-to-synthetic ranking supervision improves cross-corpus anti-spoofing EER relative to ordinary BCE and an equal-budget random-pair ranking control."
+    status: protocol_locked_source_pairing_and_blind_target_evaluation_pending
+    motivation: "A paired counterfactual comparison can suppress linguistic-content shortcuts while holding the compact transparent architecture, data volume, batch schedule, and margin term fixed."
+    priority: highest
 
 experiments:
   proxy_metric: "Cross-dataset, within-class feature-score association and causal paired score sensitivity; EER for mitigation."
   baseline_value: 0.00184813566035551
   best_value: 0.00184813566035551
-  total_runs: 28
+  total_runs: 29
   trajectory:
     - run_id: run_001
       hypothesis: H1
@@ -278,11 +283,18 @@ experiments:
       wall_time_min: 2.0
       change_summary: "The locked source-only GroupDRO rank-space fuser improves mean EER versus equal fusion and ERM on five newly evaluated corpora, but fails the protocol's source-selected single-expert falsification: Spectra-AASIST reaches 0.185% mean EER versus P's 9.309%. H8-SF is terminal and not a paper claim."
       timestamp: "2026-08-10"
+    - run_id: h9pcr_protocol_001
+      hypothesis: H9
+      metric_value: null
+      delta: null
+      wall_time_min: null
+      change_summary: "Locked an independent ODSS paired-counterfactual training study with same-data BCE and random-pair controls, BF16 Res2TCNGuard, four source-only seeds, and two fixed target corpora before H9 data/result access."
+      timestamp: "2026-08-10"
 
 outer_loop:
-  cycle: 11
-  last_direction: "h8sf_failed_dominant_single_expert_falsification"
-  last_reflection: "H8-SF showed robust fusion can improve weak fusion baselines, but the fixed source-selected Spectra-AASIST expert is overwhelmingly stronger on all five untouched targets. The table-level B0 falsification clause therefore overrides the narrower mechanical B1/B2 gate. Do not retune H8; identify a new independently protocolled hypothesis with a meaningful transparent baseline."
+  cycle: 12
+  last_direction: "h9_paired_counterfactual_ranking_protocol_locked"
+  last_reflection: "H8-SF is terminal against its dominant frozen single expert. H9-PCR changes the scientific object: paired natural/synthetic source supervision is compared to exactly matched BCE and random-pair controls in one transparent model, then evaluated on two new fixed corpora. Pair availability, provenance, and the strict two-target gate are hard stops."
   pivot_policy: "After the first association/intervention matrix or five completed runs, choose deepen, broaden, pivot, or conclude and record the evidence."
 
 workspace:
