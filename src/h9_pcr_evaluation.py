@@ -319,6 +319,7 @@ def _validate_sidecar(
     _expect_identity(sidecar, "checkpoint_sha256", checkpoint_hash, description="training result sidecar")
     if sidecar.get("target_labels_read") is not False or sidecar.get("target_audio_read") is not False:
         raise ValueError("H9 checkpoint sidecar breached the target firewall")
+    _expect_identity(sidecar, "precision", "cuda_bfloat16_autocast", description="training precision provenance")
     architecture = sidecar.get("architecture_provenance")
     if not isinstance(architecture, Mapping):
         raise ValueError("H9 checkpoint sidecar lacks architecture provenance")
@@ -825,6 +826,7 @@ def terminal_evaluate(
         "target_metrics_read": True,
         "evaluation_device": device,
         "evaluation_batch_size": EVALUATION_BATCH_SIZE,
+        "evaluation_precision": "cuda_bfloat16_autocast",
         "target_manifests": {
             name: {
                 "path": str(target.manifest_path),

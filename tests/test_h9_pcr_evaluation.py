@@ -181,6 +181,7 @@ def _ledger(tmp_path: Path, *, plan: Path, data: Path) -> Path:
                     "checkpoint_sha256": sha256_file(checkpoint),
                     "target_labels_read": False,
                     "target_audio_read": False,
+                    "precision": "cuda_bfloat16_autocast",
                     "architecture_provenance": {
                         "architecture_sha256": architecture_sha,
                         "initialization": "fresh_seeded",
