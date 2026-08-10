@@ -1,7 +1,9 @@
 % Initial ICASSP 2027 draft.  This file intentionally reports only results
 % backed by committed artifacts; all remaining experiment tables are pending.
-% Use the repository-pinned IEEEtran source, not a system-installed variant.
-\documentclass[conference]{template/IEEEtran/IEEEtran}
+% Use the user-provided ICASSP 2026 spconf bundle pinned in this repository;
+% reconcile with the official ICASSP 2027 kit when it becomes available.
+\documentclass{article}
+\usepackage{template/ICASSP2026/spconf}
 
 \usepackage{cite}
 \usepackage{booktabs}
@@ -9,15 +11,15 @@
 \usepackage{amsmath}
 \usepackage{graphicx}
 
-\newcommand{\studyname}{Beyond Crest Factor}
 \newcommand{\scorepanel}{Spectra-AASIST, AASIST, Res2TCNGuard, RawTFNet,
 WhisperMFCCMesoNet, W2V2-AASIST, XLSR-SLS, and RawBMamba}
 
-\title{\studyname: A Five-Corpus Audit of Signal Associations in Speech
-Anti-Spoofing}
+\title{BEYOND CREST FACTOR: A FIVE-CORPUS AUDIT OF SIGNAL ASSOCIATIONS IN
+SPEECH ANTI-SPOOFING}
 
-\author{\IEEEauthorblockN{Anonymous Authors}
-\IEEEauthorblockA{Author information required before ICASSP 2027 submission}}
+\name{Kirill Borodin$^{1,2}$}
+\address{$^{1}$\;lab260, Moscow, Russia\\
+$^{2}$\;BitmanagerAI, Dubai, UAE}
 
 \begin{document}
 \maketitle
@@ -39,14 +41,14 @@ portability condition. Nineteen other pre-registered feature/view/class units
 meet the descriptive association rule, but are not promoted post hoc to paired
 interventions. The frozen crest/control panel also fails its 90\% per-arm
 quality-retention gate before detector scoring. The result is a conservative
-negative finding about crest factor, together with a reproducible association
-atlas; it makes no causal shortcut claim.
+negative portability finding for the frozen crest-factor candidate, together
+with a reproducible association atlas; it makes no causal shortcut claim.
 \end{abstract}
 
-\begin{IEEEkeywords}
+\begin{keywords}
 speech deepfake detection, anti-spoofing, shortcut learning, causal audit,
 robustness
-\end{IEEEkeywords}
+\end{keywords}
 
 \section{Introduction}
 \label{sec:introduction}
@@ -67,8 +69,8 @@ harder version of the same task~\cite{muller2024harder}.
 
 The present study begins with a practical observation: an interpretable
 feature---including crest factor---may be label-discriminative, correlated with
-a detector score, and causally influential under waveform transformation; these
-are different claims. Confusing them risks attributing model reliance to a
+a detector score, or sensitive to a waveform-family transformation targeted at
+it; these are different claims. Confusing them risks attributing model reliance to a
 feature that merely tracks label prevalence, corpus identity, duration, or
 loudness. We therefore audit published per-sample scores without recomputing
 baseline inference and use a staged, locked decision process.
@@ -80,16 +82,15 @@ This paper makes the following methodological contributions.
   fixes the acceptance criterion before confirmation data are analyzed.
   \item It specifies quality-gated paired waveform interventions that can test
   score sensitivity without treating an association as a shortcut.
-  \item It defines a conditional mitigation experiment: a feature-conditioned
-  head with transformation consistency is evaluated only as a consequence of
-  audit evidence, against an equivalent training recipe and held-out corpora.
+  \item It prespecifies a conditional mitigation evaluation that is activated
+  only after a sensitivity result, against an equivalent training recipe and
+  held-out corpora.
 \end{itemize}
 
-The manuscript is intentionally an initial, evidence-conservative draft.
+We report only stages that completed their predeclared evidence gates.
 Sections~\ref{sec:study}--\ref{sec:results} distinguish locked methodology,
 three discovery screens, held-out confirmation, and a quality-gated
-intervention attempt. The title and narrative will be updated only after the
-documented outer-loop evidence gate.
+intervention attempt.
 
 \section{Background and audit target}
 \label{sec:background}
@@ -132,7 +133,8 @@ the Arena score artifacts as published evidence, rather than spending
 additional compute to reproduce their baseline inference.
 The accompanying artifact bundle preserves the pinned manifest, executable
 analysis, and compact hash-sealed results; raw corpora remain external to the
-repository.
+repository. A citable archival locator will be added when disclosure policy
+permits.
 
 The frozen \texttt{v1\_28} registry extracts 28 amplitude, spectral,
 excitation, phase, and modulation descriptors from full-waveform,
@@ -143,36 +145,40 @@ class-balanced subset using seed 2609 and at most 5,000 examples per class.
 
 \subsection{H1: association and portability}
 
-For each model, dataset, class, feature, and waveform view, H1 reports feature
-label AUROC, within-class Spearman association, and partial rank association.
+For each dataset, feature, and waveform view, H1 reports feature-label AUROC.
+For each model, dataset, class, feature, and waveform view, it reports
+within-class Spearman association and partial rank association.
 P-values are adjusted with Benjamini--Hochberg correction. Candidate estimates
-receive 2,000 clustered bootstrap replicates, with a speaker or source
-utterance cluster when metadata permits. Exclusions are limited to missing
+from the frozen manifest receive 2,000 clustered bootstrap replicates during
+held-out confirmation, with a speaker or source utterance cluster when metadata
+permits. Exclusions are limited to missing
 stable IDs, unreadable waveforms, required labels, or published scores; every
-count is reported.
+count is preserved in the accompanying artifacts.
 
-A feature is portable only if it has the same direction in at least four of the
-five core datasets, is significant in both held-out confirmation datasets, and
-is present in at least five of eight models. This criterion is fixed before
-confirmation analysis. Crest factor is one candidate in this registry, not the
-pre-supposed conclusion.
+A feature/view/class unit is portable only if it has the same direction in at
+least four of the five core datasets, is significant in both held-out
+confirmation datasets, and is present in at least five of eight models. This
+criterion is fixed before confirmation analysis. Crest factor is one candidate
+in this registry, not the pre-supposed conclusion.
 
 \subsection{H2: planned quality-gated paired interventions}
 
-The planned confirmatory H2 requires an H1-frozen candidate, 500 examples per
+The planned quality-gated H2 sensitivity study requires an H1-frozen candidate, 500 examples per
 class per core dataset, and a four-model panel. A future transformed example is
 retained only if STOI is at least 0.95, original-to-transformed transcript WER
 is at most 5\%, loudness drift is at most 0.2 LU, and no transform-induced
-clipping occurs; an arm is dropped below 90\% retention. A future sensitivity
-claim also requires a nonzero bootstrap interval, standardized paired score
-change of at least 0.2, and consistent direction in at least three datasets
-and three of four models.
+clipping occurs, and the registered target-feature direction holds; an arm is
+dropped below 90\% retention. A future sensitivity claim also requires a
+nonzero bootstrap interval, standardized paired score change of at least 0.2,
+and consistent direction in at least three datasets and three of four models.
 
 Only its score-blind exploratory component has completed: a 1,000-clip
 ASVspoof 2019 LA crest/control quality screen with DRC-3, DRC-6, +0.1-dB gain,
 and polarity. It stopped before detector scoring because three arms fail the
 locked retention gate. It is therefore neither a completed four-model,
 multi-dataset H2 nor evidence of isolated crest-factor causality.
+The currently instantiated crest follow-up is exploratory because its
+discovery-to-H2 candidate rule was introduced during the discovery loop.
 
 \subsection{H3: conditional feature-conditioned mitigation}
 
@@ -185,7 +191,8 @@ beneficial~\cite{pascu2024generalizable}.
 \section{Results}
 \label{sec:results}
 
-Table~\ref{tab:status} records the completed H1 evidence, and
+Table~\ref{tab:status} records the completed evidence and H2 quality-gate
+outcome, and
 Fig.~\ref{fig:h1-association-atlas} visualizes the registry-wide associations
 that satisfy the fixed rule. The aggregate is exhaustive over the registered
 matrix, but it is not a post-hoc intervention selector. No H2 delta, EER, or
@@ -196,8 +203,9 @@ crest-factor association, which is distinct from the frozen spoof-class crest
 candidate and is not reused for H2.
 
 \begin{table}[!t]
-  \caption{Completed H1 evidence. The five-corpus association outcome is not a
-  causal result and does not select new H2 candidates.}
+  \caption{Completed evidence and H2 quality-gate outcome. The five-corpus
+  association outcome is not a causal result and does not select new H2
+  candidates.}
   \label{tab:status}
   \centering
   \footnotesize
@@ -210,8 +218,9 @@ candidate and is not reused for H2.
     3 views $\times$ 28 features), with exact joins for every model and corpus. \\
     Fixed crest-factor slice: full waveform, spoof class & Spectra-AASIST
     partial $\rho$ is $-0.454$, $-0.099$, and $-0.065$ on 2019 LA, 2021 LA,
-    and 2021 DF. It is $-0.0326$ in In-the-Wild but $0.0014$ in ASVspoof5
-    after registered adjustment; it therefore fails portability. \\
+    and 2021 DF. It is $-0.0326$ in In-the-Wild ($q=0.000523$) but $0.0014$
+    in ASVspoof5 ($q=0.937089$) after registered adjustment; it therefore
+    fails portability. \\
     Registered five-corpus association rule & 19/168 feature/view/class units
     meet all fixed sign, held-out-confirmation, and $\geq5/8$-model conditions;
     none is added post hoc to H2. \\
@@ -267,7 +276,8 @@ a broader association atlas without converting it into post-hoc interventions.
 The pre-frozen crest transformations fail their own quality gate before score
 measurement. The paper therefore makes no causal feature-reliance claim.
 
-\bibliographystyle{template/IEEEtran/IEEEtran}
+\clearpage
+\bibliographystyle{template/ICASSP2026/IEEEbib}
 \bibliography{references}
 
 \end{document}

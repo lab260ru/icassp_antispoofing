@@ -130,52 +130,57 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
 - **Paper draft:** `paper/main.tex` compiles with
   `tectonic --outdir build main.tex` from `paper/`. Track the source, citation
   ledger, and `paper/build/main.pdf`; ignore build intermediates. The compiled
-  IEEE-style initial draft reports the completed five-corpus H1 analysis, its
+  ICASSP-2026-spconf-format initial draft reports the completed five-corpus H1 analysis, its
   descriptive association atlas, and the H2 quality-gate failure, without a
   causal score claim. `paper/reviews/five_corpus_h2_quality_20260809/`
   contains an internal claim-to-artifact audit, not peer review. The
   spoof-class frozen crest candidate fails portability; a separate
   bona-fide/full-waveform crest slice appears in the descriptive atlas and
   must never be substituted into H2 post hoc.
-  ICASSP 2027 uses **single-anonymous review**, so the present anonymous author
-  block is an internal placeholder only. Before upload, an authorized author
-  must supply the confirmed names, affiliations, and ordering; read
-  `paper/AUTHOR_BLOCK_REQUIRED.md`. Do not submit the current placeholder PDF.
+  ICASSP 2027 uses **single-anonymous review**. The current source contains the
+  authorized working metadata for Kirill Borodin with lab260 (Moscow, Russia)
+  and BitmanagerAI (Dubai, UAE); read `paper/AUTHOR_BLOCK_REQUIRED.md` before
+  changing it or uploading. The user-provided ICASSP 2026 spconf/BST inputs are
+  pinned in `paper/template/ICASSP2026/`; their archive hash and the ICASSP-2027
+  reconciliation requirement are recorded in `TEMPLATE_PROVENANCE.md`.
   **Whenever `paper/main.tex` changes, compile it successfully and update the
   committed `paper/build/main.pdf` in the same change.**
   `scripts/check_paper_pdf.py --pdf paper/build/main.pdf` is the reproducible
-  local preflight: it confirms four US-letter pages, Table I/References
+  local preflight: it confirms the present four-technical-page plus
+  references-only-fifth-page US-letter layout, exact Table 1/References
   landmarks, and embedded fonts. `anonymous-working-draft` mode additionally
   checks blank `/Author` metadata and selected project-identity strings;
   `single-anonymous-submission` mode must be used after author insertion. It
   is deliberately narrower than the official ICASSP template or IEEE PDF
   eXpress; read `paper/SUBMISSION_READINESS.md` before treating it as a
   compliance signal.
-  The required three-reviewer launcher was attempted for the initial draft,
-  the five-corpus update, the post-scope/layout draft, and the current
-  post-author-policy draft, but was blocked because the local Claude CLI is
-  unauthenticated;
+  The external three-reviewer launcher was attempted for the initial draft,
+  the five-corpus update, the post-scope/layout draft, and the post-author-policy
+  draft, but was blocked because the local Claude CLI is unauthenticated;
   see `paper/reviews/initial_draft/REVIEW_STATUS.md` and
   `paper/reviews/five_corpus_h2_quality_20260809/REVIEW_STATUS.md`, and
   `paper/reviews/post_scope_layout_20260809/REVIEW_STATUS.md`, and
   `paper/reviews/post_author_policy_20260809/REVIEW_STATUS.md`. Do not pretend
-  a review took place. Once authenticated, run a new timestamped paper-review
-  bundle.
+  a review took place. The user now requires only Codex-agent reviews. The
+  fresh named-author bundle is
+  `paper/reviews/codex_post_template_20260810/`; preserve its internal-review
+  status rather than retrying external reviewer tooling or calling it peer
+  review.
   **Required workflow:** after every modification to `paper/main.tex`, run
   `cd paper && tectonic --outdir build main.tex`, verify a PDF was written,
   and commit the refreshed `paper/build/main.pdf` in the same paper commit.
-- **Remote and Telegram:** a credential-free remote is configured, but no
-  runtime GitHub or Telegram credential exists. Keep committing locally and
-  append milestones to `to_human/pending-notifications.md`; push/send only when
-  environment credentials are supplied. Never recover or reuse previously
-  exposed credentials. `scripts/send_pending_telegram.py --list` is network-free;
+- **Remote and Telegram:** local ignored `.env` may provide runtime GitHub and
+  Telegram credentials. Never print, commit, recover, or reuse credentials from
+  chat. Source only the current `.env` to push/send. Append milestones to
+  `to_human/pending-notifications.md`; `scripts/send_pending_telegram.py --list` is network-free;
   with both Telegram variables present, `--send-latest` sends exactly one
   update and prints no credential. Read `to_human/TELEGRAM_DELIVERY.md` before
   delivery. The ICASSP page currently exposes no conference-specific
   LaTeX bundle. The official generic IEEE ZIP URL is documented in
   `paper/submission-requirements.md`, but direct download from this runtime gets
-  a CloudFront HTTP-202 WAF challenge. Do not substitute an unverified mirror:
-  obtain an approved archive, hash/compare it, then reconcile and rebuild.
+  a CloudFront HTTP-202 WAF challenge. The user provided an ICASSP-2026 archive,
+  which is now pinned with provenance; do not substitute another unverified
+  mirror, and reconcile with the 2027 kit before submission.
   A complete-history Git bundle is available on the HDD for offline recovery;
   its hash and restore command are in `to_human/GIT_BUNDLE_HANDOFF_20260809.md`.
   It does not replace the required eventual normal push.

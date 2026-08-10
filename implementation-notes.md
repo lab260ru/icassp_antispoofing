@@ -150,3 +150,20 @@
 
 - Execution: Created `/home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/handoffs/git-bundles/icassp_antispoofing_20260809T235303Z.bundle` from the local research branch. `git bundle verify` reports complete history at `55e50e8427a7bb845bfc8ecda0d2194878d76bd6`; SHA-256 is `80ce7fc0954c83202b4c5a1ac493c19e3894d68b180201686238328e8dbe9777`.
 - Boundary: The bundle is stored on the designated HDD, not Git, and is only a portable recovery artifact. It neither contacts GitHub nor satisfies the requested remote push. The restoration/push steps are in `to_human/GIT_BUNDLE_HANDOFF_20260809.md`.
+
+## 2026-08-10 - Named-author ICASSP template and Codex review checkpoint
+
+- Template: The user-provided ICASSP-2026 archive was copied to the HDD and its
+  spconf.sty/IEEEbib.bst inputs were pinned in Git with the archive SHA-256 in
+  `paper/template/ICASSP2026/TEMPLATE_PROVENANCE.md`. This is a user-directed
+  working format, not a claim of ICASSP-2027 approval.
+- Paper: `main.tex` now contains authorized dual affiliations, a literal
+  all-caps spconf title, narrowed H1/H2 wording, and a clearpage before the
+  bibliography. The resulting PDF has four technical pages and a
+  references-only fifth page, avoiding a float split through the reference list.
+- Verification: A clean build confirmed the generated bibliography uses the
+  vendored IEEEbib style; the local checker was repaired to require the actual
+  Table 1/I label rather than a substring false positive. Full tests pass 87.
+- Review: Three fresh read-only Codex-agent reviews were preserved and their
+  actionable findings resolved in `paper/reviews/codex_post_template_20260810/`.
+  Do not relabel this internal work as external peer review.
