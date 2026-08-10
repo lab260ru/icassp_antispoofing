@@ -9,7 +9,7 @@ import pandas as pd
 import pytest
 import yaml
 
-from src.h8_score_fusion import freeze_source_inputs, materialize_label_free_target_features
+from src.h8_score_fusion import freeze_source_inputs, materialize_label_free_target_features, normalize_sample_id
 
 
 def _write_scores(path: Path, values: dict[str, float]) -> None:
@@ -138,3 +138,8 @@ def test_target_features_refuse_nonexistent_orientation_model(tmp_path: Path) ->
             datasets=("source_a",),
             models=("model_a",),
         )
+
+
+def test_normalize_sample_id_only_strips_terminal_audio_extension() -> None:
+    assert normalize_sample_id("dir/CVF_de_vctk_multi_band_melgan.v2_generated_common_voice_de_1_Gen") == "CVF_de_vctk_multi_band_melgan.v2_generated_common_voice_de_1_Gen"
+    assert normalize_sample_id("dir/clip.wav") == "clip"

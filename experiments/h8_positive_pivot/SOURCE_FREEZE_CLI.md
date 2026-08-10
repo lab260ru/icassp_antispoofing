@@ -17,3 +17,8 @@ and one source-learned orientation multiplier for every frozen system.
 It refuses an existing output directory. The target datasets, target labels,
 target scores, and target metrics are absent from both the CLI arguments and
 the emitted provenance contract.
+
+The H8 v2 normalizer removes only a terminal audio suffix, rather than using a
+generic basename stem. This preserves literal dotted CVoiceFake identifiers
+such as `multi_band_melgan.v2_generated...` and prevents accidental ID
+collisions during target joining.

@@ -21,7 +21,7 @@ from scipy.stats import rankdata
 from scipy.special import ndtri
 
 
-H8_VERSION = "h8sf_source_freeze_v1"
+H8_VERSION = "h8sf_source_freeze_v2"
 SOURCE_DATASETS = ("ASVspoof2019_LA", "ASVspoof2021_LA", "ASVspoof2021_DF")
 TARGET_DATASETS = ("CFAD", "CVoiceFake_small", "DECRO", "LibriSeVoc", "XMAD")
 MODELS = (
@@ -74,8 +74,18 @@ def sha256_file(path: Path) -> str:
 
 
 def normalize_sample_id(value: object) -> str:
-    """Use the Arena join convention: basename with one suffix removed."""
-    return Path(str(value)).stem
+    """Normalize only a terminal audio suffix, preserving meaningful dots.
+
+    CVoiceFake_small has literal score IDs such as
+    ``...multi_band_melgan.v2_generated...``.  ``Path.stem`` would collapse
+    that family to a non-unique prefix, so H8 intentionally removes only a
+    terminal audio extension after discarding any directory prefix.
+    """
+    name = Path(str(value)).name
+    for suffix in (".wav", ".flac", ".mp3", ".ogg", ".opus", ".m4a"):
+        if name.casefold().endswith(suffix):
+            return name[: -len(suffix)]
+    return name
 
 
 def _load_index(index_path: Path) -> dict[str, Any]:
