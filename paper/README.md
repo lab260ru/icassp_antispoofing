@@ -12,3 +12,8 @@ required future ICASSP-2027 reconciliation are in
 
 The paper begins from the provisional causal-audit narrative and is permitted to
 pivot only after a documented outer-loop reflection.
+
+The current main Figure 1 is the hash-validated H1/H2 crest evidence-boundary
+display documented in `figures/FIGURE_CREST_EVIDENCE_BOUNDARY_MAIN.md`. Its
+reviewed v2 asset replaces the earlier registry pass-count atlas in the main
+paper; the latter remains preserved as a companion repository artifact.

@@ -4,10 +4,13 @@
 
 - Readable named-author ICASSP working draft: `paper/main.tex` and
   `paper/build/main.pdf` (SHA-256
-  `5077102e4467782f2c39c41ff29312acef4ad4c270bd9b1798eca93d0f22d094`).
+  `495bd3bb7d476915b94c592c9879f8d908ccf37892f255c993efb0fee3d8cdf0`).
   The current source uses the user-provided, hash-pinned ICASSP-2026
   `spconf`/`IEEEbib` inputs and was independently audited by three Codex-only
-  perspectives.
+  perspectives. A further Codex-only figure review replaced the registry
+  pass-count atlas with a hash-pinned H1/H2 evidence-boundary Figure 1 that
+  explicitly separates discovery from confirmation and the five-corpus H1
+  result from the one-corpus H2 quality screen.
 - Complete H1 five-corpus association audit: the discovery-frozen
   Spectra-AASIST/full-waveform/spoof crest-factor association is **not
   portable** under the locked rule. The 19/168 other entries are descriptive
@@ -31,7 +34,7 @@
 
 ## Verified now
 
-The full repository suite passes **115 tests**. The local paper checker reports
+The full repository suite passes **134 tests**. The local paper checker reports
 five US-letter pages, Table 1 on page 3, references on page 5, and ten embedded
 fonts. See `verification/FINAL_VERIFICATION_20260810.md`.
 

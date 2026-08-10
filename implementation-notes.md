@@ -294,3 +294,19 @@
   after the H6 delivery head, verified it with `git bundle verify`, and wrote a
   checksum-bound restore note. This supplements, rather than replaces, the
   successful normal remote push.
+
+## 2026-08-10 - Reviewed main evidence-boundary figure
+
+- Decision: Replace the page-sized pass-count atlas in the main paper with a
+  narrower figure that directly displays the frozen H1 crest association and
+  the H2 pre-score quality stop. H4/H5/H6/S1 remain out of the manuscript.
+- Boundary: The first renderer permits only five H1 summaries, two H1
+  confirmation rows, and one H2 summary. Three Codex-only reviews then led to
+  a separate, non-overwriting v2 layout contract; it pins the v1 parser and
+  manifest hashes and changes only scope labels, discovery/held-out grouping,
+  and polarity colour.
+- Validation: V2 passed visual verification, the main source was recompiled
+  immediately after each edit, the static five-page check passes, and the full
+  suite now has 134 passing tests. The final caption states the fixed
+  model-level portability boundary, absent score-eligible manifest, and no
+  cross-panel/causal inference.

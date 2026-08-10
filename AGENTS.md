@@ -46,13 +46,15 @@ threshold, sample, transform, scorer, feature, or model after seeing results.
   can select a cue/model, rank a detector, establish causality, or alter
   H1--H3/H2B.
 - **Paper handoff:** `paper/main.tex` and `paper/build/main.pdf` are the
-  current readable named-author ICASSP-2026-template working draft. Commit
-  `7d430c4` is the latest audited paper checkpoint; its local preflight passes
+  current readable named-author ICASSP-2026-template working draft. Its
+  reviewed Figure 1 v2 directly displays the frozen H1 crest slice and the
+  one-corpus H2 quality stop from eight hash-pinned inputs; read
+  `paper/figures/FIGURE_CREST_EVIDENCE_BOUNDARY_MAIN.md` and
+  `paper/reviews/codex_main_figure_20260810/`. The local preflight passes
   (four technical US-letter pages, references-only fifth page, Table 1 and
-  reference landmarks, embedded fonts) and the full test suite passes 115.
-  The Codex-only audit bundle is
-  `paper/reviews/codex_final_audit_20260810/`. H5, H6, and S1 are
-  supplementary-only unless a new submission-package decision is recorded.
+  reference landmarks, embedded fonts) and the full test suite passes 134.
+  H5, H6, and S1 remain supplementary-only unless a new submission-package
+  decision is recorded.
   **Every `paper/main.tex` edit must immediately run** `cd paper && tectonic
   --outdir build main.tex` **and commit the refreshed `paper/build/main.pdf`
   in the same paper change.**

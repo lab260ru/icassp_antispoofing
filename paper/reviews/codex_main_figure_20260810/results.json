@@ -1,0 +1,12 @@
+{
+  "review_mode": "Codex-only internal review",
+  "individual_reviews": {
+    "alfa": "review_alfa.md",
+    "bravo": "review_bravo.md",
+    "charlie": "review_charlie.md"
+  },
+  "meta_review": "meta_review.md",
+  "v2_verification": "v2_verification.md",
+  "final_internal_verdict": "accept evidence-conservative internal draft after v2 layout/wording resolution",
+  "external_review_invoked": false
+}

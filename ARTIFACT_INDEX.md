@@ -43,13 +43,14 @@ committed to this repository.
 
 | Item | Location | Status |
 |---|---|---|
-| Named-author source / readable PDF | `paper/main.tex`, `paper/build/main.pdf` | Current initial draft has four technical pages plus a references-only fifth page and contains authorized working metadata for the single-anonymous policy. Confirm portal metadata before upload; see `paper/AUTHOR_BLOCK_REQUIRED.md`. |
+| Named-author source / readable PDF | `paper/main.tex`, `paper/build/main.pdf` | Current initial draft has four technical pages plus a references-only fifth page and contains authorized working metadata for the single-anonymous policy. Its reviewed v2 Figure 1 directly shows the H1 crest boundary and one-corpus H2 quality stop; see `paper/figures/FIGURE_CREST_EVIDENCE_BOUNDARY_MAIN.md`. Confirm portal metadata before upload; see `paper/AUTHOR_BLOCK_REQUIRED.md`. |
 | Requirements and template status | `paper/submission-requirements.md`, `paper/template/ICASSP2026/TEMPLATE_PROVENANCE.md` | The user-provided ICASSP-2026 spconf/BST build inputs are pinned with archive hash. Reconcile with the official ICASSP-2027 kit before submission. |
 | Static local PDF preflight | `paper/SUBMISSION_READINESS.md`, `scripts/check_paper_pdf.py` | Current named-author PDF passes five-page US-letter, exact Table 1/References landmark, and font checks in single-anonymous-submission mode. This is not IEEE PDF eXpress or an official template check. |
 | Citation ledger | `paper/citation-verification.md` | Seven cited records are mapped to bounded claims. |
 | External paper-review attempts | `paper/reviews/*/REVIEW_STATUS.md` | Four timestamped panels were launched, including against the current author-policy draft, but all stopped before review because the local Claude CLI is unauthenticated. No review verdict exists. |
 | Codex-only internal reviews | `paper/reviews/codex_post_template_20260810/` | Three fresh methods/template/presentation reviews and a resolution record for the named-author ICASSP-2026-template draft. This is internal technical review, not conference peer review. |
 | Final Codex-only audit | `paper/reviews/codex_final_audit_20260810/` | Three independent review perspectives, meta-review, concern matrix, and evidence-safe resolution for the current compiled working draft. H5/H6/S1 remain supplementary-only. |
+| Codex-only Figure 1 review | `paper/reviews/codex_main_figure_20260810/` | Three independent reviews plus a v2 layout verification. The resolved main figure uses only H1/H2 hash-pinned inputs and makes no causal or cross-panel claim. |
 | Supplementary crest evidence boundary | `experiments/paper_extension/results/crest_evidence_boundary_s1_001/` | Fixed-input S1 PDF/PNG shows the sealed H1 crest slice, H2 quality stop, and score-free H4 label context. It is descriptive only and does not alter any research gate. |
 | Supplementary H5 concordance heatmap | `experiments/h5_view_invariance/H5_SUPPLEMENTARY_CONCORDANCE_FIGURE_PROTOCOL.md` | `experiments/h5_view_invariance/results/H5_SUPPLEMENTARY_CONCORDANCE_FIGURE_001.md` | Hash-validated display of all 84 sealed H5 aggregates. The v2 layout is visually approved; unavailable/stable markers remain descriptive only. |
 | Supplementary H6 agreement heatmap | `experiments/h6_score_agreement/H6_SUPPLEMENTARY_FIGURE_PROTOCOL.md` | `experiments/h6_score_agreement/results/H6_SUPPLEMENTARY_FIGURE_001.md` | Hash-validated fixed-order display of all 280 sealed H6 agreement cells. It is descriptive only and cannot rank/select models or revise a research gate. |
@@ -66,17 +67,17 @@ PYTHONPATH=. python3 scripts/check_paper_pdf.py \
   --review-stage single-anonymous-submission
 ```
 
-The most recent full suite is 115 passed. `verification/FINAL_VERIFICATION_20260810.md` records the current PDF hash, static preflight, full test suite, H6 supplementary display, and complete-history bundle evidence; rerun the commands after any relevant source change.
+The most recent full suite is 134 passed. `verification/FINAL_VERIFICATION_20260810.md` records the current PDF hash, static preflight, full test suite, reviewed main-figure revision, H6 supplementary display, and complete-history bundle evidence; rerun the commands after any relevant source change.
 
 ## External delivery and resume blockers
 
 - GitHub push: after the user replaced the local .env token, a normal non-force push created the remote `research/icassp-signal-audit` branch on 2026-08-10; see `to_human/GITHUB_PUSH_RECEIPT_20260810.md`.
-- Portable backup while push is blocked: `to_human/GIT_BUNDLE_HANDOFF_20260809.md` records the verified complete-history HDD bundle and restoration command. It is not a GitHub delivery.
+- Portable backup: `to_human/GIT_BUNDLE_HANDOFF_20260810.md` records the verified complete-history HDD bundle and restoration command. It is not a GitHub delivery.
 - Telegram milestone delivery: the latest paper/push-blocker update was delivered on 2026-08-10; its redacted receipt is in `to_human/TELEGRAM_DELIVERY_LOG_20260810.md`. Historical messages remain queued and can be listed/sent one-at-a-time through `to_human/TELEGRAM_DELIVERY.md`.
 - Paper review: use the user-requested Codex-only timestamped review bundle and address its findings; do not retry the unauthenticated external reviewer runtime.
 - Template reconciliation: obtain an approved ICASSP-2027 or official generic IEEE archive from an accessible route, hash/compare it to the pinned files, rebuild, rerun the static preflight, and use the official conference checker.
 - Author information: confirm the authorized working metadata and any portal-required email fields, then use `--review-stage single-anonymous-submission` before upload.
 
-`to_human/FINAL_HANDOFF_20260809.md` supplies the concise user-facing
+`to_human/FINAL_HANDOFF_20260810.md` supplies the concise user-facing
 continuation plan. No external action should weaken or bypass the H1/H2/H2B/H4
 negative-result stop rules.
