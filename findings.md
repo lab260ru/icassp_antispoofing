@@ -90,6 +90,14 @@ quality-frozen paired detector intervention can test that third question.
   negative signed AUROC in the three ASVspoof corpora, positive signed AUROC in
   InTheWild, and near-zero separation in ASVspoof5. This is corpus dependence
   of label separation, not evidence about any detector or causal cue.
+- H5 score-free paired view-invariance atlas: all 420 locked feature/view/corpus
+  cells and 84 aggregations completed from a fresh seed-2610 sample freeze,
+  without materializing labels or score artifacts. Seventeen units satisfy the
+  strict all-corpus descriptive view-stability rule. Six InTheWild
+  silence/clipping cells have no finite paired values and remain explicit
+  degenerate cells; they are not repaired. View measurement agreement or
+  disagreement is not evidence about a detector, labels, causality, or a
+  preferred preprocessing choice.
 
 ## Patterns and Insights
 
@@ -139,9 +147,10 @@ baseline reproduction.
 - If a future study examines an H4 unit, can it declare a fresh score-independent
   discovery/confirmation/intervention design without using the H4 atlas for
   post-hoc cue selection?
-- H5 is protocol-locked but not yet run: do all registered feature measurements
-  remain stable across the three waveform views under an independent label-free,
-  score-free sample freeze? This contextual diagnostic cannot alter H1/H2/H2B/H4.
+- H5 is complete and sealed: only 17/84 registered view-pair/feature
+  aggregations satisfy the strict all-corpus descriptive stability rule. It
+  contextualizes feature measurement dependence but cannot alter H1/H2/H2B/H3/H4
+  or select a feature for any later study.
 
 ## Optimization Trajectory
 

@@ -57,7 +57,7 @@ hypotheses:
     priority: medium
   - id: H5
     statement: "Registered feature measurements may or may not remain invariant across three waveform views under a fresh score-free sample freeze."
-    status: input_freeze_complete_pending_analysis
+    status: complete_17_terminal_view_stable_units_6_explicit_degenerate_cells
     motivation: "A paired view-invariance atlas can contextualize feature-view sensitivity without reading labels, scores, models, or audio."
     priority: medium
   - id: H6
@@ -70,7 +70,7 @@ experiments:
   proxy_metric: "Cross-dataset, within-class feature-score association and causal paired score sensitivity; EER for mitigation."
   baseline_value: null
   best_value: null
-  total_runs: 22
+  total_runs: 23
   trajectory:
     - run_id: run_001
       hypothesis: H1
@@ -226,11 +226,18 @@ experiments:
       wall_time_min: 1.0
       change_summary: "Completed all 420 score-free label-AUROC/bootstrap cells and 84 locked aggregations. Twenty-three units meet the terminal descriptive H4 rule; full-waveform crest reverses sign in InTheWild and is not H4-stable."
       timestamp: "2026-08-09"
+    - run_id: h5_analysis_001
+      hypothesis: H5
+      metric_value: 17
+      delta: null
+      wall_time_min: null
+      change_summary: "Completed the full score-free 420-cell paired view-invariance matrix and 84 aggregations from the independent seed-2610 freeze. Seventeen units meet the terminal descriptive rule; six InTheWild silence/clipping cells are explicit degenerate failures, not reruns or imputations."
+      timestamp: "2026-08-10"
 
 outer_loop:
-  cycle: 7
-  last_direction: "broaden_h5_view_invariance_and_supplementary_boundary_figure"
-  last_reflection: "The prior H1/H2/H2B/H4 gates remain closed and are not candidates for tuning. H5 is locked as an independent score-free paired view-invariance atlas over all registered features and all corpus/view cells. A separate fixed-input supplementary figure will visualize the already sealed crest evidence boundary. Neither work can select a cue, inspect a score beyond its fixed compact input, revive a failed intervention, or change the causal conclusion."
+  cycle: 8
+  last_direction: "seal_h5_view_invariance_and_continue_independent_h6_agreement_audit"
+  last_reflection: "H5 completed its exhaustive score-free measurement-agreement matrix: only 17 of 84 view-pair/feature units meet the strict all-corpus descriptive rule, and six unavailable InTheWild cells remain explicit. This contextualizes view dependence but cannot alter H1/H2/H2B/H3/H4. H6 remains a separately protocol-locked score-artifact agreement audit and must preserve its own label-only freeze and feature firewall."
   pivot_policy: "After the first association/intervention matrix or five completed runs, choose deepen, broaden, pivot, or conclude and record the evidence."
 
 workspace:

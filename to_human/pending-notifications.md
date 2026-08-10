@@ -271,3 +271,14 @@ push succeeded. The research/icassp-signal-audit branch is now on
 lab260ru/icassp_antispoofing, including the named-author ICASSP template,
 compiled paper PDF, Codex-only review bundle, reproducibility notes, and the
 Telegram delivery receipt. No research gate was reopened.
+
+## 2026-08-10 — H5 score-free view-invariance result
+
+The independently frozen, label-free H5 audit is complete: all 420 planned
+feature/view/corpus cells and all 84 aggregations were written. Seventeen
+view-pair/feature units meet the strict descriptive stability rule. Six
+InTheWild silence/clipping cells had no finite paired values and are retained
+transparently rather than repaired. This helps delimit which feature
+measurements are view-sensitive, but it does not claim detector reliance,
+causality, or a preferred preprocessing method. The full hash-bound ledger is
+in `experiments/h5_view_invariance/results/H5_ANALYSIS_001.md`.

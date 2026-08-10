@@ -201,6 +201,12 @@
   firewalls, input/hash/manifest drift rejection, deterministic independent
   selection, all 420/84 outputs, derived seeds, zero-IQR failed cells, and an
   incomplete-freeze complete failed matrix. No HDD feature product was opened.
+- Result: The frozen-manifest-only real run produced every registered cell and
+  aggregation. It retains six explicit InTheWild degenerate cells
+  (`silence_fraction`/`clipping_fraction` across all view pairs) and reports
+  17 terminal descriptive view-stable units. The registered result note binds
+  the two result CSV hashes to the input-freeze ledger; no rerun, threshold
+  adjustment, or downstream feature selection is authorized.
 
 ## 2026-08-10 - H6 published-score agreement atlas
 
