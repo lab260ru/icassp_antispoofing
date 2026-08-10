@@ -152,3 +152,14 @@ historical notifications.
 This is the fourteenth explicitly selected message in this log. The sender used
 the environment only for delivery and did not expose a credential or bulk-send
 historical notifications.
+
+## H8 fusion-stop confirmation
+
+- Heading: 2026-08-10 — H8 fusion result: stopped by the dominant baseline
+- Delivery status: success
+- Telegram message ID: 149
+- Text length: 733
+
+This is the fifteenth explicitly selected message in this log. The sender used
+the environment only for delivery and did not expose a credential or bulk-send
+historical notifications.
