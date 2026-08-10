@@ -369,3 +369,7 @@
   5,000-per-class cap and 500-replicate count to 20 and 3 only after asserting
   their production constants. This exercises all five fitted cells without
   repeated 40,000-row test fits; the production CLIs retain the locked values.
+- Validation: The real freeze wrote 50,000 exact source-ID rows (5 corpora ×
+  2 labels × 5,000) from five hash-bound metadata projections. The post-write
+  check confirmed unique source IDs and the provenance records no score,
+  feature-value, audio, ASR, or model read.
