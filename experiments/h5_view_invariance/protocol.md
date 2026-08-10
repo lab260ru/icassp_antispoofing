@@ -25,11 +25,14 @@ values are sealed by a dedicated H5 input freeze:
 | InTheWild | /home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/runs/features/v1_28/InTheWild/features_wide.parquet |
 | ASVspoof5 | /home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/runs/features/v1_28/ASVspoof5/features_wide.parquet |
 
-Only sample_id, view, and the 28 committed feature columns are projected. The
-implementation rejects labels and all source columns/paths containing score,
-logit, detector, model, eer, arena, audio, ASR, H1, H2, H2B, H4, result, or
-summary. It must not decode waveforms, initialize ASR or a model, train, or
-read any detector response or prior-result table.
+The input products may carry label and source metadata because they are shared
+feature containers, but the H5 loader must project and materialize only
+sample_id, view, and the 28 committed feature columns. It must reject any
+label/source field passed through its API or emitted in a manifest, matrix, or
+summary. The implementation rejects all score/logit/detector/model/eer columns
+and paths containing score, logit, detector, model, eer, arena, audio, ASR, H1,
+H2, H2B, H4, result, or summary. It must not decode waveforms, initialize ASR
+or a model, train, or read any detector response or prior-result table.
 
 ## Independent input freeze
 
