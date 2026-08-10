@@ -1162,8 +1162,17 @@ def _parse_fit_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--source-manifest", required=True, type=Path)
     parser.add_argument("--p-pairs", required=True, type=Path, help="Frozen h9_odss_source_pairs.csv; consumed exactly for P scheduling and validated for every method.")
     parser.add_argument("--p-pairs-sha256", required=True, help="Expected byte SHA-256 of --p-pairs from the source freeze ledger.")
-    parser.add_argument("--b2-pairs", type=Path, help="Frozen h9_odss_b2_random_pairs.csv; required only for --method B2.")
-    parser.add_argument("--b2-pairs-sha256", help="Expected byte SHA-256 of --b2-pairs from the source freeze ledger.")
+    parser.add_argument(
+        "--b2-pairs",
+        required=True,
+        type=Path,
+        help="Frozen h9_odss_b2_random_pairs.csv; byte-bound in every condition and consumed for B2 scheduling.",
+    )
+    parser.add_argument(
+        "--b2-pairs-sha256",
+        required=True,
+        help="Expected byte SHA-256 of --b2-pairs from the source freeze ledger.",
+    )
     parser.add_argument("--res2-bundle", required=True, type=Path, help="Directory containing the pinned _net.py architecture only.")
     parser.add_argument("--output-dir", required=True, type=Path)
     parser.add_argument("--method", required=True, choices=("B1", "B2", "P"))
@@ -1198,18 +1207,26 @@ def cli_main(argv: Sequence[str] | None = None) -> int:
     )
     manifest = load_source_manifest(args.source_manifest)
     p_pairs = load_frozen_p_pairs(args.p_pairs, manifest, expected_sha256=args.p_pairs_sha256)
+    # Every condition binds the B2 control table in its source-artifact
+    # provenance.  Only B2 decodes/uses it for scheduling; B1/P validate its
+    # exact bytes without introducing a hidden alternative partner schedule.
+    b2_reference_hash = sha256_file(args.b2_pairs)
+    _validate_expected_hash(args.b2_pairs, b2_reference_hash, args.b2_pairs_sha256, description="B2 pair CSV")
     if args.method == "B2":
-        if args.b2_pairs is None or args.b2_pairs_sha256 is None:
-            raise SystemExit("--method B2 requires both --b2-pairs and --b2-pairs-sha256 from the source freeze ledger")
         b2_pairs = load_frozen_b2_pairs(args.b2_pairs, manifest, p_pairs, expected_sha256=args.b2_pairs_sha256)
     else:
-        if args.b2_pairs is not None or args.b2_pairs_sha256 is not None:
-            raise SystemExit("--b2-pairs and --b2-pairs-sha256 are valid only for --method B2")
         b2_pairs = None
     run_stem = f"h9_pcr_{args.method}_seed{args.seed}"
     result = H9PCRTrainer(manifest, config, bundle_dir=args.res2_bundle, p_pairs=p_pairs, b2_pairs=b2_pairs).fit(checkpoint_path=args.output_dir / f"{run_stem}.pt")
-    write_json(args.output_dir / f"{run_stem}.json", result.jsonable())
-    print(canonical_json(result.jsonable()))
+    sidecar = result.jsonable()
+    sidecar["precision"] = "cuda_bfloat16_autocast"
+    sidecar["source_artifact_hashes"] = {
+        "source_manifest_sha256": manifest.source_manifest_sha256,
+        "p_pairs_sha256": p_pairs.sha256,
+        "b2_pairs_sha256": b2_reference_hash,
+    }
+    write_json(args.output_dir / f"{run_stem}.json", sidecar)
+    print(canonical_json(sidecar))
     return 0
 
 

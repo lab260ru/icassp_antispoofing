@@ -23,8 +23,10 @@ PYTHONPATH=. python3 scripts/train_h9_pcr.py \
   --lambda-rank 0.10
 ```
 
-For B2, add both `--b2-pairs h9_odss_b2_random_pairs.csv` and
-`--b2-pairs-sha256 B2_PAIR_SHA256`. B1/P reject B2 pair arguments. The frozen
+Every condition supplies `--b2-pairs h9_odss_b2_random_pairs.csv` and
+`--b2-pairs-sha256 B2_PAIR_SHA256` so its sidecar binds the complete shared
+source-artifact trio. Only B2 decodes the table for rank scheduling; B1/P
+validate its bytes but do not use it to schedule a loss. The frozen
 GPU assignment is fixed by seed: 9101/9102/9103/9104 map to CUDA devices
 0/1/2/3 respectively.
 

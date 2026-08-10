@@ -219,6 +219,29 @@ def test_p_lambda_selection_requires_complete_grid_and_lower_lambda_tie_break() 
         select_p_lambda(rows[:-1])
 
 
+def test_cli_requires_b2_reference_for_all_conditions(tmp_path: Path) -> None:
+    """All final sidecars must bind the shared B2 artifact, including B1/P."""
+    from src.h9_pcr_training import _parse_fit_args
+
+    with pytest.raises(SystemExit):
+        _parse_fit_args(
+            [
+                "--source-manifest", str(tmp_path / "source.csv"),
+                "--p-pairs", str(tmp_path / "p.csv"),
+                "--p-pairs-sha256", "0" * 64,
+                "--res2-bundle", str(tmp_path),
+                "--output-dir", str(tmp_path / "output"),
+                "--method", "B1",
+                "--seed", "9101",
+                "--batch-size", "24",
+                "--num-workers", "4",
+                "--max-epochs", "6",
+                "--learning-rate", "0.0001",
+                "--weight-decay", "0.01",
+            ]
+        )
+
+
 class _TinyRes2Like(nn.Module):
     def __init__(self) -> None:
         super().__init__()
