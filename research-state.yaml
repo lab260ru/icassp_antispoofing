@@ -57,7 +57,7 @@ hypotheses:
     priority: medium
   - id: H5
     statement: "Registered feature measurements may or may not remain invariant across three waveform views under a fresh score-free sample freeze."
-    status: protocol_locked_pending_input_freeze
+    status: input_freeze_complete_pending_analysis
     motivation: "A paired view-invariance atlas can contextualize feature-view sensitivity without reading labels, scores, models, or audio."
     priority: medium
   - id: H6

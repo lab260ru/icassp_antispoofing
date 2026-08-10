@@ -184,6 +184,9 @@
   for other completed studies. H5 therefore permits their presence in the raw
   schema but strictly projects only sample_id, view, and feature columns; labels
   and source IDs must never enter its API, manifest, matrix, or summary.
+- Validation: H5 input freeze 001 selected 10,000 samples in every corpus with
+  complete, unique three-view identities and no validation failure. The compact
+  HDD hashes are recorded in H5_INPUT_FREEZE_001.md before feature analysis.
 - Implementation: Added a non-overwritable input freeze that reads only the
   `sample_id, view` projection, checks exact source path/bytes/hash, selects at
   most 10,000 sample IDs by the independent SHA-256 seed 2610, and binds its
