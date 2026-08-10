@@ -17,3 +17,8 @@ The current main Figure 1 is the hash-validated H1/H2 crest evidence-boundary
 display documented in `figures/FIGURE_CREST_EVIDENCE_BOUNDARY_MAIN.md`. Its
 reviewed v2 asset replaces the earlier registry pass-count atlas in the main
 paper; the latter remains preserved as a companion repository artifact.
+
+`supplementary/H1_ADJUSTMENT_DISCLOSURE_001.md` is a hash-linked,
+display-only adjustment/bootstrap disclosure prepared for a future authorized
+supplement package. It is not currently claimed as an uploaded conference
+supplement or permanent archive.
