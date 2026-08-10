@@ -62,7 +62,7 @@ hypotheses:
     priority: medium
   - id: H6
     statement: "Published anti-spoofing score artifacts exhibit measurable within-class rank-agreement heterogeneity across models and corpora."
-    status: input_freeze_complete_pending_raw_score_analysis
+    status: complete_280_cell_score_agreement_atlas
     motivation: "A descriptive score-agreement atlas tests the value of the eight-model panel without using waveform features or reopening association selection."
     priority: medium
 
@@ -70,7 +70,7 @@ experiments:
   proxy_metric: "Cross-dataset, within-class feature-score association and causal paired score sensitivity; EER for mitigation."
   baseline_value: null
   best_value: null
-  total_runs: 24
+  total_runs: 25
   trajectory:
     - run_id: run_001
       hypothesis: H1
@@ -240,11 +240,18 @@ experiments:
       wall_time_min: 0.1
       change_summary: "Froze a fresh seed-2611 panel of 5,000 label-selected sample IDs per class in each of five corpora and sealed byte identities for 40 original score artifacts without parsing a score value."
       timestamp: "2026-08-10"
+    - run_id: h6_analysis_001
+      hypothesis: H6
+      metric_value: 0.332477
+      delta: null
+      wall_time_min: 6.0
+      change_summary: "Completed the exact 280-cell raw-score-only within-class agreement matrix and 28 pair summaries. All cells have 5,000 selected joins; agreement spans -0.629261 to 0.868770 across the locked corpus/class/pair registry."
+      timestamp: "2026-08-10"
 
 outer_loop:
-  cycle: 8
-  last_direction: "seal_h5_view_invariance_and_continue_independent_h6_agreement_audit"
-  last_reflection: "H5 completed its exhaustive score-free measurement-agreement matrix: only 17 of 84 view-pair/feature units meet the strict all-corpus descriptive rule, and six unavailable InTheWild cells remain explicit. This contextualizes view dependence but cannot alter H1/H2/H2B/H3/H4. H6 remains a separately protocol-locked score-artifact agreement audit and must preserve its own label-only freeze and feature firewall."
+  cycle: 9
+  last_direction: "seal_h6_agreement_atlas_and_prepare_descriptive_supplements"
+  last_reflection: "H5 and H6 both completed their exhaustive independent descriptive registries. H5 finds limited all-corpus feature-view stability; H6 finds broad within-class score-rank heterogeneity across its fixed panel. Neither finding selects a feature/model, changes H1/H2/H2B/H3/H4 gates, or authorizes training/interventions. The remaining bounded work is reproducible supplementary presentation and a fresh Codex-only paper audit."
   pivot_policy: "After the first association/intervention matrix or five completed runs, choose deepen, broaden, pivot, or conclude and record the evidence."
 
 workspace:

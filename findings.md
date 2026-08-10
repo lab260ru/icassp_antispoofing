@@ -155,6 +155,11 @@ baseline reproduction.
   raw-score byte identities are sealed before score parsing. Its future
   agreement matrix is descriptive only and cannot reopen any feature or causal
   decision.
+- H6 score-agreement atlas: all 280 planned within-class model-pair cells and
+  28 summaries completed with 5,000 exact joins per cell. Agreement ranges from
+  -0.629261 to 0.868770 across the fixed registry, demonstrating descriptive
+  corpus/class/model-pair heterogeneity. It neither rates models nor links a
+  score pattern to a waveform cue, causal mechanism, or training action.
 
 ## Optimization Trajectory
 
