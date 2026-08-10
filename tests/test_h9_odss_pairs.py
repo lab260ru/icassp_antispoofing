@@ -53,10 +53,10 @@ def _records(tmp_path: Path) -> tuple[dict[str, object], dict[str, dict[str, obj
     readme.write_text(
         "\n".join(
             [
-                "each natural utterance is paired with TTS re-synthesis of the same text",
-                "natural/<corpus>/<speaker>/<stem>.wav",
-                "vits/<corpus>/<speaker>/<stem>.wav",
-                "fastpitch-hifigan/<corpus>/<speaker>/<stem>.wav",
+                "speech detection**: each natural utterance is paired with TTS re-synthesis of the",
+                "same text.",
+                "`utterance_id` is the full source-relative path with `/` → `__` — the bare stem",
+                "repeats across the three generators (the same texts are synthesized).",
             ]
         ),
         encoding="utf-8",
@@ -68,6 +68,9 @@ def _records(tmp_path: Path) -> tuple[dict[str, object], dict[str, dict[str, obj
                 "utterance_id = full source-relative path with '/' -> '__'",
                 'parts = rel.split("/")',
                 'label = "bonafide" if gen == "natural" else "spoof"',
+                "natural/<corpus>/<speaker>/<stem>.wav",
+                "vits/<corpus>/<speaker>/<stem>.wav",
+                "fastpitch-hifigan/<corpus>/<speaker>/<stem>.wav",
             ]
         ),
         encoding="utf-8",
@@ -184,10 +187,10 @@ def test_file_reader_verifies_semantics_and_writer_refuses_overwrite(tmp_path: P
     readme.write_text(
         "\n".join(
             [
-                "each natural utterance is paired with TTS re-synthesis of the same text",
-                "natural/<corpus>/<speaker>/<stem>.wav",
-                "vits/<corpus>/<speaker>/<stem>.wav",
-                "fastpitch-hifigan/<corpus>/<speaker>/<stem>.wav",
+                "speech detection**: each natural utterance is paired with TTS re-synthesis of the",
+                "same text.",
+                "`utterance_id` is the full source-relative path with `/` → `__` — the bare stem",
+                "repeats across the three generators (the same texts are synthesized).",
             ]
         ),
         encoding="utf-8",
@@ -199,6 +202,9 @@ def test_file_reader_verifies_semantics_and_writer_refuses_overwrite(tmp_path: P
                 "utterance_id = full source-relative path with '/' -> '__'",
                 'parts = rel.split("/")',
                 'label = "bonafide" if gen == "natural" else "spoof"',
+                "natural/<corpus>/<speaker>/<stem>.wav",
+                "vits/<corpus>/<speaker>/<stem>.wav",
+                "fastpitch-hifigan/<corpus>/<speaker>/<stem>.wav",
             ]
         ),
         encoding="utf-8",
