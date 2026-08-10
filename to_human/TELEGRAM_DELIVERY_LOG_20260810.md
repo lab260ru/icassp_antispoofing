@@ -22,3 +22,13 @@ sent latest update.
 
 This is the second explicitly selected message in this log. No historical
 queued messages were bulk-sent.
+
+## H5 score-free result confirmation
+
+- Heading: 2026-08-10 — H5 score-free view-invariance result
+- Delivery status: success
+- Telegram message ID: 137
+- Text length: 634
+
+This is the third explicitly selected message in this log. The credential-safe
+sender did not send any earlier queued notification.
