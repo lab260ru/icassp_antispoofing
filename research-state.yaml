@@ -60,6 +60,11 @@ hypotheses:
     status: protocol_locked_pending_input_freeze
     motivation: "A paired view-invariance atlas can contextualize feature-view sensitivity without reading labels, scores, models, or audio."
     priority: medium
+  - id: H6
+    statement: "Published anti-spoofing score artifacts exhibit measurable within-class rank-agreement heterogeneity across models and corpora."
+    status: protocol_locked_pending_label_freeze
+    motivation: "A descriptive score-agreement atlas tests the value of the eight-model panel without using waveform features or reopening association selection."
+    priority: medium
 
 experiments:
   proxy_metric: "Cross-dataset, within-class feature-score association and causal paired score sensitivity; EER for mitigation."
