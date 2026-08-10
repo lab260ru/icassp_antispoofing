@@ -352,3 +352,12 @@ claim, or supplementary-result dependency. `main.tex` was rebuilt immediately:
 the PDF remains five US-letter pages, and the local preflight plus all 139 tests
 pass. The refreshed source/PDF and verification ledger are committed and pushed
 at `2d24c42`.
+
+## 2026-08-10 — reproducibility release candidate prepared
+
+I prepared owner-safe archival readiness for the ICASSP working draft:
+`CITATION.cff`, a release checklist, corrected current scope metadata, and an
+explicit exclusion list for raw audio, model weights, HDD products, and all
+credentials. This is not a public release, DOI, or claim that an artifact
+locator exists; those remain owner/license/template-reconciliation decisions.
+The preparation is committed and pushed at `7465c87`.
