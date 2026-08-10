@@ -26,9 +26,16 @@
   descriptive units and six explicit degeneracies), and H6 within-class
   published-score agreement (280 cells/28 summaries, 5,000 joins/cell). These
   do not supply causal, model-ranking, or cue-selection evidence.
+- Completed H7 feature-only transfer baseline: a newly frozen all-28-feature
+  leave-one-corpus-out logistic recipe scores 0.907785/0.845107/0.780957 on
+  the held-out ASVspoof cohorts and 0.534590/0.588320 on InTheWild/ASVspoof5.
+  Its hash-validated display and Codex-only review are supplementary-only;
+  they read no detector score and cannot establish causality, cue selection,
+  model ranking, or mitigation performance.
 - Display-only supporting figures: sealed crest evidence-boundary S1, H5
-  concordance atlas, and H6 agreement atlas. They remain outside the current
-  main paper until a submission-package decision is authorized.
+  concordance atlas, H6 agreement atlas, and H7 transfer forest plot. They
+  remain outside the current main paper until a submission-package decision is
+  authorized.
 - Resumption materials: current `AGENTS.md`, `ARTIFACT_INDEX.md`,
   `research-state.yaml`, full research/implementation logs, future roadmap,
   final verification, Telegram receipt, remote branch, and complete-history
@@ -36,7 +43,7 @@
 
 ## Verified now
 
-The full repository suite passes **139 tests**. The local paper checker reports
+The full repository suite passes **149 tests**. The local paper checker reports
 five US-letter pages, Table 1 on page 3, references on page 5, and ten embedded
 fonts. See `verification/FINAL_VERIFICATION_20260810.md`.
 

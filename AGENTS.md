@@ -67,7 +67,7 @@ threshold, sample, transform, scorer, feature, or model after seeing results.
   `paper/figures/FIGURE_CREST_EVIDENCE_BOUNDARY_MAIN.md` and
   `paper/reviews/codex_main_figure_20260810/`. The local preflight passes
   (four technical US-letter pages, references-only fifth page, Table 1 and
-  reference landmarks, embedded fonts) and the full test suite passes 139.
+  reference landmarks, embedded fonts) and the full test suite passes 149.
   H5, H6, and S1 remain supplementary-only unless a new submission-package
   decision is recorded.
   **Every `paper/main.tex` edit must immediately run** `cd paper && tectonic

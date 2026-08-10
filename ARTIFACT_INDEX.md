@@ -72,7 +72,7 @@ PYTHONPATH=. python3 scripts/check_paper_pdf.py \
   --review-stage single-anonymous-submission
 ```
 
-The most recent full suite is 139 passed. `verification/FINAL_VERIFICATION_20260810.md` records the current PDF hash, static preflight, full test suite, reviewed main-figure revision, H6 supplementary display, and complete-history bundle evidence; rerun the commands after any relevant source change.
+The most recent full suite is 149 passed. `verification/FINAL_VERIFICATION_20260810.md` records the current PDF hash, static preflight, full test suite, reviewed main-figure revision, H6/H7 supplementary displays, and complete-history bundle evidence; rerun the commands after any relevant source change.
 
 ## External delivery and resume blockers
 
