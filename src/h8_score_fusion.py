@@ -18,6 +18,7 @@ import pandas as pd
 import pyarrow.parquet as pq
 import yaml
 from scipy.stats import rankdata
+from scipy.special import ndtri
 
 
 H8_VERSION = "h8sf_source_freeze_v1"
@@ -47,6 +48,15 @@ class SourceFreezeArtifacts:
     manifest_path: Path
     provenance_path: Path
     orientation_path: Path
+
+
+@dataclass(frozen=True)
+class TargetFeatureArtifacts:
+    """Locations for a label-free H8 target score representation."""
+
+    output_dir: Path
+    features_path: Path
+    provenance_path: Path
 
 
 def canonical_json(value: object) -> str:
@@ -321,3 +331,127 @@ def freeze_source_inputs(
     }
     provenance_path.write_text(canonical_json(provenance), encoding="utf-8")
     return SourceFreezeArtifacts(output_dir, manifest_path, provenance_path, orientation_path)
+
+
+def _read_orientation(path: Path, models: Sequence[str]) -> dict[str, int]:
+    if not path.is_file():
+        raise FileNotFoundError(f"H8 source orientation is unavailable: {path}")
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise ValueError(f"H8 source orientation is not valid JSON: {path}") from error
+    if payload.get("version") != H8_VERSION or not isinstance(payload.get("models"), Mapping):
+        raise ValueError("H8 source orientation has an unexpected contract")
+    output: dict[str, int] = {}
+    for model in models:
+        row = payload["models"].get(model)
+        if not isinstance(row, Mapping) or row.get("orientation_multiplier") not in (-1, 1):
+            raise ValueError(f"H8 source orientation is missing a valid multiplier for {model}")
+        output[model] = int(row["orientation_multiplier"])
+    return output
+
+
+def _rank_probit(raw_scores: pd.Series) -> np.ndarray:
+    values = raw_scores.to_numpy(dtype=np.float64, copy=False)
+    if values.size == 0 or not np.isfinite(values).all():
+        raise ValueError("H8 rank/probit input must be non-empty and finite")
+    ranks = rankdata(values, method="average")
+    probabilities = np.clip((ranks - 0.5) / len(ranks), 1e-4, 1.0 - 1e-4)
+    transformed = ndtri(probabilities)
+    if not np.isfinite(transformed).all():
+        raise ValueError("H8 rank/probit transform emitted a non-finite value")
+    return np.asarray(transformed, dtype=np.float32)
+
+
+def feature_column(model: str) -> str:
+    """Return the literal, deterministic score feature name for one model."""
+    return f"rank_probit__{model}"
+
+
+def materialize_label_free_target_features(
+    *,
+    index_path: Path,
+    orientation_path: Path,
+    output_dir: Path,
+    datasets: Sequence[str] = TARGET_DATASETS,
+    models: Sequence[str] = MODELS,
+) -> TargetFeatureArtifacts:
+    """Write only common-ID rank/probit target features, never target labels.
+
+    Every target model's empirical CDF is calculated from its full unlabeled
+    score batch before restricting to the eight-model common intersection.
+    This is the predeclared transductive, label-free adaptation step.
+    """
+    index_path = Path(index_path).resolve()
+    orientation_path = Path(orientation_path).resolve()
+    index = _load_index(index_path)
+    datasets = tuple(datasets)
+    models = tuple(models)
+    if not datasets or not models or len(set(datasets)) != len(datasets) or len(set(models)) != len(models):
+        raise ValueError("H8 target datasets/models must be non-empty and unique")
+    _require_records(index, datasets, models)
+    orientations = _read_orientation(orientation_path, models)
+    output_rows: list[pd.DataFrame] = []
+    artifact_ledger: dict[str, dict[str, object]] = {}
+    for dataset in datasets:
+        per_model: list[pd.DataFrame] = []
+        artifact_ledger[dataset] = {}
+        for model in models:
+            score_path = _score_path(index["models"][model], dataset)
+            scores = parse_scores(score_path)
+            column = feature_column(model)
+            transformed = pd.DataFrame(
+                {
+                    "sample_id": scores["sample_id"].astype(str),
+                    column: _rank_probit(scores["raw_score"] * orientations[model]),
+                }
+            )
+            per_model.append(transformed)
+            artifact_ledger[dataset][model] = {
+                "path": str(score_path),
+                "sha256": sha256_file(score_path),
+                "size_bytes": score_path.stat().st_size,
+                "n_score_rows": int(len(scores)),
+                "model_revision": index["models"][model].get("revision"),
+                "orientation_multiplier": orientations[model],
+            }
+        common = per_model[0]
+        for next_frame in per_model[1:]:
+            common = common.merge(next_frame, on="sample_id", how="inner", validate="one_to_one")
+        if common.empty or common["sample_id"].duplicated().any():
+            raise ValueError(f"H8 target {dataset} lacks a valid eight-model common score panel")
+        common.insert(0, "dataset", dataset)
+        expected_trials = index["datasets"][dataset].get("n_trials")
+        artifact_ledger[dataset]["common_panel"] = {
+            "n_common_rows": int(len(common)),
+            "declared_n_trials": int(expected_trials) if expected_trials is not None else None,
+            "coverage_vs_declared_trials": float(len(common) / int(expected_trials)) if expected_trials else None,
+        }
+        output_rows.append(common.sort_values("sample_id").reset_index(drop=True))
+    features = pd.concat(output_rows, ignore_index=True)
+    if features.duplicated(["dataset", "sample_id"]).any() or not np.isfinite(features[[feature_column(model) for model in models]].to_numpy(dtype=float)).all():
+        raise ValueError("H8 target feature output violates unique/finite invariants")
+    output_dir = _directory_for_new_outputs(Path(output_dir))
+    features_path = output_dir / "target_rank_probit_features.parquet"
+    provenance_path = output_dir / "target_feature_provenance.json"
+    features.to_parquet(features_path, index=False)
+    provenance = {
+        "artifact_kind": "h8sf_label_free_target_rank_probit_features",
+        "version": H8_VERSION,
+        "index_path": str(index_path),
+        "index_sha256": sha256_file(index_path),
+        "source_orientation_path": str(orientation_path),
+        "source_orientation_sha256": sha256_file(orientation_path),
+        "target_datasets": list(datasets),
+        "models": list(models),
+        "feature_columns": [feature_column(model) for model in models],
+        "rank_transform": "Phi^-1(clip((average_rank-0.5)/n,1e-4,1-1e-4))",
+        "target_cdf_uses_labels": False,
+        "target_labels_read": False,
+        "target_metrics_read": False,
+        "target_score_artifacts": artifact_ledger,
+        "n_rows": int(len(features)),
+        "features_sha256": sha256_file(features_path),
+    }
+    provenance_path.write_text(canonical_json(provenance), encoding="utf-8")
+    return TargetFeatureArtifacts(output_dir, features_path, provenance_path)

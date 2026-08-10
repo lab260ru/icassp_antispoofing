@@ -9,7 +9,7 @@ import pandas as pd
 import pytest
 import yaml
 
-from src.h8_score_fusion import freeze_source_inputs
+from src.h8_score_fusion import freeze_source_inputs, materialize_label_free_target_features
 
 
 def _write_scores(path: Path, values: dict[str, float]) -> None:
@@ -88,3 +88,53 @@ def test_source_freeze_refuses_output_overwrite(tmp_path: Path) -> None:
     freeze_source_inputs(index_path=index_path, output_dir=output_dir, datasets=("source_a", "source_b"), models=("model_a", "model_b"))
     with pytest.raises(FileExistsError, match="refuses to overwrite"):
         freeze_source_inputs(index_path=index_path, output_dir=output_dir, datasets=("source_a", "source_b"), models=("model_a", "model_b"))
+
+
+def test_target_features_are_label_free_and_use_full_score_ranks(tmp_path: Path) -> None:
+    index_path = _index(tmp_path)
+    source = freeze_source_inputs(
+        index_path=index_path,
+        output_dir=tmp_path / "hdd" / "source",
+        datasets=("source_a", "source_b"),
+        models=("model_a", "model_b"),
+    )
+    index = yaml.safe_load(index_path.read_text(encoding="utf-8"))
+    for model in ("model_a", "model_b"):
+        root = Path(index["models"][model]["local_dir"])
+        relative = "scores/target.txt"
+        values = {"a": 0.0, "b": 1.0, "c": 2.0}
+        if model == "model_b":
+            values = {key: -value for key, value in values.items()}
+        _write_scores(root / relative, values)
+        index["models"][model]["score_artifacts"]["target"] = {
+            "scores": {"path": relative, "size_bytes": (root / relative).stat().st_size}
+        }
+    index["datasets"]["target"] = {"n_trials": 3}
+    index_path.write_text(yaml.safe_dump(index), encoding="utf-8")
+    outputs = materialize_label_free_target_features(
+        index_path=index_path,
+        orientation_path=source.orientation_path,
+        output_dir=tmp_path / "hdd" / "target",
+        datasets=("target",),
+        models=("model_a", "model_b"),
+    )
+    features = pd.read_parquet(outputs.features_path)
+    provenance = json.loads(outputs.provenance_path.read_text(encoding="utf-8"))
+    assert list(features["sample_id"]) == ["a", "b", "c"]
+    assert provenance["target_labels_read"] is False
+    assert provenance["target_metrics_read"] is False
+    assert provenance["target_score_artifacts"]["target"]["common_panel"]["n_common_rows"] == 3
+
+
+def test_target_features_refuse_nonexistent_orientation_model(tmp_path: Path) -> None:
+    index_path = _index(tmp_path)
+    orientation = tmp_path / "orientation.json"
+    orientation.write_text(json.dumps({"version": "h8sf_source_freeze_v1", "models": {}}), encoding="utf-8")
+    with pytest.raises(ValueError, match="orientation"):
+        materialize_label_free_target_features(
+            index_path=index_path,
+            orientation_path=orientation,
+            output_dir=tmp_path / "hdd" / "target",
+            datasets=("source_a",),
+            models=("model_a",),
+        )
