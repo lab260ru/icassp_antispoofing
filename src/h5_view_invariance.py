@@ -740,6 +740,7 @@ def analyze_frozen_manifest(
     matrix.to_csv(matrix_path, index=False)
     aggregation.to_csv(aggregation_path, index=False)
     report_path = output / "h5_analysis_provenance.json"
+    failed_cell_count = int((matrix["cell_status"] != "ok").sum())
     report = {
         "h5_version": H5_VERSION,
         "score_and_label_free": True,
@@ -751,7 +752,9 @@ def analyze_frozen_manifest(
         "bootstrap_confidence": CONFIDENCE,
         "n_dataset_view_pair_feature_cells": int(len(matrix)),
         "n_view_pair_feature_aggregation_units": int(len(aggregation)),
-        "failed_cell_count": int((matrix["cell_status"] != "ok").sum()),
+        "matrix_complete": True,
+        "failed_cell_count": failed_cell_count,
+        "analysis_status": "complete" if failed_cell_count == 0 else "failed_cells_present",
         "matrix": {"absolute_path": str(matrix_path.resolve()), "sha256": sha256_file(matrix_path), "byte_size": int(matrix_path.stat().st_size)},
         "aggregation": {"absolute_path": str(aggregation_path.resolve()), "sha256": sha256_file(aggregation_path), "byte_size": int(aggregation_path.stat().st_size)},
     }

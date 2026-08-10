@@ -149,6 +149,8 @@ def test_h5_analyzer_materializes_complete_matrix_with_derived_seeds(tmp_path: P
     assert report["score_and_label_free"] is True
     assert report["n_dataset_view_pair_feature_cells"] == 420
     assert report["n_view_pair_feature_aggregation_units"] == 84
+    assert report["matrix_complete"] is True
+    assert report["analysis_status"] == "complete"
 
 
 def test_h5_reports_explicit_failed_cells_without_relaxing_matrix(tmp_path: Path) -> None:
@@ -184,3 +186,4 @@ def test_h5_incomplete_freeze_materializes_failed_complete_matrix(tmp_path: Path
     assert len(matrix) == 420 and len(aggregation) == 84
     assert set(affected["cell_status"]) == {"failed_input_incomplete_sample_view_set"}
     assert report["failed_cell_count"] == len(affected)
+    assert report["analysis_status"] == "failed_cells_present"

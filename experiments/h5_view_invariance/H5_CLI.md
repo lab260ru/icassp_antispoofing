@@ -68,8 +68,9 @@ The new output directory contains:
   Spearman concordance, IQR-normalized median shift, two paired-sample
   percentile-bootstrap 95% intervals, and an identity-derived SHA-256 seed.
   Missing/duplicate views or samples, finite-pair shortage, rank degeneracy,
-  zero pooled IQR, and invalid bootstrap replication become explicit failed
-  cells; none is imputed or substituted.
+  or zero pooled IQR become explicit failed cells; none is imputed or
+  substituted. A degenerate bootstrap draw is retained as an invalid attempt,
+  not silently redrawn.
 - `h5_view_invariance_aggregation.csv`: all 84 view-pair/feature units, their
   five-corpus medians, and every component of the terminal view-stability rule.
 - `h5_analysis_provenance.json`: input-freeze/output hashes and locked
