@@ -10,10 +10,11 @@ note and its synthetic tests were produced.
 
 ## Inputs that must exist before the terminal call
 
-The future target materializer must produce one JSON manifest per fixed target,
-with this exact metadata-only shape. `records_path` points to a CSV or Parquet
-file with the exact ordered columns listed below; it must contain **no label
-column**.
+`scripts/materialize_h9_pcr_target.py` must produce one JSON manifest per
+fixed target after the complete source checkpoint ledger is sealed. Its
+two-phase label-firewall contract is in `TARGET_MATERIALIZATION.md`.
+`records_path` points to a CSV or Parquet file with the exact ordered columns
+listed below; it must contain **no label column**.
 
 ```json
 {
@@ -38,8 +39,10 @@ sample_id,audio_path,audio_sha256,audio_bytes,canonical_fingerprint
 All hashes/fingerprints are 64-character SHA-256 values. The evaluator
 byte-hashes every declared waveform before inference. The label file must be a
 separate CSV/Parquet table with exactly `sample_id,label`, one unique binary
-label per canonical target sample. Its values are not decoded while its hash is
-checked.
+label per canonical target sample. The target materializer may read the raw
+label column only to write this separate, hash-sealed artifact; no source fit,
+predictor, selector, or metric receives those values. The terminal evaluator
+does not decode the values while checking the label artifact hash.
 
 The source-training handoff must create an immutable JSON
 `h9_pcr_frozen_checkpoint_ledger` (version
