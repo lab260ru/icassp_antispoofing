@@ -46,6 +46,12 @@ not reopen or reinterpret H1--H8.
   `PLAN.md`. The source must
   expose a documented pair and voice grouping; otherwise H9-PCR
   stops rather than inferring a new pairing scheme or source dataset.
+- **H9 source freeze:** `h9odss_source_pairing_001` is complete and hash-bound:
+  23,883 shared paired-only trials, 15,922 P edges, 15,922 stratified B2 edges,
+  and 3,071 permanently excluded unmatched VITS rows. It is source-metadata
+  only; read `experiments/h9_paired_counterfactual/results/H9_SOURCE_FREEZE_001.md`.
+  Source training must consume these exact HDD CSVs and cannot add unmatched
+  rows, change the voice split, or remap B2 partners.
 - **H8-SF remains terminal:** it improves B1/B2 fusion but fails its
   source-selected Spectra-AASIST B0 comparison (9.309% versus 0.185% mean
   EER). Read `experiments/h8_positive_pivot/results/H8_SF_ANALYSIS_001.md`.

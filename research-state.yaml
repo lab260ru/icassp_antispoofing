@@ -77,7 +77,7 @@ hypotheses:
     priority: highest
   - id: H9
     statement: "Content-aligned natural-to-synthetic ranking supervision improves cross-corpus anti-spoofing EER relative to ordinary BCE and an equal-budget random-pair ranking control."
-    status: protocol_locked_source_pairing_and_blind_target_evaluation_pending
+    status: source_pairing_freeze_complete_fresh_bf16_training_pending
     motivation: "A documented content-aligned pair comparison tests whether matching helps while holding the compact transparent architecture, data volume, batch schedule, and margin term fixed; it does not itself prove a causal internal mechanism."
     priority: highest
 
@@ -85,7 +85,7 @@ experiments:
   proxy_metric: "Cross-dataset, within-class feature-score association and causal paired score sensitivity; EER for mitigation."
   baseline_value: 0.00184813566035551
   best_value: 0.00184813566035551
-  total_runs: 29
+  total_runs: 30
   trajectory:
     - run_id: run_001
       hypothesis: H1
@@ -290,11 +290,18 @@ experiments:
       wall_time_min: null
       change_summary: "Locked an independent ODSS content-aligned pair-ranking study with same-data BCE and random-pair controls, fresh-initialized BF16 Res2TCNGuard architecture, four source-only seeds, and two fixed target corpora before H9 data/result access."
       timestamp: "2026-08-10"
+    - run_id: h9odss_source_pairing_001
+      hypothesis: H9
+      metric_value: 15922
+      delta: null
+      wall_time_min: 0.1
+      change_summary: "Sealed the ODSS source-only paired pool: 23,883 shared B1/B2/P trials, 15,922 content-aligned P edges, an equally sized language/corpus/generator-stratified B2 mapping, 3,071 excluded unmatched VITS rows, and a voice-disjoint source development split."
+      timestamp: "2026-08-10"
 
 outer_loop:
   cycle: 12
   last_direction: "h9_content_aligned_pair_ranking_protocol_locked"
-  last_reflection: "H8-SF is terminal against its dominant frozen single expert. H9-PCR changes the scientific object: documented content-aligned natural/synthetic source supervision is compared to exactly matched BCE and random-pair controls in one transparent model, then evaluated on two new fixed corpora. Voice-disjoint source development, pair availability, provenance, and the strict two-target gate are hard stops."
+  last_reflection: "H8-SF is terminal against its dominant frozen single expert. H9-PCR's source eligibility passes with a shared matched-only pool, voice-disjoint split, and auditable B2 mapping. The next gate is an independently tested fresh-initialized BF16 harness; no source audio or target data may alter the frozen source rows, pairs, or target panel."
   pivot_policy: "After the first association/intervention matrix or five completed runs, choose deepen, broaden, pivot, or conclude and record the evidence."
 
 workspace:

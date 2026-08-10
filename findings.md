@@ -31,10 +31,17 @@ falsification: Spectra-AASIST has 0.185% mean target EER while GroupDRO has
 H9-PCR is a new, protocolled training study, not a reinterpretation of any
 earlier detector-score or feature result. It asks whether content-aligned
 natural/synthetic ranking on ODSS transfers better than same-data BCE and a
-random-pair margin control to two fixed external corpora, SONAR and ArAD. No
-H9 source/target waveform, label, model-fit, or target metric has yet been
+random-pair margin control to two fixed external corpora, SONAR and ArAD. Its
+source-metadata pairing freeze is complete, but no source waveform has been
+decoded, no model has been fit, and no target data or H9 target metric has been
 read. The source-pairing contract, provenance audit, and two-target success
 gate are in `experiments/h9_paired_counterfactual/PLAN.md`.
+
+The freeze contains 7,961 documented ODSS natural/TTS groups, a shared
+23,883-trial B1/B2/P pool, and 15,922 edges for each ranking condition. Its
+language-stratified voice-disjoint split and the 3,071 excluded unmatched VITS
+rows are hash-bound. This establishes a fair training input, not an accuracy
+result.
 
 ## Key Results
 

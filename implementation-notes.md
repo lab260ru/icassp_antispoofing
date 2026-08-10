@@ -499,3 +499,17 @@
   every B1/B2/P run starts from a fresh seed-specific initialization. No H9
   experiment may load or fine-tune `best_1.495.pth`. This correction is made
   before H9 model fitting or H9 target data access.
+
+## 2026-08-10 - H9 ODSS source-pair freeze
+
+- Validation: The pinned metadata and pairing semantics produce 7,961 complete
+  groups, each with a natural, VITS, and FastPitch--HiFi-GAN rendering. The
+  frozen pool is 23,883 records and 15,922 P edges; B2 has the same edge count
+  and exact split/language/corpus/generator marginals.
+- Exclusions: 3,071 VITS-only rows have no documented natural counterpart and
+  are removed from B1 as well as B2/P. The source split is voice-disjoint,
+  language-stratified, seed 2909, 6,051 train and 1,910 dev groups.
+- Execution boundary: this was a metadata-only freeze. Raw source audio is
+  present on the HDD but not decoded by this stage; target data, scores, and
+  model fitting remain untouched. The complete source output hashes are in
+  `experiments/h9_paired_counterfactual/results/H9_SOURCE_FREEZE_001.md`.
