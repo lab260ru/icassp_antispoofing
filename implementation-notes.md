@@ -216,6 +216,10 @@
 - Boundary: H6 must use raw pinned labels and raw published score artifacts
   only, with a new seed-2611 label-only manifest. It cannot read feature tables,
   H1/H4 summaries, audio, models, or an existing normalized result catalog.
+- Validation: H6 input freeze 001 selected exactly 5,000 IDs per label in every
+  core corpus and revalidated all five label tables plus 40 raw-score byte
+  identities. It sealed a 50,000-row label-only manifest while recording that
+  no raw score value was read; the compact result note pins both freeze hashes.
 
 ## 2026-08-10 - Supplementary S1 crest evidence boundary
 

@@ -62,7 +62,7 @@ hypotheses:
     priority: medium
   - id: H6
     statement: "Published anti-spoofing score artifacts exhibit measurable within-class rank-agreement heterogeneity across models and corpora."
-    status: protocol_locked_pending_label_freeze
+    status: input_freeze_complete_pending_raw_score_analysis
     motivation: "A descriptive score-agreement atlas tests the value of the eight-model panel without using waveform features or reopening association selection."
     priority: medium
 
@@ -70,7 +70,7 @@ experiments:
   proxy_metric: "Cross-dataset, within-class feature-score association and causal paired score sensitivity; EER for mitigation."
   baseline_value: null
   best_value: null
-  total_runs: 23
+  total_runs: 24
   trajectory:
     - run_id: run_001
       hypothesis: H1
@@ -232,6 +232,13 @@ experiments:
       delta: null
       wall_time_min: null
       change_summary: "Completed the full score-free 420-cell paired view-invariance matrix and 84 aggregations from the independent seed-2610 freeze. Seventeen units meet the terminal descriptive rule; six InTheWild silence/clipping cells are explicit degenerate failures, not reruns or imputations."
+      timestamp: "2026-08-10"
+    - run_id: h6_input_freeze_001
+      hypothesis: H6
+      metric_value: 50000
+      delta: null
+      wall_time_min: 0.1
+      change_summary: "Froze a fresh seed-2611 panel of 5,000 label-selected sample IDs per class in each of five corpora and sealed byte identities for 40 original score artifacts without parsing a score value."
       timestamp: "2026-08-10"
 
 outer_loop:
