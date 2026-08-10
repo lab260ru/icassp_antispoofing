@@ -1,6 +1,6 @@
 # ICASSP 2027 submission requirements
 
-Last checked: 2026-08-10 UTC.
+Last checked: 2026-08-10 15:10 UTC.
 
 This initial draft targets the regular ICASSP 2027 conference-paper track. The
 official [publishing and paper-presentation page](https://2027.ieeeicassp.org/publishing-and-paper-presentation-options/)
@@ -25,8 +25,12 @@ pinned as paper/template/ICASSP2026/spconf.sty and IEEEbib.bst. Its archive
 identity and extraction scope are recorded in
 paper/template/ICASSP2026/TEMPLATE_PROVENANCE.md. This is a reproducible
 ICASSP-2026 working format, not a claim that it is the eventual ICASSP-2027
-kit. Reconcile it with the official 2027 archive if IEEE posts one, then
-compile and visually check the final PDF again.
+kit. At the last check, the official 2027 publishing, call-for-papers, and
+editorial-policy pages state the format requirement but do not expose a
+downloadable 2027 paper-kit archive or LaTeX file. Do not substitute an
+unverified template: reconcile the current pinned inputs only when the official
+2027 archive is accessible, then compile and visually check the final PDF
+again.
 
 ## Current compliance target
 
