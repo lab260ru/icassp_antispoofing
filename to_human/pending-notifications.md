@@ -332,3 +332,13 @@ score-eligible retained-pair manifest was frozen. It adds no causal claim or
 new experiment. The readable five-page PDF, both preserved figure iterations,
 and the review/resolution bundle are committed and pushed at `03dc6fe`; all
 134 repository tests and the local PDF preflight pass.
+
+## 2026-08-10 — H1 adjustment disclosure completed
+
+I completed a protocol-locked, score-free disclosure audit for the paper's H1
+partial-adjustment design. It writes all 10 corpus-by-label metadata-coverage
+rows from five byte-hashed feature cohorts and records the sealed held-out
+bootstrap cluster rule/counts. It does not load score or feature values, rerun
+a bootstrap, select a cue, or change the negative H1/H2 result. The full suite
+now passes 139 tests; the artifact and resumability notes are committed and
+pushed at `6a5b16e`.
