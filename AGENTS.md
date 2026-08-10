@@ -2,10 +2,13 @@
 
 ## Mission and deadline
 
-Conduct a reproducible causal audit of signal features in cross-dataset speech
-anti-spoofing and prepare an ICASSP 2027 initial draft by **2026-08-10 18:03
-UTC**. The provisional story is a causal audit plus a robust feature-conditioned
-fix; it may pivot only according to the recorded outer-loop evidence gate.
+Conduct a reproducible audit of signal features in cross-dataset speech
+anti-spoofing and prepare an ICASSP 2027 initial draft. The original draft
+target was **2026-08-10 18:03 UTC**; the user explicitly authorized bounded,
+evidence-preserving continuation through **2026-08-10 20:00 UTC**. The
+provisional story is now a negative portability/quality-gate audit, not a
+causal effect or feature-conditioned fix, unless a new independently frozen
+protocol supplies the missing evidence.
 
 ## Resume order
 
@@ -16,6 +19,53 @@ fix; it may pivot only according to the recorded outer-loop evidence gate.
 3. Check active jobs and the HDD run directory before starting duplicates.
 4. Record each material decision in `implementation-notes.md` and append the
    result to the active experiment's `analysis.md`.
+
+## Current checkpoint — 2026-08-10, authoritative override
+
+This section supersedes older ``Current checkpoint`` details below when they
+conflict. All completed loops are hash-bound; do not reopen them by tuning a
+threshold, sample, transform, scorer, feature, or model after seeing results.
+
+- **H1 is terminal.** The sole discovery-frozen
+  `Spectra-AASIST/full_waveform/spoof/crest_factor_db` association fails the
+  fixed five-corpus portability rule. The 19/168 descriptive registry entries
+  cannot select a new intervention or training cue. Read
+  `experiments/h1_feature_association/results/five_corpus_aggregate_20260809T214500Z/AGGREGATION_RUN_20260809.md`.
+- **H2 and H2B are terminal before scoring.** H2's detector-free retained-pair
+  rates are DRC-3 18.1%, DRC-6 0.6%, gain 64.6%, and polarity 99.9%; no
+  score-eligible manifest exists and no transformed detector score may be
+  inferred. H2B Q1 selected no transform family (nearest lower Wilson bound
+  0.89624 is below 0.90), so Q2--Q4 remain closed. H3 is consequently not
+  authorized.
+- **H4/H5/H6 are completed descriptive atlases only.** H4 has 420 label-cue
+  cells/84 aggregates and 23 terminal descriptive units. H5 has 420
+  score/label-free view-invariance cells/84 aggregates, 17 terminal
+  descriptive units, and six explicit InTheWild degeneracies. H6 has 280
+  within-class published-score agreement cells/28 fixed pair summaries, each
+  with 5,000 exact joins; agreement ranges from -0.629261 to 0.868770. None
+  can select a cue/model, rank a detector, establish causality, or alter
+  H1--H3/H2B.
+- **Paper handoff:** `paper/main.tex` and `paper/build/main.pdf` are the
+  current readable named-author ICASSP-2026-template working draft. Commit
+  `7d430c4` is the latest audited paper checkpoint; its local preflight passes
+  (four technical US-letter pages, references-only fifth page, Table 1 and
+  reference landmarks, embedded fonts) and the full test suite passes 110.
+  The Codex-only audit bundle is
+  `paper/reviews/codex_final_audit_20260810/`. H5, H6, and S1 are
+  supplementary-only unless a new submission-package decision is recorded.
+  **Every `paper/main.tex` edit must immediately run** `cd paper && tectonic
+  --outdir build main.tex` **and commit the refreshed `paper/build/main.pdf`
+  in the same paper change.**
+- **Delivery and resume:** `origin/research/icassp-signal-audit` was pushed at
+  `7d430c4`; the last Telegram milestone is message ID 139, with a redacted
+  receipt in `to_human/TELEGRAM_DELIVERY_LOG_20260810.md`. Never stage the
+  user-provided `ICASSP2026_Paper_Templates.zip` or any `.env` file. No active
+  training, scoring, ASR, or download job is expected; check before assuming
+  otherwise.
+- **Only safe continuation:** archival documentation or a display-only,
+  hash-validated supplementary rendering is allowed before the 20:00 UTC
+  handoff. Any new causal, training, or feature-selection study requires a
+  fresh independent protocol and freeze; it may not repair the H2/H2B gates.
 
 ## Current checkpoint — 2026-08-09
 
