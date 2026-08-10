@@ -32,10 +32,12 @@ H9-PCR is a new, protocolled training study, not a reinterpretation of any
 earlier detector-score or feature result. It asks whether content-aligned
 natural/synthetic ranking on ODSS transfers better than same-data BCE and a
 random-pair margin control to two fixed external corpora, SONAR and ArAD. Its
-source-metadata pairing freeze is complete, but no source waveform has been
-decoded, no model has been fit, and no target data or H9 target metric has been
-read. The source-pairing contract, provenance audit, and two-target success
-gate are in `experiments/h9_paired_counterfactual/PLAN.md`.
+source-metadata pairing freeze and source-only waveform materialization are
+complete, but no model has been fit and no target data or H9 target metric has
+been read. The training input is exactly the 23,883-record canonical manifest
+hash-bound in `H9_SOURCE_MATERIALIZATION_001.md`; the source-pairing contract,
+provenance audit, and two-target success gate are in
+`experiments/h9_paired_counterfactual/PLAN.md`.
 
 The freeze contains 7,961 documented ODSS natural/TTS groups, a shared
 23,883-trial B1/B2/P pool, and 15,922 edges for each ranking condition. Its

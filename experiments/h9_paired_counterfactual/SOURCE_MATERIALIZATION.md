@@ -25,7 +25,7 @@ is never overwritten.
 ```bash
 PYTHONPATH=. python3 scripts/materialize_h9_odss_source.py \
   --freeze-dir /home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/runs/h9_paired_counterfactual/h9odss_source_pairing_001 \
-  --raw-shard-dir /home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/datasets/odss/1968e6d0ef141c4572073695bdc1d17a8706177f/data \
+  --raw-shard-dir /home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/datasets/odss/1968e6d0ef141c4572073695bdc1d17a8706177f/raw/data \
   --output-dir /home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/runs/h9_paired_counterfactual/h9odss_source_materialization_001
 ```
 
