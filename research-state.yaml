@@ -77,7 +77,7 @@ hypotheses:
     priority: highest
   - id: H9
     statement: "Content-aligned natural-to-synthetic ranking supervision improves cross-corpus anti-spoofing EER relative to ordinary BCE and an equal-budget random-pair ranking control."
-    status: source_pairing_freeze_complete_fresh_bf16_training_pending
+    status: source_audio_materialization_complete_source_only_bf16_training_pending
     motivation: "A documented content-aligned pair comparison tests whether matching helps while holding the compact transparent architecture, data volume, batch schedule, and margin term fixed; it does not itself prove a causal internal mechanism."
     priority: highest
 
@@ -85,7 +85,7 @@ experiments:
   proxy_metric: "Cross-dataset, within-class feature-score association and causal paired score sensitivity; EER for mitigation."
   baseline_value: 0.00184813566035551
   best_value: 0.00184813566035551
-  total_runs: 30
+  total_runs: 31
   trajectory:
     - run_id: run_001
       hypothesis: H1
@@ -304,11 +304,18 @@ experiments:
       wall_time_min: 1.0
       change_summary: "Selected common batch 24 from a source-free BF16 pair-loss sweep on RTX 6000 Ada (23.83 GiB peak), then froze six epochs, four workers/process, and source-dev checkpoint ties before H9 corpus training."
       timestamp: "2026-08-10"
+    - run_id: h9odss_source_materialization_001
+      hypothesis: H9
+      metric_value: 23883
+      delta: null
+      wall_time_min: null
+      change_summary: "Revalidated the sealed ODSS pairing freeze and materialized exactly 23,883 paired-only WAVs into a canonical, fingerprinted source manifest for training; no target corpus, score, model fit, or target metric was accessed."
+      timestamp: "2026-08-10"
 
 outer_loop:
   cycle: 12
-  last_direction: "h9_content_aligned_pair_ranking_protocol_locked"
-  last_reflection: "H8-SF is terminal against its dominant frozen single expert. H9-PCR's source eligibility passes with a shared matched-only pool, voice-disjoint split, and auditable B2 mapping. The next gate is an independently tested fresh-initialized BF16 harness; no source audio or target data may alter the frozen source rows, pairs, or target panel."
+  last_direction: "h9_source_materialization_complete"
+  last_reflection: "H8-SF is terminal against its dominant frozen single expert. H9-PCR now has a hash-bound, paired-only, voice-disjoint ODSS waveform manifest. The next gate is source-only fresh-initialized BF16 lambda selection; no target data may alter the frozen source rows, pairs, architecture, training envelope, or target panel."
   pivot_policy: "After the first association/intervention matrix or five completed runs, choose deepen, broaden, pivot, or conclude and record the evidence."
 
 workspace:

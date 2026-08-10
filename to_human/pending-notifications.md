@@ -443,3 +443,13 @@ VITS rows are permanently excluded from every condition. This is a
 metadata-only freeze—no source audio was decoded, no model trained, and no
 target data read. I am finishing the fresh-initialized BF16 harness and its
 throughput test before the first source training run.
+
+## 2026-08-10 — H9 source audio is sealed; BF16 selection begins
+
+The H9 source materialization is complete and hash-sealed. I revalidated the
+frozen ODSS pairing ledger and copied exactly 23,883 paired-only source WAVs
+into a canonical 16 kHz training manifest; every entry has an auditable audio
+fingerprint. The matched and random-pair tables remain unchanged. No SONAR or
+ArAD data, no target label, and no H9 model result has been accessed. I am now
+launching the source-only BF16 lambda-selection grid across the four GPUs;
+the only allowable choice from it is the predeclared P/B2 rank-loss weight.

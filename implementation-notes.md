@@ -530,3 +530,17 @@
   `lr=1e-4`, `weight_decay=1e-2`, no scheduler, no gradient accumulation, and
   deterministic first-64,600/tile-short waveform windows. No augmentation or
   random crop is allowed, so the loss condition is the only method difference.
+
+## 2026-08-10 - H9 sealed source-audio materialization
+
+- Result: The source-only materializer revalidated the exact pairing freeze,
+  then copied only its 23,883 paired-eligible ODSS WAVs into the HDD run
+  directory. It emitted the canonical eleven-column trainer manifest, a
+  raw/copy/fingerprint audit, and a raw-shard provenance ledger.
+- Integrity: All manifest entries resolve to a copied WAV and have distinct
+  canonical 16-kHz PCM fingerprints. The upstream P and B2 tables remain
+  byte-sealed and are not regenerated. Source audio was decoded only here;
+  no target artifact, target label, model, prediction, or metric was opened.
+- Next: Run the fixed fresh-init BF16 P lambda-selection grid using only this
+  manifest and source development split. The selection can choose only the
+  predeclared lambda and cannot alter the source pool or controls.
