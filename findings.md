@@ -15,6 +15,15 @@ association: its ASVspoof5 adjusted estimate is null. No causal
 shortcut-sensitivity claim has been established; only a completed,
 quality-frozen paired detector intervention can test that third question.
 
+## H8 positive-pivot status
+
+The prior feature/intervention loops are closed and cannot be promoted into a
+positive paper result. H8-SF is a separate, pre-result cross-corpus study:
+it tests whether source-only, corpus-by-class robust fusion of eight published
+detector score streams can improve blind external-corpus EER over uniform and
+ordinary learned fusion. Its target labels, scores, and metrics are not yet
+loaded; no H8 result or claim exists.
+
 ## Key Results
 
 - Input-integrity validation: all 71,237 published Spectra-AASIST scores joined

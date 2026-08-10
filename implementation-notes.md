@@ -429,3 +429,21 @@
 - Continuity: This environment has no cron/scheduler tool. The active goal,
   `research-state.yaml`, `research-log.md`, and experiment-local checkpoints
   are the durable continuation mechanism.
+
+## 2026-08-10 - H8-SF frozen robust-fusion protocol
+
+- Decision: Prioritize a low-compute, high-rigor source-only robust fusion
+  study over unprepared fine-tuning. Local corpora currently expose evaluation
+  splits and Arena score artifacts, whereas no uncontaminated training harness
+  or split is available for a new BF16 model by the deadline.
+- Protocol: Freeze three source corpora, five untouched external targets, an
+  eight-system roster, rank/probit representation, corpus-by-class balancing,
+  GroupDRO primary fuser, source-only nested selection, fixed seeds, mandatory
+  uniform/ERM/V-REx comparators, and a stringent five-part blind target gate.
+- Guardrail: Target scores can be converted to empirical ranks without labels
+  as explicitly transductive adaptation, but target labels cannot enter model,
+  hyperparameter, seed, roster, or CDF selection. Source labels alone define
+  score polarity. The `CVoiceFake_small` dataset identity is exact.
+- Contingency: A failed H8-SF primary gate is a final fusion result. A frozen
+  SSL experiment would require a separate protocol; it cannot become a
+  post-hoc fuser retune.

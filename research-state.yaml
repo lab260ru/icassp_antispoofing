@@ -72,7 +72,7 @@ hypotheses:
     priority: medium
   - id: H8
     statement: "A fresh, literature-grounded training or representation strategy can deliver a verified positive cross-corpus anti-spoofing result under a newly locked protocol."
-    status: bootstrap_previous_work_and_literature_audit
+    status: h8sf_protocol_locked_pre_target_access
     motivation: "The completed association/quality-gate paper is not sufficient as the primary ICASSP contribution; H8 permits a clean pivot rather than post-hoc repair."
     priority: highest
 
