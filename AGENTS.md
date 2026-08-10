@@ -20,6 +20,39 @@ protocol supplies the missing evidence.
 4. Record each material decision in `implementation-notes.md` and append the
    result to the active experiment's `analysis.md`.
 
+## Current checkpoint — 2026-08-10 — H8-SF positive-pivot protocol
+
+This section supersedes all earlier continuation constraints only for the new
+H8-SF study. It does not reopen or reinterpret H1--H7.
+
+- **Objective and deadline:** The user authorized a new positive-result search
+  through **2026-08-11 13:00 UTC**. The active question is whether a single,
+  source-trained robust fusion of frozen anti-spoofing systems transfers to an
+  untouched external corpus panel. Read `experiments/h8_positive_pivot/PLAN.md`
+  and `DATA.md` before loading an H8 input or writing H8 code/results.
+- **Strict roles:** H8 sources are `ASVspoof2019_LA`, `ASVspoof2021_LA`, and
+  `ASVspoof2021_DF`. Blind primary targets are `CFAD`, `CVoiceFake_small`,
+  `DECRO`, `LibriSeVoc`, and `XMAD`. Do not read target labels, target metrics,
+  or target score values before the committed protocol's label-free integrity
+  and frozen-source stages have completed. Never use the earlier inspected
+  `ASVspoof5`, `InTheWild`, or `DeepVoice` results for H8 selection.
+- **Frozen H8 roster/method:** The roster is eight named published systems and
+  the only primary method is corpus-by-class GroupDRO over label-free,
+  within-corpus rank/probit scores. B0 single expert, B1 uniform rank mean,
+  B2 balanced ERM, and A1 V-REx are mandatory comparators. No target label may
+  pick a model, hyperparameter, seed, transform, or roster. The positive gate
+  is fixed in `PLAN.md`; a failure stops H8-SF rather than licensing tuning.
+- **Storage and reproducibility:** Keep all H8 raw score inputs, source/target
+  panels, models, and large outputs below
+  `/home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/`. Commit only protocols,
+  code, compact hash ledgers, and summaries. Write material decisions in
+  `implementation-notes.md`, append outcomes in `research-log.md`, and update
+  this guide and `ARTIFACT_INDEX.md` at each H8 milestone.
+- **Paper rule:** Do not edit `paper/main.tex` until a result passes the full
+  locked H8 gate and an internal claim review. If it is edited, immediately
+  run `cd paper && tectonic --outdir build main.tex`, update the tracked PDF,
+  and commit both in the same paper change.
+
 ## Current checkpoint — 2026-08-10, authoritative override
 
 This section supersedes older ``Current checkpoint`` details below when they
