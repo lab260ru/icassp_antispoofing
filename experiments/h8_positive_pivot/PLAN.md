@@ -77,6 +77,15 @@ For each blind target, report EER, AUROC, retained common-score count, and all
 methods. The primary endpoint is the unweighted mean target EER across all five
 targets; the secondary co-primary safety endpoint is their maximum EER.
 
+Point estimates use every retained common-score target row. For the fixed
+uncertainty comparison only, the final evaluator freezes up to 10,000 target
+IDs per target × label by ascending
+`sha256('H8SFBOOT|2608|dataset|label|sample_id')`; smaller classes are used in
+full. It then takes 2,000 stratified sample-ID bootstrap replicates on that
+method-independent panel. This cap is an execution-bound clarification made
+before any target score or label access; it cannot change the point-estimate
+panel, model, target, hyperparameter, or decision threshold.
+
 H8-SF is a positive-result candidate only if P:
 
 1. reduces mean target EER by **at least 5% relative** versus both B1 and B2;

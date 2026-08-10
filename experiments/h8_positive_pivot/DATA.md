@@ -22,6 +22,11 @@ revision identity from `data/arena-index.yaml` before reading target labels.
 Target score CDFs may be materialized label-free only after the protocol is
 committed. Target labels are read only by the final evaluator.
 
+Final point estimates use all retained common-score target rows. The evaluator
+uses a separate method-independent uncertainty panel of at most 10,000 stable
+IDs per target × label, selected with the exact `H8SFBOOT|2608` SHA-256 rule
+in `PLAN.md`, solely for its fixed 2,000-replicate bootstrap.
+
 ## Storage
 
 Large source panels remain under
