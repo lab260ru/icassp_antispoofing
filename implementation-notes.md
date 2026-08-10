@@ -476,7 +476,7 @@
 - Protocol: H9 fixes ODSS as the only source, requires documented
   content-aligned pairs, a voice-disjoint development split, and at least 1,000
   valid natural--spoof matched groups, and stops if a prerequisite is absent.
-  It fixes Res2TCNGuard BF16
+  It fixes a fresh-initialized Res2TCNGuard architecture with BF16
   training, four seeds, source-only loss-weight/checkpoint choice, B1 BCE, B2
   random-pair ranking, P content-aligned pair ranking, and SONAR+ArAD as the only
   external primary target panel.
@@ -488,3 +488,14 @@
   checkpoints are frozen and may not select or tune them.
 - Paper: H9 has no paper change at this point. Any future `main.tex` edit must
   immediately rebuild the tracked PDF in the same commit.
+
+## 2026-08-10 - H9 architecture-provenance correction
+
+- Audit: The public Res2TCNGuard bundle documents that `best_1.495.pth` was
+  pretrained on ASVspoof2019 LA and its model card publishes historical target
+  benchmark rows. Those legacy rows are not H9 measurements, but the checkpoint
+  would violate H9's ODSS-only source premise.
+- Correction: H9 now hashes and uses only the public network architecture;
+  every B1/B2/P run starts from a fresh seed-specific initialization. No H9
+  experiment may load or fine-tune `best_1.495.pth`. This correction is made
+  before H9 model fitting or H9 target data access.

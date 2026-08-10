@@ -5,13 +5,20 @@
 | Role | Dataset | Revision | Permitted role |
 | --- | --- | --- | --- |
 | Source development and training | `SpeechAntiSpoofingBenchmarks/ODSS` | `1968e6d0ef141c4572073695bdc1d17a8706177f` | Matched-pair construction, group-disjoint train/dev split, hyperparameter selection, and final source fit. |
-| Blind external primary target 1 | `SpeechAntiSpoofingBenchmarks/SONAR` | `eca7c72ebdf0f7936a644605a56735ac8564dbd9` | Final prediction only; target labels are withheld from H9 configuration and training. |
-| Blind external primary target 2 | `SpeechAntiSpoofingBenchmarks/ArAD` | `350184966eeb5b46ff2acdabd8f4d12e41e582da` | Final prediction only; target labels are withheld from H9 configuration and training. |
+| Fixed external primary target 1 | `SpeechAntiSpoofingBenchmarks/SONAR` | `eca7c72ebdf0f7936a644605a56735ac8564dbd9` | Final prediction only; target labels are withheld from H9 configuration and training. |
+| Fixed external primary target 2 | `SpeechAntiSpoofingBenchmarks/ArAD` | `350184966eeb5b46ff2acdabd8f4d12e41e582da` | Final prediction only; target labels are withheld from H9 configuration and training. |
 
 The source revisions and approximate trial counts were obtained from the
 hash-sealed `arena-manifest` metadata snapshot under the HDD root. Those
 metadata counts are not H9 observations. No target values may be read before
 the committed source-selection artifact exists.
+
+After H9's first protocol commit, the architecture provenance audit revealed
+that the excluded historical Res2TCNGuard checkpoint's public model card lists
+legacy benchmark outcomes for these targets. Those are not H9 predictions or
+label values, did not alter either target or any H9 configuration, and the
+checkpoint is now prohibited. H9's new model predictions remain target-metric
+fenced until the terminal evaluator; do not describe this evaluation as blind.
 
 ## Source eligibility hard stops
 
@@ -44,6 +51,11 @@ Target files may be acquired and byte-hashed for integrity, but their labels
 must not be loaded by training, source-dev selection, throughput probing, or
 prediction. The final evaluation command is the first allowed target-label
 load and must evaluate both targets and every predeclared method together.
+
+H9 uses a fresh-initialized architecture only. The public architecture bundle
+is retained for code provenance, but its ASVspoof2019-LA-pretrained checkpoint
+is excluded from loading, training, or comparison. This prevents its historical
+benchmark exposure from becoming an undeclared H9 training source.
 
 For source and target, record repository revision, file paths, SHA-256, bytes,
 schema, sample IDs, label counts (only in the final target ledger), duration

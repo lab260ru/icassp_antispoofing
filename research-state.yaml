@@ -288,7 +288,7 @@ experiments:
       metric_value: null
       delta: null
       wall_time_min: null
-      change_summary: "Locked an independent ODSS content-aligned pair-ranking study with same-data BCE and random-pair controls, BF16 Res2TCNGuard, four source-only seeds, and two fixed target corpora before H9 data/result access."
+      change_summary: "Locked an independent ODSS content-aligned pair-ranking study with same-data BCE and random-pair controls, fresh-initialized BF16 Res2TCNGuard architecture, four source-only seeds, and two fixed target corpora before H9 data/result access."
       timestamp: "2026-08-10"
 
 outer_loop:

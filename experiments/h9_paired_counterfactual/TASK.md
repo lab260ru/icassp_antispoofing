@@ -15,7 +15,8 @@ the interpretation of H1--H8.
 ## Deliverables
 
 1. Hash-sealed ODSS source and SONAR/ArAD target manifests under the HDD root.
-2. A BF16, four-GPU-efficient Res2TCNGuard training/evaluation harness with
+2. A BF16, four-GPU-efficient, **fresh-initialized** Res2TCNGuard
+   architecture training/evaluation harness with
    identical-budget BCE, random-pair, and PCR conditions.
 3. Exhaustive source-development and two-target results, fixed uncertainty,
    provenance/fingerprint audit, and a hard decision note.
