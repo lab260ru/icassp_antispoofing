@@ -342,3 +342,13 @@ bootstrap cluster rule/counts. It does not load score or feature values, rerun
 a bootstrap, select a cue, or change the negative H1/H2 result. The full suite
 now passes 139 tests; the artifact and resumability notes are committed and
 pushed at `6a5b16e`.
+
+## 2026-08-10 — paper reproducibility disclosure integrated
+
+The compiled ICASSP draft now points directly to the sealed H1 corpus/class
+covariate-coverage and held-out bootstrap-context material. This resolves a
+methods-reporting concern without adding a new statistic, experiment, causal
+claim, or supplementary-result dependency. `main.tex` was rebuilt immediately:
+the PDF remains five US-letter pages, and the local preflight plus all 139 tests
+pass. The refreshed source/PDF and verification ledger are committed and pushed
+at `2d24c42`.
