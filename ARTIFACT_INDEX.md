@@ -52,6 +52,7 @@ committed to this repository.
 | Final Codex-only audit | `paper/reviews/codex_final_audit_20260810/` | Three independent review perspectives, meta-review, concern matrix, and evidence-safe resolution for the current compiled working draft. H5/H6/S1 remain supplementary-only. |
 | Supplementary crest evidence boundary | `experiments/paper_extension/results/crest_evidence_boundary_s1_001/` | Fixed-input S1 PDF/PNG shows the sealed H1 crest slice, H2 quality stop, and score-free H4 label context. It is descriptive only and does not alter any research gate. |
 | Supplementary H5 concordance heatmap | `experiments/h5_view_invariance/H5_SUPPLEMENTARY_CONCORDANCE_FIGURE_PROTOCOL.md` | `experiments/h5_view_invariance/results/H5_SUPPLEMENTARY_CONCORDANCE_FIGURE_001.md` | Hash-validated display of all 84 sealed H5 aggregates. The v2 layout is visually approved; unavailable/stable markers remain descriptive only. |
+| Supplementary H6 agreement heatmap | `experiments/h6_score_agreement/H6_SUPPLEMENTARY_FIGURE_PROTOCOL.md` | `experiments/h6_score_agreement/results/H6_SUPPLEMENTARY_FIGURE_001.md` | Hash-validated fixed-order display of all 280 sealed H6 agreement cells. It is descriptive only and cannot rank/select models or revise a research gate. |
 | Internal audits | `paper/reviews/five_corpus_h2_quality_20260809/` | Claim-to-artifact and scope/layout audits only; never call them peer review. |
 
 ## Reproduce the current local handoff

@@ -269,3 +269,18 @@
   causal feasibility, fresh association discovery, and conditional BF16
   training. Each direction requires a new independent protocol and immutable
   input freeze before it can inspect the data types it will analyze.
+
+## 2026-08-10 - H6 sealed supplementary display
+
+- Design: A fixed 28-by-10 heatmap is the smallest legible visualization of
+  the completed H6 matrix. It preserves registry order, displays every cell,
+  uses a colorblind-safe signed `[-1, 1]` scale, and avoids annotations that
+  would obscure the complete grid.
+- Boundary: The implementation hard-locks all three compact H6 paths and byte
+  hashes, checks the 280-cell/28-summary/provenance contract, and refuses raw
+  score fields or any incomplete matrix before plotting. It was committed and
+  synthetic-tested before opening the sealed compact results.
+- Validation: The real display output has vector PDF, 300-DPI PNG, metadata,
+  and recorded checksums on the HDD. Visual inspection found readable fixed
+  rows/columns, corpus boundaries, color scale, and caveat; no layout revision
+  is needed.
