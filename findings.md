@@ -160,6 +160,14 @@ baseline reproduction.
   -0.629261 to 0.868770 across the fixed registry, demonstrating descriptive
   corpus/class/model-pair heterogeneity. It neither rates models nor links a
   score pattern to a waveform cue, causal mechanism, or training action.
+- H7 fixed-vector feature transfer: one independently frozen 28-feature,
+  full-waveform logistic baseline was trained on four corpora and evaluated on
+  the fifth in all five leave-one-corpus-out folds. AUROC is 0.907785,
+  0.845107, and 0.780957 when holding out the three ASVspoof corpora, but
+  0.534590 on InTheWild and 0.588320 on ASVspoof5 (median 0.780957). This
+  illustrates feature-only label-transfer dependence across corpus families;
+  it reads no detector score and is not evidence of detector reliance,
+  causality, a selected cue, or mitigation performance.
 
 ## Optimization Trajectory
 

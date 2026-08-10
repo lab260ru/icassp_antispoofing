@@ -1,0 +1,32 @@
+{
+  "claims_not_supported": [
+    "detector_reliance",
+    "causality",
+    "cue_selection",
+    "model_ranking",
+    "mitigation_performance"
+  ],
+  "classifier": {
+    "C": 1.0,
+    "max_iter": 1000,
+    "penalty": "l2",
+    "random_state": 2612,
+    "solver": "lbfgs"
+  },
+  "complete_matrix_cells": 5,
+  "corpora": [
+    "ASVspoof2019_LA",
+    "ASVspoof2021_LA",
+    "ASVspoof2021_DF",
+    "InTheWild",
+    "ASVspoof5"
+  ],
+  "freeze_dir": "experiments/h7_feature_transfer/results/h7_input_freeze_001",
+  "freeze_manifest_sha256": "42592ee49a3867b86f41f83620d328272de4362b32649021028a4e1253fd194f",
+  "freeze_provenance_sha256": "236a95a309d201b8b24276e1436d1c3043c3d5d20c6e0685e7b0aaa1503248ec",
+  "median_held_out_auroc": 0.78095708,
+  "median_held_out_eer": 0.2898,
+  "preprocessing": "train-only median imputation plus missing indicators and standardization",
+  "protocol": "experiments/h7_feature_transfer/protocol.md",
+  "representation": "all_28_full_waveform_features"
+}

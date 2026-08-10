@@ -49,6 +49,14 @@ threshold, sample, transform, scorer, feature, or model after seeing results.
   with 5,000 exact joins; agreement ranges from -0.629261 to 0.868770. None
   can select a cue/model, rank a detector, establish causality, or alter
   H1--H3/H2B.
+- **H7 is a completed descriptive feature-only transfer baseline.** One
+  fresh seed-2612 freeze fixes all 28 full-waveform features and a single L2
+  logistic recipe for five leave-one-corpus-out cells. Held-out AUROC is
+  0.907785/0.845107/0.780957 on the three ASVspoof corpora but
+  0.534590/0.588320 on InTheWild/ASVspoof5 (median 0.780957). It reads no
+  detector score and cannot establish detector reliance, causality, feature
+  selection, model ranking, or mitigation performance; read
+  `experiments/h7_feature_transfer/results/h7_analysis_001/H7_ANALYSIS_001.md`.
 - **Paper handoff:** `paper/main.tex` and `paper/build/main.pdf` are the
   current readable named-author ICASSP-2026-template working draft. Its
   reviewed Figure 1 v2 directly displays the frozen H1 crest slice and the
