@@ -319,3 +319,16 @@ record are on the HDD and their compact ledger is committed. I also refreshed
 reopen H1/H2/H2B; the branch is pushed through `0920e74`. The full repository
 suite currently passes 115 tests. The compiled main paper remains unchanged
 and readable.
+
+## 2026-08-10 — reviewed main evidence-boundary paper revision
+
+The compiled ICASSP working draft now foregrounds its central evidence boundary:
+Figure 1 directly shows the discovery-frozen five-corpus crest association and
+the separate one-corpus, detector-free H2 quality stop. A Codex-only
+three-perspective review found only presentation risks; a separately
+hash-pinned v2 layout now visibly separates discovery from held-out rows,
+names the 1,000-clip ASVspoof2019 LA H2 scope, and explains that no
+score-eligible retained-pair manifest was frozen. It adds no causal claim or
+new experiment. The readable five-page PDF, both preserved figure iterations,
+and the review/resolution bundle are committed and pushed at `03dc6fe`; all
+134 repository tests and the local PDF preflight pass.
