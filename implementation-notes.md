@@ -184,6 +184,20 @@
   for other completed studies. H5 therefore permits their presence in the raw
   schema but strictly projects only sample_id, view, and feature columns; labels
   and source IDs must never enter its API, manifest, matrix, or summary.
+- Implementation: Added a non-overwritable input freeze that reads only the
+  `sample_id, view` projection, checks exact source path/bytes/hash, selects at
+  most 10,000 sample IDs by the independent SHA-256 seed 2610, and binds its
+  selection manifest back to the current identity projection before analysis.
+- Implementation: Added a frozen-manifest-only analyzer that materializes the
+  complete 420-cell paired-view matrix and 84 aggregation units, with exact
+  lexicographic view-pair order, identity-derived bootstrap seeds, 200 paired
+  resample attempts, explicit failed cells, and the terminal descriptive
+  view-stability rule. A tied bootstrap resample is recorded as invalid rather
+  than redrawn; this preserves the registered resampling procedure.
+- Validation: Synthetic-only coverage verifies exact projections, response/path
+  firewalls, input/hash/manifest drift rejection, deterministic independent
+  selection, all 420/84 outputs, derived seeds, zero-IQR failed cells, and an
+  incomplete-freeze complete failed matrix. No HDD feature product was opened.
 
 ## 2026-08-10 - H6 published-score agreement atlas
 
@@ -193,3 +207,13 @@
 - Boundary: H6 must use raw pinned labels and raw published score artifacts
   only, with a new seed-2611 label-only manifest. It cannot read feature tables,
   H1/H4 summaries, audio, models, or an existing normalized result catalog.
+
+## 2026-08-10 - Supplementary S1 crest evidence boundary
+
+- Result: The fixed-input renderer validated all nine sealed source hashes and
+  produced PDF, 300-DPI PNG, metadata, result note, and inspection record.
+- Validation: Targeted renderer/integrity tests pass, and a separate visual
+  check confirmed readable three-panel layout, held-out intervals, 90 percent
+  gate, and score-free boundary labels.
+- Boundary: S1 is a descriptive figure only; it contains no new statistical
+  computation and cannot modify an H1/H2/H2B/H3/H4 decision.

@@ -1,0 +1,121 @@
+{
+  "artifact_kind": "supplementary_crest_factor_evidence_boundary",
+  "caption": "Supplementary Fig. S1. Evidence boundary for the fixed full-waveform, spoof-class crest-factor slice. (A) The pre-frozen Spectra-AASIST partial association with published spoof evidence across the five core corpora; 95% clustered intervals are displayed only for the two sealed held-out confirmations. (B) Detector-free H2 waveform-quality retention for the four frozen arms against the locked 90% gate. The panel was refused before any detector scoring. (C) Score-free signed label AUROC for full-waveform crest factor across the same corpora. This is raw label separation, not detector reliance. No pooled estimate, new test, ranking, or cross-panel inference is computed.",
+  "claim_boundary": {
+    "causal_claim": false,
+    "cross_panel_inference": false,
+    "detector_scoring_available": false,
+    "new_test_or_bootstrap": false,
+    "pooled_estimate": false,
+    "selection_or_ranking": false
+  },
+  "deterministic_renderer": "src.crest_evidence_boundary.render_locked_crest_evidence_boundary",
+  "figure": {
+    "pdf_vector": true,
+    "png_dpi": 300,
+    "size_inches": [
+      7.16,
+      3.16
+    ]
+  },
+  "fixed_corpus_order": [
+    "ASVspoof2019_LA",
+    "ASVspoof2021_LA",
+    "ASVspoof2021_DF",
+    "InTheWild",
+    "ASVspoof5"
+  ],
+  "fixed_h2_arm_gate": 0.9,
+  "input_hashes": {
+    "h1_association_asvspoof2019_la": {
+      "kind": "h1_association_summary",
+      "path": "/home/kirill/icassp_antispoofing/experiments/h1_feature_association/results/ASVspoof2019_LA/association_summary.csv",
+      "sha256": "ab276d603a3de23d7200bac6f259dc6227f1f7f2480af096f65e9a8080f66934"
+    },
+    "h1_association_asvspoof2021_df": {
+      "kind": "h1_association_summary",
+      "path": "/home/kirill/icassp_antispoofing/experiments/h1_feature_association/results/ASVspoof2021_DF/association_summary.csv",
+      "sha256": "4cfc76949ce4fee6f9e6784fee2b1ed3599742d614c2ec9f3d16352545d26c03"
+    },
+    "h1_association_asvspoof2021_la": {
+      "kind": "h1_association_summary",
+      "path": "/home/kirill/icassp_antispoofing/experiments/h1_feature_association/results/ASVspoof2021_LA/association_summary.csv",
+      "sha256": "3ada0bdc7f6f3f0363435e0288921779da19f9ce7bac24632c8a494fc1225b55"
+    },
+    "h1_association_asvspoof5": {
+      "kind": "h1_association_summary",
+      "path": "/home/kirill/icassp_antispoofing/experiments/h1_feature_association/results/ASVspoof5/association_summary.csv",
+      "sha256": "d6539ee8194d9d87f28ca46a00716e172fa9cacb98a3f8095b8d35b836be7acb"
+    },
+    "h1_association_inthewild": {
+      "kind": "h1_association_summary",
+      "path": "/home/kirill/icassp_antispoofing/experiments/h1_feature_association/results/InTheWild/association_summary.csv",
+      "sha256": "fca2212ce2ee026f632e56d2f4386a98b844519a1310e10f0db076d19a1b89e4"
+    },
+    "h1_confirmation_asvspoof5": {
+      "kind": "h1_confirmation_bootstrap",
+      "path": "/home/kirill/icassp_antispoofing/experiments/h1_feature_association/results/ASVspoof5/association_confirmation_bootstrap.csv",
+      "sha256": "ff9d1b9690f1bcebc09765dc0d02e206b19138c7c1255b23ce2ed188b98966b9"
+    },
+    "h1_confirmation_inthewild": {
+      "kind": "h1_confirmation_bootstrap",
+      "path": "/home/kirill/icassp_antispoofing/experiments/h1_feature_association/results/InTheWild/association_confirmation_bootstrap.csv",
+      "sha256": "d45ef60da53e7a35ba19a6a7e91595ed3a1637abccc7cfce0d48e029c64dd825"
+    },
+    "h2_quality_full_002_summary": {
+      "kind": "h2_detector_free_quality_summary",
+      "path": "/home/kirill/icassp_antispoofing/experiments/h2_causal_interventions/results/quality_runs/h2_quality_full_002.summary.json",
+      "sha256": "4c5adad8165e97efe44ca7d8b1e8737eb34e0847a4ee08b114c0c0fd61ea7c8e"
+    },
+    "h4_label_cue_matrix": {
+      "kind": "h4_hash_sealed_label_cue_matrix",
+      "path": "/home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/runs/h4_label_transportability/h4_analysis_001/h4_label_cue_matrix.csv",
+      "sha256": "03dc8674db5739bfffa1c2f2b6e2973b31a8294ab5e15f0f7d6b8e35a669b25f"
+    }
+  },
+  "manifest": {
+    "path": "experiments/paper_extension/crest_evidence_boundary_input_manifest.json",
+    "sha256": "208af578eb25648e91a0de4777981d1b2dd67b9725865afd62bf3baf3a8f6d04"
+  },
+  "output_hashes": {
+    "pdf_sha256": "25ed19cb988bbd037d7d20c6e946bf0d50159a84e2cb56db7e6598bc61f39045",
+    "png_sha256": "6dfac2a0d4f392f9c21d8c65cd4ba6ef56d9692c73d09d8f70896a2f6ba22a9b"
+  },
+  "protocol": {
+    "path": "experiments/paper_extension/crest_evidence_boundary_protocol.md",
+    "sha256": "5ebee23b885edb9581ab794b98c906d902b79820762af2aea2bbab3d618c836d"
+  },
+  "rendered_values": {
+    "h1_held_out_partial_spearman_ci": {
+      "ASVspoof5": [
+        -0.029092378429382268,
+        0.032219398102008946
+      ],
+      "InTheWild": [
+        -0.07004497869407102,
+        -0.001717825489141536
+      ]
+    },
+    "h1_partial_spearman_rho": [
+      -0.453884780070683,
+      -0.09914275587582524,
+      -0.06494969491137322,
+      -0.03260597970786976,
+      0.0013834715697478
+    ],
+    "h2_retained_fraction": {
+      "drc_cf3": 0.181,
+      "drc_cf6": 0.006,
+      "polarity": 0.999,
+      "small_gain_plus_0p1db": 0.646
+    },
+    "h4_signed_label_auroc": [
+      -0.4927612,
+      -0.45933440000000003,
+      -0.26193639999999996,
+      0.34277296,
+      -0.01947456000000003
+    ]
+  },
+  "schema_version": "crest_evidence_boundary_s1_output_v1"
+}
