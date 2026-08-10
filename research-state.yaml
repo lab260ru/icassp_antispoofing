@@ -297,6 +297,13 @@ experiments:
       wall_time_min: 0.1
       change_summary: "Sealed the ODSS source-only paired pool: 23,883 shared B1/B2/P trials, 15,922 content-aligned P edges, an equally sized language/corpus/generator-stratified B2 mapping, 3,071 excluded unmatched VITS rows, and a voice-disjoint source development split."
       timestamp: "2026-08-10"
+    - run_id: h9pcr_synthetic_throughput_001
+      hypothesis: H9
+      metric_value: 30.52
+      delta: null
+      wall_time_min: 1.0
+      change_summary: "Selected common batch 24 from a source-free BF16 pair-loss sweep on RTX 6000 Ada (23.83 GiB peak), then froze six epochs, four workers/process, and source-dev checkpoint ties before H9 corpus training."
+      timestamp: "2026-08-10"
 
 outer_loop:
   cycle: 12

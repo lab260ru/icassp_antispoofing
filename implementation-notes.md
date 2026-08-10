@@ -513,3 +513,16 @@
   present on the HDD but not decoded by this stage; target data, scores, and
   model fitting remain untouched. The complete source output hashes are in
   `experiments/h9_paired_counterfactual/results/H9_SOURCE_FREEZE_001.md`.
+
+## 2026-08-10 - H9 source-free BF16 execution envelope
+
+- Probe: A synthetic P/B2 worst-case BF16 training-step sweep of the
+  fresh-initialized Res2TCNGuard architecture tested batch sizes 2, 4, 8, 16,
+  24, 32, 40, and 48 on an RTX 6000 Ada. Batch 24 is the fastest observed
+  safe point (30.52 examples/s; 23.83 GiB peak); 48 approaches the 48-GB
+  device limit (47.64 GiB) and is not selected.
+- Freeze: Every H9 condition/seed uses batch 24, four workers/process, at most
+  six epochs, and the lowest source-dev EER checkpoint with lower-epoch ties.
+  This bounds the twelve source-lambda fits and twelve final fits while keeping
+  the exact training budget equal across methods. The probe uses synthetic
+  inputs only and reads no source/target corpus value or checkpoint.

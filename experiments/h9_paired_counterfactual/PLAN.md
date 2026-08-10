@@ -40,16 +40,17 @@ the primary comparison does not conflate pair availability with the loss.
   are shared by B1, B2, and P.
 - Four independent seeds: `9101`, `9102`, `9103`, `9104`, one fixed GPU per
   seed at final fit. Each seeds every initialization and data/random-pair
-  schedule. A batch-size throughput probe selects one safe batch size
-  before final runs; the selected size is then shared by all conditions.
+  schedule. A source-free synthetic BF16 P-step sweep selected the fixed common
+  batch size **24**: 30.52 examples/s and 23.83 GiB peak on an RTX 6000 Ada;
+  all methods use it with **4** workers per process.
 - Source-only loss-weight selection: choose `lambda` from `{0.10, 0.30, 1.00}`
   on the group-disjoint ODSS development split by mean EER over the four
   predeclared seeds. Tie-break lower lambda. The selected lambda applies to P
   and B2. Target data cannot enter this choice.
-- Source-only stopping: fixed maximum epoch budget and a source-dev EER
-  checkpoint rule, shared across conditions. The exact epoch count and
-  checkpoint tie rule are written before the first training run; target data
-  cannot select a checkpoint.
+- Source-only stopping: all fits have exactly **6 maximum epochs**. Retain the
+  checkpoint with lowest source-development EER; ties retain the lower epoch.
+  This rule, shared across conditions, is frozen before the first training run;
+  target data cannot select a checkpoint.
 
 ## Methods
 
