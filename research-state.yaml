@@ -1,12 +1,12 @@
 project:
-  title: "Beyond Crest Factor: A Cross-Dataset Causal Audit of Signal Cues in Speech Anti-Spoofing"
-  question: "Which interpretable waveform cues associate causally, rather than merely correlationally, with published speech anti-spoofing detector scores across datasets and architectures, and can a robust feature-conditioned head reduce harmful sensitivity?"
-  status: deadline_handoff_complete
+  title: "Positive Cross-Corpus Generalization for Speech Anti-Spoofing"
+  question: "Which newly predeclared, compute-feasible training or representation strategy can produce a reproducible positive cross-corpus anti-spoofing result, with a credible baseline and held-out evaluation?"
+  status: active_positive_pivot_bootstrap
   started: "2026-08-09"
-  deadline_utc: "2026-08-10T20:00:00Z"
+  deadline_utc: "2026-08-11T13:00:00Z"
   domain: "speech anti-spoofing"
   target_venue: "ICASSP 2027"
-  narrative_status: evidence_conservative_initial_draft_complete
+  narrative_status: searching_for_a_positive_cross_corpus_contribution
 
 literature:
   key_papers:
@@ -70,6 +70,11 @@ hypotheses:
     status: complete_descriptive_feature_only_transfer_matrix
     motivation: "Tests full fixed-vector feature-label transportability without detector scores, feature selection, or causal interpretation."
     priority: medium
+  - id: H8
+    statement: "A fresh, literature-grounded training or representation strategy can deliver a verified positive cross-corpus anti-spoofing result under a newly locked protocol."
+    status: bootstrap_previous_work_and_literature_audit
+    motivation: "The completed association/quality-gate paper is not sufficient as the primary ICASSP contribution; H8 permits a clean pivot rather than post-hoc repair."
+    priority: highest
 
 experiments:
   proxy_metric: "Cross-dataset, within-class feature-score association and causal paired score sensitivity; EER for mitigation."
