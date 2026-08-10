@@ -1,5 +1,10 @@
 # Research and paper handoff — 2026-08-10
 
+**Rolling verification timestamp:** 2026-08-10 19:35 UTC. The current
+research-result checkpoint is `8892b7931344b79351b8b1e22d006be92b574456`;
+it is mirrored by the verified complete-history HDD bundle described in
+`to_human/GIT_BUNDLE_HANDOFF_20260810.md`.
+
 ## Delivered
 
 - Readable named-author ICASSP working draft: `paper/main.tex` and
@@ -43,7 +48,7 @@
 
 ## Verified now
 
-The full repository suite passes **149 tests**. The local paper checker reports
+The full repository suite passes **149 tests** in 27.46 seconds. The local paper checker reports
 five US-letter pages, Table 1 on page 3, references on page 5, and ten embedded
 fonts. See `verification/FINAL_VERIFICATION_20260810.md`.
 
