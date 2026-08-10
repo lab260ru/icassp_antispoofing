@@ -64,6 +64,8 @@ not promoted based on target results.
   smaller step size.
 - A1 uses the same L2 grid and variance coefficient `{0.01, 0.1, 1.0}` under
   the same inner procedure.
+- B2 uses the fixed central grid value `L2=1e-2`; it is a mandatory baseline,
+  not a target-selected method.
 - Final source fit uses the selected settings and seeds `1701`, `1702`, and
   `1703`; report mean prediction across all three. No target metric may choose
   a seed, epoch, model, or hyperparameter.
