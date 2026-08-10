@@ -184,3 +184,12 @@
   for other completed studies. H5 therefore permits their presence in the raw
   schema but strictly projects only sample_id, view, and feature columns; labels
   and source IDs must never enter its API, manifest, matrix, or summary.
+
+## 2026-08-10 - H6 published-score agreement atlas
+
+- Decision: Add a separate architecture-diversity audit because it tests the
+  value of the fixed eight-model score panel without treating model agreement as
+  evidence about waveform features or interventions.
+- Boundary: H6 must use raw pinned labels and raw published score artifacts
+  only, with a new seed-2611 label-only manifest. It cannot read feature tables,
+  H1/H4 summaries, audio, models, or an existing normalized result catalog.
