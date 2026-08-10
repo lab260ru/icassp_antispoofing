@@ -345,3 +345,7 @@
   full HDD products, and every credential. It preserves only compact,
   hash-bound evidence and the path/hash manifests needed to reconstruct the
   environment.
+- Changed: Added a self-contained, hash-linked H1 adjustment disclosure in
+  `paper/supplementary/` for a future authorized supplement package. It is a
+  display-only copy of the sealed score-free coverage audit, not a new paper
+  result or availability claim.
