@@ -355,3 +355,13 @@
 - Follow-up: Added a pre-deadline objective audit that distinguishes completed
   evidence from intentionally quality-gated stops and external submission work.
   It will be reconciled against the final remote/PDF/test state at handoff.
+
+## 2026-08-10 - H7 fixed-vector cross-corpus transfer audit
+
+- Decision: Test the complete frozen 28-feature vector as one score-free,
+  leave-one-corpus-out logistic baseline, rather than mining a H1/H4 feature
+  shortlist or bypassing the failed causal gates.
+- Boundary: H7 uses a fresh seed-2612 source-ID freeze and projects only five
+  feature tables. It cannot read detector scores, waveform audio, model code,
+  H1/H4/H5/H6 results, or coefficients for feature selection; its complete
+  matrix is descriptive and terminal.
