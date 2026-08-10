@@ -142,7 +142,16 @@ def render(table: pd.DataFrame, output_dir: Path, *, input_hashes: Mapping[str, 
         zorder=3,
     )
     axis.axvline(0.5, color=GRAY, linewidth=1.1, linestyle="--", zorder=1)
-    axis.text(0.502, 0.22, "chance", color=GRAY, fontsize=7.5, va="bottom")
+    axis.text(
+        0.502,
+        0.97,
+        "chance",
+        color=GRAY,
+        fontsize=7.5,
+        ha="left",
+        va="top",
+        transform=axis.get_xaxis_transform(),
+    )
     axis.set_yticks(positions)
     axis.set_yticklabels(["ASVspoof 2019 LA", "ASVspoof 2021 LA", "ASVspoof 2021 DF", "In-the-Wild", "ASVspoof 5"])
     axis.invert_yaxis()
