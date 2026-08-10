@@ -59,6 +59,15 @@ class TargetFeatureArtifacts:
     provenance_path: Path
 
 
+@dataclass(frozen=True)
+class SourceFeatureArtifacts:
+    """Locations for a revalidated H8 source rank/probit training panel."""
+
+    output_dir: Path
+    features_path: Path
+    provenance_path: Path
+
+
 def canonical_json(value: object) -> str:
     """Return stable pretty JSON for an H8 compact provenance record."""
     return json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False) + "\n"
@@ -465,3 +474,122 @@ def materialize_label_free_target_features(
     }
     provenance_path.write_text(canonical_json(provenance), encoding="utf-8")
     return TargetFeatureArtifacts(output_dir, features_path, provenance_path)
+
+
+def _read_source_freeze_provenance(path: Path) -> dict[str, Any]:
+    if not path.is_file():
+        raise FileNotFoundError(f"H8 source freeze provenance is unavailable: {path}")
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise ValueError(f"H8 source freeze provenance is invalid JSON: {path}") from error
+    if not isinstance(value, dict) or value.get("artifact_kind") != "h8sf_source_only_input_freeze" or value.get("version") != H8_VERSION:
+        raise ValueError("H8 source freeze provenance has an unexpected contract")
+    return value
+
+
+def materialize_source_features(
+    *,
+    index_path: Path,
+    source_manifest_path: Path,
+    source_orientation_path: Path,
+    source_provenance_path: Path,
+    output_dir: Path,
+) -> SourceFeatureArtifacts:
+    """Revalidate a sealed source freeze and write its rank/probit features.
+
+    Ranks are calculated over every score in each source corpus before the
+    balanced manifest is applied. The output stores labels only for the frozen
+    source rows and has no target-path argument or target-data interface.
+    """
+    index_path = Path(index_path).resolve()
+    source_manifest_path = Path(source_manifest_path).resolve()
+    source_orientation_path = Path(source_orientation_path).resolve()
+    source_provenance_path = Path(source_provenance_path).resolve()
+    index = _load_index(index_path)
+    provenance = _read_source_freeze_provenance(source_provenance_path)
+    if provenance.get("index_sha256") != sha256_file(index_path):
+        raise ValueError("H8 source freeze index hash no longer matches")
+    if provenance.get("source_manifest_sha256") != sha256_file(source_manifest_path):
+        raise ValueError("H8 source manifest hash no longer matches")
+    if provenance.get("source_orientation_sha256") != sha256_file(source_orientation_path):
+        raise ValueError("H8 source orientation hash no longer matches")
+    datasets = tuple(provenance.get("source_datasets", ()))
+    models = tuple(provenance.get("models", ()))
+    if not datasets or not models or len(set(datasets)) != len(datasets) or len(set(models)) != len(models):
+        raise ValueError("H8 source freeze has invalid datasets or model roster")
+    _require_records(index, datasets, models)
+    orientations = _read_orientation(source_orientation_path, models)
+    manifest = pd.read_csv(source_manifest_path, dtype={"dataset": str, "sample_id": str, "selection_key_sha256": str})
+    expected_columns = ["dataset", "label", "sample_id", "selection_rank", "selection_key_sha256"]
+    if list(manifest.columns) != expected_columns:
+        raise ValueError("H8 source manifest schema changed")
+    manifest["label"] = pd.to_numeric(manifest["label"], errors="raise").astype("int8")
+    if manifest.empty or manifest.duplicated(["dataset", "sample_id"]).any() or not manifest["label"].isin(LABELS).all():
+        raise ValueError("H8 source manifest is invalid")
+    source_score_artifacts = provenance.get("source_score_artifacts")
+    if not isinstance(source_score_artifacts, Mapping):
+        raise ValueError("H8 source provenance lacks source score artifacts")
+    panels: list[pd.DataFrame] = []
+    label_checks: dict[str, object] = {}
+    for dataset in datasets:
+        expected_labels = _read_labels(_labels_path(index["datasets"][dataset]))
+        selected = manifest.loc[manifest["dataset"].eq(dataset), ["sample_id", "label"]].copy()
+        selection_check = selected.merge(expected_labels, on="sample_id", how="left", validate="one_to_one", suffixes=("_manifest", "_source"))
+        if len(selection_check) != len(selected) or selection_check["label_source"].isna().any() or not (selection_check["label_manifest"] == selection_check["label_source"]).all():
+            raise ValueError(f"H8 source manifest labels no longer match {dataset}")
+        model_frames: list[pd.DataFrame] = []
+        for model in models:
+            score_path = _score_path(index["models"][model], dataset)
+            expected_score = source_score_artifacts.get(model, {}).get(dataset) if isinstance(source_score_artifacts.get(model), Mapping) else None
+            if not isinstance(expected_score, Mapping) or expected_score.get("sha256") != sha256_file(score_path):
+                raise ValueError(f"H8 source score hash no longer matches for {model}/{dataset}")
+            scores = parse_scores(score_path)
+            model_frames.append(
+                pd.DataFrame(
+                    {
+                        "sample_id": scores["sample_id"].astype(str),
+                        feature_column(model): _rank_probit(scores["raw_score"] * orientations[model]),
+                    }
+                )
+            )
+        common = model_frames[0]
+        for next_frame in model_frames[1:]:
+            common = common.merge(next_frame, on="sample_id", how="inner", validate="one_to_one")
+        panel = selected.merge(common, on="sample_id", how="left", validate="one_to_one")
+        if len(panel) != len(selected) or panel[[feature_column(model) for model in models]].isna().any().any():
+            raise ValueError(f"H8 source {dataset} selection lacks eight-model score coverage")
+        panel.insert(0, "dataset", dataset)
+        panels.append(panel.sort_values("sample_id").reset_index(drop=True))
+        label_checks[dataset] = {"n_selected": int(len(selected)), "n_available_labels": int(len(expected_labels))}
+    features = pd.concat(panels, ignore_index=True)
+    if features.duplicated(["dataset", "sample_id"]).any() or not np.isfinite(features[[feature_column(model) for model in models]].to_numpy(dtype=float)).all():
+        raise ValueError("H8 source feature output violates unique/finite invariants")
+    output_dir = _directory_for_new_outputs(Path(output_dir))
+    features_path = output_dir / "source_rank_probit_features.parquet"
+    output_provenance_path = output_dir / "source_feature_provenance.json"
+    features.to_parquet(features_path, index=False)
+    output_provenance = {
+        "artifact_kind": "h8sf_source_rank_probit_features",
+        "version": H8_VERSION,
+        "index_path": str(index_path),
+        "index_sha256": sha256_file(index_path),
+        "source_manifest_path": str(source_manifest_path),
+        "source_manifest_sha256": sha256_file(source_manifest_path),
+        "source_orientation_path": str(source_orientation_path),
+        "source_orientation_sha256": sha256_file(source_orientation_path),
+        "source_freeze_provenance_path": str(source_provenance_path),
+        "source_freeze_provenance_sha256": sha256_file(source_provenance_path),
+        "source_datasets": list(datasets),
+        "models": list(models),
+        "feature_columns": [feature_column(model) for model in models],
+        "rank_transform": "Phi^-1(clip((average_rank-0.5)/n,1e-4,1-1e-4))",
+        "source_label_checks": label_checks,
+        "target_labels_read": False,
+        "target_scores_read": False,
+        "target_metrics_read": False,
+        "n_rows": int(len(features)),
+        "features_sha256": sha256_file(features_path),
+    }
+    output_provenance_path.write_text(canonical_json(output_provenance), encoding="utf-8")
+    return SourceFeatureArtifacts(output_dir, features_path, output_provenance_path)

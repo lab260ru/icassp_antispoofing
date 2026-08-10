@@ -9,7 +9,12 @@ import pandas as pd
 import pytest
 import yaml
 
-from src.h8_score_fusion import freeze_source_inputs, materialize_label_free_target_features, normalize_sample_id
+from src.h8_score_fusion import (
+    freeze_source_inputs,
+    materialize_label_free_target_features,
+    materialize_source_features,
+    normalize_sample_id,
+)
 
 
 def _write_scores(path: Path, values: dict[str, float]) -> None:
@@ -143,3 +148,26 @@ def test_target_features_refuse_nonexistent_orientation_model(tmp_path: Path) ->
 def test_normalize_sample_id_only_strips_terminal_audio_extension() -> None:
     assert normalize_sample_id("dir/CVF_de_vctk_multi_band_melgan.v2_generated_common_voice_de_1_Gen") == "CVF_de_vctk_multi_band_melgan.v2_generated_common_voice_de_1_Gen"
     assert normalize_sample_id("dir/clip.wav") == "clip"
+
+
+def test_source_features_revalidate_freeze_and_write_no_target_access(tmp_path: Path) -> None:
+    index_path = _index(tmp_path)
+    source = freeze_source_inputs(
+        index_path=index_path,
+        output_dir=tmp_path / "hdd" / "source_freeze",
+        datasets=("source_a", "source_b"),
+        models=("model_a", "model_b"),
+    )
+    outputs = materialize_source_features(
+        index_path=index_path,
+        source_manifest_path=source.manifest_path,
+        source_orientation_path=source.orientation_path,
+        source_provenance_path=source.provenance_path,
+        output_dir=tmp_path / "hdd" / "source_features",
+    )
+    features = pd.read_parquet(outputs.features_path)
+    provenance = json.loads(outputs.provenance_path.read_text(encoding="utf-8"))
+    assert len(features) == 12
+    assert set(features["label"]) == {0, 1}
+    assert provenance["target_labels_read"] is False
+    assert provenance["target_scores_read"] is False
