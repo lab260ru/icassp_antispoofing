@@ -352,3 +352,6 @@
 - Paper context: Added the verified canonical ASVspoof 5 reference beside its
   first held-out-corpus mention. The citation identifies the corpus only; it
   changes no estimator, result, or causal interpretation.
+- Follow-up: Added a pre-deadline objective audit that distinguishes completed
+  evidence from intentionally quality-gated stops and external submission work.
+  It will be reconciled against the final remote/PDF/test state at handoff.
