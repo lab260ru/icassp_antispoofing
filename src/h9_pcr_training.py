@@ -8,13 +8,14 @@ predeclared objectives:
 ``B1``
     BCE on every paired-eligible source row.
 ``B2``
-    BCE plus a deterministic, stratum-matched random opposite-class margin.
+    BCE plus the pre-frozen, stratum-matched random opposite-class margin.
 ``P``
     BCE plus the matched-content natural-to-synthetic margin.
 
-The input contract is intentionally strict.  A future source-manifest builder
-must prove the pairing and voice-disjoint split before this code is allowed to
-load waveforms.  No target path, label reader, metric, or checkpoint loader is
+The input contract is intentionally strict.  A source-manifest builder must
+prove the pairing and voice-disjoint split before this code is allowed to load
+waveforms, and the trainer consumes the independently frozen P/B2 pair CSVs
+byte-for-byte.  No target path, label reader, metric, or checkpoint loader is
 present here.
 """
 
@@ -68,6 +69,39 @@ REQUIRED_SOURCE_COLUMNS: tuple[str, ...] = (
     "source_corpus",
     "speaker_id",
     "spoof_generator",
+)
+P_PAIR_COLUMNS: tuple[str, ...] = (
+    "pair_id",
+    "split",
+    "group_key",
+    "voice_key",
+    "content_key",
+    "source_corpus",
+    "language",
+    "bona_utterance_id",
+    "bona_relative_path",
+    "spoof_utterance_id",
+    "spoof_relative_path",
+    "spoof_generator",
+)
+B2_PAIR_COLUMNS: tuple[str, ...] = (
+    "pair_id",
+    "split",
+    "group_key",
+    "voice_key",
+    "content_key",
+    "source_corpus",
+    "language",
+    "spoof_generator",
+    "random_bona_utterance_id",
+    "random_bona_relative_path",
+    "random_bona_content_key",
+    "random_bona_voice_key",
+    "random_bona_split",
+    "random_bona_language",
+    "random_bona_source_corpus",
+    "spoof_utterance_id",
+    "spoof_relative_path",
 )
 
 
@@ -138,6 +172,21 @@ class SourceManifest:
 
     def records_for_split(self, split: str) -> tuple[SourceRecord, ...]:
         return tuple(self.records[sample_id] for sample_id in self.paired_eligible_ids[split])
+
+
+@dataclass(frozen=True)
+class FrozenPairArtifact:
+    """Hash-pinned source ranking edges supplied by the H9 materializer."""
+
+    kind: Literal["P", "B2"]
+    path: str
+    sha256: str
+    edges_by_split: Mapping[str, tuple[PairEdge, ...]]
+    pairing_audit: Mapping[str, Any]
+    # The P file preserves source-only content/voice provenance needed to
+    # prove that B2's frozen random bona partner is in the declared stratum.
+    context_by_edge_key: Mapping[tuple[str, str, str], Mapping[str, str]]
+    context_by_bona_id: Mapping[str, Mapping[str, str]]
 
 
 def _read_manifest_frame(path: Path) -> pd.DataFrame:
@@ -265,6 +314,281 @@ def load_source_manifest(path: str | Path) -> SourceManifest:
             for split, edges in edges_by_split.items()
         },
         source_manifest_sha256=digest,
+    )
+
+
+def _validate_expected_hash(path: Path, observed: str, expected: str | None, *, description: str) -> None:
+    if expected is None:
+        return
+    normalized = expected.lower().strip()
+    if len(normalized) != 64 or any(character not in "0123456789abcdef" for character in normalized):
+        raise ValueError(f"H9 {description} expected SHA-256 must be 64 lowercase hexadecimal characters")
+    if observed != normalized:
+        raise ValueError(f"H9 {description} SHA-256 mismatch for {path}: expected {normalized}, observed {observed}")
+
+
+def _read_frozen_pair_frame(path: Path, *, columns: tuple[str, ...], description: str) -> pd.DataFrame:
+    if not path.is_file() or path.suffix.lower() != ".csv":
+        raise FileNotFoundError(f"H9 frozen {description} must be an available CSV: {path}")
+    frame = pd.read_csv(path, dtype=str, keep_default_na=False)
+    if tuple(frame.columns) != columns:
+        raise ValueError(
+            f"H9 frozen {description} schema drift: expected {list(columns)}, observed {list(frame.columns)}"
+        )
+    if frame.empty:
+        raise ValueError(f"H9 frozen {description} cannot be empty")
+    for column in columns:
+        _require_text(frame, column)
+    return frame
+
+
+def _edge_audit(edges: Sequence[PairEdge], *, kind: str, sha256: str) -> dict[str, Any]:
+    strata: dict[str, dict[str, int]] = {}
+    for edge in edges:
+        key = "|".join(edge.stratum)
+        values = strata.setdefault(key, {"edge_count": 0, "unique_spoof_count": 0, "unique_bona_count": 0})
+        values["edge_count"] += 1
+    for key in sorted(strata):
+        stratum_edges = [edge for edge in edges if "|".join(edge.stratum) == key]
+        strata[key]["unique_spoof_count"] = len({edge.spoof_id for edge in stratum_edges})
+        strata[key]["unique_bona_count"] = len({edge.bona_id for edge in stratum_edges})
+    return {
+        "kind": kind,
+        "pair_csv_sha256": sha256,
+        "edge_count": len(edges),
+        "strata": strata,
+    }
+
+
+def _edge_key(edge: PairEdge) -> tuple[str, str, str]:
+    return (edge.split, edge.pair_id, edge.spoof_id)
+
+
+def load_frozen_p_pairs(
+    path: str | Path,
+    manifest: SourceManifest,
+    *,
+    expected_sha256: str | None = None,
+) -> FrozenPairArtifact:
+    """Validate and load the materialized, immutable matched PCR pair CSV.
+
+    The returned edges originate from the CSV itself.  The manifest-derived
+    edges are used solely to reject a stale/malformed freeze; they are never
+    substituted into the training schedule.
+    """
+    pair_path = Path(path)
+    observed_hash = sha256_file(pair_path)
+    _validate_expected_hash(pair_path, observed_hash, expected_sha256, description="P pair CSV")
+    frame = _read_frozen_pair_frame(pair_path, columns=P_PAIR_COLUMNS, description="P pair CSV")
+    edges_by_split: dict[str, list[PairEdge]] = {"train": [], "dev": []}
+    context_by_edge_key: dict[tuple[str, str, str], dict[str, str]] = {}
+    context_by_bona_id: dict[str, dict[str, str]] = {}
+    for row in frame.itertuples(index=False):
+        split = str(row.split)
+        if split not in {"train", "dev"}:
+            raise ValueError("H9 frozen P pair CSV has a non-train/dev split")
+        spoof_id, bona_id = str(row.spoof_utterance_id), str(row.bona_utterance_id)
+        if spoof_id not in manifest.records or bona_id not in manifest.records:
+            raise ValueError("H9 frozen P pair CSV references an ID absent from the canonical source manifest")
+        spoof, bona = manifest.records[spoof_id], manifest.records[bona_id]
+        if spoof.label != 1 or bona.label != 0:
+            raise ValueError("H9 frozen P pair CSV must map spoof rows to bona-fide rows")
+        if (spoof.split, bona.split) != (split, split):
+            raise ValueError("H9 frozen P pair CSV split disagrees with canonical source manifest")
+        if spoof.pair_id != str(row.pair_id) or bona.pair_id != str(row.pair_id):
+            raise ValueError("H9 frozen P pair CSV pair_id disagrees with canonical source manifest")
+        if (spoof.language, bona.language) != (str(row.language), str(row.language)):
+            raise ValueError("H9 frozen P pair CSV language disagrees with canonical source manifest")
+        if (spoof.source_corpus, bona.source_corpus) != (str(row.source_corpus), str(row.source_corpus)):
+            raise ValueError("H9 frozen P pair CSV source_corpus disagrees with canonical source manifest")
+        if spoof.spoof_generator != str(row.spoof_generator):
+            raise ValueError("H9 frozen P pair CSV spoof_generator disagrees with canonical source manifest")
+        if spoof.group_id != bona.group_id:
+            raise ValueError("H9 frozen P pair CSV maps different voice groups")
+        edge = PairEdge(
+            split=split,
+            pair_id=str(row.pair_id),
+            spoof_id=spoof_id,
+            bona_id=bona_id,
+            language=str(row.language),
+            source_corpus=str(row.source_corpus),
+            spoof_generator=str(row.spoof_generator),
+        )
+        key = _edge_key(edge)
+        if key in context_by_edge_key:
+            raise ValueError("H9 frozen P pair CSV has duplicate split/pair_id/spoof IDs")
+        context = {
+            "group_key": str(row.group_key),
+            "voice_key": str(row.voice_key),
+            "content_key": str(row.content_key),
+            "source_corpus": str(row.source_corpus),
+            "language": str(row.language),
+            "split": split,
+            "pair_id": str(row.pair_id),
+        }
+        prior_bona = context_by_bona_id.get(bona_id)
+        if prior_bona is not None and prior_bona != context:
+            raise ValueError("H9 frozen P pair CSV gives conflicting provenance for one bona-fide ID")
+        context_by_edge_key[key] = context
+        context_by_bona_id[bona_id] = context
+        edges_by_split[split].append(edge)
+    observed_edges = {
+        edge
+        for split in ("train", "dev")
+        for edge in edges_by_split[split]
+    }
+    expected_edges = {
+        edge
+        for split in ("train", "dev")
+        for edge in manifest.pair_edges[split]
+    }
+    if observed_edges != expected_edges:
+        raise ValueError("H9 frozen P pair CSV rows are not an exact match to canonical source paired edges")
+    all_edges = tuple(sorted(observed_edges, key=lambda edge: (edge.split, edge.pair_id, edge.spoof_id)))
+    audit = _edge_audit(all_edges, kind="H9_P_FROZEN_MATCHED_PAIR_AUDIT", sha256=observed_hash)
+    audit["all_manifest_matched_edges_present_exactly_once"] = True
+    return FrozenPairArtifact(
+        kind="P",
+        path=str(pair_path),
+        sha256=observed_hash,
+        edges_by_split={
+            split: tuple(sorted(edges_by_split[split], key=lambda edge: (edge.pair_id, edge.spoof_id)))
+            for split in ("train", "dev")
+        },
+        pairing_audit=audit,
+        context_by_edge_key=context_by_edge_key,
+        context_by_bona_id=context_by_bona_id,
+    )
+
+
+def load_frozen_b2_pairs(
+    path: str | Path,
+    manifest: SourceManifest,
+    p_pairs: FrozenPairArtifact,
+    *,
+    expected_sha256: str | None = None,
+) -> FrozenPairArtifact:
+    """Validate and load the already-frozen B2 random-pair control CSV.
+
+    B2 partner IDs are not regenerated at runtime.  This validator checks the
+    frozen partners against the canonical manifest and P strata, including the
+    materializer's explicit different-content proof.
+    """
+    if p_pairs.kind != "P":
+        raise ValueError("H9 B2 validation requires the frozen P pair artifact")
+    pair_path = Path(path)
+    observed_hash = sha256_file(pair_path)
+    _validate_expected_hash(pair_path, observed_hash, expected_sha256, description="B2 pair CSV")
+    frame = _read_frozen_pair_frame(pair_path, columns=B2_PAIR_COLUMNS, description="B2 pair CSV")
+    p_by_key = {
+        _edge_key(edge): edge
+        for split in ("train", "dev")
+        for edge in p_pairs.edges_by_split[split]
+    }
+    candidate_bona_by_split_stratum: dict[tuple[str, str, str, str], set[str]] = {}
+    for edge in p_by_key.values():
+        candidate_bona_by_split_stratum.setdefault((edge.split, *edge.stratum), set()).add(edge.bona_id)
+    edges_by_split: dict[str, list[PairEdge]] = {"train": [], "dev": []}
+    seen_keys: set[tuple[str, str, str]] = set()
+    b2_context_by_edge_key: dict[tuple[str, str, str], dict[str, str]] = {}
+    for row in frame.itertuples(index=False):
+        split, pair_id, spoof_id = str(row.split), str(row.pair_id), str(row.spoof_utterance_id)
+        key = (split, pair_id, spoof_id)
+        if key in seen_keys:
+            raise ValueError("H9 frozen B2 pair CSV has duplicate split/pair_id/spoof IDs")
+        seen_keys.add(key)
+        matched = p_by_key.get(key)
+        if matched is None:
+            raise ValueError("H9 frozen B2 pair CSV has a spoof edge missing from frozen P pairs")
+        if (
+            str(row.language),
+            str(row.source_corpus),
+            str(row.spoof_generator),
+        ) != matched.stratum:
+            raise ValueError("H9 frozen B2 pair CSV stratum disagrees with frozen P pairs")
+        p_context = p_pairs.context_by_edge_key[key]
+        for column in ("group_key", "voice_key", "content_key"):
+            if str(getattr(row, column)) != p_context[column]:
+                raise ValueError(f"H9 frozen B2 pair CSV {column} disagrees with frozen P pairs")
+        bona_id = str(row.random_bona_utterance_id)
+        if bona_id not in manifest.records:
+            raise ValueError("H9 frozen B2 pair CSV references a random bona ID absent from canonical source manifest")
+        bona = manifest.records[bona_id]
+        if bona.label != 0:
+            raise ValueError("H9 frozen B2 pair CSV random partner is not bona-fide")
+        if bona_id not in candidate_bona_by_split_stratum.get((split, *matched.stratum), set()):
+            raise ValueError("H9 frozen B2 pair CSV random partner is outside the declared P stratum")
+        expected_random_context = p_pairs.context_by_bona_id.get(bona_id)
+        if expected_random_context is None:
+            raise ValueError("H9 frozen B2 pair CSV random partner has no frozen P provenance")
+        for row_column, context_column in (
+            ("random_bona_content_key", "content_key"),
+            ("random_bona_voice_key", "voice_key"),
+            ("random_bona_split", "split"),
+            ("random_bona_language", "language"),
+            ("random_bona_source_corpus", "source_corpus"),
+        ):
+            if str(getattr(row, row_column)) != expected_random_context[context_column]:
+                raise ValueError(f"H9 frozen B2 pair CSV {row_column} disagrees with frozen P provenance")
+        if str(row.random_bona_content_key) == p_context["content_key"] or bona_id == matched.bona_id:
+            raise ValueError("H9 frozen B2 pair CSV random partner must have different content from P match")
+        if (bona.split, bona.language, bona.source_corpus) != (split, matched.language, matched.source_corpus):
+            raise ValueError("H9 frozen B2 pair CSV random partner disagrees with canonical source manifest stratum")
+        edge = PairEdge(
+            split=split,
+            pair_id=pair_id,
+            spoof_id=spoof_id,
+            bona_id=bona_id,
+            language=matched.language,
+            source_corpus=matched.source_corpus,
+            spoof_generator=matched.spoof_generator,
+        )
+        edges_by_split[split].append(edge)
+        b2_context_by_edge_key[key] = p_context
+    if seen_keys != set(p_by_key):
+        raise ValueError("H9 frozen B2 pair CSV must contain every frozen P spoof edge exactly once")
+    all_edges = tuple(
+        sorted(
+            (edge for split in ("train", "dev") for edge in edges_by_split[split]),
+            key=lambda edge: (edge.split, edge.pair_id, edge.spoof_id),
+        )
+    )
+    audit = _edge_audit(all_edges, kind="H9_B2_FROZEN_STRATIFIED_RANDOM_PAIR_AUDIT", sha256=observed_hash)
+    split_strata: dict[str, dict[str, int]] = {}
+    for split, language, source_corpus, spoof_generator in sorted(candidate_bona_by_split_stratum):
+        key = f"{split}|{language}|{source_corpus}|{spoof_generator}"
+        selected = [
+            edge
+            for edge in all_edges
+            if (edge.split, *edge.stratum) == (split, language, source_corpus, spoof_generator)
+        ]
+        split_strata[key] = {
+            "edge_count": len(selected),
+            "unique_selected_bona_count": len({edge.bona_id for edge in selected}),
+            "eligible_p_bona_count": len(candidate_bona_by_split_stratum[(split, language, source_corpus, spoof_generator)]),
+        }
+    audit["split_strata"] = split_strata
+    for stratum, values in audit["strata"].items():
+        language, source_corpus, spoof_generator = stratum.split("|", maxsplit=2)
+        values["eligible_p_bona_count"] = sum(
+            len(candidate_bona_by_split_stratum[(split, language, source_corpus, spoof_generator)])
+            for split in ("train", "dev")
+            if (split, language, source_corpus, spoof_generator) in candidate_bona_by_split_stratum
+        )
+    audit["matches_frozen_p_spoof_edges_exactly_once"] = True
+    audit["all_bona_are_content_unmatched"] = True
+    audit["p_pair_csv_sha256"] = p_pairs.sha256
+    return FrozenPairArtifact(
+        kind="B2",
+        path=str(pair_path),
+        sha256=observed_hash,
+        edges_by_split={
+            split: tuple(sorted(edges_by_split[split], key=lambda edge: (edge.pair_id, edge.spoof_id)))
+            for split in ("train", "dev")
+        },
+        pairing_audit=audit,
+        context_by_edge_key=b2_context_by_edge_key,
+        context_by_bona_id={},
     )
 
 
@@ -472,61 +796,6 @@ def _cycle_edges(edges: Sequence[PairEdge], *, wanted: int) -> tuple[PairEdge, .
     return tuple(edges[index % len(edges)] for index in range(wanted))
 
 
-def build_random_pair_edges(
-    matched_edges: Sequence[PairEdge],
-    records: Mapping[str, SourceRecord],
-    *,
-    seed: int,
-    epoch: int,
-) -> tuple[tuple[PairEdge, ...], dict[str, Any]]:
-    """Build B2 edges, preserving P's spoof IDs and stratum/count exactly.
-
-    Candidate bona-fide clips are derived from matched P edges, then stratified
-    by the spoof edge's language, source corpus, and generator.  The exact
-    same-content ``pair_id`` is excluded, giving a label-valid but
-    content-unmatched control.  Hash selection makes the partner independent
-    of worker order and deterministic from ``(seed, epoch, spoof_id)``.
-    """
-    candidates: dict[tuple[str, str, str], list[tuple[str, str]]] = {}
-    for edge in matched_edges:
-        candidates.setdefault(edge.stratum, []).append((edge.pair_id, edge.bona_id))
-    output: list[PairEdge] = []
-    audit: dict[str, dict[str, int]] = {}
-    for edge in matched_edges:
-        valid = sorted(
-            {bona_id for pair_id, bona_id in candidates[edge.stratum] if pair_id != edge.pair_id}
-        )
-        if not valid:
-            raise ValueError(
-                "H9 B2 random control lacks a same-language/corpus/generator "
-                f"content-unmatched bona partner for pair_id={edge.pair_id!r}, stratum={edge.stratum}"
-            )
-        selected = valid[_stable_int("h9-b2", seed, epoch, edge.spoof_id) % len(valid)]
-        if records[selected].label != 0:
-            raise AssertionError("H9 B2 construction selected a non-bona-fide partner")
-        output.append(
-            PairEdge(
-                split=edge.split,
-                pair_id=f"random:{edge.pair_id}",
-                spoof_id=edge.spoof_id,
-                bona_id=selected,
-                language=edge.language,
-                source_corpus=edge.source_corpus,
-                spoof_generator=edge.spoof_generator,
-            )
-        )
-        key = "|".join(edge.stratum)
-        audit.setdefault(key, {"edge_count": 0, "candidate_bona_count": len(valid)})["edge_count"] += 1
-    return tuple(output), {
-        "kind": "H9_B2_STRATIFIED_RANDOM_PAIR_AUDIT",
-        "seed": int(seed),
-        "epoch": int(epoch),
-        "edge_count": len(output),
-        "strata": audit,
-        "all_bona_are_content_unmatched": True,
-    }
-
-
 def pairwise_margin_loss(spoof_logits: torch.Tensor, bona_logits: torch.Tensor, *, margin: float = H9_MARGIN) -> torch.Tensor:
     """The protocol's exact mean hinge: max(0, 1 - [z_spoof - z_bona])."""
     if spoof_logits.ndim != 1 or bona_logits.ndim != 1 or spoof_logits.shape != bona_logits.shape:
@@ -624,6 +893,8 @@ class TrainingResult:
     best_epoch: int
     source_dev_eer: float
     source_manifest_sha256: str
+    p_pair_csv_sha256: str
+    b2_pair_csv_sha256: str | None
     architecture_provenance: Mapping[str, Any]
     pairing_audit: Sequence[Mapping[str, Any]]
     checkpoint_path: str | None
@@ -646,6 +917,8 @@ class H9PCRTrainer:
         config: TrainingConfig,
         *,
         bundle_dir: str | Path,
+        p_pairs: FrozenPairArtifact,
+        b2_pairs: FrozenPairArtifact | None = None,
         waveform_loader: Callable[[str], np.ndarray] = _load_audio_16k,
         model_factory: Callable[[int, str | torch.device], tuple[nn.Module, dict[str, Any]]] = build_fresh_res2tcn_guard,
     ) -> None:
@@ -653,6 +926,14 @@ class H9PCRTrainer:
         self.manifest = manifest
         self.config = config
         self.bundle_dir = Path(bundle_dir)
+        if p_pairs.kind != "P":
+            raise ValueError("H9 trainer requires the validated frozen P pair CSV")
+        if config.method == "B2" and (b2_pairs is None or b2_pairs.kind != "B2"):
+            raise ValueError("H9 B2 trainer requires the validated frozen B2 pair CSV")
+        if config.method != "B2" and b2_pairs is not None:
+            raise ValueError("H9 B1/P trainer must not receive a B2 pair CSV")
+        self.p_pairs = p_pairs
+        self.b2_pairs = b2_pairs
         self.waveform_loader = waveform_loader
         self.model_factory = model_factory
 
@@ -676,33 +957,28 @@ class H9PCRTrainer:
             persistent_workers=bool(self.config.num_workers),
         )
 
-    def _rank_loader(self, epoch: int, steps: int) -> tuple[DataLoader[dict[str, Any]], Mapping[str, Any]]:
-        matched = self.manifest.pair_edges["train"]
+    def _rank_loader(self, steps: int) -> DataLoader[dict[str, Any]]:
         if self.config.method == "P":
-            rank_edges = matched
-            audit: Mapping[str, Any] = {
-                "kind": "H9_P_MATCHED_PAIR_AUDIT",
-                "epoch": int(epoch),
-                "edge_count": len(matched),
-                "all_matched_pair_edges_used_before_cycling": True,
-            }
+            rank_edges = self.p_pairs.edges_by_split["train"]
         elif self.config.method == "B2":
-            rank_edges, audit = build_random_pair_edges(matched, self.manifest.records, seed=self.config.seed, epoch=epoch)
+            if self.b2_pairs is None:
+                raise AssertionError("H9 B2 missing its frozen pair artifact")
+            rank_edges = self.b2_pairs.edges_by_split["train"]
         else:
             raise AssertionError("B1 has no rank loader")
         half = self.config.batch_size // 2
-        scheduled = _cycle_edges(rank_edges, wanted=steps * half)
+        wanted = steps * half
+        if wanted < len(rank_edges):
+            raise ValueError("H9 common batch schedule cannot consume every frozen rank edge in one epoch")
+        scheduled = _cycle_edges(rank_edges, wanted=wanted)
         dataset = PairWaveformDataset(scheduled, self.manifest.records, waveform_loader=self.waveform_loader)
-        return (
-            DataLoader(
-                dataset,
-                batch_size=half,
-                shuffle=False,
-                num_workers=self.config.num_workers,
-                pin_memory=self.config.require_cuda,
-                persistent_workers=bool(self.config.num_workers),
-            ),
-            audit,
+        return DataLoader(
+            dataset,
+            batch_size=half,
+            shuffle=False,
+            num_workers=self.config.num_workers,
+            pin_memory=self.config.require_cuda,
+            persistent_workers=bool(self.config.num_workers),
         )
 
     def _evaluate_dev(self, model: nn.Module) -> float:
@@ -730,15 +1006,16 @@ class H9PCRTrainer:
         optimizer = torch.optim.AdamW(model.parameters(), lr=self.config.learning_rate, weight_decay=self.config.weight_decay)
         best_eer = math.inf
         best_epoch = -1
-        audits: list[Mapping[str, Any]] = []
+        audits: list[Mapping[str, Any]] = [self.p_pairs.pairing_audit]
+        if self.b2_pairs is not None:
+            audits.append(self.b2_pairs.pairing_audit)
         final_checkpoint: Path | None = Path(checkpoint_path) if checkpoint_path is not None else None
         for epoch in range(1, self.config.max_epochs + 1):
             bce_loader = self._bce_loader("train", epoch)
             if self.config.method == "B1":
                 iterator: Iterable[tuple[dict[str, Any], Mapping[str, Any] | None]] = ((batch, None) for batch in bce_loader)
             else:
-                rank_loader, audit = self._rank_loader(epoch, len(bce_loader))
-                audits.append(audit)
+                rank_loader = self._rank_loader(len(bce_loader))
                 iterator = zip(bce_loader, rank_loader, strict=True)
             for item in iterator:
                 if self.config.method == "B1":
@@ -773,6 +1050,8 @@ class H9PCRTrainer:
                             "model_state_dict": model.state_dict(),
                             "training_config": asdict(self.config),
                             "source_manifest_sha256": self.manifest.source_manifest_sha256,
+                            "p_pair_csv_sha256": self.p_pairs.sha256,
+                            "b2_pair_csv_sha256": self.b2_pairs.sha256 if self.b2_pairs is not None else None,
                             "architecture_provenance": architecture_provenance,
                             "selection_rule": "lowest_source_dev_eer_then_lower_epoch",
                             "best_epoch": epoch,
@@ -790,6 +1069,8 @@ class H9PCRTrainer:
             best_epoch=best_epoch,
             source_dev_eer=float(best_eer),
             source_manifest_sha256=self.manifest.source_manifest_sha256,
+            p_pair_csv_sha256=self.p_pairs.sha256,
+            b2_pair_csv_sha256=self.b2_pairs.sha256 if self.b2_pairs is not None else None,
             architecture_provenance=architecture_provenance,
             pairing_audit=tuple(audits),
             checkpoint_path=str(final_checkpoint) if final_checkpoint is not None else None,
@@ -879,6 +1160,10 @@ def write_json(path: str | Path, value: Mapping[str, Any]) -> None:
 def _parse_fit_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Train one source-only fresh-init H9-PCR Res2TCNGuard run.")
     parser.add_argument("--source-manifest", required=True, type=Path)
+    parser.add_argument("--p-pairs", required=True, type=Path, help="Frozen h9_odss_source_pairs.csv; consumed exactly for P scheduling and validated for every method.")
+    parser.add_argument("--p-pairs-sha256", required=True, help="Expected byte SHA-256 of --p-pairs from the source freeze ledger.")
+    parser.add_argument("--b2-pairs", type=Path, help="Frozen h9_odss_b2_random_pairs.csv; required only for --method B2.")
+    parser.add_argument("--b2-pairs-sha256", help="Expected byte SHA-256 of --b2-pairs from the source freeze ledger.")
     parser.add_argument("--res2-bundle", required=True, type=Path, help="Directory containing the pinned _net.py architecture only.")
     parser.add_argument("--output-dir", required=True, type=Path)
     parser.add_argument("--method", required=True, choices=("B1", "B2", "P"))
@@ -912,8 +1197,17 @@ def cli_main(argv: Sequence[str] | None = None) -> int:
         lambda_rank=float(lambda_rank),
     )
     manifest = load_source_manifest(args.source_manifest)
+    p_pairs = load_frozen_p_pairs(args.p_pairs, manifest, expected_sha256=args.p_pairs_sha256)
+    if args.method == "B2":
+        if args.b2_pairs is None or args.b2_pairs_sha256 is None:
+            raise SystemExit("--method B2 requires both --b2-pairs and --b2-pairs-sha256 from the source freeze ledger")
+        b2_pairs = load_frozen_b2_pairs(args.b2_pairs, manifest, p_pairs, expected_sha256=args.b2_pairs_sha256)
+    else:
+        if args.b2_pairs is not None or args.b2_pairs_sha256 is not None:
+            raise SystemExit("--b2-pairs and --b2-pairs-sha256 are valid only for --method B2")
+        b2_pairs = None
     run_stem = f"h9_pcr_{args.method}_seed{args.seed}"
-    result = H9PCRTrainer(manifest, config, bundle_dir=args.res2_bundle).fit(checkpoint_path=args.output_dir / f"{run_stem}.pt")
+    result = H9PCRTrainer(manifest, config, bundle_dir=args.res2_bundle, p_pairs=p_pairs, b2_pairs=b2_pairs).fit(checkpoint_path=args.output_dir / f"{run_stem}.pt")
     write_json(args.output_dir / f"{run_stem}.json", result.jsonable())
     print(canonical_json(result.jsonable()))
     return 0
