@@ -27,7 +27,7 @@ not reopen or reinterpret H1--H8.
 
 - **Objective and deadline:** The user authorized a new positive-result search
   through **2026-08-11 13:00 UTC**. The active question is whether
-  content-matched natural/synthetic pair ranking improves transfer of a
+  content-aligned natural/synthetic pair ranking improves transfer of a
   transparent compact detector relative to equal-budget BCE and random-pair
   controls. Read all four documents in `experiments/h9_paired_counterfactual/`
   before accessing any H9 input or writing H9 code/results.
@@ -39,9 +39,9 @@ not reopen or reinterpret H1--H8.
   weight, or source split. The final evaluator is their first permitted H9
   label load and must evaluate all frozen methods and both targets together.
 - **Frozen H9 method:** Res2TCNGuard, BF16 training, four seeds, ODSS
-  group-disjoint source selection, BCE (B1), random-pair ranking (B2), and
-  paired counterfactual ranking (P) are fixed in `PLAN.md`. The source must
-  expose a conservative paired-content and voice grouping; otherwise H9-PCR
+  voice-disjoint source selection, BCE (B1), random-pair ranking (B2), and
+  content-aligned pair ranking (P) are fixed in `PLAN.md`. The source must
+  expose a documented pair and voice grouping; otherwise H9-PCR
   stops rather than inferring a new pairing scheme or source dataset.
 - **H8-SF remains terminal:** it improves B1/B2 fusion but fails its
   source-selected Spectra-AASIST B0 comparison (9.309% versus 0.185% mean

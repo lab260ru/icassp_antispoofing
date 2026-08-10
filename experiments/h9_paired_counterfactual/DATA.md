@@ -19,14 +19,18 @@ ODSS must supply, from its pinned revision:
 
 1. a deterministic **content/utterance key** that maps at least one bona-fide
    clip and at least one spoof clip to the same linguistic item;
-2. a speaker/voice identifier or a documented conservative proxy that permits
-   group-disjoint train/dev allocation;
+2. a source-corpus-plus-speaker/voice identifier that permits **voice-disjoint**
+   train/dev allocation, with every language present in both splits;
 3. audio decodable to mono PCM and a binary label; and
 4. at least 1,000 complete matched groups after the split and source hash audit.
 
 If any condition fails, H9-PCR records `SOURCE_PAIRING_UNAVAILABLE` and stops;
 it does not infer pairs from audio similarity, use a random pairing as the
 primary method, or substitute a new source dataset post hoc.
+
+All unmatched source items are excluded from **every** H9 method, including
+the BCE baseline. This makes pair eligibility a source-pool property rather
+than a hidden data-volume advantage for PCR.
 
 ## Leakage and target integrity
 
@@ -43,4 +47,7 @@ load and must evaluate both targets and every predeclared method together.
 
 For source and target, record repository revision, file paths, SHA-256, bytes,
 schema, sample IDs, label counts (only in the final target ledger), duration
-statistics, canonical audio fingerprint, and split/pair assignment hashes.
+statistics, canonical audio fingerprint, and split/pair assignment hashes. The
+source ledger also reports any available content-key overlap across its
+voice-disjoint train/dev split; no claim of text-disjoint development is made
+without a transcript-level key.

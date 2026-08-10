@@ -2,7 +2,7 @@
 
 ## Objective
 
-Test whether **paired counterfactual ranking** on content-matched natural and
+Test whether **content-aligned pair ranking** on content-matched natural and
 synthetic speech makes a compact, transparent detector transfer better than
 ordinary label training to two predeclared unseen corpora.
 
