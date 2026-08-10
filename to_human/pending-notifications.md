@@ -382,3 +382,16 @@ iterations are under `experiments/h7_feature_transfer/results/h7_analysis_001/`.
 This is descriptive feature-only transfer context: it reads no detector score
 and makes no causal, cue-selection, model-ranking, or mitigation claim. The
 full repository suite passes 149 tests.
+
+## 2026-08-10 — 20:00 UTC research handoff
+
+The autonomous research loop reached its 20:00 UTC handoff with the branch
+pushed at `088d293`. Final checks pass: 149 repository tests, and the readable
+paper PDF has five US-letter pages (four technical plus references), Table 1 on
+page 3, references on page 5, and ten embedded fonts. H1 yields a negative
+five-corpus portability result for the frozen crest slice; H2/H2B stop before
+detector scoring on their locked quality gates, so no causal or training claim
+is made. The new score-free H7 transfer supplement, full notes, future roadmap,
+and a verified complete-history HDD Git bundle are preserved. The next causal
+or training study must start from the independently frozen protocol in
+`experiments/future_directions/POST_20260810_RESEARCH_PLAN.md`.

@@ -1,12 +1,12 @@
 project:
   title: "Beyond Crest Factor: A Cross-Dataset Causal Audit of Signal Cues in Speech Anti-Spoofing"
   question: "Which interpretable waveform cues associate causally, rather than merely correlationally, with published speech anti-spoofing detector scores across datasets and architectures, and can a robust feature-conditioned head reduce harmful sensitivity?"
-  status: active
+  status: deadline_handoff_complete
   started: "2026-08-09"
   deadline_utc: "2026-08-10T20:00:00Z"
   domain: "speech anti-spoofing"
   target_venue: "ICASSP 2027"
-  narrative_status: provisional
+  narrative_status: evidence_conservative_initial_draft_complete
 
 literature:
   key_papers:

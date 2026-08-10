@@ -74,14 +74,18 @@ threshold, sample, transform, scorer, feature, or model after seeing results.
   --outdir build main.tex` **and commit the refreshed `paper/build/main.pdf`
   in the same paper change.**
 - **Delivery and resume:** `origin/research/icassp-signal-audit` has been
-  pushed through the rolling H7/handoff-verification checkpoint (`8892b79`)
-  and the last Telegram milestone is message ID 146, with a redacted receipt in
+  pushed through the deadline-handoff verification checkpoint (`088d293`)
+  and the last Telegram milestone is message ID 147, with a redacted receipt in
   `to_human/TELEGRAM_DELIVERY_LOG_20260810.md`. Use `git log` and
   `git status --branch` to confirm the exact remote/local head before resuming.
   Never stage the
   user-provided `ICASSP2026_Paper_Templates.zip` or any `.env` file. No active
   training, scoring, ASR, or download job is expected; check before assuming
   otherwise.
+- **Deadline handoff:** The 2026-08-10 20:00 UTC loop is complete. Read
+  `verification/DEADLINE_COMPLETION_20260810.md` before starting any new work;
+  the future roadmap, rather than a stopped gate, is the only authorized
+  starting point for a subsequent research loop.
 - **Only safe continuation:** archival documentation or a display-only,
   hash-validated supplementary rendering is allowed before the 20:00 UTC
   handoff. Any new causal, training, or feature-selection study requires a
