@@ -431,3 +431,15 @@ and the strict two-target EER/bootstrap gate are frozen before H9 data or
 target labels are read. I am now checking the source pairing schema; if that
 precondition fails, I will stop this hypothesis rather than change it after
 looking at data.
+
+## 2026-08-10 — H9 source-pairing freeze passed
+
+H9 has passed its first real data gate and is pushed at `28ffac2`. The pinned
+ODSS metadata yields 7,961 complete natural/VITS/FastPitch--HiFi-GAN groups:
+23,883 records form one shared source pool for BCE, random-pair, and
+content-aligned ranking; both ranking conditions have exactly 15,922 frozen
+edges. The split is voice-disjoint and language-stratified, and 3,071 unmatched
+VITS rows are permanently excluded from every condition. This is a
+metadata-only freeze—no source audio was decoded, no model trained, and no
+target data read. I am finishing the fresh-initialized BF16 harness and its
+throughput test before the first source training run.
