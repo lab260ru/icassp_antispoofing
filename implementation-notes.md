@@ -240,3 +240,18 @@
   gate, and score-free boundary labels.
 - Boundary: S1 is a descriptive figure only; it contains no new statistical
   computation and cannot modify an H1/H2/H2B/H3/H4 decision.
+
+## 2026-08-10 - Final Codex-only paper audit and evidence-boundary revision
+
+- Review: Three independent Codex-only reviews audited methods/claims,
+  presentation/template, and narrative scope. Their detailed reports,
+  meta-review, concern matrix, and resolution are preserved under
+  `paper/reviews/codex_final_audit_20260810/`; no external reviewer runtime was
+  used at the user's direction.
+- Decision: Keep H5/H6/S1 supplementary-only because none changes the paper's
+  primary H1/H2 conclusion and no authorized archival supplement package is
+  declared. Do not inflate the main result with a second descriptive question.
+- Revision: Main text now discloses the partial-rank/self-control/BH/bootstrap
+  details, full portability subcriterion, exploratory crest status, released
+  score-artifact scope, passing polarity control, and conditional H3 status.
+  The main PDF was recompiled immediately and passed its local static preflight.

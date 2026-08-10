@@ -32,12 +32,12 @@ associates with a detector score within label, and changes a score under an
 intervention passing prespecified audio-quality gates. The locked audit registers 28 descriptors on
 three waveform views, eight published detector score artifacts, three discovery
 corpora, and two held-out confirmation corpora. Across 6,720 within-class
-screen cells, the discovery-frozen Spectra-AASIST/full-waveform/spoof-class
+screen cells, the exploratory, discovery-frozen Spectra-AASIST/full-waveform/spoof-class
 crest-factor candidate is negative in all three discovery corpora but attenuates sharply. In
 In-the-Wild its adjusted association is small ($\rho=-0.0326$), while in
 ASVspoof5 it is null after the registered controls ($\rho=0.0014$), despite a
 negative unadjusted association. Thus this candidate fails the fixed five-corpus
-portability condition. Nineteen other pre-registered feature/view/class units
+portability condition. Nineteen other registered feature/view/class units
 meet the descriptive association rule, but are not promoted post hoc to paired
 interventions. The frozen crest/control panel also fails its 90\% per-arm
 quality-retention gate before detector scoring. The result is a conservative
@@ -46,7 +46,7 @@ with a reproducible association atlas; it makes no causal shortcut claim.
 \end{abstract}
 
 \begin{keywords}
-speech deepfake detection, anti-spoofing, shortcut learning, causal audit,
+speech deepfake detection, anti-spoofing, shortcut learning, evidence audit,
 robustness
 \end{keywords}
 
@@ -75,16 +75,18 @@ feature that merely tracks label prevalence, corpus identity, duration, or
 loudness. We therefore audit published per-sample scores without recomputing
 baseline inference and use a staged, locked decision process.
 
-This paper makes the following methodological contributions.
+This paper makes two completed contributions and one explicitly conditional
+design contribution.
 \begin{itemize}
   \item It registers a cross-dataset, multi-model association design that
   separates label effects from within-class score-feature associations and
   fixes the acceptance criterion before confirmation data are analyzed.
-  \item It specifies quality-gated paired waveform interventions that can test
-  score sensitivity without treating an association as a shortcut.
-  \item It prespecifies a conditional mitigation evaluation that is activated
-  only after a sensitivity result, against an equivalent training recipe and
-  held-out corpora.
+  \item It reports the exploratory discovery-frozen crest slice's failed
+  five-corpus portability test, preserves the separate 19-unit descriptive
+  atlas without post-hoc intervention promotion, and records a stopped
+  quality-gated crest/control panel before detector scoring.
+  \item It provides a conditional mitigation \emph{protocol}, not an evaluated
+  method, that activates only after a future valid sensitivity result.
 \end{itemize}
 
 We report only stages that completed their predeclared evidence gates.
@@ -97,13 +99,12 @@ intervention attempt.
 
 The ASVspoof 2019 challenge provides a common setting for logical-access
 spoofing research~\cite{todisco2019asvspoof}. Let $y_i\in\{0,1\}$ denote the
-registered label of utterance $i$, $f_i$ an interpretable waveform feature, and
+registered label of utterance $i$ ($0$ bona fide and $1$ spoof), $f_i$ an interpretable waveform feature, and
 $s_{m,i}$ the published score of model $m$. Each score artifact is oriented to
 increasing spoof evidence only after a label-direction check; artifacts that
 fail an exact sample-ID join or an orientation check are excluded rather than
 heuristically repaired. Let $c_i$ contain registered nuisance variables such
-as duration, integrated loudness, and available speaker, attack, or codec
-metadata.
+as duration, integrated loudness, and available speaker or attack metadata.
 
 The first audit target is the within-class association
 $\rho_{m,y}=\operatorname{Spearman}(f_i,s_{m,i}\mid y_i=y)$ and its
@@ -131,6 +132,8 @@ The score panel consists of \scorepanel. Where a published score artifact is
 absent, the cell is reported as missing and is never imputed. This design uses
 the Arena score artifacts as published evidence, rather than spending
 additional compute to reproduce their baseline inference.
+Accordingly, its estimands concern pinned released score artifacts, not
+re-executed current implementations or independent architectural mechanisms.
 The accompanying artifact bundle preserves the pinned manifest, executable
 analysis, and compact hash-sealed results; raw corpora remain external to the
 repository. A citable archival locator will be added when disclosure policy
@@ -147,19 +150,23 @@ class-balanced subset using seed 2609 and at most 5,000 examples per class.
 
 For each dataset, feature, and waveform view, H1 reports feature-label AUROC.
 For each model, dataset, class, feature, and waveform view, it reports
-within-class Spearman association and partial rank association.
-P-values are adjusted with Benjamini--Hochberg correction. Candidate estimates
-from the frozen manifest receive 2,000 clustered bootstrap replicates during
-held-out confirmation, with a speaker or source utterance cluster when metadata
-permits. Exclusions are limited to missing
+within-class Spearman association and partial rank association. The latter is
+the correlation of rank residuals after an intercept, ranked duration and
+integrated loudness, and available speaker/attack indicators; a tested feature
+or score is removed from its own control set. P-values receive
+Benjamini--Hochberg correction across the complete 1,344-cell screen within
+each corpus. Candidate estimates from the frozen manifest receive 2,000
+label-stratified clustered bootstrap replicates during held-out confirmation,
+using speaker ID when available and otherwise source utterance ID. Exclusions are limited to missing
 stable IDs, unreadable waveforms, required labels, or published scores; every
 count is preserved in the accompanying artifacts.
 
-A feature/view/class unit is portable only if it has the same direction in at
-least four of the five core datasets, is significant in both held-out
-confirmation datasets, and is present in at least five of eight models. This
-criterion is fixed before confirmation analysis. Crest factor is one candidate
-in this registry, not the pre-supposed conclusion.
+A feature/view/class unit is portable only if at least five of eight models
+each have the same direction in at least four of the five core datasets, are
+BH-significant in both held-out confirmation datasets, and match the held-out
+direction. This full model-level criterion is fixed before confirmation
+analysis. Crest factor is one candidate in this registry, not the pre-supposed
+conclusion.
 
 \subsection{H2: planned quality-gated paired interventions}
 
@@ -222,11 +229,13 @@ candidate and is not reused for H2.
     in ASVspoof5 ($q=0.937089$) after registered adjustment; it therefore
     fails portability. \\
     Registered five-corpus association rule & 19/168 feature/view/class units
-    meet all fixed sign, held-out-confirmation, and $\geq5/8$-model conditions;
+    meet the full fixed sign, held-out-confirmation, and $\geq5/8$-model
+    subcriterion;
     none is added post hoc to H2. \\
     Frozen H2 crest/control quality panel & DRC-3, DRC-6, and gain retain
-    18.1\%, 0.6\%, and 64.6\%, respectively, below 90\%; no detector scores,
-    paired deltas, or H3 training are produced. \\
+    18.1\%, 0.6\%, and 64.6\%, respectively, below 90\%; polarity alone
+    retains 99.9\%. No detector scores, paired deltas, or H3 training are
+    produced. \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -234,9 +243,9 @@ candidate and is not reused for H2.
 \begin{figure*}[t]
   \centering
   \includegraphics[width=\textwidth]{figures/fig_h1_portable_association_atlas.pdf}
-  \caption{Five-corpus association atlas. Each bar is a registered
-  feature/view/class unit meeting the fixed partial-Spearman/BH rule in at
-  least five of eight score artifacts; colors identify the waveform view.
+  \caption{Five-corpus rule pass-count atlas. Each bar is a registered
+  feature/view/class unit for which the displayed models satisfy the full fixed
+  partial-Spearman/BH portability subcriterion; rows group the waveform views.
   These 19 descriptive associations were not re-ranked or promoted to H2 after
   confirmation data were inspected. The frozen crest candidate is absent
   because it fails the same rule.}
@@ -266,10 +275,10 @@ before detector scoring. It therefore supplies no paired-sensitivity estimate.
 
 \section{Conclusion}
 
-We present a reproducible path from a score-feature correlation to a testable
-claim about detector sensitivity: exact artifact joins, within-class adjusted
+We present a reproducible association-portability audit and a path toward a
+future test of detector sensitivity: exact artifact joins, within-class adjusted
 associations, quality-gated paired interventions, and a conditional robustness
-test. Five corpora show that the discovery-frozen
+test. Five corpora show that the exploratory, discovery-frozen
 Spectra-AASIST/full-waveform/spoof crest-factor direction does not survive the
 registered portability condition. The result also exposes
 a broader association atlas without converting it into post-hoc interventions.
