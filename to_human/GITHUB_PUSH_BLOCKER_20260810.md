@@ -8,7 +8,7 @@ One non-interactive push attempt was made after sourcing the local ignored
 username-or-token authentication error. The credential was not printed,
 persisted, copied, or retried.
 
-To unblock the requested remote delivery, replace the local .env GitHub token
-with a valid repository-write credential for lab260ru/icassp_antispoofing, then
-run a normal non-force push of research/icassp-signal-audit. The local commit,
-HDD archive, paper PDF, and review bundle remain preserved.
+Resolution: the user updated the local .env credential later on 2026-08-10. A
+credential-helper-backed non-force push then succeeded; see
+GITHUB_PUSH_RECEIPT_20260810.md. The local commit, HDD archive, paper PDF, and
+review bundle remain preserved.
