@@ -284,3 +284,13 @@
   and recorded checksums on the HDD. Visual inspection found readable fixed
   rows/columns, corpus boundaries, color scale, and caveat; no layout revision
   is needed.
+
+## 2026-08-10 - Final verification and recovery handoff
+
+- Verification: Re-ran the static single-anonymous paper check without a
+  source change, confirming the compiled five-page PDF, layout landmarks, and
+  embedded fonts. The full repository suite now has 115 passing tests.
+- Resilience: Created a new complete-history Git bundle on the designated HDD
+  after the H6 delivery head, verified it with `git bundle verify`, and wrote a
+  checksum-bound restore note. This supplements, rather than replaces, the
+  successful normal remote push.

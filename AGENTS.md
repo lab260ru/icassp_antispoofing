@@ -49,16 +49,19 @@ threshold, sample, transform, scorer, feature, or model after seeing results.
   current readable named-author ICASSP-2026-template working draft. Commit
   `7d430c4` is the latest audited paper checkpoint; its local preflight passes
   (four technical US-letter pages, references-only fifth page, Table 1 and
-  reference landmarks, embedded fonts) and the full test suite passes 110.
+  reference landmarks, embedded fonts) and the full test suite passes 115.
   The Codex-only audit bundle is
   `paper/reviews/codex_final_audit_20260810/`. H5, H6, and S1 are
   supplementary-only unless a new submission-package decision is recorded.
   **Every `paper/main.tex` edit must immediately run** `cd paper && tectonic
   --outdir build main.tex` **and commit the refreshed `paper/build/main.pdf`
   in the same paper change.**
-- **Delivery and resume:** `origin/research/icassp-signal-audit` was pushed at
-  `7d430c4`; the last Telegram milestone is message ID 139, with a redacted
-  receipt in `to_human/TELEGRAM_DELIVERY_LOG_20260810.md`. Never stage the
+- **Delivery and resume:** `origin/research/icassp-signal-audit` has been
+  pushed through the H6 supplementary-handoff checkpoint and the last Telegram
+  milestone is message ID 140, with a redacted receipt in
+  `to_human/TELEGRAM_DELIVERY_LOG_20260810.md`. Use `git log` and
+  `git status --branch` to confirm the exact remote/local head before resuming.
+  Never stage the
   user-provided `ICASSP2026_Paper_Templates.zip` or any `.env` file. No active
   training, scoring, ASR, or download job is expected; check before assuming
   otherwise.
