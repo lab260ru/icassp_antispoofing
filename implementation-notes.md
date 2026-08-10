@@ -255,3 +255,17 @@
   details, full portability subcriterion, exploratory crest status, released
   score-artifact scope, passing polarity control, and conditional H3 status.
   The main PDF was recompiled immediately and passed its local static preflight.
+- Literature: A primary-source refresh records three optional camera-ready
+  sources, but deliberately does not add them to the already-rebuilt
+  page-constrained draft without a claim-specific placement decision.
+
+## 2026-08-10 - Resumable post-loop handoff
+
+- Decision: Treat H1, H2, H2B, H4, H5, and H6 as sealed at their recorded
+  boundaries. The remaining time is reserved for provenance, readable paper
+  verification, and display-only supplementary work rather than a post-result
+  rescue experiment.
+- Continuation: Added a prospective roadmap that separates new quality-first
+  causal feasibility, fresh association discovery, and conditional BF16
+  training. Each direction requires a new independent protocol and immutable
+  input freeze before it can inspect the data types it will analyze.

@@ -295,3 +295,15 @@ predeclared feature/view units; it makes the 17 terminal descriptive stable
 units and six unavailable cells explicit without selecting a cue. Both ledgers
 are committed; the H6 result is in
 `experiments/h6_score_agreement/results/H6_ANALYSIS_001.md`.
+
+## 2026-08-10 — compiled paper audit checkpoint
+
+The manuscript has completed a fresh three-perspective Codex-only audit.
+Reviewers verified the central H1/H2 values and agreed to keep H5/H6
+supplementary-only. I tightened the paper’s portability-rule, partial-control,
+bootstrap, released-score, exploratory-crest, and conditional-H3 wording
+without adding a causal claim. `paper/main.tex` was rebuilt immediately: the
+tracked PDF has four technical US-letter pages plus a references-only fifth
+page, and the local table/font/layout check passes. The paper and review
+resolution are committed; remaining submission conditions are the official
+ICASSP-2027 template/checker and an authorized archival artifact locator.

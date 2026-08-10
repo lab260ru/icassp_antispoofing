@@ -32,3 +32,24 @@ queued messages were bulk-sent.
 
 This is the third explicitly selected message in this log. The credential-safe
 sender did not send any earlier queued notification.
+
+## H6 atlas and H5 supplement confirmation
+
+- Heading: 2026-08-10 — H6 score-agreement atlas and H5 supplement
+- Delivery status: success
+- Telegram message ID: 138
+- Text length: 759
+
+This is the fourth explicitly selected message in this log. No credential,
+chat ID, or earlier queued notification was sent or recorded.
+
+## Compiled paper-audit confirmation
+
+- Heading: 2026-08-10 — compiled paper audit checkpoint
+- Delivery status: success
+- Telegram message ID: 139
+- Text length: 714
+
+This is the fifth explicitly selected message in this log. The sender used the
+environment only for delivery and did not expose a credential or bulk-send
+historical notifications.

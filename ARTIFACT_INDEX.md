@@ -28,6 +28,7 @@ committed to this repository.
 | H5 score-free view-invariance atlas | `experiments/h5_view_invariance/protocol.md` | `experiments/h5_view_invariance/results/H5_INPUT_FREEZE_001.md` and `H5_ANALYSIS_001.md` | All 420 cells and 84 aggregations complete; 17 terminal descriptive units. Six unavailable InTheWild silence/clipping cells remain explicit; H5 cannot select a feature or alter H1--H4/H2B/H3. |
 | H6 published-score agreement atlas | `experiments/h6_score_agreement/protocol.md` | `experiments/h6_score_agreement/results/H6_INPUT_FREEZE_001.md` and `H6_ANALYSIS_001.md` | All 280 cells and 28 summaries complete with 5,000 exact joins/cell; substantial agreement heterogeneity is descriptive only and cannot select a model or alter other gates. |
 | H3 feature-conditioned training | `experiments/h3_feature_conditioned_fix/protocol.md` | No run artifact exists by design. | H3 is not authorized because no causal H2 result exists. Any future training must use BF16 and a new, valid causal prerequisite. |
+| Post-handoff roadmap | `experiments/future_directions/POST_20260810_RESEARCH_PLAN.md` | No result artifact exists by design. | New work must use an independent protocol/freeze and cannot repair H1/H2/H2B/H3 after outcomes. |
 
 ## Model and data provenance
 
@@ -64,7 +65,7 @@ PYTHONPATH=. python3 scripts/check_paper_pdf.py \
   --review-stage single-anonymous-submission
 ```
 
-The most recent full suite is 87 passed. `verification/PAPER_TEMPLATE_AND_REVIEW_20260810.md` records the current PDF hash, template/BST provenance, clean bibliography rebuild, and full local build/test evidence; rerun the commands after any relevant source change.
+The most recent full suite is 110 passed. `verification/PAPER_FINAL_AUDIT_20260810.md` records the current PDF hash, template/BST provenance, clean bibliography rebuild, final Codex-only audit, and full local build/test evidence; rerun the commands after any relevant source change.
 
 ## External delivery and resume blockers
 
