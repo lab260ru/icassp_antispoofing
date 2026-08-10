@@ -12,6 +12,8 @@
 - Three fresh Codex-only reviews are preserved with a resolution record in
   paper/reviews/codex_post_template_20260810/. No external reviewer runtime
   was used.
+- The research/icassp-signal-audit branch has been pushed normally to origin;
+  the credential-free receipt is in to_human/GITHUB_PUSH_RECEIPT_20260810.md.
 - The scientific boundary is unchanged: the frozen crest candidate fails H1
   portability; H2 fails quality screening before detector scoring; H2B selects
   no valid transform family; and H4 is descriptive only. There is no causal

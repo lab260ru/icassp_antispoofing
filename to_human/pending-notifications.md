@@ -263,3 +263,11 @@ are preserved and their actionable corrections are applied. The local commit
 is `78a79e9`. A single normal GitHub push using the current local .env was
 rejected as an invalid credential; please replace it with a repository-write
 token for lab260ru/icassp_antispoofing. No token was exposed or retried.
+
+## 2026-08-10 — GitHub push succeeded
+
+The replacement local GitHub credential was verified and a normal non-force
+push succeeded. The research/icassp-signal-audit branch is now on
+lab260ru/icassp_antispoofing, including the named-author ICASSP template,
+compiled paper PDF, Codex-only review bundle, reproducibility notes, and the
+Telegram delivery receipt. No research gate was reopened.

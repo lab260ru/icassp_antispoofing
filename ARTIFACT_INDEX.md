@@ -63,7 +63,7 @@ The most recent full suite is 87 passed. `verification/PAPER_TEMPLATE_AND_REVIEW
 
 ## External delivery and resume blockers
 
-- GitHub push: the current local `.env` token and pre-existing GitHub CLI credential were both rejected as invalid on 2026-08-10. Replace the local repository-write token, then push normally without force; see `to_human/GITHUB_PUSH_BLOCKER_20260810.md`.
+- GitHub push: after the user replaced the local .env token, a normal non-force push created the remote `research/icassp-signal-audit` branch on 2026-08-10; see `to_human/GITHUB_PUSH_RECEIPT_20260810.md`.
 - Portable backup while push is blocked: `to_human/GIT_BUNDLE_HANDOFF_20260809.md` records the verified complete-history HDD bundle and restoration command. It is not a GitHub delivery.
 - Telegram milestone delivery: the latest paper/push-blocker update was delivered on 2026-08-10; its redacted receipt is in `to_human/TELEGRAM_DELIVERY_LOG_20260810.md`. Historical messages remain queued and can be listed/sent one-at-a-time through `to_human/TELEGRAM_DELIVERY.md`.
 - Paper review: use the user-requested Codex-only timestamped review bundle and address its findings; do not retry the unauthenticated external reviewer runtime.
