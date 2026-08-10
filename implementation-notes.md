@@ -331,3 +331,7 @@
   context. A post-write structural check verified unique cells, five source
   hashes, and the forbidden-operation ledger; no score or feature value was
   loaded.
+- Paper integration: The limitations section now points to the exact
+  corpus--class adjustment and bootstrap disclosure without introducing a new
+  quantitative claim. `main.tex` was immediately rebuilt; the five-page local
+  preflight remains clean.

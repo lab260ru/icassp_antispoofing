@@ -4,7 +4,7 @@
 
 - Readable named-author ICASSP working draft: `paper/main.tex` and
   `paper/build/main.pdf` (SHA-256
-  `495bd3bb7d476915b94c592c9879f8d908ccf37892f255c993efb0fee3d8cdf0`).
+  `f3d166dd87f2bca53eb52ef5b332f784f0065e7c6e360114e367e43f3783ad86`).
   The current source uses the user-provided, hash-pinned ICASSP-2026
   `spconf`/`IEEEbib` inputs and was independently audited by three Codex-only
   perspectives. A further Codex-only figure review replaced the registry
