@@ -387,3 +387,23 @@
   The independent post-write validator confirmed matrix cardinality, frozen
   train/test sizes, finite ordered intervals, and the explicit no-causal/no-
   detector claim boundary.
+
+## 2026-08-10 - H7 sealed supplementary rendering
+
+- Decision: Render the sealed five-cell H7 matrix as a fixed-order forest plot
+  for a future authorized supplement, rather than adding a new H7 result to
+  the four-page main paper.
+- Boundary: The hash-bound renderer reads only the compact H7 freeze,
+  provenance, and result CSV artifacts. It validates the no-score/no-causal
+  claim ledger and performs no fit, bootstrap, ranking, or feature
+  attribution.
+- Presentation: Academic-plotting guidance set the vector-PDF/300-DPI-PNG
+  output, serif type, Okabe--Ito blue marks, fixed corpus order, fixed
+  AUROC=[0.45, 1.00] axis, and a neutral chance reference. The derived `eer`
+  field is declared but deliberately not plotted; it is not a raw response.
+- Validation: Ten focused H7 analysis/figure tests passed. Manual inspection
+  accepted the final display after two retained layout-only trials exposed an
+  overlapping then a clipped chance label. Their input hashes and scientific
+  encodings are unchanged; only the final axes-anchored annotation is
+  authoritative. See
+  `experiments/h7_feature_transfer/results/h7_analysis_001/H7_SUPPLEMENTARY_FIGURE_001.md`.

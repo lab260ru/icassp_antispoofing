@@ -57,6 +57,9 @@ threshold, sample, transform, scorer, feature, or model after seeing results.
   detector score and cannot establish detector reliance, causality, feature
   selection, model ranking, or mitigation performance; read
   `experiments/h7_feature_transfer/results/h7_analysis_001/H7_ANALYSIS_001.md`.
+  Its hash-bound vector/300-DPI supplementary forest plot has been visually
+  approved but is not a main-paper figure; read
+  `experiments/h7_feature_transfer/results/h7_analysis_001/H7_SUPPLEMENTARY_FIGURE_001.md`.
 - **Paper handoff:** `paper/main.tex` and `paper/build/main.pdf` are the
   current readable named-author ICASSP-2026-template working draft. Its
   reviewed Figure 1 v2 directly displays the frozen H1 crest slice and the
