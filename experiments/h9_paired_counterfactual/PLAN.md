@@ -38,6 +38,10 @@ the primary comparison does not conflate pair availability with the loss.
 - Batch construction: class-balanced, language-balanced where metadata
   permits, fixed source train groups. The same batch schedule and augmentations
   are shared by B1, B2, and P.
+- Optimizer: **AdamW**, learning rate **1e-4**, weight decay **1e-2**, no
+  scheduler, and no gradient accumulation. All source waveform windows use the
+  deterministic shared first-64,600/tile-short policy; no random crop or
+  data augmentation is used.
 - Four independent seeds: `9101`, `9102`, `9103`, `9104`, one fixed GPU per
   seed at final fit. Each seeds every initialization and data/random-pair
   schedule. A source-free synthetic BF16 P-step sweep selected the fixed common
