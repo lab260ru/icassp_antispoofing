@@ -148,10 +148,68 @@ def _source_artifacts(tmp_path: Path) -> tuple[Path, Path, Path, Path, Path]:
     return manifest, p_pairs, b2_pairs, freeze, materialization
 
 
-def _selection(tmp_path: Path) -> Path:
+def _selection(tmp_path: Path, hashes: dict[str, str], architecture_sha256: str) -> Path:
     candidates = []
+    inputs: list[dict[str, str]] = []
     for number, lam in enumerate(H9_LAMBDA_GRID, start=1):
         by_seed = {str(seed): 0.1 * number for seed in H9_SEEDS}
+        for index, seed in enumerate(H9_SEEDS):
+            checkpoint = tmp_path / f"selection_P_{lam}_{seed}.pt"
+            torch.save(
+                {
+                    "model_state_dict": {"synthetic": torch.tensor([index])},
+                    "training_config": {
+                        "method": "P",
+                        "seed": seed,
+                        "device": f"cuda:{index}",
+                        "batch_size": 24,
+                        "num_workers": 4,
+                        "max_epochs": 6,
+                        "learning_rate": 1e-4,
+                        "weight_decay": 1e-2,
+                        "lambda_rank": lam,
+                        "margin": 1.0,
+                        "require_cuda": True,
+                    },
+                    "source_manifest_sha256": hashes["source_manifest_sha256"],
+                    "p_pair_csv_sha256": hashes["p_pairs_sha256"],
+                    "b2_pair_csv_sha256": None,
+                    "architecture_provenance": {
+                        "architecture_sha256": architecture_sha256,
+                        "initialization": "fresh_seeded",
+                        "initialization_seed": seed,
+                        "checkpoint_loaded": False,
+                    },
+                    "selection_rule": "lowest_source_dev_eer_then_lower_epoch",
+                    "best_epoch": 1,
+                    "source_dev_eer": by_seed[str(seed)],
+                },
+                checkpoint,
+            )
+            sidecar = tmp_path / f"selection_P_{lam}_{seed}.json"
+            _write_json(
+                sidecar,
+                {
+                    "method": "P",
+                    "seed": seed,
+                    "device": f"cuda:{index}",
+                    "lambda_rank": lam,
+                    "source_dev_eer": by_seed[str(seed)],
+                    "checkpoint_path": str(checkpoint),
+                    "checkpoint_sha256": sha256_file(checkpoint),
+                    "target_labels_read": False,
+                    "target_audio_read": False,
+                    "precision": "cuda_bfloat16_autocast",
+                    "architecture_provenance": {
+                        "architecture_sha256": architecture_sha256,
+                        "initialization": "fresh_seeded",
+                        "initialization_seed": seed,
+                        "checkpoint_loaded": False,
+                    },
+                    "source_artifact_hashes": hashes,
+                },
+            )
+            inputs.append({"path": str(sidecar), "sha256": sha256_file(sidecar)})
         candidates.append(
             {
                 "lambda_rank": lam,
@@ -163,14 +221,18 @@ def _selection(tmp_path: Path) -> Path:
     _write_json(
         path,
         {
+            "artifact_kind": "h9_pcr_frozen_source_only_lambda_selection",
             "kind": "H9_P_SOURCE_ONLY_LAMBDA_SELECTION",
             "selected_lambda_rank": 0.1,
             "selection_metric": "mean_source_dev_eer_over_four_predeclared_P_seeds",
             "tie_break": "lower_lambda_rank",
             "applies_unchanged_to": ["P", "B2"],
             "candidates": candidates,
+            "input_sidecars": inputs,
+            "source_artifact_hashes": hashes,
             "target_labels_read": False,
             "target_audio_read": False,
+            "target_metrics_read": False,
         },
     )
     return path
@@ -256,7 +318,7 @@ def _inputs(tmp_path: Path) -> dict[str, object]:
         "b2_pairs": b2_pairs,
         "source_freeze_provenance": freeze,
         "source_materialization_provenance": materialization,
-        "source_selection": _selection(tmp_path),
+        "source_selection": _selection(tmp_path, hashes, sha256_file(architecture)),
         "architecture_bundle": bundle,
         "training_records": _final_sidecars(tmp_path, hashes, sha256_file(architecture)),
         "plan": Path("experiments/h9_paired_counterfactual/PLAN.md").resolve(),
@@ -284,5 +346,19 @@ def test_checkpoint_ledger_builder_rejects_target_firewall_breach_before_publica
     _write_json(breached, payload)
     output = tmp_path / "should_not_exist.json"
     with pytest.raises(ValueError, match="target firewall"):
+        build_frozen_checkpoint_ledger(**inputs, output=output)
+    assert not output.exists()
+
+
+def test_checkpoint_ledger_replays_hashed_selection_sidecars(tmp_path: Path) -> None:
+    inputs = _inputs(tmp_path)
+    selection_path = Path(inputs["source_selection"])
+    selection = json.loads(selection_path.read_text(encoding="utf-8"))
+    first_sidecar = Path(selection["input_sidecars"][0]["path"])
+    sidecar = json.loads(first_sidecar.read_text(encoding="utf-8"))
+    sidecar["precision"] = "float32"
+    _write_json(first_sidecar, sidecar)
+    output = tmp_path / "selection_sidecar_drift.json"
+    with pytest.raises(ValueError, match="SHA-256 mismatch"):
         build_frozen_checkpoint_ledger(**inputs, output=output)
     assert not output.exists()

@@ -12,6 +12,15 @@ and the twelve final training sidecars/checkpoints. Before publication it
 replays the source-manifest/P/B2 validators, verifies both provenance seals,
 and checks fresh BF16 initialization, the complete method×seed matrix, fixed
 optimization envelope, selected lambda, checkpoint rule, and every byte hash.
+
+The lambda-selection JSON is not trusted as an aggregate alone. It must name
+exactly the 12 hash-pinned P grid sidecars (three locked lambdas × four seeds).
+The builder rereads each sidecar and its checkpoint, and rejects drift in its
+source-artifact triple, CUDA-BF16 provenance, fresh seed-specific
+initialization, device, P-only grid identity, lower-EER/lower-epoch source
+checkpoint rule, frozen optimization envelope, or source-development EER.
+Each selection-candidate seed value must equal the corresponding hashed
+sidecar/checkpoint EER before the selected lambda can enter the final matrix.
 It then validates the candidate JSON with the terminal evaluator's own ledger
 loader and publishes the JSON create-only. An existing output is always an
 error; no replacement ledger is possible.
