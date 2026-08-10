@@ -64,3 +64,14 @@ historical notifications.
 This is the sixth explicitly selected message in this log. The sender used the
 environment only for delivery and did not expose a credential or bulk-send
 historical notifications.
+
+## Reviewed main evidence-boundary paper revision confirmation
+
+- Heading: 2026-08-10 — reviewed main evidence-boundary paper revision
+- Delivery status: success
+- Telegram message ID: 141
+- Text length: 786
+
+This is the seventh explicitly selected message in this log. The sender used
+the environment only for delivery and did not expose a credential or bulk-send
+historical notifications.
