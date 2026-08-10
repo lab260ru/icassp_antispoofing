@@ -323,3 +323,6 @@
 - Tradeoff: The pinned H1 Parquets necessarily retain their 28 feature columns.
   The audit therefore uses strict Parquet column projection rather than
   rejecting the source schema; feature values are never loaded.
+- Changed: The Markdown renderer avoids the unavailable optional `tabulate`
+  package and formats the compact table directly, preserving the dependency
+  footprint of the existing analysis environment.
