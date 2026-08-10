@@ -466,23 +466,25 @@
   generated B1/B2 Boolean. H8-SF is closed; do not exclude Spectra, tune a
   gate/weight/loss, or recast the result as a positive contribution.
 
-## 2026-08-10 - H9 paired-counterfactual pivot
+## 2026-08-10 - H9 content-aligned pair-ranking pivot
 
-- Decision: A structured divergent idea pass selected paired counterfactual
-  ranking (PCR), because it has an explicit shortcut-suppression mechanism and
-  two same-budget controls. H8 score fusion, a single-corpus DeepVoice
+- Decision: A structured divergent idea pass selected content-aligned pair
+  ranking (PCR), because it has an explicit matched-pair mechanism and two
+  same-budget controls. H8 score fusion, a single-corpus DeepVoice
   identity study, prospective generator collection, and a large DFADD run were
   recorded but not selected.
-- Protocol: H9 fixes ODSS as the only source, requires a conservative
-  content/voice group and at least 1,000 valid natural--spoof matched groups,
-  and stops if that prerequisite is absent. It fixes Res2TCNGuard BF16
+- Protocol: H9 fixes ODSS as the only source, requires documented
+  content-aligned pairs, a voice-disjoint development split, and at least 1,000
+  valid natural--spoof matched groups, and stops if a prerequisite is absent.
+  It fixes Res2TCNGuard BF16
   training, four seeds, source-only loss-weight/checkpoint choice, B1 BCE, B2
-  random-pair ranking, P matched-pair ranking, and SONAR+ArAD as the only
+  random-pair ranking, P content-aligned pair ranking, and SONAR+ArAD as the only
   external primary target panel.
 - Integrity: no H9 source or target waveform, label, model fit, target result,
   or target-derived configuration has been accessed at protocol commit time.
   Exact standardized-audio collisions between source and target are a hard
-  stop. The target evaluator is staged after source checkpoints are frozen and
-  may not select or tune them.
+  stop. Matched alignment does not itself establish a causal internal
+  shortcut-suppression mechanism. The target evaluator is staged after source
+  checkpoints are frozen and may not select or tune them.
 - Paper: H9 has no paper change at this point. Any future `main.tex` edit must
   immediately rebuild the tracked PDF in the same commit.

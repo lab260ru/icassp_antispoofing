@@ -29,7 +29,7 @@ falsification: Spectra-AASIST has 0.185% mean target EER while GroupDRO has
 ## H9 paired-counterfactual status
 
 H9-PCR is a new, protocolled training study, not a reinterpretation of any
-earlier detector-score or feature result. It asks whether content-matched
+earlier detector-score or feature result. It asks whether content-aligned
 natural/synthetic ranking on ODSS transfers better than same-data BCE and a
 random-pair margin control to two fixed external corpora, SONAR and ArAD. No
 H9 source/target waveform, label, model-fit, or target metric has yet been

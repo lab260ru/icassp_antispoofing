@@ -30,7 +30,7 @@ and deployment channel), and falsifiable hypothesis templates.
 
 | ID | Candidate | Mechanism and prediction | Feasibility / reason not selected |
 | --- | --- | --- | --- |
-| A | **Paired counterfactual ranking (PCR)** | Match natural and synthetic renderings of the same content, then require the spoof logit to rank the synthetic rendering higher. This should suppress content-specific label shortcuts that ordinary BCE can retain. | **Selected.** ODSS is compact and reportedly contains matched material; transparent Res2TCNGuard can be trained in BF16. Same-data BCE and random-pair controls isolate the matching mechanism. |
+| A | **Content-aligned pair ranking (PCR)** | Match natural and synthetic renderings of the same text, then require the spoof logit to rank the synthetic rendering higher. This tests whether content-aligned supervision helps more than an equally sized random pairing. | **Selected.** ODSS is compact and documents matched material; transparent Res2TCNGuard can be trained in BF16. Same-data BCE and random-pair controls isolate the matching mechanism. |
 | B | DeepVoice identity-disjoint GroupDRO | Hold out every source/target voice incident edge in RVC conversion data; GroupDRO should reduce worst identity-fold error. | Useful ablation/future work, but one 5,053-trial corpus cannot sustain a broad generalization claim and a subset was previously used for H2B waveform-quality work. |
 | C | Prospective post-release generator panel | Freeze systems before generating a factorial modern-generator/channel panel. A prospective gap could be an important benchmark contribution. | Data collection, licensing, generator access, and enough balanced voices/channels exceed the remaining deadline. A small panel would be less convincing than a proper source-trained test. |
 | D | Robust score fusion | GroupDRO over published score panels. | Terminally falsified in H8 against its frozen dominant single-system baseline; prohibited from reuse/tuning. |
@@ -39,13 +39,15 @@ and deployment channel), and falsifiable hypothesis templates.
 ## Selected hypothesis
 
 **H9-PCR.** Given a fixed architecture, source data, augmentation, optimizer,
-and pair count, a matched natural-to-synthetic ranking term will improve
-unseen-corpus EER relative to both (a) ordinary BCE and (b) an equal-budget
-random opposite-class ranking control.
+and pair count, a content-aligned natural-to-synthetic ranking term will
+improve unseen-corpus EER relative to both (a) ordinary BCE and (b) an
+equal-budget random opposite-class ranking control.
 
-The key counterfactual is not merely "add a ranking loss": it is whether a
-ranking pair that holds linguistic content fixed helps more than a randomly
-chosen pair with the same labels and loss weight.
+The key comparison is not merely "add a ranking loss": it is whether a
+ranking pair whose documented source text is shared helps more than a randomly
+chosen pair with the same labels and loss weight. This is a supervision test,
+not evidence that a model's internal representation has causally removed
+content or speaker information.
 
 ## Evidence boundary and success bar
 

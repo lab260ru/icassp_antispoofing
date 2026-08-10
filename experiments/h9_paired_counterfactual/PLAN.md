@@ -1,11 +1,11 @@
-# H9-PCR experiment plan — paired counterfactual ranking
+# H9-PCR experiment plan — content-aligned pair ranking
 
 **Status:** locked before H9 source/target data materialization, model fitting,
 or target result access.
 
 ## Question
 
-Can content-matched natural-to-synthetic ranking supervision reduce cross-corpus
+Can content-aligned natural-to-synthetic ranking supervision reduce cross-corpus
 speech anti-spoofing error beyond both ordinary BCE and an equal-budget random
 opposite-class ranking control?
 
@@ -17,13 +17,22 @@ compact (172,102-parameter) detector; its existing source-PyTorch inference
 path has a documented baseline-parity check, but that check is not an H9
 result.
 
+Every method uses only the frozen **paired-eligible source pool**: complete
+groups with one documented natural clip and at least one documented synthetic
+re-synthesis. Unmatched source items are excluded from B1 as well as B2/P, so
+the primary comparison does not conflate pair availability with the loss.
+
 - Input: mono 16-kHz waveform, deterministic fixed-length policy shared by all
   conditions.
 - Precision: CUDA BF16 autocast with a finite-loss guard. No FP32 training
   fallback is allowed.
-- Splits: H9 source groups are disjoint by the conservative
-  `(speaker_or_voice_key, content_key)` grouping rule. A group never crosses
-  train/dev. The deterministic split seed is `2909`.
+- Splits: a `voice_key=(source_corpus,speaker)` is wholly assigned to train or
+  dev under a deterministic language-stratified split, so a voice never crosses
+  the source development boundary. The pair key is a documented
+  source-corpus/speaker/utterance identifier after removing the generator
+  prefix. The manifest reports its content-key overlap diagnostic but does not
+  claim text-disjoint development without transcript-level evidence. The split
+  seed is `2909`.
 - Batch construction: class-balanced, language-balanced where metadata
   permits, fixed source train groups. The same batch schedule and augmentations
   are shared by B1, B2, and P.
@@ -48,13 +57,18 @@ training samples and objective scaling. A pair term is
 
 | ID | Method | Difference from B1 | Purpose |
 | --- | --- | --- | --- |
-| B1 | Class-balanced BCE | None | Required ordinary label-training baseline. |
-| B2 | BCE + random opposite-class rank term | A deterministic, label-valid but content-unmatched bonafide partner for every spoof pair; same term count and selected lambda as P. | Controls for pairwise-margin regularization itself. |
-| **P** | **BCE + paired counterfactual rank term** | Natural and spoof clips in the same frozen content group; same term count and selected lambda as B2. | Primary method: hold content fixed while ranking synthesis evidence. |
+| B1 | Class-balanced BCE | None, on the same paired-eligible source pool. | Required ordinary label-training baseline. |
+| B2 | BCE + random opposite-class rank term | A deterministic, label-valid but content-unmatched bonafide partner for every spoof pair; random pairing is stratified by language, source corpus, and spoof generator; same term count and selected lambda as P. | Controls for pairwise-margin regularization itself without a domain-composition confound. |
+| **P** | **BCE + content-aligned rank term** | Natural and spoof clips in the same documented source-text group; same term count and selected lambda as B2. | Primary method: test whether documented content alignment helps beyond an equally sized random margin term. |
 
 No GroupDRO, codec augmentation, architecture change, target normalization,
 or ensemble is part of H9-PCR. Those would confound the paired-supervision
 test and require a new protocol.
+
+The source manifest must emit counts and hashes for all exclusions and a B2/P
+marginal distribution table over language, source corpus, spoof generator,
+voice, duration, and pair count. A mismatch in the locked strata or term count
+is a run failure, not a reason to alter the random-pair rule.
 
 ## Source artifacts and target firewall
 
@@ -98,8 +112,9 @@ improvement, or a different target/model/loss is not a positive result.
 
 ## Claim boundary
 
-A passing H9 result supports a restricted claim that matched content
-counterfactual supervision improved transfer of this transparent compact model
+A passing H9 result supports a restricted claim that content-aligned pair
+supervision improved transfer of this transparent compact model
 to the two predeclared external corpora under this protocol. It does not prove
-why an internal representation changed, certify arbitrary future generators,
+why an internal representation changed, establish a causal content/speaker
+mechanism, certify arbitrary future generators,
 or establish a comparison with proprietary / independently trained systems.

@@ -76,9 +76,9 @@ hypotheses:
     motivation: "The completed association/quality-gate paper is not sufficient as the primary ICASSP contribution; H8 permits a clean pivot rather than post-hoc repair."
     priority: highest
   - id: H9
-    statement: "Content-matched natural-to-synthetic ranking supervision improves cross-corpus anti-spoofing EER relative to ordinary BCE and an equal-budget random-pair ranking control."
+    statement: "Content-aligned natural-to-synthetic ranking supervision improves cross-corpus anti-spoofing EER relative to ordinary BCE and an equal-budget random-pair ranking control."
     status: protocol_locked_source_pairing_and_blind_target_evaluation_pending
-    motivation: "A paired counterfactual comparison can suppress linguistic-content shortcuts while holding the compact transparent architecture, data volume, batch schedule, and margin term fixed."
+    motivation: "A documented content-aligned pair comparison tests whether matching helps while holding the compact transparent architecture, data volume, batch schedule, and margin term fixed; it does not itself prove a causal internal mechanism."
     priority: highest
 
 experiments:
@@ -288,13 +288,13 @@ experiments:
       metric_value: null
       delta: null
       wall_time_min: null
-      change_summary: "Locked an independent ODSS paired-counterfactual training study with same-data BCE and random-pair controls, BF16 Res2TCNGuard, four source-only seeds, and two fixed target corpora before H9 data/result access."
+      change_summary: "Locked an independent ODSS content-aligned pair-ranking study with same-data BCE and random-pair controls, BF16 Res2TCNGuard, four source-only seeds, and two fixed target corpora before H9 data/result access."
       timestamp: "2026-08-10"
 
 outer_loop:
   cycle: 12
-  last_direction: "h9_paired_counterfactual_ranking_protocol_locked"
-  last_reflection: "H8-SF is terminal against its dominant frozen single expert. H9-PCR changes the scientific object: paired natural/synthetic source supervision is compared to exactly matched BCE and random-pair controls in one transparent model, then evaluated on two new fixed corpora. Pair availability, provenance, and the strict two-target gate are hard stops."
+  last_direction: "h9_content_aligned_pair_ranking_protocol_locked"
+  last_reflection: "H8-SF is terminal against its dominant frozen single expert. H9-PCR changes the scientific object: documented content-aligned natural/synthetic source supervision is compared to exactly matched BCE and random-pair controls in one transparent model, then evaluated on two new fixed corpora. Voice-disjoint source development, pair availability, provenance, and the strict two-target gate are hard stops."
   pivot_policy: "After the first association/intervention matrix or five completed runs, choose deepen, broaden, pivot, or conclude and record the evidence."
 
 workspace:
