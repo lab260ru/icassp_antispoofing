@@ -185,3 +185,14 @@ historical notifications.
 This is the seventeenth explicitly selected message in this log. The sender
 used the environment only for delivery and did not expose a credential or
 bulk-send historical notifications.
+
+## H9 source-audio materialization confirmation
+
+- Heading: 2026-08-10 — H9 source audio is sealed; BF16 selection begins
+- Delivery status: success
+- Telegram message ID: 152
+- Text length: 602
+
+This is the eighteenth explicitly selected message in this log. The sender used
+the environment only for delivery and did not expose a credential or
+bulk-send historical notifications.
