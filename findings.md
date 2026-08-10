@@ -139,6 +139,9 @@ baseline reproduction.
 - If a future study examines an H4 unit, can it declare a fresh score-independent
   discovery/confirmation/intervention design without using the H4 atlas for
   post-hoc cue selection?
+- H5 is protocol-locked but not yet run: do all registered feature measurements
+  remain stable across the three waveform views under an independent label-free,
+  score-free sample freeze? This contextual diagnostic cannot alter H1/H2/H2B/H4.
 
 ## Optimization Trajectory
 
