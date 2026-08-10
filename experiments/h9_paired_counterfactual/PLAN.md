@@ -11,11 +11,13 @@ opposite-class ranking control?
 
 ## Fixed model and optimization envelope
 
-All methods fine-tune the same public, locally runnable **Res2TCNGuard**
-PyTorch implementation from the same pinned checkpoint. It is a transparent,
-compact (172,102-parameter) detector; its existing source-PyTorch inference
-path has a documented baseline-parity check, but that check is not an H9
-result.
+All methods train the same public, locally runnable **Res2TCNGuard** PyTorch
+architecture from a fresh seed-specific initialization. The public `_net.py`
+architecture is compact (172,102 parameters); the bundled
+`best_1.495.pth` checkpoint is deliberately not loaded because its declared
+ASVspoof2019-LA pretraining would make ODSS no longer the sole training source
+and its model card exposes historical benchmark rows. The architecture-file
+hash and initialization rule are frozen in the source manifest.
 
 Every method uses only the frozen **paired-eligible source pool**: complete
 groups with one documented natural clip and at least one documented synthetic
@@ -37,7 +39,8 @@ the primary comparison does not conflate pair availability with the loss.
   permits, fixed source train groups. The same batch schedule and augmentations
   are shared by B1, B2, and P.
 - Four independent seeds: `9101`, `9102`, `9103`, `9104`, one fixed GPU per
-  seed at final fit. A batch-size throughput probe selects one safe batch size
+  seed at final fit. Each seeds every initialization and data/random-pair
+  schedule. A batch-size throughput probe selects one safe batch size
   before final runs; the selected size is then shared by all conditions.
 - Source-only loss-weight selection: choose `lambda` from `{0.10, 0.30, 1.00}`
   on the group-disjoint ODSS development split by mean EER over the four

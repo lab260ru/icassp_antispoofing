@@ -32,15 +32,18 @@ not reopen or reinterpret H1--H8.
   controls. Read all four documents in `experiments/h9_paired_counterfactual/`
   before accessing any H9 input or writing H9 code/results.
 - **Strict roles:** source development is only ODSS revision
-  `1968e6d0ef141c4572073695bdc1d17a8706177f`; blind H9 primary targets are
+  `1968e6d0ef141c4572073695bdc1d17a8706177f`; fixed H9 primary targets are
   SONAR revision `eca7c72ebdf0f7936a644605a56735ac8564dbd9` and ArAD revision
   `350184966eeb5b46ff2acdabd8f4d12e41e582da`. Target labels/audio cannot
   select a source hyperparameter, epoch, seed, model, augmentation, loss
-  weight, or source split. The final evaluator is their first permitted H9
+  weight, or source split. Historical public checkpoint rows were exposed only
+  during the provenance audit; that checkpoint is excluded and H9 target
+  predictions remain metric-fenced. The final evaluator is their first permitted H9
   label load and must evaluate all frozen methods and both targets together.
 - **Frozen H9 method:** Res2TCNGuard, BF16 training, four seeds, ODSS
   voice-disjoint source selection, BCE (B1), random-pair ranking (B2), and
-  content-aligned pair ranking (P) are fixed in `PLAN.md`. The source must
+  content-aligned pair ranking (P), and fresh model initialization are fixed in
+  `PLAN.md`. The source must
   expose a documented pair and voice grouping; otherwise H9-PCR
   stops rather than inferring a new pairing scheme or source dataset.
 - **H8-SF remains terminal:** it improves B1/B2 fusion but fails its
