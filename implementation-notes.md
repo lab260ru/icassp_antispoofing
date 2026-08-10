@@ -413,3 +413,19 @@
   clarification is that singleton source IDs make the reported clustered
   bootstrap utterance-level. See
   `paper/reviews/codex_h7_supplement_20260810/review.md`.
+
+## 2026-08-10 - H8 positive-result pivot bootstrap
+
+- Decision: The user judged the completed negative portability/quality-gate
+  narrative insufficient for ICASSP and authorized a fresh, broad pivot. H8 is
+  a new project-level search for a positive cross-corpus training or
+  representation result, not a post-hoc rescue of H1--H7.
+- Constraint: Every H8 hypothesis must be literature-grounded, protocolled and
+  committed before result access; a candidate needs a credible baseline and an
+  independent held-out check before it can affect the paper.
+- Compute: Four mostly idle 48-GB RTX 6000 Ada GPUs are available. The search
+  will use BF16, throughput probing, and parallel runs only after the new
+  evaluation/data contract is locked.
+- Continuity: This environment has no cron/scheduler tool. The active goal,
+  `research-state.yaml`, `research-log.md`, and experiment-local checkpoints
+  are the durable continuation mechanism.
