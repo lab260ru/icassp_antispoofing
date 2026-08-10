@@ -46,6 +46,7 @@ _HEX = frozenset("0123456789abcdef")
 _SOURCE_FREEZE_KIND = "h9_odss_paired_counterfactual_source_freeze"
 _SOURCE_MATERIALIZATION_KIND = "h9_odss_paired_counterfactual_source_materialization"
 _SELECTION_KIND = "H9_P_SOURCE_ONLY_LAMBDA_SELECTION"
+_FROZEN_SELECTION_ARTIFACT_KIND = "h9_pcr_frozen_source_only_lambda_selection"
 _SELECTION_METRIC = "mean_source_dev_eer_over_four_predeclared_P_seeds"
 _SELECTION_TIE_BREAK = "lower_lambda_rank"
 _SOURCE_BINDING_KEYS: tuple[str, ...] = (
@@ -210,11 +211,24 @@ def _validate_source_provenance(
     }
 
 
-def _validate_selection(path: Path) -> tuple[dict[str, Any], float]:
+def _validate_selection(
+    path: Path,
+    *,
+    source_hashes: Mapping[str, str],
+    architecture_sha256: str,
+) -> tuple[dict[str, Any], float]:
+    """Replay all 12 hashed P-selection fits before accepting their aggregate.
+
+    The final source-training ledger must not trust a hand-assembled list of
+    EER values.  Each P grid result is bound to a sidecar and checkpoint whose
+    source hashes, fresh initialization, CUDA-BF16 provenance, and frozen
+    optimization configuration are replayed here, before the selected lambda
+    can enter the final B1/B2/P fit matrix.
+    """
     selection = _read_json(path, description="source-only lambda selection")
-    if selection.get("kind") != _SELECTION_KIND:
+    if selection.get("artifact_kind") != _FROZEN_SELECTION_ARTIFACT_KIND or selection.get("kind") != _SELECTION_KIND:
         raise ValueError("H9 lambda selection artifact kind drift")
-    for key in ("target_labels_read", "target_audio_read"):
+    for key in ("target_labels_read", "target_audio_read", "target_metrics_read"):
         _require_false(selection, key, description="source-only lambda selection")
     if selection.get("selection_metric") != _SELECTION_METRIC or selection.get("tie_break") != _SELECTION_TIE_BREAK:
         raise ValueError("H9 lambda selection rule drift")
@@ -223,6 +237,76 @@ def _validate_selection(path: Path) -> tuple[dict[str, Any], float]:
     selected = _as_float(selection.get("selected_lambda_rank"), description="selected lambda rank")
     if selected not in H9_LAMBDA_GRID:
         raise ValueError("H9 selected lambda is outside the locked grid")
+    hashes = selection.get("source_artifact_hashes")
+    if not isinstance(hashes, Mapping) or dict(hashes) != dict(source_hashes):
+        raise ValueError("H9 lambda selection source-artifact binding drift")
+    sidecars = selection.get("input_sidecars")
+    if not isinstance(sidecars, list) or len(sidecars) != len(H9_LAMBDA_GRID) * len(H9_SEEDS):
+        raise ValueError("H9 lambda selection requires exactly twelve hashed P sidecars")
+    expected_identities = {(lam, seed) for lam in H9_LAMBDA_GRID for seed in H9_SEEDS}
+    observed_sidecars: dict[tuple[float, int], float] = {}
+    seen_paths: set[Path] = set()
+    for input_record in sidecars:
+        if not isinstance(input_record, Mapping):
+            raise ValueError("H9 lambda selection sidecar record must be an object")
+        raw_path = input_record.get("path")
+        if not isinstance(raw_path, str) or not raw_path.strip():
+            raise ValueError("H9 lambda selection sidecar record lacks a path")
+        sidecar_path = _path(raw_path, description="lambda-selection P sidecar")
+        if sidecar_path in seen_paths:
+            raise ValueError("H9 lambda selection sidecar paths must be unique")
+        seen_paths.add(sidecar_path)
+        _require_hash(sidecar_path, input_record.get("sha256"), description="lambda-selection P sidecar")
+        sidecar = _read_json(sidecar_path, description="lambda-selection P sidecar")
+        if sidecar.get("method") != "P":
+            raise ValueError("H9 lambda selection sidecar method must be P")
+        try:
+            lambda_rank, seed = float(sidecar.get("lambda_rank")), int(sidecar.get("seed"))
+        except (TypeError, ValueError) as error:
+            raise ValueError("H9 lambda selection sidecar has invalid lambda/seed identity") from error
+        identity = (lambda_rank, seed)
+        if identity not in expected_identities or identity in observed_sidecars:
+            raise ValueError("H9 lambda selection sidecars do not form the locked P lambda/seed grid")
+        for firewall_key in ("target_labels_read", "target_audio_read"):
+            _require_false(sidecar, firewall_key, description="lambda-selection P sidecar")
+        if sidecar.get("precision") != "cuda_bfloat16_autocast":
+            raise ValueError("H9 lambda selection sidecar does not prove CUDA BF16 training")
+        if sidecar.get("device") != H9_SEED_DEVICES[seed]:
+            raise ValueError("H9 lambda selection sidecar seed/device binding drift")
+        if sidecar.get("source_artifact_hashes") != dict(source_hashes):
+            raise ValueError("H9 lambda selection sidecar source-artifact binding drift")
+        architecture = sidecar.get("architecture_provenance")
+        if not isinstance(architecture, Mapping):
+            raise ValueError("H9 lambda selection sidecar lacks architecture provenance")
+        for name, value in {
+            "architecture_sha256": architecture_sha256,
+            "initialization": "fresh_seeded",
+            "initialization_seed": seed,
+            "checkpoint_loaded": False,
+        }.items():
+            if architecture.get(name) != value:
+                raise ValueError(f"H9 lambda selection sidecar architecture provenance drift in {name}")
+        raw_checkpoint = sidecar.get("checkpoint_path")
+        if not isinstance(raw_checkpoint, str) or not raw_checkpoint.strip():
+            raise ValueError("H9 lambda selection sidecar lacks checkpoint_path")
+        checkpoint_path = _path(raw_checkpoint, description="lambda-selection P checkpoint")
+        _require_hash(checkpoint_path, sidecar.get("checkpoint_sha256"), description="lambda-selection P checkpoint")
+        _validate_checkpoint(
+            _checkpoint_payload(checkpoint_path),
+            method="P",
+            seed=seed,
+            selected_lambda_rank=lambda_rank,
+            source_hashes=source_hashes,
+            architecture_sha256=architecture_sha256,
+        )
+        checkpoint = _checkpoint_payload(checkpoint_path)
+        sidecar_eer = _as_float(sidecar.get("source_dev_eer"), description="lambda-selection sidecar source development EER")
+        checkpoint_eer = _as_float(checkpoint.get("source_dev_eer"), description="lambda-selection checkpoint source development EER")
+        if not 0.0 <= sidecar_eer <= 1.0 or sidecar_eer != checkpoint_eer:
+            raise ValueError("H9 lambda selection sidecar/checkpoint source development EER drift")
+        observed_sidecars[identity] = sidecar_eer
+    if set(observed_sidecars) != expected_identities:
+        raise ValueError("H9 lambda selection sidecars do not cover the full locked P grid")
     candidates = selection.get("candidates")
     if not isinstance(candidates, list) or len(candidates) != len(H9_LAMBDA_GRID):
         raise ValueError("H9 lambda selection requires exactly one candidate per locked lambda")
@@ -247,6 +331,8 @@ def _validate_selection(path: Path) -> tuple[dict[str, Any], float]:
             abs_tol=1e-12,
         ):
             raise ValueError("H9 lambda selection mean does not reconstruct from its seed results")
+        if any(by_seed[seed] != observed_sidecars[(lam, seed)] for seed in H9_SEEDS):
+            raise ValueError("H9 lambda selection candidates disagree with hashed P sidecars")
         observed[lam] = by_seed
     recomputed = min(H9_LAMBDA_GRID, key=lambda lam: (sum(observed[lam].values()) / len(H9_SEEDS), lam))
     if selected != recomputed:
@@ -476,7 +562,11 @@ def build_frozen_checkpoint_ledger(
         source_freeze_provenance=freeze_path,
         source_materialization_provenance=materialization_path,
     )
-    _, selected_lambda_rank = _validate_selection(selection_path)
+    _, selected_lambda_rank = _validate_selection(
+        selection_path,
+        source_hashes=source_hashes,
+        architecture_sha256=architecture_sha256,
+    )
     records = _validate_sidecars(
         [Path(path).expanduser().resolve() for path in training_records],
         source_hashes=source_hashes,
