@@ -74,8 +74,8 @@ threshold, sample, transform, scorer, feature, or model after seeing results.
   --outdir build main.tex` **and commit the refreshed `paper/build/main.pdf`
   in the same paper change.**
 - **Delivery and resume:** `origin/research/icassp-signal-audit` has been
-  pushed through the H7 supplementary-result checkpoint (`b9fb8bf`) and the
-  last Telegram milestone is message ID 146, with a redacted receipt in
+  pushed through the rolling H7/handoff-verification checkpoint (`8892b79`)
+  and the last Telegram milestone is message ID 146, with a redacted receipt in
   `to_human/TELEGRAM_DELIVERY_LOG_20260810.md`. Use `git log` and
   `git status --branch` to confirm the exact remote/local head before resuming.
   Never stage the
