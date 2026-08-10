@@ -42,7 +42,7 @@ hypotheses:
     priority: high
   - id: H3
     statement: "Feature-conditioned scoring with transformation consistency improves held-out EER relative to an equivalent baseline recipe."
-    status: pending
+    status: not_authorized_no_valid_h2_sensitivity_result
     motivation: "The audit should yield an actionable robustness intervention when evidence supports one."
     priority: medium
   - id: H2B

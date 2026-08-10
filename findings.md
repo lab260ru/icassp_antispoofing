@@ -152,7 +152,7 @@ baseline reproduction.
   contextualizes feature measurement dependence but cannot alter H1/H2/H2B/H3/H4
   or select a feature for any later study.
 - H6 has a complete independent label-only freeze: 50,000 selected IDs and 40
-  raw-score byte identities are sealed before score parsing. Its future
+  raw-score byte identities were sealed before score parsing. Its completed
   agreement matrix is descriptive only and cannot reopen any feature or causal
   decision.
 - H6 score-agreement atlas: all 280 planned within-class model-pair cells and
