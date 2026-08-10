@@ -361,3 +361,12 @@ explicit exclusion list for raw audio, model weights, HDD products, and all
 credentials. This is not a public release, DOI, or claim that an artifact
 locator exists; those remain owner/license/template-reconciliation decisions.
 The preparation is committed and pushed at `7465c87`.
+
+## 2026-08-10 — ASVspoof5 paper citation verified and integrated
+
+The paper now cites the canonical ASVspoof 5 dataset/challenge paper at its
+held-out-corpus mention. The BibTeX was retrieved through the DOI endpoint and
+checked against the ISCA Archive record; no quantitative or causal paper claim
+changed. `main.tex` was rebuilt immediately and remains within five US-letter
+pages; the local preflight and 139-test suite pass. The source, bibliography,
+citation ledger, and compiled PDF are committed and pushed at `0f349d3`.
