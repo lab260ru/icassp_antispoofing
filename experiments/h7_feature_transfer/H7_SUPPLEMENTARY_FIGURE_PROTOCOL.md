@@ -23,9 +23,10 @@ The input CSV must have exactly five rows in the fixed corpus order
 ASVspoof2019_LA, ASVspoof2021_LA, ASVspoof2021_DF, InTheWild, ASVspoof5;
 AUROC and its 95% interval must be finite and ordered; each cell must have
 10,000 test rows, a 40,000-row train pool, 500/500 valid source-ID bootstrap
-replicates, and converged fit. The implementation rejects response-like input
-paths/headers, substitutions, hash mismatch, missing rows, invalid CIs, and
-nonempty output directories.
+replicates, and converged fit. The declared derived `eer` summary field is
+allowed but is not plotted. The implementation rejects raw response-like
+(`score`, `logit`, `detector`, or `model`) input paths/headers, substitutions,
+hash mismatch, missing rows, invalid CIs, and nonempty output directories.
 
 ## Locked rendering
 
@@ -35,7 +36,8 @@ Render one fixed-order horizontal AUROC forest plot, not a ranking:
 - an Okabe--Ito blue point and 95% CI line represent each held-out AUROC;
 - a neutral dashed AUROC=0.5 reference identifies chance label separation;
 - axis range is fixed to [0.45, 1.00];
-- title and annotation explicitly say `H7 score-free, feature-only baseline`,
+- title and annotation explicitly say `H7 score-free, feature-only
+  cross-corpus transfer`,
   `all 28 full-waveform features`, `LOO train: 40k`, `held-out: 10k`, and
   `no detector score or causal claim`; and
 - export vector PDF plus 300-DPI PNG and hash-bound metadata JSON.
