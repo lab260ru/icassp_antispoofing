@@ -1,0 +1,85 @@
+{
+  "schema_version": "crest_evidence_boundary_s1_inputs_v1",
+  "protocol": {
+    "relative_path": "experiments/paper_extension/crest_evidence_boundary_protocol.md",
+    "sha256": "5ebee23b885edb9581ab794b98c906d902b79820762af2aea2bbab3d618c836d"
+  },
+  "fixed_corpus_order": [
+    "ASVspoof2019_LA",
+    "ASVspoof2021_LA",
+    "ASVspoof2021_DF",
+    "InTheWild",
+    "ASVspoof5"
+  ],
+  "focus": {
+    "class_label": 1,
+    "feature": "crest_factor_db",
+    "model": "Spectra-AASIST",
+    "view": "full_waveform"
+  },
+  "fixed_h2_arm_gate": 0.9,
+  "inputs": [
+    {
+      "dataset": "ASVspoof2019_LA",
+      "id": "h1_association_asvspoof2019_la",
+      "kind": "h1_association_summary",
+      "relative_path": "experiments/h1_feature_association/results/ASVspoof2019_LA/association_summary.csv",
+      "sha256": "ab276d603a3de23d7200bac6f259dc6227f1f7f2480af096f65e9a8080f66934"
+    },
+    {
+      "dataset": "ASVspoof2021_LA",
+      "id": "h1_association_asvspoof2021_la",
+      "kind": "h1_association_summary",
+      "relative_path": "experiments/h1_feature_association/results/ASVspoof2021_LA/association_summary.csv",
+      "sha256": "3ada0bdc7f6f3f0363435e0288921779da19f9ce7bac24632c8a494fc1225b55"
+    },
+    {
+      "dataset": "ASVspoof2021_DF",
+      "id": "h1_association_asvspoof2021_df",
+      "kind": "h1_association_summary",
+      "relative_path": "experiments/h1_feature_association/results/ASVspoof2021_DF/association_summary.csv",
+      "sha256": "4cfc76949ce4fee6f9e6784fee2b1ed3599742d614c2ec9f3d16352545d26c03"
+    },
+    {
+      "dataset": "InTheWild",
+      "id": "h1_association_inthewild",
+      "kind": "h1_association_summary",
+      "relative_path": "experiments/h1_feature_association/results/InTheWild/association_summary.csv",
+      "sha256": "fca2212ce2ee026f632e56d2f4386a98b844519a1310e10f0db076d19a1b89e4"
+    },
+    {
+      "dataset": "ASVspoof5",
+      "id": "h1_association_asvspoof5",
+      "kind": "h1_association_summary",
+      "relative_path": "experiments/h1_feature_association/results/ASVspoof5/association_summary.csv",
+      "sha256": "d6539ee8194d9d87f28ca46a00716e172fa9cacb98a3f8095b8d35b836be7acb"
+    },
+    {
+      "dataset": "InTheWild",
+      "id": "h1_confirmation_inthewild",
+      "kind": "h1_confirmation_bootstrap",
+      "relative_path": "experiments/h1_feature_association/results/InTheWild/association_confirmation_bootstrap.csv",
+      "sha256": "d45ef60da53e7a35ba19a6a7e91595ed3a1637abccc7cfce0d48e029c64dd825"
+    },
+    {
+      "dataset": "ASVspoof5",
+      "id": "h1_confirmation_asvspoof5",
+      "kind": "h1_confirmation_bootstrap",
+      "relative_path": "experiments/h1_feature_association/results/ASVspoof5/association_confirmation_bootstrap.csv",
+      "sha256": "ff9d1b9690f1bcebc09765dc0d02e206b19138c7c1255b23ce2ed188b98966b9"
+    },
+    {
+      "id": "h2_quality_full_002_summary",
+      "kind": "h2_detector_free_quality_summary",
+      "relative_path": "experiments/h2_causal_interventions/results/quality_runs/h2_quality_full_002.summary.json",
+      "sha256": "4c5adad8165e97efe44ca7d8b1e8737eb34e0847a4ee08b114c0c0fd61ea7c8e"
+    },
+    {
+      "id": "h4_label_cue_matrix",
+      "kind": "h4_hash_sealed_label_cue_matrix",
+      "absolute_path": "/home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/runs/h4_label_transportability/h4_analysis_001/h4_label_cue_matrix.csv",
+      "sha256": "03dc8674db5739bfffa1c2f2b6e2973b31a8294ab5e15f0f7d6b8e35a669b25f"
+    }
+  ],
+  "caption": "Supplementary Fig. S1. Evidence boundary for the fixed full-waveform, spoof-class crest-factor slice. (A) The pre-frozen Spectra-AASIST partial association with published spoof evidence across the five core corpora; 95% clustered intervals are displayed only for the two sealed held-out confirmations. (B) Detector-free H2 waveform-quality retention for the four frozen arms against the locked 90% gate. The panel was refused before any detector scoring. (C) Score-free signed label AUROC for full-waveform crest factor across the same corpora. This is raw label separation, not detector reliance. No pooled estimate, new test, ranking, or cross-panel inference is computed."
+}
