@@ -24,6 +24,7 @@ import hashlib
 import json
 import math
 from pathlib import Path
+import re
 from typing import Any
 
 import pandas as pd
@@ -49,14 +50,16 @@ REQUIRED_METADATA_COLUMNS = ("utterance_id", "label")
 SEMANTICS_MARKERS = {
     "readme": (
         "each natural utterance is paired with TTS re-synthesis of the same text",
-        "natural/<corpus>/<speaker>/<stem>.wav",
-        "vits/<corpus>/<speaker>/<stem>.wav",
-        "fastpitch-hifigan/<corpus>/<speaker>/<stem>.wav",
+        "the bare stem repeats across the three generators",
+        "source-relative path",
     ),
     "build_script": (
         "utterance_id = full source-relative path with '/' -> '__'",
         'parts = rel.split("/")',
         'label = "bonafide" if gen == "natural" else "spoof"',
+        "natural/<corpus>/<speaker>/<stem>.wav",
+        "vits/<corpus>/<speaker>/<stem>.wav",
+        "fastpitch-hifigan/<corpus>/<speaker>/<stem>.wav",
     ),
 }
 
@@ -100,6 +103,11 @@ def _path_record(path: str | Path) -> dict[str, Any]:
     }
 
 
+def _normalize_semantics_whitespace(value: str) -> str:
+    """Make Markdown line wrapping semantically inert without relaxing wording."""
+    return re.sub(r"\s+", " ", value).strip()
+
+
 def _validate_semantics_documents(semantics_documents: Mapping[str, str | Path]) -> dict[str, dict[str, Any]]:
     """Byte-bind the two ODSS documents that make UID pairing interpretable."""
     expected = set(SEMANTICS_MARKERS)
@@ -108,8 +116,12 @@ def _validate_semantics_documents(semantics_documents: Mapping[str, str | Path])
     records: dict[str, dict[str, Any]] = {}
     for name in sorted(expected):
         record = _path_record(semantics_documents[name])
-        content = Path(record["path"]).read_text(encoding="utf-8")
-        missing = [marker for marker in SEMANTICS_MARKERS[name] if marker not in content]
+        content = _normalize_semantics_whitespace(Path(record["path"]).read_text(encoding="utf-8"))
+        missing = [
+            marker
+            for marker in SEMANTICS_MARKERS[name]
+            if _normalize_semantics_whitespace(marker) not in content
+        ]
         if missing:
             raise ValueError(
                 f"ODSS {name} no longer establishes the pinned path/label semantics; missing markers: {missing}"
