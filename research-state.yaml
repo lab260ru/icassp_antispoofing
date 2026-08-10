@@ -65,12 +65,17 @@ hypotheses:
     status: complete_280_cell_score_agreement_atlas
     motivation: "A descriptive score-agreement atlas tests the value of the eight-model panel without using waveform features or reopening association selection."
     priority: medium
+  - id: H7
+    statement: "A fixed 28-feature full-waveform logistic baseline has corpus-dependent leave-one-corpus-out label transfer under a fresh source-ID freeze."
+    status: complete_descriptive_feature_only_transfer_matrix
+    motivation: "Tests full fixed-vector feature-label transportability without detector scores, feature selection, or causal interpretation."
+    priority: medium
 
 experiments:
   proxy_metric: "Cross-dataset, within-class feature-score association and causal paired score sensitivity; EER for mitigation."
   baseline_value: null
   best_value: null
-  total_runs: 25
+  total_runs: 27
   trajectory:
     - run_id: run_001
       hypothesis: H1
@@ -246,6 +251,20 @@ experiments:
       delta: null
       wall_time_min: 6.0
       change_summary: "Completed the exact 280-cell raw-score-only within-class agreement matrix and 28 pair summaries. All cells have 5,000 selected joins; agreement spans -0.629261 to 0.868770 across the locked corpus/class/pair registry."
+      timestamp: "2026-08-10"
+    - run_id: h7_input_freeze_001
+      hypothesis: H7
+      metric_value: 50000
+      delta: null
+      wall_time_min: 0.1
+      change_summary: "Froze a fresh seed-2612 panel of 5,000 source IDs per dataset/label from metadata only, without score, feature-value, audio, ASR, or model access."
+      timestamp: "2026-08-10"
+    - run_id: h7_analysis_001
+      hypothesis: H7
+      metric_value: 0.780957
+      delta: null
+      wall_time_min: 0.4
+      change_summary: "Completed all five fixed all-28-feature leave-one-corpus-out logistic cells. AUROC is high on held-out ASVspoof cohorts but near chance/weak on InTheWild and ASVspoof5; this is a descriptive label-transfer result only."
       timestamp: "2026-08-10"
 
 outer_loop:

@@ -378,3 +378,12 @@
   deterministic interpolation returns the shared FPR for a zero-width ROC
   segment; a focused regression test covers this case. No H7 result file was
   written before the correction.
+- Decision: The H7 complete transfer matrix is strong descriptive context but a
+  separate question from the main H1/H2 evidence boundary. Prepare a
+  hash-bound supplementary forest plot rather than adding incomplete H7
+  methods/results to the four-page manuscript.
+- Validation: H7 wrote all five locked leave-one-corpus-out cells; each fit
+  converged and every source-ID AUROC bootstrap had 500/500 valid replicates.
+  The independent post-write validator confirmed matrix cardinality, frozen
+  train/test sizes, finite ordered intervals, and the explicit no-causal/no-
+  detector claim boundary.
