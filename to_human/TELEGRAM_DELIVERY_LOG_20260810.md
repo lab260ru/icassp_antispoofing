@@ -53,3 +53,14 @@ chat ID, or earlier queued notification was sent or recorded.
 This is the fifth explicitly selected message in this log. The sender used the
 environment only for delivery and did not expose a credential or bulk-send
 historical notifications.
+
+## H6 supplementary figure and handoff confirmation
+
+- Heading: 2026-08-10 — sealed H6 supplementary figure and handoff
+- Delivery status: success
+- Telegram message ID: 140
+- Text length: 684
+
+This is the sixth explicitly selected message in this log. The sender used the
+environment only for delivery and did not expose a credential or bulk-send
+historical notifications.

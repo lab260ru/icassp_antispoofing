@@ -307,3 +307,15 @@ tracked PDF has four technical US-letter pages plus a references-only fifth
 page, and the local table/font/layout check passes. The paper and review
 resolution are committed; remaining submission conditions are the official
 ICASSP-2027 template/checker and an authorized archival artifact locator.
+
+## 2026-08-10 — sealed H6 supplementary figure and handoff
+
+I completed a display-only H6 supplementary heatmap after committing its exact
+three-input hash/schema contract. It shows all 280 completed within-class
+model-pair agreement cells in fixed registry order, with no model ranking or
+new experiment. The vector PDF, 300-DPI PNG, metadata, and visual-inspection
+record are on the HDD and their compact ledger is committed. I also refreshed
+`AGENTS.md` and the future-work roadmap so a new agent cannot accidentally
+reopen H1/H2/H2B; the branch is pushed through `0920e74`. The full repository
+suite currently passes 115 tests. The compiled main paper remains unchanged
+and readable.
