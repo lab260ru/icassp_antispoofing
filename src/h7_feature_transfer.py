@@ -12,8 +12,6 @@ from typing import Mapping
 import numpy as np
 import pandas as pd
 import pyarrow.parquet as pq
-from scipy.interpolate import interp1d
-from scipy.optimize import brentq
 from sklearn.exceptions import ConvergenceWarning
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
@@ -236,10 +234,15 @@ def _eer(y_true: np.ndarray, scores: np.ndarray) -> float:
     if not len(crossing):
         return float((fpr[np.argmin(np.abs(differences))] + fnr[np.argmin(np.abs(differences))]) / 2.0)
     index = int(crossing[0])
-    x = np.array([fpr[index], fpr[index + 1]], dtype=float)
-    y = np.array([fnr[index], fnr[index + 1]], dtype=float)
-    interpolated_fnr = interp1d(x, y, bounds_error=True)
-    return float(brentq(lambda value: value - float(interpolated_fnr(value)), min(x), max(x)))
+    fpr_low, fpr_high = float(fpr[index]), float(fpr[index + 1])
+    difference_low, difference_high = float(differences[index]), float(differences[index + 1])
+    # A vertical ROC segment has identical FPRs but can cross the FNR line.
+    # Its interpolated EER is that shared FPR; bracketing a root over a
+    # zero-width interval would fail despite a valid empirical crossing.
+    if np.isclose(fpr_low, fpr_high, rtol=0.0, atol=1e-15):
+        return fpr_low
+    weight = -difference_low / (difference_high - difference_low)
+    return float(fpr_low + weight * (fpr_high - fpr_low))
 
 
 def _cell_seed(dataset: str) -> int:
