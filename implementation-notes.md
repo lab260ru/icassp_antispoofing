@@ -447,3 +447,21 @@
 - Contingency: A failed H8-SF primary gate is a final fusion result. A frozen
   SSL experiment would require a separate protocol; it cannot become a
   post-hoc fuser retune.
+
+## 2026-08-10 - H8-SF target evaluation and stop
+
+- Integrity: Target score CDF materialization first exposed a CVoiceFake_small
+  ID collision caused by generic basename-stem parsing of literal dotted IDs.
+  The v2 terminal-audio-suffix normalizer and replacement source freeze were
+  committed before the successful target panel; no label/metric guided it.
+  The first evaluator invocation then stopped before a label value because
+  label files were absent; only five SHA-256-pinned `labels.parquet` files were
+  downloaded, verified, and supplied to the unchanged committed evaluator.
+- Validation: The final target join covers all 625,021 score-prediction and
+  label rows. P has a 2,000-replicate stratified bootstrap mean-EER difference
+  of -2.551 percentage points versus B2 (95% CI [-2.671, -2.434]).
+- Decision: Although P improves B1/B2, it cannot approach the source-selected
+  Spectra-AASIST B0 baseline (9.309% versus 0.185% mean EER). The B0 table
+  falsification in the precommitted plan is authoritative over the narrower
+  generated B1/B2 Boolean. H8-SF is closed; do not exclude Spectra, tune a
+  gate/weight/loss, or recast the result as a positive contribution.

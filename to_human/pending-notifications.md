@@ -406,3 +406,15 @@ target corpora, baselines, and success gate are now committed and pushed at
 the pinned score artifacts, run integrity checks, then evaluate the frozen
 methods blind. If it does not beat fixed and ordinary learned fusion under the
 locked rule, I will stop it rather than tune on the targets.
+
+## 2026-08-10 — H8 fusion result: stopped by the dominant baseline
+
+The new blinded H8 fusion run is complete and preserved, but it is not the
+positive paper result: GroupDRO improved over equal fusion and ordinary learned
+fusion on every target (mean EER 9.31% vs. 19.94% and 11.91%), yet the
+source-selected Spectra-AASIST baseline is far stronger at 0.185% mean EER.
+The predeclared B0 falsification therefore closes H8-SF; I will not remove
+Spectra, tune weights, or otherwise repair it after seeing targets. All
+625,021 target joins, hashes, bootstrap outputs, and the consistency note are
+on the HDD/repo. I am now screening a fresh hypothesis with a meaningful,
+transparent baseline rather than trying to publish this comparison.

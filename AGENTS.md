@@ -42,6 +42,13 @@ H8-SF study. It does not reopen or reinterpret H1--H7.
   B2 balanced ERM, and A1 V-REx are mandatory comparators. No target label may
   pick a model, hyperparameter, seed, transform, or roster. The positive gate
   is fixed in `PLAN.md`; a failure stops H8-SF rather than licensing tuning.
+- **H8-SF result:** The complete target run is terminal. P improves weak
+  fusion baselines (mean EER 9.309% versus B1 19.936% and B2 11.911%), but the
+  source-selected Spectra-AASIST B0 baseline is 0.185% mean EER. The B0
+  falsification cell in `PLAN.md` is therefore violated; read
+  `experiments/h8_positive_pivot/results/H8_SF_ANALYSIS_001.md`. Do not use
+  the generated narrower B1/B2 Boolean as a positive claim and do not retune
+  H8 with a model subset, gate, transform, target, or hyperparameter.
 - **Storage and reproducibility:** Keep all H8 raw score inputs, source/target
   panels, models, and large outputs below
   `/home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/`. Commit only protocols,

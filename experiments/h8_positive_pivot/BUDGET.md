@@ -13,14 +13,14 @@ proposers              = 3 Codex-only research perspectives
 critics                = 3 Codex-only research perspectives
 stagnation             = 1 generation
 --- spent ---
-generations_run        = 0
-experiments_run        = 0
-cpu_min_used           = 0
+generations_run        = 1
+experiments_run        = 1
+cpu_min_used           = 6
 gpu_min_used           = 0
-best_metric            = pending fresh baseline
-champion               = none
+best_metric            = 0.00184813566035551 (B0 mean target EER; not a new method)
+champion               = none; H8-SF terminal due to B0 falsification
 ```
 
-The H8-SF compute cap is intentionally small: it is a rapid evidence gate.
-If its locked target criterion fails, do not extend the fusion sweep; move to
-the separately protocolled frozen-SSL fallback.
+The H8-SF compute cap is intentionally small: it is a rapid evidence gate. It
+failed its locked B0 falsification, so do not extend the fusion sweep. A new
+candidate needs a separately committed protocol and cannot be an H8 retune.

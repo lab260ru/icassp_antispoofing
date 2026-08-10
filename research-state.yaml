@@ -72,15 +72,15 @@ hypotheses:
     priority: medium
   - id: H8
     statement: "A fresh, literature-grounded training or representation strategy can deliver a verified positive cross-corpus anti-spoofing result under a newly locked protocol."
-    status: h8sf_protocol_locked_pre_target_access
+    status: complete_failed_dominant_single_model_falsification
     motivation: "The completed association/quality-gate paper is not sufficient as the primary ICASSP contribution; H8 permits a clean pivot rather than post-hoc repair."
     priority: highest
 
 experiments:
   proxy_metric: "Cross-dataset, within-class feature-score association and causal paired score sensitivity; EER for mitigation."
-  baseline_value: null
-  best_value: null
-  total_runs: 27
+  baseline_value: 0.00184813566035551
+  best_value: 0.00184813566035551
+  total_runs: 28
   trajectory:
     - run_id: run_001
       hypothesis: H1
@@ -271,11 +271,18 @@ experiments:
       wall_time_min: 0.4
       change_summary: "Completed all five fixed all-28-feature leave-one-corpus-out logistic cells. AUROC is high on held-out ASVspoof cohorts but near chance/weak on InTheWild and ASVspoof5; this is a descriptive label-transfer result only."
       timestamp: "2026-08-10"
+    - run_id: h8sf_target_evaluation_001
+      hypothesis: H8
+      metric_value: 0.09309287783858625
+      delta: -0.02601467920566619
+      wall_time_min: 2.0
+      change_summary: "The locked source-only GroupDRO rank-space fuser improves mean EER versus equal fusion and ERM on five newly evaluated corpora, but fails the protocol's source-selected single-expert falsification: Spectra-AASIST reaches 0.185% mean EER versus P's 9.309%. H8-SF is terminal and not a paper claim."
+      timestamp: "2026-08-10"
 
 outer_loop:
-  cycle: 10
-  last_direction: "finalize_evidence_conservative_paper_and_preserve_supplements"
-  last_reflection: "The final Codex-only audit verified the H1/H2 numerical claims and found no reason to reopen a scientific gate. The paper was tightened to distinguish exploratory discovery-freezing, released-score estimands, full portability criteria, and conditional H3 protocol from completed results. H5/H6 remain supplementary-only. Remaining work is external submission provenance/template reconciliation or a new independently protocolled research question."
+  cycle: 11
+  last_direction: "h8sf_failed_dominant_single_expert_falsification"
+  last_reflection: "H8-SF showed robust fusion can improve weak fusion baselines, but the fixed source-selected Spectra-AASIST expert is overwhelmingly stronger on all five untouched targets. The table-level B0 falsification clause therefore overrides the narrower mechanical B1/B2 gate. Do not retune H8; identify a new independently protocolled hypothesis with a meaningful transparent baseline."
   pivot_policy: "After the first association/intervention matrix or five completed runs, choose deepen, broaden, pivot, or conclude and record the evidence."
 
 workspace:
