@@ -55,6 +55,11 @@ hypotheses:
     status: complete_23_atlas_only_stable_label_associations
     motivation: "A descriptive label--cue transportability atlas can contextualize corpus dependence without reopening failed intervention loops."
     priority: medium
+  - id: H5
+    statement: "Registered feature measurements may or may not remain invariant across three waveform views under a fresh score-free sample freeze."
+    status: protocol_locked_pending_input_freeze
+    motivation: "A paired view-invariance atlas can contextualize feature-view sensitivity without reading labels, scores, models, or audio."
+    priority: medium
 
 experiments:
   proxy_metric: "Cross-dataset, within-class feature-score association and causal paired score sensitivity; EER for mitigation."
@@ -218,9 +223,9 @@ experiments:
       timestamp: "2026-08-09"
 
 outer_loop:
-  cycle: 6
-  last_direction: "conclude_h4_score_free_label_cue_atlas"
-  last_reflection: "The five-corpus H1 result remains a conservative negative crest-portability finding, and the original H2 panel remains blocked before scoring. The separate score-blinded H2B Q1 DeepVoice calibration completed all 2,304 pairs under its precommitted finite grid and selected no family. H4 then completed its predeclared score-free 420-cell label--cue transportability atlas from revalidated feature products only. Twenty-three of 84 units meet its terminal descriptive rule, while full-waveform crest reverses sign in InTheWild and is near null in ASVspoof5. This neither explains detector scores nor authorizes a candidate, intervention, model, or training path. Preserve the result, do not tune it, and keep the paper's causal conclusion unchanged."
+  cycle: 7
+  last_direction: "broaden_h5_view_invariance_and_supplementary_boundary_figure"
+  last_reflection: "The prior H1/H2/H2B/H4 gates remain closed and are not candidates for tuning. H5 is locked as an independent score-free paired view-invariance atlas over all registered features and all corpus/view cells. A separate fixed-input supplementary figure will visualize the already sealed crest evidence boundary. Neither work can select a cue, inspect a score beyond its fixed compact input, revive a failed intervention, or change the causal conclusion."
   pivot_policy: "After the first association/intervention matrix or five completed runs, choose deepen, broaden, pivot, or conclude and record the evidence."
 
 workspace:

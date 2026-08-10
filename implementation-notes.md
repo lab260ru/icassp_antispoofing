@@ -167,3 +167,16 @@
 - Review: Three fresh read-only Codex-agent reviews were preserved and their
   actionable findings resolved in `paper/reviews/codex_post_template_20260810/`.
   Do not relabel this internal work as external peer review.
+
+## 2026-08-10 - H5 view invariance and supplementary crest boundary
+
+- Decision: Broaden only into a fresh score-free paired-view diagnostic because
+  H1/H2/H2B are terminal and H4 features are forbidden from candidate selection.
+- Assumption: Existing v1_28 tables contain complete, unique three-view sample
+  keys that support a label-free paired analysis.
+- Tradeoff: H5 uses an independent 10,000-sample cap and 200 paired bootstrap
+  resamples so all 420 predeclared cells are practical within the remaining
+  wall-clock window. It is descriptive, not a detector evaluation.
+- Boundary: Protocols are committed before their input freeze or rendering. H5
+  omits labels, scores, models, audio, and prior-result tables; the figure can
+  read only prelisted sealed compact quantities.
