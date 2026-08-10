@@ -12,6 +12,7 @@ the real author block and should use the submission-stage mode.
 from __future__ import annotations
 
 from pathlib import Path
+import re
 from typing import Any
 
 from pypdf import PdfReader
@@ -21,6 +22,7 @@ DEFAULT_FORBIDDEN_TEXT = ("lab260", "kirill", "nikita", "ivan")
 US_LETTER_WIDTH_POINTS = 612.0
 US_LETTER_HEIGHT_POINTS = 792.0
 PAGE_SIZE_TOLERANCE_POINTS = 0.5
+TABLE_LABEL_PATTERN = re.compile(r"\btable\s+(?:1|i)\b", flags=re.IGNORECASE)
 
 
 def _resolve(value: Any) -> Any:
@@ -93,21 +95,28 @@ def _is_us_letter(size: tuple[float, float]) -> bool:
 def audit_working_draft_pdf(
     pdf_path: Path | str,
     *,
-    expected_pages: int = 4,
+    expected_pages: int = 5,
+    table_page: int = 3,
+    references_page: int | None = None,
     forbidden_text: tuple[str, ...] = DEFAULT_FORBIDDEN_TEXT,
     anonymous_working_draft: bool = True,
 ) -> dict[str, object]:
-    """Inspect a built anonymous working draft and return a serializable report.
+    """Inspect a built working draft and return a serializable report.
 
     The caller owns any submission-policy decision. A report with ``ok=False``
     is a local failure that should be corrected before treating the PDF as a
-    readable handoff artifact.
+    readable handoff artifact. The default landmarks match the current draft:
+    Table 1 on page 3, the atlas on page 4, and a references-only fifth page.
     """
     path = Path(pdf_path)
     if not path.is_file():
         raise FileNotFoundError(f"Paper PDF does not exist: {path}")
-    if expected_pages < 1:
-        raise ValueError("expected_pages must be positive")
+    if expected_pages < 1 or table_page < 1:
+        raise ValueError("expected_pages and table_page must be positive")
+    if references_page is None:
+        references_page = expected_pages
+    if references_page < 1:
+        raise ValueError("references_page must be positive")
 
     reader = PdfReader(str(path))
     page_text = [(page.extract_text() or "") for page in reader.pages]
@@ -118,10 +127,17 @@ def audit_working_draft_pdf(
     errors: list[str] = []
     if len(reader.pages) != expected_pages:
         errors.append(f"expected {expected_pages} pages but found {len(reader.pages)}")
-    if len(page_text) < 2 or "table i" not in lower_text[1]:
-        errors.append("Table I is not recoverable from extracted text on page 2")
-    if len(page_text) < 3 or "references" not in lower_text[2]:
-        errors.append("References are not recoverable from extracted text on page 3")
+    table_on_expected_page = (
+        len(page_text) >= table_page
+        and TABLE_LABEL_PATTERN.search(page_text[table_page - 1]) is not None
+    )
+    if not table_on_expected_page:
+        errors.append(f"Table 1/I is not recoverable from extracted text on page {table_page}")
+    references_on_expected_page = (
+        len(page_text) >= references_page and "references" in lower_text[references_page - 1]
+    )
+    if not references_on_expected_page:
+        errors.append(f"References are not recoverable from extracted text on page {references_page}")
     if not all(_is_us_letter(size) for size in page_sizes):
         observed = ", ".join(f"{width:.1f}x{height:.1f}" for width, height in page_sizes)
         errors.append(f"all PDF pages must have US Letter MediaBox 612.0x792.0 pt; observed {observed}")
@@ -145,8 +161,10 @@ def audit_working_draft_pdf(
         "pdf": str(path.resolve()),
         "page_count": len(reader.pages),
         "expected_pages": expected_pages,
-        "table_i_on_page_2": len(page_text) >= 2 and "table i" in lower_text[1],
-        "references_on_page_3": len(page_text) >= 3 and "references" in lower_text[2],
+        "table_page": table_page,
+        "references_page": references_page,
+        "table_1_or_i_on_expected_page": table_on_expected_page,
+        "references_on_expected_page": references_on_expected_page,
         "page_sizes_points": [[width, height] for width, height in page_sizes],
         "us_letter_geometry": all(_is_us_letter(size) for size in page_sizes),
         "font_count": len(fonts),

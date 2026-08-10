@@ -40,11 +40,12 @@ committed to this repository.
 
 | Item | Location | Status |
 |---|---|---|
-| Internal placeholder source / readable PDF | `paper/main.tex`, `paper/build/main.pdf` | Current initial draft is four pages, but its anonymous block is not upload-ready: ICASSP 2027 uses single-anonymous review. An authorized author must follow `paper/AUTHOR_BLOCK_REQUIRED.md`, then compile and commit the refreshed PDF. |
-| Requirements and template status | `paper/submission-requirements.md` | The official ICASSP page limit is recorded. The official generic IEEE ZIP is known but this runtime receives a CloudFront WAF challenge; no unverified replacement was made. |
-| Static local PDF preflight | `paper/SUBMISSION_READINESS.md`, `scripts/check_paper_pdf.py` | Current internal PDF passes four-page US-letter, layout, font, and anonymous-draft checks. Submission mode retains the geometry/layout/font checks after authors are added. This is not IEEE PDF eXpress or an official template check. |
+| Named-author source / readable PDF | `paper/main.tex`, `paper/build/main.pdf` | Current initial draft has four technical pages plus a references-only fifth page and contains authorized working metadata for the single-anonymous policy. Confirm portal metadata before upload; see `paper/AUTHOR_BLOCK_REQUIRED.md`. |
+| Requirements and template status | `paper/submission-requirements.md`, `paper/template/ICASSP2026/TEMPLATE_PROVENANCE.md` | The user-provided ICASSP-2026 spconf/BST build inputs are pinned with archive hash. Reconcile with the official ICASSP-2027 kit before submission. |
+| Static local PDF preflight | `paper/SUBMISSION_READINESS.md`, `scripts/check_paper_pdf.py` | Current named-author PDF passes five-page US-letter, exact Table 1/References landmark, and font checks in single-anonymous-submission mode. This is not IEEE PDF eXpress or an official template check. |
 | Citation ledger | `paper/citation-verification.md` | Seven cited records are mapped to bounded claims. |
 | External paper-review attempts | `paper/reviews/*/REVIEW_STATUS.md` | Four timestamped panels were launched, including against the current author-policy draft, but all stopped before review because the local Claude CLI is unauthenticated. No review verdict exists. |
+| Codex-only internal reviews | `paper/reviews/codex_post_template_20260810/` | Three fresh methods/template/presentation reviews and a resolution record for the named-author ICASSP-2026-template draft. This is internal technical review, not conference peer review. |
 | Internal audits | `paper/reviews/five_corpus_h2_quality_20260809/` | Claim-to-artifact and scope/layout audits only; never call them peer review. |
 
 ## Reproduce the current local handoff
@@ -55,19 +56,19 @@ PYTHONPATH=. python3 -m pytest -q
 cd paper && tectonic --outdir build main.tex && cd ..
 PYTHONPATH=. python3 scripts/check_paper_pdf.py \
   --pdf paper/build/main.pdf \
-  --review-stage anonymous-working-draft
+  --review-stage single-anonymous-submission
 ```
 
-The most recent recorded full suite is 87 passed. `verification/FINAL_VERIFICATION_20260809.md` records the PDF hash and the full local build/test evidence; rerun the commands after any relevant source change.
+The most recent full suite is 87 passed. `verification/PAPER_TEMPLATE_AND_REVIEW_20260810.md` records the current PDF hash, template/BST provenance, clean bibliography rebuild, and full local build/test evidence; rerun the commands after any relevant source change.
 
 ## External delivery and resume blockers
 
 - GitHub push: requires `GH_TOKEN` or `GITHUB_TOKEN` in the environment; do not put a credential in files, history, or commands.
 - Portable backup while push is blocked: `to_human/GIT_BUNDLE_HANDOFF_20260809.md` records the verified complete-history HDD bundle and restoration command. It is not a GitHub delivery.
 - Telegram milestone delivery: requires `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID`; messages are queued in `to_human/pending-notifications.md` and can be listed/sent one-at-a-time through `to_human/TELEGRAM_DELIVERY.md`.
-- Paper review: authenticate the local Claude CLI, then launch a new timestamped three-reviewer bundle and address any findings.
+- Paper review: use the user-requested Codex-only timestamped review bundle and address its findings; do not retry the unauthenticated external reviewer runtime.
 - Template reconciliation: obtain an approved ICASSP-2027 or official generic IEEE archive from an accessible route, hash/compare it to the pinned files, rebuild, rerun the static preflight, and use the official conference checker.
-- Author information: provide authorized author names, affiliations, and order; replace the internal placeholder, then use `--review-stage single-anonymous-submission` before upload.
+- Author information: confirm the authorized working metadata and any portal-required email fields, then use `--review-stage single-anonymous-submission` before upload.
 
 `to_human/FINAL_HANDOFF_20260809.md` supplies the concise user-facing
 continuation plan. No external action should weaken or bypass the H1/H2/H2B/H4

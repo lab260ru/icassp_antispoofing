@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run static readiness checks on the built anonymous ICASSP working draft."""
+"""Run static readiness checks on the built ICASSP working draft."""
 
 from __future__ import annotations
 
@@ -19,7 +19,9 @@ from src.paper_pdf_checks import audit_working_draft_pdf
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--pdf", type=Path, default=REPO_ROOT / "paper" / "build" / "main.pdf")
-    parser.add_argument("--expected-pages", type=int, default=4)
+    parser.add_argument("--expected-pages", type=int, default=5)
+    parser.add_argument("--table-page", type=int, default=3)
+    parser.add_argument("--references-page", type=int, default=5)
     parser.add_argument(
         "--review-stage",
         choices=("anonymous-working-draft", "single-anonymous-submission"),
@@ -33,6 +35,8 @@ def main() -> None:
     report = audit_working_draft_pdf(
         args.pdf,
         expected_pages=args.expected_pages,
+        table_page=args.table_page,
+        references_page=args.references_page,
         anonymous_working_draft=args.review_stage == "anonymous-working-draft",
     )
     print(json.dumps(report, indent=2, sort_keys=True))
