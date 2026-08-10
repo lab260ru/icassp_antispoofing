@@ -12,3 +12,13 @@ were recorded.
 No credential, chat ID, or token value is recorded here. Historical queued
 messages remain queued intentionally; this receipt covers only the explicitly
 sent latest update.
+
+## Remote-push confirmation
+
+- Heading: 2026-08-10 — GitHub push succeeded
+- Delivery status: success
+- Telegram message ID: 136
+- Text length: 386
+
+This is the second explicitly selected message in this log. No historical
+queued messages were bulk-sent.
