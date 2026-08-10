@@ -418,3 +418,16 @@ Spectra, tune weights, or otherwise repair it after seeing targets. All
 625,021 target joins, hashes, bootstrap outputs, and the consistency note are
 on the HDD/repo. I am now screening a fresh hypothesis with a meaningful,
 transparent baseline rather than trying to publish this comparison.
+
+## 2026-08-10 — H9 paired-counterfactual training protocol locked
+
+I have stopped the failed score-fusion line and committed/pushed a fresh H9
+training study at `0e88d17`. It tests whether content-matched
+natural-to-synthetic ranking improves a transparent BF16 Res2TCNGuard detector
+over the same-data BCE baseline and an equal-budget random-pair ranking
+control. ODSS is the only source; SONAR and ArAD are the two fixed external
+targets. All four seeds, source-only selection, waveform-fingerprint audit,
+and the strict two-target EER/bootstrap gate are frozen before H9 data or
+target labels are read. I am now checking the source pairing schema; if that
+precondition fails, I will stop this hypothesis rather than change it after
+looking at data.
