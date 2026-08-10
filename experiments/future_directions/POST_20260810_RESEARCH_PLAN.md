@@ -12,8 +12,10 @@ research loop, rather than attempting to rescue a failed gate.
   the detector-free 90% retained-pair quality gate.
 - H2B Q1 selects no non-control waveform family under its locked Wilson-bound
   rule. Its Q2--Q4 stages are closed.
-- H4, H5, and H6 are complete descriptive atlases. Their outputs cannot choose
-  an intervention feature, a model, a scorer, or a training input.
+- H4, H5, H6, and H7 are complete descriptive audits. H7's fixed all-28-feature
+  transfer baseline is strong on the held-out ASVspoof cohorts but weak on
+  InTheWild/ASVspoof5; like the atlases, it cannot choose an intervention
+  feature, a model, a scorer, or a training input.
 - H3 is not authorized because the causal prerequisite does not exist.
 
 Consequently, no threshold relaxation, transform-grid expansion, source-panel
@@ -33,7 +35,7 @@ opening any score artifact or detector code. It must:
 3. run quality/ASR/feature diagnostics without detector access, record every
    failure, and lock a retained-only panel before scoring;
 4. independently freeze a feature identity using *new* discovery and held-out
-   confirmation corpora, without consulting H4/H5/H6 for selection; and
+   confirmation corpora, without consulting H4/H5/H6/H7 for selection; and
 5. validate four executable scorers against their own untouched published-score
    baselines before any paired detector analysis.
 
@@ -47,7 +49,7 @@ If the question is instead association portability, create a new corpus split
 and register a finite feature/model/view panel before reading new score data.
 Use a discovery/confirmation firewall, fixed within-class controls, multiplicity
 family, clustered intervals, and a written portability criterion. Existing H1
-and H4/H5/H6 registries may provide background but cannot be mined to name the
+and H4/H5/H6/H7 registries may provide background but cannot be mined to name the
 next candidate. Report the complete registered matrix regardless of selection.
 
 ## Direction C — training only after causal evidence
@@ -71,6 +73,6 @@ The current manuscript is a conservative negative-result working draft. Before
 submission, reconcile the pinned ICASSP-2026 template with the official
 ICASSP-2027 kit, obtain the official PDF/checker outcome, create an authorized
 permanent artifact/archive locator for the hash-bound outputs, and decide
-whether supplementary figures S1/H5/H6 are permitted in the submission
+whether supplementary figures S1/H5/H6/H7 are permitted in the submission
 package. Any `paper/main.tex` modification must immediately rebuild and commit
 `paper/build/main.pdf`.
