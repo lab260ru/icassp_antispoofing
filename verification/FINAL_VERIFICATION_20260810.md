@@ -8,7 +8,7 @@ research gate or claim an official conference submission check.
 
 | Check | Command / result |
 | --- | --- |
-| Full repository suite | `PYTHONPATH=. python3 -m pytest -q` — **134 passed** in 26.50 s |
+| Full repository suite | `PYTHONPATH=. python3 -m pytest -q` — **139 passed** in 26.87 s |
 | Worktree safety | `git diff --check` passed; the only intentionally untracked item is the user-provided `ICASSP2026_Paper_Templates.zip` archive |
 | Paper PDF | `paper/build/main.pdf`, SHA-256 `495bd3bb7d476915b94c592c9879f8d908ccf37892f255c993efb0fee3d8cdf0` |
 | Paper preflight | `PYTHONPATH=. python3 scripts/check_paper_pdf.py --pdf paper/build/main.pdf --review-stage single-anonymous-submission` — five US-letter pages, Table 1 page 3, references page 5, 10 embedded fonts, no errors |

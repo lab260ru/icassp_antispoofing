@@ -31,6 +31,10 @@ threshold, sample, transform, scorer, feature, or model after seeing results.
   fixed five-corpus portability rule. The 19/168 descriptive registry entries
   cannot select a new intervention or training cue. Read
   `experiments/h1_feature_association/results/five_corpus_aggregate_20260809T214500Z/AGGREGATION_RUN_20260809.md`.
+  The score-free covariate-availability reporting audit at
+  `experiments/h1_feature_association/results/covariate_availability_audit_001/`
+  records exact adjustment-metadata coverage and held-out bootstrap context,
+  but computes no new H1 statistic or decision.
 - **H2 and H2B are terminal before scoring.** H2's detector-free retained-pair
   rates are DRC-3 18.1%, DRC-6 0.6%, gain 64.6%, and polarity 99.9%; no
   score-eligible manifest exists and no transformed detector score may be
@@ -52,7 +56,7 @@ threshold, sample, transform, scorer, feature, or model after seeing results.
   `paper/figures/FIGURE_CREST_EVIDENCE_BOUNDARY_MAIN.md` and
   `paper/reviews/codex_main_figure_20260810/`. The local preflight passes
   (four technical US-letter pages, references-only fifth page, Table 1 and
-  reference landmarks, embedded fonts) and the full test suite passes 134.
+  reference landmarks, embedded fonts) and the full test suite passes 139.
   H5, H6, and S1 remain supplementary-only unless a new submission-package
   decision is recorded.
   **Every `paper/main.tex` edit must immediately run** `cd paper && tectonic

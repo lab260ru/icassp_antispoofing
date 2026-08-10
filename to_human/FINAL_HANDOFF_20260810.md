@@ -14,7 +14,9 @@
 - Complete H1 five-corpus association audit: the discovery-frozen
   Spectra-AASIST/full-waveform/spoof crest-factor association is **not
   portable** under the locked rule. The 19/168 other entries are descriptive
-  and are not intervention candidates.
+  and are not intervention candidates. A score-free covariate-availability
+  report now makes the exact five-cohort adjustment coverage and confirmation
+  bootstrap cluster context directly inspectable.
 - Complete H2 and H2B quality-first stops: H2's DRC-3, DRC-6, and gain arms
   retain 18.1%, 0.6%, and 64.6%, respectively, below the 90% gate; H2B Q1
   selects no non-control family. No transformed detector was scored and H3
@@ -34,7 +36,7 @@
 
 ## Verified now
 
-The full repository suite passes **134 tests**. The local paper checker reports
+The full repository suite passes **139 tests**. The local paper checker reports
 five US-letter pages, Table 1 on page 3, references on page 5, and ten embedded
 fonts. See `verification/FINAL_VERIFICATION_20260810.md`.
 
