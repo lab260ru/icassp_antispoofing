@@ -58,8 +58,9 @@ The source-training handoff must create an immutable JSON
   sidecar by SHA-256.
 
 Every sidecar must say `target_labels_read: false`, `target_audio_read: false`,
-must prove `fresh_seeded` initialization with the matching seed and architecture
-hash, and must contain this exact source binding:
+must record `precision: "cuda_bfloat16_autocast"`, prove `fresh_seeded`
+initialization with the matching seed and architecture hash, and must contain
+this exact source binding:
 
 ```json
 "source_artifact_hashes": {
