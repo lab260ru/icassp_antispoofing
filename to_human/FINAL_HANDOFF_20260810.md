@@ -1,30 +1,52 @@
-# Named-author paper checkpoint — 2026-08-10
+# Research and paper handoff — 2026-08-10
 
-## Delivered locally
+## Delivered
 
-- The ICASSP paper now uses the user-provided ICASSP-2026 spconf/IEEEbib
-  template pair, pinned with archive provenance and an HDD archival copy.
-- The authorized working author metadata is Kirill Borodin with lab260
-  (Moscow, Russia) and BitmanagerAI (Dubai, UAE). No email was invented.
-- The readable PDF is rebuilt at paper/build/main.pdf: four technical pages
-  plus a references-only fifth page. It passes local US-letter, exact Table 1,
-  final References, and embedded-font checks in single-anonymous mode.
-- Three fresh Codex-only reviews are preserved with a resolution record in
-  paper/reviews/codex_post_template_20260810/. No external reviewer runtime
-  was used.
-- The research/icassp-signal-audit branch has been pushed normally to origin;
-  the credential-free receipt is in to_human/GITHUB_PUSH_RECEIPT_20260810.md.
-- The scientific boundary is unchanged: the frozen crest candidate fails H1
-  portability; H2 fails quality screening before detector scoring; H2B selects
-  no valid transform family; and H4 is descriptive only. There is no causal
-  score or H3 training result.
+- Readable named-author ICASSP working draft: `paper/main.tex` and
+  `paper/build/main.pdf` (SHA-256
+  `5077102e4467782f2c39c41ff29312acef4ad4c270bd9b1798eca93d0f22d094`).
+  The current source uses the user-provided, hash-pinned ICASSP-2026
+  `spconf`/`IEEEbib` inputs and was independently audited by three Codex-only
+  perspectives.
+- Complete H1 five-corpus association audit: the discovery-frozen
+  Spectra-AASIST/full-waveform/spoof crest-factor association is **not
+  portable** under the locked rule. The 19/168 other entries are descriptive
+  and are not intervention candidates.
+- Complete H2 and H2B quality-first stops: H2's DRC-3, DRC-6, and gain arms
+  retain 18.1%, 0.6%, and 64.6%, respectively, below the 90% gate; H2B Q1
+  selects no non-control family. No transformed detector was scored and H3
+  training was not run.
+- Completed bounded descriptive extensions: H4 label-cue transportability
+  (420 cells/84 aggregates), H5 feature-view invariance (420/84, 17 terminal
+  descriptive units and six explicit degeneracies), and H6 within-class
+  published-score agreement (280 cells/28 summaries, 5,000 joins/cell). These
+  do not supply causal, model-ranking, or cue-selection evidence.
+- Display-only supporting figures: sealed crest evidence-boundary S1, H5
+  concordance atlas, and H6 agreement atlas. They remain outside the current
+  main paper until a submission-package decision is authorized.
+- Resumption materials: current `AGENTS.md`, `ARTIFACT_INDEX.md`,
+  `research-state.yaml`, full research/implementation logs, future roadmap,
+  final verification, Telegram receipt, remote branch, and complete-history
+  HDD Git bundle.
 
-## Remaining submission conditions
+## Verified now
 
-1. Reconcile the pinned ICASSP-2026 package with the official ICASSP-2027 kit
-   when it is available, then rebuild and rerun official validation.
-2. Confirm portal author ordering, affiliations, and any requested email field.
-3. Add an archival repository/DOI locator only when disclosure policy permits.
+The full repository suite passes **115 tests**. The local paper checker reports
+five US-letter pages, Table 1 on page 3, references on page 5, and ten embedded
+fonts. See `verification/FINAL_VERIFICATION_20260810.md`.
 
-Read AGENTS.md before any experiment or paper continuation. Do not reopen the
-failed H1/H2/H2B/H4 gates by tuning thresholds or selecting a new cue post hoc.
+## Do not reopen
+
+Do not tune the completed H1/H2/H2B thresholds, feature choice, score
+orientation, transform grids, quality gate, sample manifests, or model panels.
+Any causal or training study must begin with the independent protocol and
+freeze requirements in
+`experiments/future_directions/POST_20260810_RESEARCH_PLAN.md`.
+
+## External submission work
+
+Before upload, reconcile the pinned ICASSP-2026 template with the official
+ICASSP-2027 kit, run its official checker/PDF workflow, choose an authorized
+permanent artifact locator, and decide whether a supplementary package is
+allowed. If `paper/main.tex` changes, immediately compile it and commit the
+refreshed `paper/build/main.pdf` with the edit.
