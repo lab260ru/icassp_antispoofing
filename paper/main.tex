@@ -200,14 +200,14 @@ beneficial~\cite{pascu2024generalizable}.
 
 Table~\ref{tab:status} records the completed evidence and H2 quality-gate
 outcome, and
-Fig.~\ref{fig:h1-association-atlas} visualizes the registry-wide associations
-that satisfy the fixed rule. The aggregate is exhaustive over the registered
-matrix, but it is not a post-hoc intervention selector. No H2 delta, EER, or
-causal claim is reported. Eighteen of the 19 units are bona-fide-class
-associations; the remaining spoof-class unit is pre-emphasized spectral
-flatness. The atlas also includes a separate bona-fide/full-waveform
-crest-factor association, which is distinct from the frozen spoof-class crest
-candidate and is not reused for H2.
+Fig.~\ref{fig:crest-evidence-boundary} makes the frozen crest slice and the
+quality-gate stop directly inspectable. The 19 fixed-rule registry entries are
+preserved as a complete descriptive table, not a post-hoc intervention
+selector. No H2 delta, EER, or causal claim is reported. Eighteen of the 19
+units are bona-fide-class associations; the remaining spoof-class unit is
+pre-emphasized spectral flatness. The registry also includes a separate
+bona-fide/full-waveform crest-factor association, which is distinct from the
+frozen spoof-class crest candidate and is not reused for H2.
 
 \begin{table}[!t]
   \caption{Completed evidence and H2 quality-gate outcome. The five-corpus
@@ -242,14 +242,20 @@ candidate and is not reused for H2.
 
 \begin{figure*}[t]
   \centering
-  \includegraphics[width=\textwidth]{figures/fig_h1_portable_association_atlas.pdf}
-  \caption{Five-corpus rule pass-count atlas. Each bar is a registered
-  feature/view/class unit for which the displayed models satisfy the full fixed
-  partial-Spearman/BH portability subcriterion; rows group the waveform views.
-  These 19 descriptive associations were not re-ranked or promoted to H2 after
-  confirmation data were inspected. The frozen crest candidate is absent
-  because it fails the same rule.}
-  \label{fig:h1-association-atlas}
+  \includegraphics[width=\textwidth]{figures/fig_crest_evidence_boundary_main_v2.pdf}
+  \caption{Evidence boundary for the discovery-frozen
+  Spectra-AASIST/full-waveform/spoof crest-factor slice. (A) Fixed-analysis
+  adjusted associations across the fixed five-corpus order, separated into
+  locked discovery and held-out confirmation; 95\% clustered intervals appear
+  only for the two sealed held-out confirmations. The slice fails the paper's
+  fixed model-level portability condition. (B) Detector-free H2 retention for four fixed
+  crest/control arms on the 1,000-clip ASVspoof2019 LA quality panel against
+  the locked 90\% gate. Polarity alone clears the per-arm rate, but three arms
+  fall below it, so no score-eligible retained-pair manifest was frozen and no
+  detector scoring was performed. The panels are descriptive displays only;
+  no cross-panel relationship, pooled estimate, ranking, new test, or causal
+  inference is computed.}
+  \label{fig:crest-evidence-boundary}
 \end{figure*}
 
 \section{Limitations and responsible reporting}
