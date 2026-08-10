@@ -25,12 +25,14 @@ HDD, one row per `sample_id` selected by the existing `full_waveform` view:
 | InTheWild | `/home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/runs/features/v1_28/InTheWild/features_wide.parquet` |
 | ASVspoof5 | `/home/kirill/mnt/hdd_6tb_1/icassp_antispoofing/runs/features/v1_28/ASVspoof5/features_wide.parquet` |
 
-Permitted columns are exactly `sample_id`, `source_id`, `label`, `view`,
-`duration_seconds`, `integrated_lufs`, `speaker_id`, and `attack_id`. The tool
-must reject score, logit, detector, model, EER, AUROC, feature-registry, audio,
-or ASR paths and columns. It must reject other views, duplicate `sample_id`s
-within a corpus, missing labels, or a mismatch between the five locked corpus
-names and paths.
+The audit projects exactly `sample_id`, `source_id`, `label`, `view`,
+`duration_seconds`, `integrated_lufs`, `speaker_id`, and `attack_id`; it must
+never materialize registry feature values. The pinned Parquets are known to
+contain feature columns because they are the original H1 products, so those
+unprojected columns are not themselves an error. The tool must reject score,
+logit, detector, model, EER, AUROC, audio, or ASR paths and columns. It must
+reject other views, duplicate `sample_id`s within a corpus, missing labels, or
+a mismatch between the five locked corpus names and paths.
 
 The two existing confirmation notes are fixed contextual inputs only:
 `results/InTheWild/CONFIRMATION_RUN_20260809.md` and
