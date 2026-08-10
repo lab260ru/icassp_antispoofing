@@ -370,3 +370,15 @@ checked against the ISCA Archive record; no quantitative or causal paper claim
 changed. `main.tex` was rebuilt immediately and remains within five US-letter
 pages; the local preflight and 139-test suite pass. The source, bibliography,
 citation ledger, and compiled PDF are committed and pushed at `0f349d3`.
+
+## 2026-08-10 — H7 score-free feature-transfer supplement
+
+H7 is complete and pushed at `b9fb8bf`. The independently frozen,
+all-28-feature leave-one-corpus-out baseline has AUROC 0.908/0.845/0.781 on
+held-out ASVspoof 2019 LA/2021 LA/2021 DF, but 0.535 on InTheWild and 0.588 on
+ASVspoof5; every cell has 500/500 source-ID bootstrap replicates. A
+hash-validated vector PDF, 300-DPI PNG, metadata, and retained layout
+iterations are under `experiments/h7_feature_transfer/results/h7_analysis_001/`.
+This is descriptive feature-only transfer context: it reads no detector score
+and makes no causal, cue-selection, model-ranking, or mitigation claim. The
+full repository suite passes 149 tests.
