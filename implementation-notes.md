@@ -349,3 +349,6 @@
   `paper/supplementary/` for a future authorized supplement package. It is a
   display-only copy of the sealed score-free coverage audit, not a new paper
   result or availability claim.
+- Paper context: Added the verified canonical ASVspoof 5 reference beside its
+  first held-out-corpus mention. The citation identifies the corpus only; it
+  changes no estimator, result, or causal interpretation.

@@ -1,9 +1,9 @@
 # Citation verification ledger
 
 This ledger is the paper-local record required before an entry is used in
-`references.bib`. Each BibTeX record was fetched programmatically through the
-DOI content-negotiation endpoint on 2026-08-09. The second source confirms
-existence, metadata, and the limited claim attributed in `main.tex`.
+`references.bib`. Each BibTeX record was fetched programmatically through its
+DOI content-negotiation endpoint. The second source confirms existence,
+metadata, and the limited claim attributed in `main.tex`.
 
 | Citation key | DOI and BibTeX source | Independent primary/authoritative source | Claim used in the draft |
 |---|---|---|---|
@@ -14,6 +14,7 @@ existence, metadata, and the limited claim attributed in `main.tex`.
 | `yamagishi2021asvspoof` | Crossref metadata and `https://doi.org/10.21437/ASVSPOOF.2021-8` with `Accept: application/x-bibtex` | [ISCA Archive record](https://www.isca-archive.org/asvspoof_2021/yamagishi21_asvspoof.html) | ASVspoof 2021 adds channel/compression variability and unmatched evaluation conditions. |
 | `muller2024harder` | Crossref metadata and `https://doi.org/10.21437/Interspeech.2024-247` with `Accept: application/x-bibtex` | [ISCA Archive record](https://www.isca-archive.org/interspeech_2024/muller24b_interspeech.html) | The reported cross-domain gap is primarily distributional difference rather than only hardness. |
 | `pascu2024generalizable` | Crossref metadata and `https://doi.org/10.21437/Interspeech.2024-1302` with `Accept: application/x-bibtex` | [ISCA Archive record](https://www.isca-archive.org/interspeech_2024/pascu24_interspeech.html) | Frozen SSL representations with a simple classifier can generalize and calibrate strongly in the authors' benchmark. |
+| `wang2024asvspoof5` | `https://doi.org/10.21437/ASVSPOOF.2024-1` with `Accept: application/x-bibtex` (retrieved 2026-08-10) | [ISCA Archive record](https://www.isca-archive.org/asvspoof_2024/wang24_asvspoof.html) | Identifies the ASVspoof 5 held-out corpus used in the audit; the cited paper describes its dataset and challenge setup. |
 
 No unverified citation keys occur in `main.tex`. The model-card and Arena
 artifact provenance are tracked in the repository data manifest rather than
