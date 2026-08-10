@@ -365,3 +365,7 @@
   feature tables. It cannot read detector scores, waveform audio, model code,
   H1/H4/H5/H6 results, or coefficients for feature selection; its complete
   matrix is descriptive and terminal.
+- Tradeoff: Synthetic integration tests monkeypatch the module-level
+  5,000-per-class cap and 500-replicate count to 20 and 3 only after asserting
+  their production constants. This exercises all five fitted cells without
+  repeated 40,000-row test fits; the production CLIs retain the locked values.
