@@ -34,7 +34,7 @@ SOURCE_POOL_NAME = "shared_b1_b2_p_complete_matched_only"
 CANONICAL_AUDIO_POLICY: dict[str, Any] = {
     "kind": "h9_canonical_mono16k_pcm_sha256",
     "version": 1,
-    "decode": "soundfile.read(BytesIO(raw_wav), dtype=float32, always_2d=True)",
+    "decode": "soundfile.read(BytesIO(raw_audio), dtype=float32, always_2d=True)",
     "channels": "arithmetic_mean_over_channels_in_float64_then_cast_float32",
     "resample": "scipy.signal.resample_poly(reduced_16000_over_source_rate, window=('kaiser',5.0), padtype='constant')",
     "pcm": "clip_to_minus1_plus1; rint(sample*32767); little_endian_signed_int16",
@@ -297,17 +297,27 @@ def load_h9_odss_source_freeze(freeze_dir: str | Path, *, expectation: H9SourceF
     return FrozenODSSSource(root, provenance_path, provenance, trials, pairs, random_pairs, excluded)
 
 
-def canonical_mono16k_pcm_fingerprint(raw_wav: bytes) -> tuple[str, int, int]:
-    """Fingerprint deterministic mono 16-kHz signed-16-bit PCM, not raw bytes."""
-    if len(raw_wav) < 12 or raw_wav[:4] != b"RIFF" or raw_wav[8:12] != b"WAVE":
-        raise ValueError("H9 ODSS source payload is not a RIFF/WAVE byte stream")
+def canonical_mono16k_pcm_fingerprint(
+    raw_audio: bytes, *, require_riff_wave: bool = True
+) -> tuple[str, int, int]:
+    """Fingerprint deterministic mono 16-kHz PCM from a pinned audio payload.
+
+    ODSS source payloads are deliberately RIFF/WAVE-only.  A terminal target
+    may instead use the Hub's documented FLAC container, while retaining the
+    same decoded-PCM fingerprint policy.  Callers must explicitly opt out of
+    the RIFF/WAVE guard; this function does not broaden the source contract.
+    """
+    if require_riff_wave and (
+        len(raw_audio) < 12 or raw_audio[:4] != b"RIFF" or raw_audio[8:12] != b"WAVE"
+    ):
+        raise ValueError("H9 source payload is not a RIFF/WAVE byte stream")
     try:
-        decoded, sample_rate = sf.read(io.BytesIO(raw_wav), dtype="float32", always_2d=True)
+        decoded, sample_rate = sf.read(io.BytesIO(raw_audio), dtype="float32", always_2d=True)
     except RuntimeError as error:
-        raise ValueError("H9 ODSS source payload cannot be decoded as WAV") from error
+        raise ValueError("H9 audio payload cannot be decoded by the canonical audio policy") from error
     values = np.asarray(decoded, dtype=np.float32)
     if values.ndim != 2 or values.shape[0] == 0 or values.shape[1] == 0 or not np.isfinite(values).all() or int(sample_rate) <= 0:
-        raise ValueError("H9 ODSS source WAV is empty, malformed, or non-finite")
+        raise ValueError("H9 audio payload is empty, malformed, or non-finite")
     mono = values.astype(np.float64).mean(axis=1, dtype=np.float64).astype(np.float32)
     if int(sample_rate) != 16_000:
         from scipy.signal import resample_poly

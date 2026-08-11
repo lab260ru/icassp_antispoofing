@@ -24,20 +24,26 @@ from src.h9_pcr_target_materialize import (
 from src.res2tcn_pytorch import sha256_file
 
 
-def _wav_bytes(value: float) -> bytes:
+def _audio_bytes(value: float, *, format: str = "WAV") -> bytes:
     stream = io.BytesIO()
-    sf.write(stream, np.full(32, value, dtype=np.float32), 16_000, format="WAV", subtype="PCM_16")
+    sf.write(stream, np.full(32, value, dtype=np.float32), 16_000, format=format, subtype="PCM_16")
     return stream.getvalue()
 
 
-def _raw_target(tmp_path: Path, *, dataset: str = "SONAR", labels: list[int] | None = None) -> Path:
+def _raw_target(
+    tmp_path: Path,
+    *,
+    dataset: str = "SONAR",
+    labels: list[int] | None = None,
+    audio_format: str = "WAV",
+) -> Path:
     labels = [0, 0, 1, 1] if labels is None else labels
     raw = tmp_path / "datasets" / dataset.lower() / TARGET_REVISIONS[dataset] / "raw" / "data"
     raw.mkdir(parents=True)
     rows = [
         {
             "path": f"synthetic/{dataset.lower()}_{index}.wav",
-            "audio": {"bytes": _wav_bytes(float(index) / 8.0), "path": None},
+            "audio": {"bytes": _audio_bytes(float(index) / 8.0, format=audio_format), "path": None},
             "label": label,
         }
         for index, label in enumerate(labels)
@@ -124,6 +130,25 @@ def test_rejects_nonbinary_label_without_publishing_output(tmp_path: Path) -> No
             _source_handoff_validator=_validator,
         )
     assert not output.exists()
+
+
+def test_materializes_pinned_flac_payloads_with_their_true_extension(tmp_path: Path) -> None:
+    raw = _raw_target(tmp_path, audio_format="FLAC")
+    output = tmp_path / "hdd" / "flac_target"
+    output.parent.mkdir(parents=True)
+    result = materialize_h9_target(
+        dataset="SONAR",
+        raw_shard_dir=raw,
+        checkpoint_ledger=tmp_path / "synthetic-ledger.json",
+        plan=tmp_path / "synthetic-plan.md",
+        data_contract=tmp_path / "synthetic-data.md",
+        output_dir=output,
+        allowed_output_root=tmp_path / "hdd",
+        _source_handoff_validator=_validator,
+    )
+    records = pd.read_csv(result.records)
+    assert records["audio_path"].str.endswith(".flac").all()
+    assert all(Path(path).read_bytes().startswith(b"fLaC") for path in records["audio_path"])
 
 
 def test_source_handoff_is_validated_before_a_target_path_is_inspected(tmp_path: Path) -> None:

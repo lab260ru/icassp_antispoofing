@@ -17,7 +17,10 @@ The `--dataset` argument accepts only the locked role/revision pair:
 
 The raw directory must contain Parquet shards whose Arrow schema has string
 `path`, a struct-valued `audio.bytes` binary payload, and an integer `label`.
-The adapter rejects an unknown revision, missing/changed field, non-WAV audio,
+The adapter accepts only the two containers present in the pinned inputs:
+RIFF/WAVE and FLAC. It preserves the original container extension while
+copying every byte, and fingerprints their shared decoded-PCM representation.
+It rejects an unknown revision, missing/changed field, another container,
 duplicate raw path, nonbinary label, empty class, changed copy hash, or
 existing output directory. It does not guess a schema, remap a label, or
 select trials.
@@ -26,7 +29,8 @@ select trials.
 
 The materializer uses two non-overlapping raw-column passes:
 
-1. It reads only `path,audio`, copies every byte-identical WAV payload, and
+1. It reads only `path,audio`, copies every byte-identical RIFF/WAVE or FLAC
+   payload (with its real extension), and
    writes the canonical record CSV and audio audit. The record table has
    exactly `sample_id,audio_path,audio_sha256,audio_bytes,canonical_fingerprint`;
    it has no label column.
