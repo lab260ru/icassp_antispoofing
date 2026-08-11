@@ -77,7 +77,7 @@ hypotheses:
     priority: highest
   - id: H9
     statement: "Content-aligned natural-to-synthetic ranking supervision improves cross-corpus anti-spoofing EER relative to ordinary BCE and an equal-budget random-pair ranking control."
-    status: source_audio_materialization_complete_source_only_bf16_training_pending
+    status: source_lambda_selected_final_bf16_fits_running
     motivation: "A documented content-aligned pair comparison tests whether matching helps while holding the compact transparent architecture, data volume, batch schedule, and margin term fixed; it does not itself prove a causal internal mechanism."
     priority: highest
 
@@ -85,7 +85,7 @@ experiments:
   proxy_metric: "Cross-dataset, within-class feature-score association and causal paired score sensitivity; EER for mitigation."
   baseline_value: 0.00184813566035551
   best_value: 0.00184813566035551
-  total_runs: 31
+  total_runs: 32
   trajectory:
     - run_id: run_001
       hypothesis: H1
@@ -311,11 +311,18 @@ experiments:
       wall_time_min: null
       change_summary: "Revalidated the sealed ODSS pairing freeze and materialized exactly 23,883 paired-only WAVs into a canonical, fingerprinted source manifest for training; no target corpus, score, model fit, or target metric was accessed."
       timestamp: "2026-08-10"
+    - run_id: h9pcr_source_lambda_selection_001
+      hypothesis: H9
+      metric_value: 0.220511539002921
+      delta: null
+      wall_time_min: null
+      change_summary: "Completed the predeclared 12-fit source-only P grid and froze lambda_rank=1.00 by mean voice-disjoint source-dev EER; the value applies unchanged to final P and B2 before target access."
+      timestamp: "2026-08-11"
 
 outer_loop:
   cycle: 12
-  last_direction: "h9_source_materialization_complete"
-  last_reflection: "H8-SF is terminal against its dominant frozen single expert. H9-PCR now has a hash-bound, paired-only, voice-disjoint ODSS waveform manifest. The next gate is source-only fresh-initialized BF16 lambda selection; no target data may alter the frozen source rows, pairs, architecture, training envelope, or target panel."
+  last_direction: "h9_source_only_lambda_selected"
+  last_reflection: "The H9 source-only 12-fit grid selected lambda 1.00 under its locked rule. Final B1/B2/P fresh-init BF16 fits are now the only permitted source computation; target materialization and scoring remain prohibited until their source checkpoint ledger is sealed."
   pivot_policy: "After the first association/intervention matrix or five completed runs, choose deepen, broaden, pivot, or conclude and record the evidence."
 
 workspace:
