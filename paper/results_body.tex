@@ -26,14 +26,12 @@ behaviours available to a decoder whose stop decision has lost access to the
 count.
 
 The collapse point $k^\ast$ ranges from \kStarMin{} to \kStarMax{}
-(Table~\ref{tab:models}). Within the Qwen3-TTS family it doubles from $0.6$B to
-$1.7$B, so scale buys a longer horizon --- but a bounded one, exactly as
-\eqref{eq:horizon} says it should. The effect is not specific to repeated single
-words: repeating a whole \emph{sentence} produces the same curve, and number
-phrases with intrinsic digit-word repetition (\emph{six hundred sixty-six
-thousand six hundred sixty-six}) fail at the modest counts their structure
-imposes. The unit can be a word, a phrase, or a place-value pattern; what matters
-is that it recurs.
+(Table~\ref{tab:models}); within the Qwen3-TTS family it doubles from $0.6$B to
+$1.7$B, so scale buys a longer horizon but a bounded one, as
+\eqref{eq:horizon} says it should. The unit of repetition can be a word, a whole
+sentence, or a place-value pattern (\emph{six hundred sixty-six thousand six
+hundred sixty-six}); all three produce the same curve. What matters is that it
+recurs.
 
 \subsection{The limit is periodicity, not length}
 
@@ -55,17 +53,15 @@ per-token NLL \NllCtl{} vs.\ \NllRep{}), and the gap widens monotonically with
 $k$. The harder-to-predict text is the one models render correctly, so
 naturalness runs opposite to the effect.
 
-A second alternative locates the collapse in acoustic rather than text space:
-perhaps the decoder falls into an attractor once it has emitted enough
-near-identical frames, with the text playing no part. That account predicts the
-horizon should be counted in acoustic tokens, so sentence repetition --- whose
-unit costs several times more tokens than a word --- should collapse after far
-fewer repetitions. It does not. Across \UnitNModels{} models, $k^\ast$ for
-sentence repetition differs from $k^\ast$ for word repetition by \UnitKDiff{}
-repetitions on average, while the token count at collapse differs by a factor of
-\UnitTokRatio{}. The horizon is counted in applications of the periodic map, not
-in accumulated acoustic tokens --- which is the unit Theorem~\ref{thm:collapse}
-predicts it should be in.
+A second alternative locates the collapse in acoustic rather than text space: an
+attractor reached once enough near-identical frames accumulate, with the text
+playing no part. That predicts a horizon counted in tokens, so sentence
+repetition --- whose unit costs several times more tokens than a word --- should
+collapse after far fewer repetitions. It does not. Across \UnitNModels{} models
+$k^\ast$ differs between the two families by \UnitKDiff{} repetitions on average
+while the token count at collapse differs by \UnitTokRatio{}$\times$. The horizon
+is counted in applications of the periodic map, the unit
+Theorem~\ref{thm:collapse} says it should be.
 
 \begin{table}[t]
 \centering
@@ -113,27 +109,23 @@ hallucinated generations. Per-model tables are in the supplement.
 \subsection{Two things we could not establish}
 \label{sec:negative}
 
-We first tried to estimate $q$ directly, locating each repetition boundary from
-the model's text attention and fitting
-$\log\lVert h_{m+1}-h_m\rVert = a + m\log q$. That estimator is unsound here:
-boundary localisation needs a monotone text read-head, and the deep-layer
-attention centroid of these decoders advances on barely half of generation steps,
-so boundary estimates collapse onto near-duplicate positions and the distances
-measure localisation error rather than state dynamics. The failure is
-self-defeating by construction --- the flatter the attention over repeated spans,
-exactly what Lemma~\ref{lem:dilution} predicts, the worse any attention-based
-localiser gets. The capacity measure needs no boundaries, which is why we adopted
-it.
+We first tried to estimate $q$ directly, locating repetition boundaries from text
+attention and fitting $\log\lVert h_{m+1}-h_m\rVert = a + m\log q$. That
+estimator is unsound here: localisation needs a monotone text read-head, and
+these decoders' deep-layer attention centroid advances on barely half of
+generation steps, so boundary estimates collapse onto near-duplicate positions
+and the distances measure localisation error. The failure is self-defeating by
+construction --- the flatter the attention over repeated spans, exactly what
+Lemma~\ref{lem:dilution} predicts, the worse any attention-based localiser gets.
+The capacity measure needs no boundaries, which is why we adopted it.
 
-Second, we cannot claim the count is \emph{absent} from the states. A ridge probe
-recovering $\log_2 k$ from trajectory summaries, cross-validated across carrier
-templates, decodes it only coarsely: median $R^2 = \ProbeLateRTwo{}$ on repeated
-text late in generation, far from the near-perfect decodability reported for text
-LMs~\cite{venkatesh2026repeated}. Comparing the first and last third of the
-\emph{same} trajectory --- a within-item contrast, so probe capacity and item
-count cancel --- the count is retained at \ProbeRetRep{} of its early-window
-level on repeated text against \ProbeRetCtl{} on controls, and repeated retention
-is the lower of the pair in \ProbeNBelowWord{} of \ProbeNModels{} variants. The
-direction is consistent, but this is degradation, not erasure; since a linear
-probe is exactly the readout class Theorem~\ref{thm:collapse}(iii) constrains, a
-stronger probe recovering the count would matter, and we cannot rule that out.
+Second, we cannot claim the count is \emph{absent}. A ridge probe recovering
+$\log_2 k$ from trajectory summaries, cross-validated across carrier templates,
+decodes it only coarsely (median $R^2 = \ProbeLateRTwo{}$ late in generation),
+far from the near-perfect decodability reported for text
+LMs~\cite{venkatesh2026repeated}. Contrasting the first and last third of the
+\emph{same} trajectory, so that probe capacity cancels, the count is retained at
+\ProbeRetRep{} of its early level on repeated text against \ProbeRetCtl{} on
+controls, repeated being the lower of the pair in \ProbeNBelowWord{} of
+\ProbeNModels{} variants. The direction is consistent, but this is degradation,
+not erasure, and a stronger probe could change the picture.

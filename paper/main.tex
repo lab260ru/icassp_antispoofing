@@ -143,10 +143,7 @@ counts $m \le n$ with decision margin $\mu>0$, then $\mu \le 2LCq^m$ and
 Part~(iv) is the operative statement: the number of repetitions an AR decoder can
 count is bounded by how fast its per-repetition map contracts, how large its
 orbit is, and how much separation its readout needs. No property of the decoding
-rule enters, so the bound applies to greedy, sampled and beam decoding alike. It
-is also scale free --- doubling $C$ costs only $\log 2/\log(1/q)$ extra
-repetitions, while pushing $q$ toward $1$ buys unboundedly many, so the design
-lever is the contraction factor, not the state magnitude.
+rule enters, so the bound applies to greedy, sampled and beam decoding alike.
 
 \noindent\textbf{Formal verification.}
 Both results are formalised in Lean~4 against \texttt{mathlib}. Part~(i)
@@ -181,21 +178,17 @@ coverage. Each item is generated with \NSeeds{} seeds.
 \noindent\textbf{Behavioural measurement.}
 Generated audio is transcribed with Whisper large-v3~\cite{radford2023whisper}.
 The judge is itself an autoregressive model that de-duplicates repeated
-material, so a transcript count alone understates loops. We therefore score
-correctness \emph{conjunctively}: an item is correct only if the normalised
-transcript contains exactly the requested number of units \emph{and} the audio
-duration is consistent with that number, against a per-model, per-template
-duration model fitted on the low-$k$ regime. Nothing is excluded --- the two
-signals fail in opposite directions (ASR de-duplication shortens the transcript
-while lengthening the audio; babbling does the reverse), so requiring both is
-what makes the label robust, and every item receives one. Repeated and control
-items are scored by the same question, how many of the $k$ requested units were
-rendered, which is what makes their accuracies comparable. Outcomes are labelled
-\{correct, undercount, truncation, overcount, loop, miscount, degenerate,
-empty\}. The two
-estimators agree on \AgreeLowK{}\% of items in the low-$k$ regime where a correct
-rendering exists to be measured; at high $k$ they diverge precisely because the
-output no longer corresponds to any clean count.
+material, so a transcript count alone understates loops, while duration has only
+$\pm1$ repetition of resolution. We therefore score correctness
+\emph{conjunctively}: an item is correct only if the normalised transcript
+contains exactly the requested number of units \emph{and} the duration is
+consistent with that number, against a per-model, per-template duration model
+fitted on the low-$k$ regime. The two signals fail in opposite directions, so
+requiring both is what makes the label robust; nothing is excluded, and every
+item is labelled \{correct, undercount, truncation, overcount, loop, miscount,
+degenerate, empty\}. Repeated and control items are scored by the same
+question --- how many of the $k$ requested units were rendered --- which is what
+makes their accuracies comparable.
 
 \noindent\textbf{State measurement.}
 For each instrumented generation we record per-step hidden states at probe layers
@@ -226,11 +219,10 @@ the released tables.
 
 \section{Conclusion}
 
-Repetition hallucination in autoregressive TTS admits a structural explanation:
-periodic text makes the decoder's per-repetition update autonomous, and past an
-explicit horizon no Lipschitz readout recovers the count. We proved this in Lean
-and measured its consequence in real decoders. Decoding-rule mitigations address
-a symptom; the quantity to control is $q$.
+Periodic text makes an AR decoder's per-repetition update autonomous, and past an
+explicit horizon no Lipschitz readout recovers the count --- proved in Lean,
+measured in real decoders. Decoding-rule mitigations address a symptom; the
+quantity to control is $q$.
 
 \vfill\pagebreak
 

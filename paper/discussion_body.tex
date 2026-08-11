@@ -17,14 +17,11 @@ convergence by \emph{depth} or an abstract temperature; ours indexes it by
 into a statement about counting and yields a horizon in actionable units.
 Repetition inevitability has also been derived at the level of decoding
 rules~\cite{fu2021theoretical,xu2022learning}; Theorem~\ref{thm:collapse}
-constrains any Lipschitz readout of the state and so is decoding-rule agnostic.
-One competing account deserves note: in text LMs, repeated-token counts remain
-linearly decodable from the residual stream even where the wrong answer forms,
-locating the failure in the output policy rather than the
-representation~\cite{venkatesh2026repeated}. Our probes recover the count only
-coarsely and better from non-repetitive text, so our data favour representational
-degradation --- but the two accounts are not exclusive, and separating them is
-the obvious next experiment.
+constrains any Lipschitz readout and so is decoding-rule agnostic. A competing
+account holds that in text LMs the count survives in the residual stream and only
+the output policy fails~\cite{venkatesh2026repeated}; our probes favour
+representational degradation, but the two are not exclusive and separating them
+is the obvious next experiment.
 
 \noindent\textbf{Implications and limits.}
 Existing mitigations act late: attention supervision, alignment priors,
@@ -32,11 +29,14 @@ contrastive decoding~\cite{wang2025eliminating,xin2024ralle}. Under this account
 they help only insofar as they raise $q$ or enlarge the readout margin, and
 \eqref{eq:horizon} says the levers are not equal --- the horizon is logarithmic
 in the margin but inversely logarithmic in $q$, so moving $q$ from $0.9$ to
-$0.95$ roughly doubles it while doubling the margin adds a constant. The panel is
-English-only; text attention is unavailable in models whose text and acoustic
-embeddings are additively fused (Qwen3-TTS); XTTS-v2 ships a repetition penalty
-of $5.0$ that acts against the behaviour we measure, making it a conservative
-panel member, so we rerun it with the penalty disabled. Finally, we do not
-propagate the residual $O(\delta + 1/k)$ term of Lemma~\ref{lem:dilution} through
-the theorem, so the machine-checked bound applies to the idealised periodic map
-rather than to the measured one.
+$0.95$ roughly doubles it while doubling the margin adds a constant. XTTS-v2 is
+itself a case in point: it ships a repetition penalty of $5.0$ on acoustic
+tokens, and rerunning it with that penalty disabled moves $k^\ast$ from
+\AblRpKStar{} to \AblNoRpKStar{} while the repeated-vs-control gap persists
+(\AblNoRpRep{}\% vs.\ \AblNoRpCtl{}\% at $k\ge6$). The penalty was masking the
+collapse, not causing it, which makes the penalised model the conservative member
+of our panel. Remaining limits: the panel is English-only; text attention is
+unavailable where text and acoustic embeddings are additively fused (Qwen3-TTS);
+and we do not propagate the residual $O(\delta + 1/k)$ term of
+Lemma~\ref{lem:dilution} through the theorem, so the machine-checked bound
+applies to the idealised periodic map rather than the measured one.

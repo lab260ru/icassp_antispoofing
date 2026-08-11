@@ -51,7 +51,7 @@ def fig_main(beh: pd.DataFrame, state: pd.DataFrame, cap: dict, out: Path) -> No
     page is 4 pages and two figure environments cost roughly a third of one.
     """
     models = ordered(beh.model.unique())
-    fig, axes = plt.subplots(1, 4, figsize=(7.0, 1.62))
+    fig, axes = plt.subplots(1, 4, figsize=(7.0, 1.52))
 
     ax = axes[0]
     for m in models:
