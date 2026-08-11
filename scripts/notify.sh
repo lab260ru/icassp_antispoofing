@@ -16,7 +16,10 @@ API="https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}"
 
 if [ "${1:-}" = "--doc" ]; then
   DOC="$2"; shift 2
-  CAPTION="${*:-}"
+  # Telegram rejects sendDocument captions over 1024 chars with a bare HTTP 400
+  # and no explanation, so truncate rather than silently lose the notification.
+  CAPTION="$(printf '%s' "${*:-}" | cut -c1-1000)"
+  [ "${#*}" -gt 1000 ] && CAPTION="${CAPTION}…"
   curl -s -o /dev/null -w "[notify] doc http=%{http_code}\n" \
     -F "chat_id=${TELEGRAM_CHAT_ID}" \
     -F "document=@${DOC}" \
