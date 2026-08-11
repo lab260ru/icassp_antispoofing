@@ -227,12 +227,10 @@ the released tables.
 \section{Conclusion}
 
 Repetition hallucination in autoregressive TTS admits a structural explanation:
-periodic text makes the decoder's per-repetition update autonomous, contraction
-of that update erases the count geometrically, and past an explicit horizon no
-Lipschitz readout can recover it. We proved this in Lean, measured its premise
-in real decoders, and showed the predicted horizon tracks the observed collapse.
-The practical reading is that mitigations acting on the decoding rule address a
-symptom; the quantity to control is $q$.
+periodic text makes the decoder's per-repetition update autonomous, and past an
+explicit horizon no Lipschitz readout recovers the count. We proved this in Lean
+and measured its consequence in real decoders. Decoding-rule mitigations address
+a symptom; the quantity to control is $q$.
 
 \vfill\pagebreak
 

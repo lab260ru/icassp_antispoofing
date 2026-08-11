@@ -136,6 +136,32 @@ def main() -> None:
             macros[f"SatRep{tag}"] = fmt(v["repeated"]["sat"], 0)
             macros[f"SatCtl{tag}"] = fmt(v["control"]["sat"], 0)
 
+    # ---- naturalness control -------------------------------------------
+    nll_path = Path("data/results/text_nll.json")
+    if nll_path.exists():
+        nll = json.loads(nll_path.read_text())
+        if "diff_mean" in nll:
+            macros["NllDiff"] = fmt(nll["diff_mean"], 2)
+            macros["NllCtlHigherPct"] = fmt(100 * nll["frac_ctl_higher"], 0)
+            macros["NllRep"] = fmt(nll["rep_mean"], 1)
+            macros["NllCtl"] = fmt(nll["ctl_mean"], 1)
+            macros["NllPairs"] = str(nll["n_pairs"])
+
+    # ---- probe -----------------------------------------------------------
+    probe_path = Path("data/results/probe.json")
+    if probe_path.exists():
+        pr = json.loads(probe_path.read_text()).get("models", {})
+        rets_r, rets_c = [], []
+        for v in pr.values():
+            for fam, bucket in (("word_rep", rets_r), ("control_word", rets_c)):
+                e = v.get(fam)
+                if e and np.isfinite(e.get("retention", np.nan)):
+                    bucket.append(e["retention"])
+        if rets_r:
+            macros["ProbeRetRep"] = fmt(np.median(rets_r), 2)
+        if rets_c:
+            macros["ProbeRetCtl"] = fmt(np.median(rets_c), 2)
+
     p2 = summ.get("p2", {})
     for k, nd in (("r2", 2), ("spearman", 2), ("beta", 2), ("alpha", 2)):
         if k in p2:

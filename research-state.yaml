@@ -1,60 +1,95 @@
 # Central state for the AR-TTS counting-collapse study.
-# A fresh agent should be able to resume from THIS FILE + findings.md alone.
+# A fresh agent should be able to resume from THIS FILE + findings.md + README.md.
 project: "Counting Collapse in Autoregressive TTS"
-venue: "ICASSP 2026 (4 pages + refs)"
+venue: "ICASSP 2026 (4 pages + 1 page refs)"
 started: "2026-08-11"
 branch: "research/ar-tts-counting-collapse"
-remote: "https://github.com/lab260ru/icassp_antispoofing.git"
+remote: "https://github.com/lab260ru/icassp_antispoofing"
 
 question: >
   Autoregressive TTS models mis-render text containing many repetitions
-  (looping, truncating, or losing count). Is this a *structural* consequence of
-  the decoder's state dynamics under periodic conditioning, rather than a
-  stochastic sampling artifact? If the per-repetition state map contracts, the
-  model provably cannot count past a finite horizon.
+  (looping, truncating, losing count). Is this a structural consequence of the
+  decoder's state dynamics under periodic conditioning rather than a sampling
+  artifact? If the per-repetition state map contracts, the model provably
+  cannot count past a finite horizon.
 
-lineage:
-  prior_paper: "arXiv:2604.08591 — From Dispersion to Attraction (Whisper, spectral regimes)"
-  relation: >
-    Same authors, same conceptual frame (failure = geometry of signal
-    propagation, not noise), moved from encoder-decoder ASR to decoder-only TTS.
-    Novelty over prior work: the central theorem is machine-checked in Lean 4.
+phase: "P3-refinement"   # P0 scaffold, P1 bringup, P2 sweep, P3 refinement, P4 ship
 
-theory:
-  theorem_A: "Counting Collapse — Banach contraction at repetition boundaries => finite counting horizon N*"
-  lemma_B: "Attention Dilution — softmax over k near-identical keys gives weight in [e^-d/k, e^d/k], entropy >= log k - 2d"
-  honesty_note: >
-    Contraction (q<1) is a HYPOTHESIS about the empirical decoder, measured per
-    model as q_hat. It is NOT proved about transformers. The Lean artifact proves
-    the implication, not the premise. Say this explicitly in the paper.
-  fallback_narrative: >
-    If some model shows q_hat >= 1, that is the dispersion/Regime-II analog and
-    the contrapositive of Theorem A carries the story. Any outcome publishes.
+# ---------------------------------------------------------------- what is done
+settled:
+  lean: >
+    COMPLETE and verified. 11 theorems in lean/SpectralTTS, zero sorry, axiom
+    audit shows only propext / Classical.choice / Quot.sound. Gate:
+    scripts/check_lean.sh. Do not re-derive; it is finished.
+  theory: >
+    Theorem A (i)-(iv) counting collapse + Lemma B attention dilution. The Lean
+    artifact proves an IMPLICATION; the contraction premise is empirical. Keep
+    that distinction explicit in all writing -- reviewers rewarded it.
+  benchmark: >
+    180 stimuli, data/stimuli/stimuli.jsonl, regenerable by make_stimuli.py.
+    Regenerating only changes metadata, never text, so existing generations
+    stay valid.
+  behavioural_pipeline: "generate -> vocode (Llasa only) -> Whisper -> score_counts"
 
-predictions:
-  P1: "boundary-state distances d_m decay geometrically; fit q_hat per model/layer"
-  P2: "predicted horizon N*(q_hat) tracks the measured behavioural collapse point k*"
-  P3: "attention mass per repeated occurrence ~ 1/k; text-attention entropy ~ log k"
-  P4: "spectral proxies (N_eff, alpha, Kf) shift between faithful and hallucinated generations"
+# --------------------------------------------------------------- key findings
+findings_headline:
+  dissociation: >
+    Every model fails on repeated text where length-matched distinct-word
+    controls survive. k>=6 accuracy, repeated vs control:
+    llasa1b 0.07/0.30, llasa3b 0.06/0.11, xtts2 0.14/0.59,
+    qwen06b 0.08/0.64, qwen17b 0.29/0.69.
+  collapse_points: "k* = 0, 1, 4, 4, 8 for llasa1b, llasa3b, xtts2, qwen06b, qwen17b"
+  scale_effect: "within Qwen, 0.6B -> 1.7B doubles k* (4 -> 8)"
+  mechanism: >
+    Representational capacity gain dN_eff/dlog k is ~0.5x on repeated text vs
+    control, with disjoint 95% template-bootstrap CIs (llasa1b 22.0 vs 52.7;
+    xtts2 21.6 vs 36.1). Rerunning over all 7 variants now.
+  lemma_b: >
+    Confirmed tightly. Renormalised over the k repeated keys: block entropy =
+    0.98 log k, implied delta <= 0.06 nats, max share never exceeds 1.9/k.
+  negative_result: >
+    The boundary-difference estimator for q is unsound here -- deep-layer
+    attention centroid advances on ~51% of steps, so boundary localisation
+    dominates the measurement. Reported in the paper, code kept in
+    src/common/boundaries.py.
 
 model_panel:
-  - {id: "HKUSTAudio/Llasa-1B",  family: llasa, params: 1B,   instrumented: true,  status: pending}
-  - {id: "HKUSTAudio/Llasa-3B",  family: llasa, params: 3B,   instrumented: true,  status: pending}
-  - {id: "HKUSTAudio/Llasa-8B",  family: llasa, params: 8B,   instrumented: true,  status: pending}
-  - {id: "coqui/XTTS-v2",        family: xtts,  params: 0.4B, instrumented: true,  status: pending}
-  - {id: "Qwen/Qwen3-TTS-12Hz-0.6B-Base", family: qwen, params: 0.6B, instrumented: unknown, status: pending}
-  - {id: "Qwen/Qwen3-TTS-12Hz-1.7B-Base", family: qwen, params: 1.7B, instrumented: unknown, status: pending}
-asr_judge: "openai/whisper-large-v3"
+  - {key: llasa1b, status: complete}
+  - {key: llasa3b, status: complete}
+  - {key: llasa8b, status: generating, note: "~23s/item; use whatever is done"}
+  - {key: xtts2,   status: complete}
+  - {key: qwen06b, status: complete}
+  - {key: qwen17b, status: complete}
+  - {key: xtts2norp, status: generating,
+     note: "ablation, repetition_penalty=1.0, rules out the decoding-time confound"}
+instrumentation_notes:
+  qwen: "hidden states yes, text attention NOT obtainable (text+codec embeddings additively fused)"
+  xtts: "full; note shipped repetition_penalty=5.0 -> conservative panel member"
+  llasa: "full; SDPA for sampling, eager only for the instrumented pass"
 
-phase: "P0-scaffold"
-gates_passed: []
+# ------------------------------------------------------------------- in flight
 active_background_jobs:
-  - "scripts/setup_lean.sh  -> logs/lean_setup.log (elan + mathlib cache)"
-  - "env/setup_envs.sh all  -> logs/env_*.log (base, qwen, coqui, xcodec2)"
-  - "scripts/download_models.sh -> logs/download_models.log"
-  - "literature survey subagent -> literature/survey.md, literature/gaps.md, paper/refs.bib"
+  - "analysis/state_dynamics.py over all 7 variants -> logs/state_all.log"
+  - "analysis/probe_count.py early-vs-late probe -> logs/probe.log"
+  - "src/models/llasa_gen.py --model llasa8b (GPU 2)"
+  - "src/models/xtts_gen.py --model xtts2norp (GPU 2, ablation)"
 
+# --------------------------------------------------------------- what is next
 next_actions:
-  - "write lean/SpectralTTS/SpectralTTS/{CountingCollapse,AttentionDilution}.lean"
-  - "generate data/stimuli/stimuli.jsonl"
-  - "smoke-test each checkpoint, validate hooks"
+  - "when state_all finishes: capacity.py, horizon_fit.py, figures.py, paper/build.sh"
+  - "fold llasa8b + xtts2norp in as they complete (all analyses take whatever exists)"
+  - "trim paper to 4 pages + 1 of refs (currently 6; content must end on p4)"
+  - "second /paper-review round on the revised draft, then revise again"
+  - "final: check_lean.sh, build both PDFs, tag v1.0-submission"
+
+review_round_1:
+  location: "paper/reviews/r1/"
+  addressed: >
+    stale abstract claim, method/results mismatch, table caption, audit-bucket
+    framing, broken citations, internal path in a bib note, outcome taxonomy,
+    LaTeX escape in a caption, code availability, author block.
+  outstanding:
+    - "panel breadth: fixed as models land"
+    - "naturalness/perplexity confound not separately controlled (controls at high k are also unnatural word salad -- state this)"
+    - "acoustic/codec-token repetition attractor as an alternative locus: not ruled out"
+    - "Lemma B and Theorem A not experimentally separated"
