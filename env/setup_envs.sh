@@ -41,6 +41,12 @@ setup_xcodec2() {
   conda env list | grep -q "^xcodec2 " || conda create -y -n xcodec2 python=3.11
   conda activate xcodec2
   pip install -q xcodec2==0.1.5
+  # xcodec2 0.1.5 pins torch 2.5 but leaves transformers/torchao unpinned, and
+  # both have since moved past it:
+  #   transformers 5.x  -> `Could not import module 'PreTrainedModel'`
+  #   torchao >= 0.7    -> `module 'torch' has no attribute 'int1'`
+  # These three pins are what actually make `decode_code` importable.
+  pip install -q "transformers==4.46.3" "tokenizers<0.21" "torchao==0.6.1" soundfile
 }
 
 WHICH="${1:-all}"
