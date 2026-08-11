@@ -51,11 +51,21 @@ Repetition Hallucination in Autoregressive Text-to-Speech}
 self-contained. It reproduces the formal artifact in full, states precisely
 what it does and does not certify, documents the benchmark and measurement
 protocol down to the level a re-implementer needs, reports the negative
-result of Section~4.4 of the main paper in the detail it deserves, and
-answers, with new measurements rather than argument, five alternative
-explanations for the main results raised across two rounds of review
-(Section~\ref{sec:s8}). Every claim below is traceable to a specific file in
-the project repository, cited inline by path.}
+result of Section~4.4 of the main paper in the detail it deserves, answers,
+with new measurements rather than argument, five alternative explanations
+for the main results raised across two rounds of review
+(Section~\ref{sec:s8}), and documents, in Section~\ref{sec:s9}, the audit
+that found the paper's original behavioural judge (Whisper large-v3) to be
+biased against exactly the phenomenon under study, the validation of its
+replacement, and the metric change that followed -- the project's single
+most consequential methodological correction, which post-dates
+Sections~\ref{sec:s1}--\ref{sec:s8} and supersedes every Whisper-judged,
+exact-match number reported in them. Those numbers are not deleted; they are
+flagged inline, at the point each recurs, with a pointer to
+Section~\ref{sec:s9}, because the contrast between what the old instrument
+said and what the new one says is itself part of the evidence. Every claim
+below is traceable to a specific file in the project repository, cited
+inline by path.}
 \end{center}
 
 \tableofcontents
@@ -1016,6 +1026,19 @@ transcript; a target word prone to ASR mis-transcription independent of the
 TTS model's behaviour would contaminate that count with ASR noise rather than
 TTS behaviour.
 
+\noindent\textbf{Superseded by the audit (Section~\ref{sec:s9-audit}).} This
+selection criterion assumed the risk was \emph{lexical} -- that choosing
+short, common, phonetically unambiguous target words could engineer around
+Whisper's language-model prior item by item. The concatenative audit built
+from exactly these six words (\emph{very, no, far, blue, quick, really})
+shows that assumption does not hold: on audio with exact ground truth,
+Whisper undercounts these same targets at a mean counted/true ratio of
+$0.27$--$0.65$ for $k\ge4$, while a CTC recogniser scores the identical audio
+at ratio $1.00$ throughout (Table~\ref{tab:asraudit-b}). The risk was never
+which word was chosen; it is that the judge's own decoder is autoregressive,
+which no choice of target word can fix. Every behavioural number in this
+document that is judged by Whisper should be read against that fact.
+
 \subsection{Number phrases}
 
 Table~\ref{tab:numbers} reproduces all ten number-phrase stimuli
@@ -1182,6 +1205,37 @@ written by \texttt{make\_stimuli.py} at generation time and the
 % ============================================================
 \section{Measurement protocol in full}
 \label{sec:s4}
+
+\noindent\textbf{Superseded as the paper's headline instrument
+(Section~\ref{sec:s9}).} Everything in this section documents the
+measurement pipeline as it stood through Sections~\ref{sec:s1}--\ref{sec:s8}:
+Count A is Whisper large-v3, and correctness is decided by exact match
+against the requested count. A dedicated audit, described in full in
+Section~\ref{sec:s9-audit}, later established that Whisper's decoder is
+itself autoregressive with a language-model prior and systematically
+undercounts genuinely correct periodic speech -- by construction the worst
+possible property for an instrument scoring a study of
+repetition-suppression dynamics. The main paper's headline behavioural
+metric is accordingly not what this section describes: it is a CTC
+recogniser with no decoder and no language model, scored by \emph{relative
+count error} rather than exact match (Section~\ref{sec:s9-metric}). This
+section nonetheless remains the accurate reference for everything in it that
+does not depend on which recogniser produced the transcript: Count B's
+duration-fitting procedure, the outcome taxonomy's logic (all eight labels
+below apply verbatim under either judge, since \texttt{classify} consumes a
+generic count and never inspects which recogniser produced it), the
+audio-level degeneracy detectors, and the template bootstrap are unchanged in
+their machinery by the judge swap -- though Count B's fitted constants are
+recomputed separately per judge, since the fit is calibrated on whichever
+judge's low-$k$ points are being scored (exactly where the audit finds both
+recognisers reliable, so the two fits agree closely in practice). What does
+not survive unchanged is any specific number computed from Count A as
+Whisper, or any \texttt{correct} label built by exact match against it; both
+recur through Section~\ref{sec:s8} and are flagged individually where they
+do. \texttt{score\_counts.py}'s \texttt{--judge \{whisper,ctc\}} flag
+switches only the transcript source, reusing this section's audio-level
+degeneracy flags across both judges rather than recomputing them
+(Section~\ref{sec:s9-metric}).
 
 \subsection{The conjunctive correctness criterion}
 
@@ -1835,7 +1889,9 @@ silently pulls a default CUDA-12 wheel and the driver/toolkit combo breaks.''
 \item \textbf{Whisper de-duplicates repeated speech}, so a transcript-only
   repetition count systematically understates loops; this is the direct
   motivation for the conjunctive correctness criterion of
-  Section~\ref{sec:s4}.
+  Section~\ref{sec:s4}. Section~\ref{sec:s9-audit} quantifies this bias
+  directly against ground truth, which is why the paper's headline judge is
+  no longer Whisper (Section~\ref{sec:s9}).
 \end{itemize}
 
 \subsection{Exact commands}
@@ -2141,6 +2197,23 @@ five models for the word side of the comparison, not six, a distinction the
 committed JSON's flat \texttt{mean\_tok\_ratio} field does not surface on its
 own.
 
+\noindent\textbf{Superseded instrument (Section~\ref{sec:s9}).} Both
+$k^\ast$ and the per-$k$ accuracy this subsection thresholds (``largest $k$
+with accuracy $>0.5$'' against \texttt{data/results/behavioural.csv}) are
+computed from the Whisper-judged, exact-match pipeline of
+Section~\ref{sec:s4}, which Section~\ref{sec:s9-audit} shows is biased
+specifically against the periodic material this comparison is built from.
+The repetitions-vs-tokens conclusion above does not depend on the exact
+resolution used to locate the collapse point -- the
+$|k^\ast_{\mathrm{word}}-k^\ast_{\mathrm{sent}}|$ argument only needs a
+threshold applied \emph{consistently} to both families, which it is, and an
+undercounting bias that hits both families' transcripts in the same
+direction does not selectively favour either side of the comparison -- but
+the absolute $k^\ast$ values in Table~\ref{tab:unitinv} should not be read
+as calibrated against the paper's current CTC-judged relative-count-error
+metric, which has no single-threshold crossing point by construction
+(Section~\ref{sec:s9-metric}).
+
 \subsection{Capacity confound: is effective-rank decline tautological?}
 \label{sec:s8-capacity}
 
@@ -2247,6 +2320,22 @@ raw, six-checkpoint 0.50; and the correct-only control has two
 unstable or empty per-model cells at the extremes of the panel's capability
 range, so it should be read as directionally corroborating the raw result
 rather than as an independently decisive test in its own right.
+
+\noindent\textbf{Superseded correctness label (Section~\ref{sec:s9}).} The
+\emph{correct-only} variant restricts to items whose \texttt{outcome} equals
+\texttt{correct} under the Whisper-judged, exact-match criterion of
+Section~\ref{sec:s4} -- exactly the label Section~\ref{sec:s9-audit} shows is
+biased toward \emph{under}-crediting genuinely correct repeated renderings at
+moderate-to-high $k$. That bias only ever moves an item out of the repeated
+side's \texttt{correct} pool (a genuinely correct rendering that Whisper
+undercounts is relabelled \texttt{undercount}, never manufactured as
+\texttt{correct} by a transcript that happens to agree by coincidence with a
+wrong recording), so the correct-only cells reported here are, if anything,
+an under-powered rather than an inflated sample of repeated-side successes --
+the same asymmetry the gap-plausibility bound of Section~\ref{sec:s9-audit}
+uses to bound the Whisper-judged accuracy gap. The raw and
+diversity-adjusted variants of this test do not use the \texttt{correct}
+label at all and are unaffected.
 
 \subsection{The competing account: does the count survive in the representation?}
 \label{sec:s8-probe}
@@ -2446,6 +2535,29 @@ directly on the unablated panel -- but it means the ablation corroborates the
 behavioural dissociation more strongly than it corroborates the capacity
 measurement, and the two should not be conflated.
 
+\noindent\textbf{Superseded numbers, and a withdrawn reading
+(Section~\ref{sec:s9}).} The $k^\ast$ and accuracy figures above, and the
+reading built on them -- that disabling the penalty makes the dissociation
+``persist, indeed strengthen'' -- are Whisper-judged and exact-match, both
+superseded by Section~\ref{sec:s9}. Rerun under the CTC judge with the
+relative-count-error metric (\texttt{data/results/count\_error.json},
+Section~\ref{sec:s9-metric}), the picture is different: \texttt{xtts2}
+(penalty on) renders repeated material at a median relative count error of
+$-15.6\%$ against an exact $0.0\%$ control at $k\ge6$, matching the
+qualitative story above, but \texttt{xtts2norp} (penalty off) degrades on
+\emph{both} arms -- $-58.3\%$ repeated, $-66.7\%$ control -- close enough in
+absolute terms that the ablation no longer isolates periodicity from a
+general breakdown of the model's decoding once its one built-in
+anti-repetition mechanism is removed. The specific reading that the penalty
+selectively masks the collapse, rather than merely holding the whole model
+together, is accordingly withdrawn, matching the project's own running notes
+(\texttt{findings.md}). The subsection's structural conclusion is otherwise
+unaffected: the ablation remains uninformative about the dissociation rather
+than confirming it, and XTTS-v2 with the penalty on remains the panel's
+conservative member, since the penalty acts against the behaviour under
+study -- that conclusion just no longer rests on the Whisper-judged
+``strengthens'' comparison given above.
+
 \subsection{Statistical treatment}
 \label{sec:s8-stats}
 
@@ -2525,6 +2637,410 @@ Sections~\ref{sec:s8-capacity} and~\ref{sec:s8-probe} is treated as one
 family; this document supplies the counts rather than picking a family on the
 reader's behalf, because the right grouping depends on which claim in the
 main paper the reader is trying to stress-test.
+
+% ============================================================
+\section{The judge is part of the experiment}
+\label{sec:s9}
+
+This section documents the project's single most consequential
+methodological correction, made after Sections~\ref{sec:s1}--\ref{sec:s8}
+were written: the behavioural judge that produced every Whisper-scored,
+exact-match number in this document was itself found to be biased against
+exactly the phenomenon the paper studies, and was replaced. We give the
+audit that found the bias, the validation of its replacement, the metric
+change the replacement made possible, an independent ASR-free attempt that
+did not replicate the result (and why that failure is informative rather
+than damning), and the implication for measurement practice beyond this
+paper. Sections~\ref{sec:s1}--\ref{sec:s8} are not rewritten; the numbers in
+them are marked at each point they recur, because the contrast between what
+the old instrument said and what the new one says is itself part of the
+evidence this section presents.
+
+\subsection{The audit that disqualified Whisper}
+\label{sec:s9-audit}
+
+\textbf{Why an autoregressive recogniser is the wrong instrument, in
+principle, before any measurement is even taken.} Every behavioural number
+reported through Section~\ref{sec:s8} is built on Count A: occurrences of the
+target word in a Whisper large-v3 transcript (Section~\ref{sec:s4}).
+Whisper's decoder is itself an autoregressive sequence model with a learned
+language-model prior over plausible continuations, generating each
+transcript token conditioned on its own previously decoded tokens.
+Confronted with audio that genuinely repeats a phrase many times, that prior
+does what a language model's prior does to any low-marginal-probability
+continuation: it discounts it. A decoder transcribing ``the dog was very big
+\ldots{}'' eight times in a row has, by the third or fourth repetition,
+strong internal evidence -- from its own prior over what sentences look like
+-- that the correct continuation is \emph{not} an implausible ninth verbatim
+repeat, and it is prone to closing the sentence and stopping. That is the
+same architectural pattern Theorem~A (main paper, Section~2) describes for a
+TTS \emph{decoder} under periodic conditioning, applied here to a different
+modality by the instrument doing the scoring. Using such a recogniser to
+grade a TTS decoder's repetition count is accordingly not a noisy
+measurement, in the way an imperfect segmentation or a slightly-too-permissive
+threshold would be; it is a category error, because the instrument is
+subject to the very failure mode it is being asked to certify the presence
+or absence of in something else. No amount of decoding-parameter tuning
+fixes this, since the flaw is architectural, not a setting -- which is
+exactly what the decoding-consistency test below was designed to check.
+
+\texttt{analysis/asr\_reliability.py}
+(\texttt{data/results/asr\_reliability.json}) turns this into three
+measurements that do not require ground-truth transcripts of the real
+generations, none of which existed at project scale.
+
+\textbf{(a) Decoding-consistency.} If Whisper is asked to transcribe the same
+audio twice -- once with the production greedy configuration
+(\texttt{condition\_on\_prev\_tokens=False}, the setting used to build every
+number in Section~\ref{sec:s4}), once with beam search
+(\texttt{num\_beams=5}, otherwise unchanged) -- a recogniser measuring the
+audio rather than its own decoding path should agree with itself almost
+always. On a stratified $114$-item subsample spanning \texttt{word\_rep} and
+\texttt{control\_word} items across four checkpoints from all three panel
+architectures, it does not agree evenly. On \texttt{control\_word} items
+(distinct fillers, no repetition) the two decoding strategies produce the
+same occurrence count $96.3\%$ of the time ($n{=}54$, mean absolute count
+difference $0.91$); on \texttt{word\_rep} items (the repeated material) they
+agree only $83.3\%$ of the time ($n{=}60$), with a mean absolute
+disagreement of $33.8$ occurrences -- tens of repetitions apart, on average,
+between two transcriptions of the identical audio. By $k{=}24$ the two
+decoding strategies agree on only $17\%$ of repeated items, against $100\%$
+agreement on the matched controls at the same $k$. Whatever Count A measures
+on repeated material at moderate-to-high $k$, it is measuring Whisper's own
+decoding path at least as much as it is measuring the TTS output.
+
+\textbf{(b) Bias direction on synthetic ground truth.} Decoding-consistency
+shows Whisper is unreliable on repeated material; it does not by itself show
+which direction the bias runs, since two decoding strategies could disagree
+without either being systematically low. To settle direction and magnitude
+against real ground truth, six single, individually verified $k{=}1$
+renderings (one per carrier template, all from the same \texttt{xtts2} voice,
+each independently confirmed to contain the target word exactly once with
+duration matching a single occurrence) were concatenated $k\in\{2,4,8,16,32\}$
+times with a short ($0.25\,$s) silence between copies. Because the sequence
+is built by concatenation of a verified atom, the true occurrence count is
+exact by construction -- there is no annotation step to get wrong.
+Table~\ref{tab:asraudit-b} gives the mean counted/true ratio at every $k$,
+alongside the identical construction run with $k$ \emph{distinct} words from
+the same voice and carrier family instead of one word repeated (three cyclic
+rotations per $k$, same silence structure), which isolates whether the
+undercount is specific to periodicity or a generic artefact of long
+concatenated audio.
+
+\begin{table}[h]
+\centering
+\caption{Whisper large-v3, mean counted/true ratio on synthetic ground truth
+(\texttt{data/results/asr\_reliability.json}, \texttt{synthetic\_ground\_truth}
+and \texttt{synthetic\_ground\_truth\_control}). $n{=}6$ per cell for the
+repeated-word condition, $n{=}3$ rotations per cell for the distinct-word
+control.}
+\label{tab:asraudit-b}
+\small
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Condition & $k{=}2$ & $k{=}4$ & $k{=}8$ & $k{=}16$ & $k{=}32$ \\
+\midrule
+Repeated word & 0.92 & 0.50 & 0.27 & 0.65 & 0.53 \\
+Distinct words (control) & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The distinct-word control transcribes exactly, at every $k$ up to $32$:
+Whisper has no trouble with long concatenated audio \emph{per se}. The
+repeated-word condition falls to a ratio of $0.27$--$0.65$ for $k\ge4$,
+non-monotonically (the dip at $k{=}8$ and partial recovery at $k{=}16$ track
+\emph{how} Whisper collapses -- typically emitting one or two copies of the
+sentence rather than a count that degrades smoothly with length -- not a
+smooth function of duration). The gap between the two rows is the direct
+measurement decoding-consistency could only imply: an undercount specific to
+identical repeated material, of exactly the sign that would inflate the
+paper's repeated-vs-control accuracy gap.
+
+\textbf{Gap-plausibility bound.} Two independent bounds ask how much of the
+paper's headline Whisper-judged gap this bias could account for, without
+trusting either the real behavioural data or the synthetic trials alone. The
+\emph{behavioural-CSV bound} credits every repeated item Whisper's
+exact-match criterion labelled \texttt{undercount} -- the one outcome bucket
+structurally reachable by an undercounting bias -- back to \texttt{correct},
+which is deliberately generous to the confound (some of those items are
+certainly genuine TTS failures, not ASR artefacts, so this is an upper bound,
+not a point estimate). At $k\ge6$ the measured Whisper-judged accuracy is
+$12.3\%$ repeated ($n{=}612$) against $42.8\%$ control ($n{=}612$), a
+$\approx3.5\times$ gap; crediting every undercount back raises repeated to
+at most $36.3\%$, still $\approx1.2\times$ below the control rate. The bias
+can inflate the reported gap; it cannot manufacture it. The independent
+\emph{instrument-ceiling bound} uses only the synthetic trials: the fraction
+of ground-truth-known periodic sequences at $k\ge4$ where Whisper's
+transcript count exactly equalled the true count -- the best ``correct''
+rate the exact-match criterion could \emph{ever} award to a model that
+always renders a perfect $k$-repetition -- is $12.5\%$ overall ($n{=}24$
+trials: $33.3\%$ at $k{=}4$, $16.7\%$ at $k{=}8$, $0\%$ at $k{=}16$ and at
+$k{=}32$). The exact-match criterion throws away real successes at these
+$k$, a genuine measurement-validity problem that neither reverses the
+paper's effect nor is fully responsible for its size.
+
+\textbf{Conclusion.} The audit converges from three independent angles --
+self-inconsistency under a changed decoding strategy, systematic undercount
+on ground truth with an exact known answer, and a matched control showing
+the undercount is periodicity-specific rather than a length artefact -- on
+the same verdict: Whisper large-v3 cannot be trusted to count repeated
+speech, precisely because it is repeated, and precisely because Whisper's
+decoder is the same kind of machine as the one under study.
+
+\subsection{Validating the replacement}
+\label{sec:s9-ctc}
+
+Disqualifying one instrument does not license trusting the next one on
+faith; adopting a replacement without putting it through the identical test
+would repeat the very error just documented.
+\texttt{analysis/ctc\_validation.py} therefore reruns the audit's
+construction -- a verified $k{=}1$ rendering concatenated $N$ times with a
+short silence, exact ground truth by construction, no splicing inside a word
+-- on \emph{both} recognisers side by side, on identical audio, at
+$k\in\{2,4,8,16,32\}$, for the same six word templates plus a matched set of
+six distinct-word controls built the same way.
+
+The replacement is \texttt{facebook/wav2vec2-large-960h-lv60-self}: a
+connectionist temporal classification (CTC) recogniser. It has no
+autoregressive decoder and no internal language model. It emits a per-frame
+distribution over characters and collapses repeated frames and blank symbols
+into a final transcript; the number of times a word appears in the output is
+governed by how many times the acoustic pattern for that word actually
+appears in the input, not by what a decoder expects to come next, because
+there is no next-token expectation to have. \texttt{src/common/asr\_ctc.py}
+chunks long audio into $25\,$s windows with a $0.25\,$s overlap before
+transcribing (repetition items run up to $40\,$s and the model's conv+attention
+stack is more stable processed in pieces; the overlap exists so a word
+straddling a chunk boundary is not cut in half), then joins the per-chunk
+transcripts with spaces -- a purely local, non-autoregressive operation with
+no scope for the kind of global self-suppression Whisper exhibits in
+Section~\ref{sec:s9-audit}. It is a substantially worse recogniser in
+absolute terms: higher word error rate, no punctuation, no casing,
+upper-case-only output. That is the right trade for this purpose, because
+its errors are not correlated with repetition.
+
+\begin{table}[h]
+\centering
+\caption{Head-to-head validation on identical synthetic ground truth
+(\texttt{data/results/ctc\_validation.json}). Median counted/true ratio,
+$k\ge4$ pooled (\texttt{\_kge4} in the committed summary).}
+\label{tab:ctcval}
+\small
+\begin{tabular}{@{}llrl@{}}
+\toprule
+Recogniser & Material & $k\ge4$ ratio & Notes \\
+\midrule
+CTC & periodic (repeated word) & 1.00 & exact at every $k$ up to 32 \\
+CTC & distinct words & 1.00 & exact at every $k$ up to 32 \\
+Whisper large-v3 & periodic (repeated word) & 0.19 & no transcript at $k{=}16,32$ \\
+Whisper large-v3 & distinct words & 0.25 & no transcript at $k{=}16,32$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The CTC recogniser counts at ratio $1.00$ at every $k$ from $2$ to $32$, on
+both periodic and distinct-word material -- no bias, in either direction, at
+any point on the ladder tested. Whisper reproduces the same undercount
+pattern this validation exists to check for ($0.25$ at $k{=}4$, $0.125$ at
+$k{=}8$ on both conditions), and surfaces something the shorter sequences of
+the earlier audit did not: every one of its transcription calls at $k{=}16$
+and $k{=}32$ -- both conditions, all twelve word templates -- raised a
+\texttt{ValueError} and returned no transcript at all, on audio between
+roughly $40$ and $100$ seconds long. The $k\ge4$ ratios in
+Table~\ref{tab:ctcval} for Whisper are therefore computed from only the
+$k{=}4$ and $k{=}8$ trials that returned anything; the true failure mode at
+$k\ge16$ is not ``low ratio,'' it is \emph{no measurement}, an operational
+fragility layered on top of the counting bias itself.
+
+This is the same test that disqualified Whisper, applied without exception
+to its replacement. The asymmetry in the result -- one recogniser exact
+throughout, the other biased and, at the top of the ladder, unable to
+produce output at all -- is the paper's warrant for treating the CTC judge as
+right for this purpose, not merely as a different choice made for
+convenience.
+
+\subsection{The metric: from exact match to relative count error}
+\label{sec:s9-metric}
+
+Adopting the CTC judge changes what Count A measures; it also exposes a
+second problem that a better recogniser alone does not fix. Sections~\ref{sec:s4}
+and~\ref{sec:s8} score correctness by exact match: an item is
+\texttt{correct} only if the transcript count equals the requested $k$
+precisely. Exact match is the wrong resolution for this measurement
+regardless of which recogniser supplies the count. A model that renders
+$30$ of $32$ requested repetitions and one that renders $3$ of $32$ are
+doing categorically different things -- one is a near-miss, the other a
+near-total failure -- but exact match scores both identically \texttt{wrong},
+discarding exactly the information the paper's ladder design ($k$ up to $32$,
+dense at low $k$) was built to resolve. Worse, exact match is not even
+robust on its own terms: a recogniser slip of $\pm1$ -- one missed or
+duplicated word, well within ordinary ASR noise even for a good recogniser --
+flips the label from \texttt{correct} to \texttt{undercount} or
+\texttt{overcount}, so the binary label carries less signal than the
+continuous count it is thresholded from.
+
+\texttt{analysis/count\_error.py} replaces exact-match correctness with the
+\emph{relative count error}, $(\hat c - k)/k$, where $\hat c$ is the CTC
+occurrence count. This is signed, so premature stopping (undercount, negative
+error) is distinguishable from looping (overcount, positive error) rather
+than both being folded into a single \texttt{wrong} bucket; it is scale-free,
+so a deficit of one repetition reads as a small error at $k{=}32$ and a large
+one at $k{=}4$, matching how noticeable the failure actually is rather than
+counting absolute misses; and it degrades gracefully under residual
+recogniser noise, since a $\pm1$ slip moves the statistic by $1/k$ rather
+than flipping a label outright. Degenerate audio (silence, spectral flatness
+above threshold) is excluded and reported as its own rate rather than folded
+in as an extreme negative error, the same discipline Section~\ref{sec:s4}'s
+outcome taxonomy already applies. The judge switch itself is a single flag,
+\texttt{--judge \{whisper,ctc\}}, in \texttt{src/common/score\_counts.py}:
+audio-level degeneracy flags (RMS, spectral flatness, trailing silence, loop
+autocorrelation) are computed once from the audio during the Whisper pass and
+are judge-independent properties of the waveform, so they are borrowed
+unchanged when scoring under the CTC judge rather than recomputed -- the
+only thing that changes between \texttt{behavioural.csv} and
+\texttt{behavioural\_ctc.csv} is which transcript supplies Count A.
+
+\begin{table}[h]
+\centering
+\caption{CTC-judge relative count error, median $[95\%$ bootstrap CI$]$ at
+$k\ge6$ (\texttt{data/results/count\_error.json}). ``Sep.'' marks a model
+whose repeated-item interval is disjoint from its own control's.}
+\label{tab:counterror}
+\footnotesize
+\begin{tabular}{@{}p{2.9cm}p{3.6cm}p{3.0cm}c@{}}
+\toprule
+Model & Repeated (\%) & Control (\%) & Sep.\ \\
+\midrule
+Llasa-1B & $-16.1\ [-31.3,-12.5]$, $n{=}94$ & $0.0\ [0.0,0.0]$, $n{=}104$ & yes \\
+Llasa-3B & $-12.5\ [-25.0,-6.3]$, $n{=}101$ & $0.0\ [0.0,0.0]$, $n{=}105$ & yes \\
+Llasa-8B & $-16.7\ [-25.0,-12.5]$, $n{=}103$ & $0.0\ [0.0,0.0]$, $n{=}106$ & yes \\
+Qwen3-TTS-0.6B & $-8.3\ [-12.5,-3.6]$, $n{=}108$ & $0.0\ [0.0,0.0]$, $n{=}108$ & yes \\
+Qwen3-TTS-1.7B & $0.0\ [0.0,0.0]$, $n{=}108$ & $0.0\ [0.0,0.0]$, $n{=}108$ & no \\
+XTTS-v2 & $-15.6\ [-16.7,-12.5]$, $n{=}108$ & $0.0\ [0.0,0.0]$, $n{=}108$ & yes \\
+\midrule
+Panel (pooled) & $-8.3\ [-12.5,-8.3]$, $n{=}622$ & $0.0\ [0.0,0.0]$, $n{=}639$ & 5/6 \\
+XTTS-v2, no penalty (abl.) & $-58.3\ [-83.3,-31.3]$, $n{=}107$ & $-66.7\ [-75.0,-60.4]$, $n{=}108$ & no \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Five of six panel checkpoints show a repeated-item error interval disjoint
+from their own control's, which sits at exactly $0.0\%$ for every model at
+every $k$ up to $32$ -- the matched-control result of the main paper's
+Section~4.2 reproduced under the new judge with the new metric. Qwen3-TTS-1.7B
+is the exception, at $0.0\%$ on both arms: not a null result but a second
+regime, as the main paper's Discussion frames it -- a checkpoint for which
+Theorem~A's contraction premise may simply not hold, which the theorem
+itself is silent about rather than refuted by. At $k{=}8$ specifically, the
+five affected checkpoints' median relative error ranges from $-12.5\%$ to
+$-18.8\%$ (\texttt{rep\_by\_k} in the committed JSON), i.e.\ a deficit of
+roughly one to one-and-a-half repetitions out of eight -- the figure
+Section~\ref{sec:s9-duration} uses to explain why a duration-only criterion
+cannot see this effect. The ablation row, \texttt{xtts2norp}, is excluded
+from every pooled panel statistic for the reason given throughout this
+document (Section~\ref{sec:s6}, Section~\ref{sec:s8-ablation}) and is
+discussed on its own terms where it recurs in Section~\ref{sec:s8-ablation}.
+
+\subsection{An ASR-free attempt, and why it does not replicate}
+\label{sec:s9-duration}
+
+A recogniser-based metric, however validated, is still a transcript-based
+metric, and the natural next question is whether the dissociation survives
+when the transcript is removed from the criterion entirely.
+\texttt{analysis/duration\_only.py} asks exactly this: an item is
+\texttt{duration-ok} when its duration ratio falls in $[0.70, 1.45]$ (the
+same acceptance band \texttt{score\_counts.py} uses, $\pm30\%/45\%$ around
+the calibrated expected duration for that $k$) and it is not flagged
+degenerate by the audio-level detectors -- neither of which consults any
+transcript. This is deliberately a \emph{weaker} criterion than the
+conjunctive one: a model that babbles for approximately the right length
+without saying anything coherent passes it. That weakness is the point --
+duration cannot be inflated by an ASR bias it never looks at, so if the
+repeated-vs-control gap survived here, it could not be attributed to the
+judge at all.
+
+\begin{table}[h]
+\centering
+\caption{Fraction \texttt{duration-ok} at $k\ge6$, Wilson $95\%$ CI
+(\texttt{data/results/duration\_only.json}).}
+\label{tab:duronly}
+\small
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Model & Repeated (\%) & Control (\%) \\
+\midrule
+Llasa-1B & $41.7\ [32.8,51.1]$ & $40.7\ [31.9,50.2]$ \\
+Llasa-3B & $39.8\ [31.1,49.2]$ & $21.3\ [14.6,29.9]$ \\
+Llasa-8B & $36.1\ [26.0,47.6]$ & $22.2\ [14.2,33.1]$ \\
+Qwen3-TTS-0.6B & $80.6\ [72.1,86.9]$ & $69.4\ [60.2,77.3]$ \\
+Qwen3-TTS-1.7B & $89.8\ [82.7,94.2]$ & $74.1\ [65.1,81.4]$ \\
+XTTS-v2 & $69.4\ [60.2,77.3]$ & $72.2\ [63.1,79.8]$ \\
+\midrule
+Pooled panel & $60.9\ [57.0,64.7]$, $n{=}612$ & $51.6\ [47.7,55.6]$, $n{=}612$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+It does not replicate. Pooled, repeated items pass the duration criterion
+\emph{more} often than controls ($60.9\%$ vs.\ $51.6\%$, the wrong direction
+for the paper's claim), the two intervals are not disjoint, and only one of
+six checkpoints (XTTS-v2, $69.4\%$ vs.\ $72.2\%$, itself not a resolved
+difference) shows the gap pointing the expected way. We report this plainly
+as a negative result and explain, rather than explain away, why: the
+duration band is far too coarse to resolve the failure this paper measures.
+At \texttt{DUR\_LO}$=0.70$, \texttt{DUR\_HI}$=1.45$, the acceptance window at
+$k{=}8$ spans approximately $5.6$ to $11.6$ repetitions' worth of expected
+duration -- roughly $2.4$ fewer or $3.6$ more repetitions than the true
+count, built deliberately wide to absorb ordinary speech-rate variation
+(Section~\ref{sec:s4}). The CTC-judged deficit this paper reports at
+$k{=}8$ specifically is a median relative error of $-12.5\%$ to $-18.8\%$
+across the panel's five affected checkpoints (Section~\ref{sec:s9-metric}),
+i.e.\ roughly a one-to-one-and-a-half-repetition miscount -- comfortably
+inside a band with two to three-and-a-half repetitions of slack in either
+direction. A model that drops one or two repetitions out of eight sounds, in
+total duration, indistinguishable from one that renders all eight at a
+slightly different pace; duration was never going to see an effect this
+small at this magnitude, independent of anything about the judge. We
+therefore report \texttt{duration\_only.py} as a \emph{bound}, not a
+replication: it establishes that a purely acoustic, transcript-free signal
+lacks the resolution to confirm \emph{or} refute the dissociation at the
+scale of miscount involved, which is precisely why a recogniser that can
+count -- validated, in Section~\ref{sec:s9-ctc}, to do so exactly -- is
+necessary in the first place, rather than a convenience.
+
+\subsection{Beyond this paper}
+\label{sec:s9-beyond}
+
+The mechanism behind Section~\ref{sec:s9-audit}'s finding is not particular
+to this project's stimuli: an autoregressive recogniser with a
+language-model prior is, structurally, a poor instrument for counting
+repeated speech, because it is subject to a version of the same
+repetition-suppression dynamics whenever the material it is asked to
+transcribe is itself periodic. That instrument choice is not idiosyncratic
+to this project, either. Whisper is, at the time of writing, one of the most
+widely used off-the-shelf recognisers for evaluating text-to-speech output
+in general, including in work on the AR-TTS stability and hallucination
+failures this paper's own introduction cites as
+motivation~\cite{wang2025eliminating,song2024ellav,xin2024ralle,du2024cosyvoice2}:
+transcribe-then-score against a reference is standard practice for measuring
+word error rate, and wherever an evaluation extends that same pipeline to
+counting or flagging repetition-type failures specifically, it inherits the
+risk this section quantifies. We have not audited any other paper's
+evaluation code or re-run its pipeline, and we make no claim that a specific
+published repetition or looping number is wrong -- only Whisper large-v3, on
+our stimuli, under our decoding configuration, is measured here. What
+generalises is the mechanism, not a verdict on any other result: any
+repetition or looping metric built by transcribing with an autoregressive,
+language-model-equipped recogniser and thresholding or exact-matching the
+transcript is exposed, in principle, to the bias Section~\ref{sec:s9-audit}
+measures, in proportion to how periodic the scored material actually is.
+The appropriate response is not to distrust every such number on priors, but
+to check it directly -- the concatenative, exact-ground-truth construction
+used throughout this section needs no new data collection, only one
+verified rendering and a splice, and is cheap enough to run as a standard
+validity check before treating any transcript-based repetition count as
+neutral with respect to the phenomenon it is being used to measure.
 
 \bibliographystyle{IEEEtran}
 \bibliography{../refs}

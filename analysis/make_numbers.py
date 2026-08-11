@@ -70,7 +70,9 @@ def prop_macros(macros: dict, name: str, sub, col: str = "correct") -> None:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--behavioural", default="data/results/behavioural.csv")
+    ap.add_argument("--behavioural", default="data/results/behavioural_ctc.csv",
+                    help="CTC-judged by default; the Whisper table exists only for "
+                         "the instrument audit and must not feed the paper")
     ap.add_argument("--state", default="data/results/state.csv")
     ap.add_argument("--summary", default="data/results/summary.json")
     ap.add_argument("--stimuli", default="data/stimuli/stimuli.jsonl")
@@ -113,27 +115,10 @@ def main() -> None:
             continue
         macros[f"kStar{tag}"] = fmt(e.get("k_star"), 0)
 
-    # ---- panel-level aggregates ----------------------------------------
-    if summ.get("models"):
-        qr = [e.get("q_rep", {}).get("q") for e in summ["models"].values()]
-        qc = [e.get("q_ctl", {}).get("q") for e in summ["models"].values()]
-        qr = [v for v in qr if v is not None and np.isfinite(v)]
-        qc = [v for v in qc if v is not None and np.isfinite(v)]
-        if qr:
-            macros["qRepMin"], macros["qRepMax"] = fmt(min(qr), 3), fmt(max(qr), 3)
-            macros["NContracting"] = str(sum(1 for v in qr if v < 1.0))
-            macros["NContractingWord"] = WORDS.get(sum(1 for v in qr if v < 1.0),
-                                                   str(sum(1 for v in qr if v < 1.0)))
-        if qr and qc:
-            macros["NqRepBelowCtl"] = str(sum(
-                1 for e in summ["models"].values()
-                if np.isfinite(e.get("q_rep", {}).get("q", np.nan))
-                and np.isfinite(e.get("q_ctl", {}).get("q", np.nan))
-                and e["q_rep"]["q"] < e["q_ctl"]["q"]))
-        ks = [e.get("k_star") for e in summ["models"].values()]
-        ks = [v for v in ks if v is not None and np.isfinite(v)]
-        if ks:
-            macros["kStarMin"], macros["kStarMax"] = fmt(min(ks), 0), fmt(max(ks), 0)
+    # Panel-level q_hat aggregates and the P2 regression macros were removed:
+    # both estimators were abandoned (see results, 'Two things we could not
+    # establish'). Leaving them defined invites quoting a number the paper no
+    # longer stands behind. Preserved in git history and analysis/pooled_q.py.
 
     # ---- capacity confound check -----------------------------------------
     cc_path = Path("data/results/capacity_confound.json")
@@ -307,14 +292,6 @@ def main() -> None:
                                  if n_below == len(pr) and pr
                                  else f"{n_below} of {len(pr)}")
 
-    # LaTeX macro names may not contain digits, so "r2" must be spelled out.
-    p2 = summ.get("p2", {})
-    for k, name, nd in (("r2", "RTwo", 2), ("spearman", "Spearman", 2),
-                        ("beta", "Beta", 2), ("alpha", "Alpha", 2)):
-        if k in p2:
-            macros["PTwo" + name] = fmt(p2[k], nd)
-    if "n" in p2:
-        macros["PTwoN"] = str(p2["n"])
 
     # ---- the dissociation, pooled over the PANEL (ablations excluded) -----
     if len(beh):
