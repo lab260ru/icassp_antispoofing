@@ -222,7 +222,9 @@ def main() -> None:
     # ---- probe -----------------------------------------------------------
     probe_path = Path("data/results/probe.json")
     if probe_path.exists():
-        pr = json.loads(probe_path.read_text()).get("models", {})
+        pr = {k: v for k, v in
+              json.loads(probe_path.read_text()).get("models", {}).items()
+              if k not in ABLATIONS}
         rets_r, rets_c, late_r, n_below = [], [], [], 0
         for v in pr.values():
             r, c = v.get("word_rep"), v.get("control_word")

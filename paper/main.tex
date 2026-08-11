@@ -29,20 +29,19 @@
 Autoregressive text-to-speech models loop, truncate, and lose count on text that
 repeats a phrase many times. We show this is not a sampling accident but a
 structural limit. Modelling one repetition as a state map $F$ on the decoder's
-hidden state, we prove that if $F$ contracts with factor $q<1$, then boundary
-states converge geometrically and \emph{no} Lipschitz readout---including the
-model's own stop head---can separate repetition counts beyond a horizon
-$N^\ast \le \log(\mu/2LC)/\log q$. The theorem and a companion attention-dilution
-lemma are machine-checked in Lean~4 with \texttt{mathlib}, free of \texttt{sorry}
-and of nonstandard axioms. Empirically, across \NModels{} checkpoints from
-\NFamilies{} families, counting accuracy collapses past a model-specific
-$k^\ast$ while length-matched non-repetitive controls survive far beyond it
-(\AccRepHigh{}\% vs.\ \AccCtlHigh{}\% at $k\ge6$), so the limit tracks
-periodicity rather than length. The theorem's own consequence is directly
-observable: the number of distinguishable states a generation visits grows with
-$k$ at a factor \CapRatio{} of the control rate, with disjoint bootstrap
-intervals. The decoder does not merely err on repeated text --- it runs out of
-states in which the count could be represented.
+hidden state, we prove that if $F$ contracts with factor $q<1$ then \emph{no}
+Lipschitz readout---the model's own stop head included---can separate repetition
+counts beyond a horizon $N^\ast \le \log(\mu/2LC)/\log q$. The theorem and a
+companion attention-dilution lemma are machine-checked in Lean~4 with
+\texttt{mathlib}, free of \texttt{sorry} and of nonstandard axioms. Across
+\NModels{} checkpoints from \NFamilies{} families, counting accuracy collapses
+past a model-specific $k^\ast$ while length-matched non-repetitive controls
+survive far beyond it (\AccRepHigh{}\% vs.\ \AccCtlHigh{}\% at $k\ge6$), so the
+limit tracks periodicity rather than length. The theorem's consequence is
+directly observable: the number of distinguishable states a generation visits
+grows with $k$ at a factor \CapRatio{} of the control rate, with disjoint
+bootstrap intervals. The decoder does not merely err on repeated text --- it runs
+out of states in which the count could be represented.
 \end{abstract}
 
 \begin{keywords}
@@ -215,13 +214,6 @@ the released tables.
 \label{sec:discussion}
 
 \input{discussion_body}
-
-\section{Conclusion}
-
-Periodic text makes an AR decoder's per-repetition update autonomous, and past an
-explicit horizon no Lipschitz readout recovers the count --- proved in Lean,
-measured in real decoders. Decoding-rule mitigations address a symptom; the
-quantity to control is $q$.
 
 \vfill\pagebreak
 

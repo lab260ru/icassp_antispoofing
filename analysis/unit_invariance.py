@@ -27,6 +27,10 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+# Re-runs of a panel member under a changed decoding setting are reported
+# separately and never counted as additional checkpoints.
+ABLATIONS = {"xtts2norp"}
+
 
 def k_star(sub: pd.DataFrame, thr: float = 0.5) -> tuple[float, float]:
     """Largest k with accuracy above `thr`, and the median token count there."""
@@ -49,7 +53,7 @@ def main() -> None:
 
     d = pd.read_csv(args.behavioural)
     rows, res = [], {"models": {}}
-    for m in sorted(d.model.unique()):
+    for m in sorted(set(d.model.unique()) - ABLATIONS):
         kw, tw = k_star(d[(d.model == m) & (d.family == "word_rep")])
         ks, ts = k_star(d[(d.model == m) & (d.family == "sentence_rep")])
         if not (np.isfinite(kw) and np.isfinite(ks)):

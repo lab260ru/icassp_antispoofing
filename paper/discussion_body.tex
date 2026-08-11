@@ -8,14 +8,20 @@ transformer contracts, and our attempt to measure that premise directly failed
 \emph{consequence} --- capacity saturation under periodicity --- not its
 antecedent. Formalisation is what forced us to keep the two apart.
 
-That deep transformers lose rank and over-squash is
-known~\cite{dong2021attention,barbero2024glasses}, and self-attention has been
-analysed as a dynamical system with attracting
-clusters~\cite{geshkovski2023emergence,gao2026clustered}. Those results index
-convergence by \emph{depth} or an abstract temperature; ours indexes it by
-\emph{generation step under periodic conditioning}, which turns the consequence
-into a statement about counting. A competing account holds that in text LMs the
-count survives in the residual stream and only the output policy
+The closest prior result is representational
+collapse~\cite{barbero2024glasses}: as a sequence grows, distinct prefixes map to
+arbitrarily close final representations, which already implies counting errors.
+The mechanisms are different and our control separates them empirically.
+Collapse-by-length predicts that a $32$-word control and a $32$-word repetition
+fail alike, since both are equally long; it is the length that does the work.
+Collapse-by-periodicity predicts the gap we measure. Figure~\ref{fig:main}(b) is
+therefore not only evidence for our account but evidence against length alone
+being sufficient, and~\eqref{eq:horizon} supplies a rate in repetitions that a
+length-indexed bound does not. Related dynamical treatments of self-attention
+index convergence by depth or an abstract
+temperature~\cite{dong2021attention,geshkovski2023emergence,gao2026clustered};
+ours indexes it by generation step. A competing account holds that in text LMs
+the count survives in the residual stream and only the output policy
 fails~\cite{venkatesh2026repeated}; our probes favour representational
 degradation, but the two are not exclusive.
 
@@ -35,3 +41,8 @@ unreachable where text and acoustic embeddings are additively fused (Qwen3-TTS);
 and we do not propagate the residual $O(\delta + 1/k)$ term of
 Lemma~\ref{lem:dilution} through the theorem, so the machine-checked bound applies
 to the idealised periodic map rather than the measured one.
+
+The claim itself is simple: periodic text makes an AR decoder's per-repetition
+update autonomous, and past an explicit horizon no Lipschitz readout recovers the
+count. Decoding-rule mitigations address a symptom; the quantity to control
+is $q$.

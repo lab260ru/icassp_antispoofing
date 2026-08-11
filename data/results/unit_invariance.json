@@ -12,6 +12,12 @@
       "tok_word": 209.0,
       "tok_sent": 456.5
     },
+    "llasa8b": {
+      "k_word": 4.0,
+      "k_sent": 3.0,
+      "tok_word": 327.5,
+      "tok_sent": 423.5
+    },
     "qwen06b": {
       "k_word": 4.0,
       "k_sent": 4.0,
@@ -29,16 +35,10 @@
       "k_sent": 4.0,
       "tok_word": 89.0,
       "tok_sent": 128.0
-    },
-    "xtts2norp": {
-      "k_word": 2.0,
-      "k_sent": 1.0,
-      "tok_word": 63.0,
-      "tok_sent": 29.0
     }
   },
   "mean_abs_k_diff": 1.6666666666666667,
-  "mean_k_ratio": 1.2,
-  "mean_tok_ratio": 1.3364022911493985,
+  "mean_k_ratio": 1.25,
+  "mean_tok_ratio": 1.5029647532843797,
   "n_models": 6
 }

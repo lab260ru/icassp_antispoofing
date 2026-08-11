@@ -68,11 +68,9 @@ Theorem~\ref{thm:collapse} says it should be.
 
 \begin{table}[t]
 \centering
-\caption{Per-model summary. $k^\ast$ is the largest requested repetition count at
-which counting accuracy still exceeds $0.5$; accuracies are over $k\ge6$.
-Capacity gain is $\mathrm{d}\mathcal{N}_{\mathrm{eff}}/\mathrm{d}\log k$ at deep
-probe layers, fitted separately on repeated items and on their length-matched
-controls.}
+\caption{Panel summary. $k^\ast$ is the largest $k$ with counting accuracy above
+$0.5$; accuracies are over $k\ge6$; capacity gain is
+$\mathrm{d}\mathcal{N}_{\mathrm{eff}}/\mathrm{d}\log k$ at deep probe layers.}
 \label{tab:models}
 \resizebox{\columnwidth}{!}{\input{table1}}
 \end{table}
@@ -117,21 +115,19 @@ percent of uniform, which is what Assumption~\ref{ass:periodic} needs.
 \subsection{Two things we could not establish}
 \label{sec:negative}
 
-We first tried to estimate $q$ directly, locating repetition boundaries from text
-attention and fitting $\log\lVert h_{m+1}-h_m\rVert = a + m\log q$. That
-estimator is unsound here: localisation needs a monotone text read-head, and
-these decoders' deep-layer attention centroid advances on barely half of
-generation steps, so boundary estimates collapse onto near-duplicate positions
-and the distances measure localisation error. The failure is self-defeating by
-construction --- the flatter the attention over repeated spans, exactly what
-Lemma~\ref{lem:dilution} predicts, the worse any attention-based localiser gets.
-The capacity measure needs no boundaries, which is why we adopted it.
+We could not measure $q$ itself. Estimating it from boundary distances
+($\log\lVert h_{m+1}-h_m\rVert = a + m\log q$) needs a monotone text read-head to
+place the boundaries, and these decoders' deep-layer attention centroid advances
+on barely half of generation steps, so the distances measure localisation error
+instead. The failure is self-defeating by construction: the flatter the attention
+over repeated spans --- exactly what Lemma~\ref{lem:dilution} predicts --- the
+worse any attention-based localiser gets. The capacity measure needs no
+boundaries, which is why we adopted it.
 
-Second, we cannot claim the count is \emph{absent}. A ridge probe recovering
-$\log_2 k$ from trajectory summaries decodes it only coarsely (median
-$R^2 = \ProbeLateRTwo{}$ late in generation), and contrasting the first and last
-third of the \emph{same} trajectory --- so that probe capacity cancels --- the
-count is retained at \ProbeRetRep{} of its early level on repeated text against
-\ProbeRetCtl{} on controls, repeated being lower in \ProbeNBelowWord{} of
-\ProbeNModels{} variants. Consistent in direction, but this is degradation, not
-erasure.
+Nor can we claim the count is \emph{absent}. A ridge probe recovering $\log_2 k$
+from trajectory summaries decodes it only coarsely (median
+$R^2 = \ProbeLateRTwo{}$ late in generation); contrasting the first and last third
+of the \emph{same} trajectory, so probe capacity cancels, the count is retained at
+\ProbeRetRep{} of its early level on repeated text against \ProbeRetCtl{} on
+controls, repeated being lower in \ProbeNBelowWord{} of \ProbeNModels{} variants.
+Consistent in direction, but degradation rather than erasure.

@@ -245,30 +245,41 @@ SIL_S = 0.25  # short silence between copies -- long enough for Whisper's VAD-
               # as a genuine pause a real speaker would insert.
 
 
-def pick_donors(behavioural_csv: Path, n: int = 6) -> list[dict]:
-    """Verified-correct k=1 renderings: outcome=='correct' means the transcript
-    contained the target word exactly once AND the duration matched a
-    single-repetition rendering, so the donor clip is known-clean ground truth
-    for "this word, said once, correctly" -- not merely "Whisper heard it
-    once", which would beg the question this check is trying to answer.
-    Diversity across models/templates/words is preferred over the single
-    shortest clip so the bias estimate isn't a property of one voice."""
+def build_pool(behavioural_csv: Path, model_key: str = "xtts2", n: int = 6) -> list[dict]:
+    """One verified-correct k=1 rendering per template, all from the SAME
+    checkpoint/voice. outcome=='correct' means the transcript contained the
+    target word exactly once AND the duration matched a single-repetition
+    rendering, so each donor clip is known-clean ground truth for "this word,
+    said once, correctly" -- not merely "Whisper heard it once", which would
+    beg the question this check is trying to answer.
+
+    Single-voice by design: using one checkpoint's clips for every condition
+    below means voice, vocoder, and clip-length distribution are held fixed,
+    so the ONLY thing that differs between the repeated-word test and the
+    distinct-word control test (below) is whether the concatenated words are
+    identical or different -- exactly the manipulation the paper's stimuli
+    make between word_rep and control_word. XTTS-v2 is used because its k=1
+    clips are shortest (~2-3s), keeping even k=32 sequences tractable.
+    """
     df = pd.read_csv(behavioural_csv)
-    sub = df[(df.family == "word_rep") & (df.k == 1) & (df.outcome == "correct")]
-    sub = sub.drop_duplicates(subset=["model", "template"]).sort_values("duration_s")
-    donors = []
+    sub = df[(df.model == model_key) & (df.family == "word_rep") & (df.k == 1)
+             & (df.outcome == "correct")]
+    sub = sub.drop_duplicates(subset=["template"]).sort_values("template")
+    pool = []
     for _, row in sub.head(n).iterrows():
-        donors.append(dict(model=row["model"], item_id=row["item_id"],
-                            seed=int(row["seed"]), template=row["template"],
-                            target_word=row["target_unit"],
-                            duration_s=float(row["duration_s"])))
-    return donors
+        pool.append(dict(model=row["model"], item_id=row["item_id"],
+                          seed=int(row["seed"]), template=row["template"],
+                          target_word=row["target_unit"]))
+    return pool
 
 
-def run_part_b(proc, model, device, behavioural_csv: Path) -> dict:
-    print("\n=== Part (b): synthetic ground-truth concatenation ===")
-    donors = pick_donors(behavioural_csv)
-    print(f"donors: {[(d['model'], d['target_word']) for d in donors]}")
+def run_part_b(proc, model, device, pool: list[dict]) -> dict:
+    """Repeated-word condition: the SAME donor word concatenated k times.
+    Ground truth is exact by construction (we built the sequence), so any
+    transcript count != k is pure ASR error, not TTS error."""
+    print("\n=== Part (b): synthetic ground-truth concatenation (repeated word) ===")
+    print(f"donor pool (voice={pool[0]['model'] if pool else '?'}): "
+          f"{[d['target_word'] for d in pool]}")
 
     # Main-run config: greedy, condition_on_prev_tokens=False -- the same
     # instrument setting actually used to build behavioural.csv, because the
@@ -277,7 +288,7 @@ def run_part_b(proc, model, device, behavioural_csv: Path) -> dict:
     main_kwargs = dict(num_beams=1, do_sample=False)
 
     rows = []
-    for d in donors:
+    for d in pool:
         wav_path = AUDIO_ROOT / d["model"] / f"{d['item_id']}_s{d['seed']}.wav"
         wav, sr = load_wav(wav_path)
         sil = np.zeros(int(SIL_S * sr), dtype=wav.dtype)
@@ -292,7 +303,8 @@ def run_part_b(proc, model, device, behavioural_csv: Path) -> dict:
                 seq_duration_s=float(seq.size / sr), transcript=text,
             ))
             print(f"  {d['model']:9s} {d['target_word']:8s} k_true={k:2d}  "
-                  f"k_counted={counted:2d}  ratio={counted/k:.2f}")
+                  f"k_counted={counted:2d}  ratio={counted/k:.2f}  "
+                  f"dur={seq.size/sr:.1f}s")
 
     by_k: dict[str, dict] = {}
     for k in K_LIST:
@@ -306,8 +318,70 @@ def run_part_b(proc, model, device, behavioural_csv: Path) -> dict:
         )
 
     return dict(
+        condition="repeated_word",
         main_decoding_config="greedy, condition_on_prev_tokens=False (matches main run)",
-        silence_between_copies_s=SIL_S, donors=donors, k_list=K_LIST,
+        silence_between_copies_s=SIL_S, donors=pool, k_list=K_LIST,
+        by_k=by_k, rows=rows,
+    )
+
+
+def run_part_b_control(proc, model, device, pool: list[dict]) -> dict:
+    """Distinct-word condition, matched to run_part_b on everything except
+    periodicity: cycle through the pool's distinct words (same voice, same
+    clip-length distribution, same silence gaps) to reach length k, instead
+    of repeating one word k times. This is the direct instrument-only analog
+    of the paper's word_rep vs control_word manipulation, with exact ground
+    truth on both sides. It isolates whether the undercount measured above is
+    specific to IDENTICAL repeated material, or is a generic artefact of long
+    concatenated audio that would hit distinct words just as hard -- in which
+    case it could not explain a *differential* repeated-vs-control gap.
+
+    Three cyclic rotations per k (not just one) so the by-k summary is a mean
+    over several word orders rather than a single draw, the same reason the
+    real control stimuli use several distinct fillers rather than one.
+    """
+    if len(pool) < 2:
+        return dict(skipped="fewer than 2 distinct donor words in pool")
+    print("\n=== Part (b'): matched distinct-word synthetic control ===")
+    clips = {d["target_word"]: load_wav(AUDIO_ROOT / d["model"] / f"{d['item_id']}_s{d['seed']}.wav")
+             for d in pool}
+    words = [d["target_word"] for d in pool]
+    sr_ref = next(iter(clips.values()))[1]
+    sil = np.zeros(int(SIL_S * sr_ref), dtype=np.float32)
+    main_kwargs = dict(num_beams=1, do_sample=False)
+
+    rows = []
+    n_rot = min(3, len(words))
+    for offset in range(n_rot):
+        for k in K_LIST:
+            seq_words = [words[(offset + i) % len(words)] for i in range(k)]
+            parts = [clips[w][0] for w in seq_words]
+            seq = np.concatenate([parts[0]] + [x for p in parts[1:] for x in (sil, p)])
+            text = transcribe(seq, sr_ref, proc, model, device, main_kwargs)
+            counted = count_units(normalise(text), seq_words)
+            rows.append(dict(
+                offset=offset, k_true=k, k_counted=counted, ratio=counted / k,
+                seq_duration_s=float(seq.size / sr_ref), transcript=text,
+                words_used=seq_words,
+            ))
+            print(f"  distinct rot={offset} k_true={k:2d}  k_counted={counted:2d}  "
+                  f"ratio={counted/k:.2f}  dur={seq.size/sr_ref:.1f}s")
+
+    by_k: dict[str, dict] = {}
+    for k in K_LIST:
+        sub = [r for r in rows if r["k_true"] == k]
+        counted = np.array([r["k_counted"] for r in sub], float)
+        ratios = counted / k
+        by_k[str(k)] = dict(
+            n=len(sub), mean_counted=float(counted.mean()),
+            mean_ratio=float(ratios.mean()), median_ratio=float(np.median(ratios)),
+            frac_undercounted=float((counted < k).mean()),
+        )
+
+    return dict(
+        condition="distinct_words", voice=pool[0]["model"], n_rotations=n_rot,
+        main_decoding_config="greedy, condition_on_prev_tokens=False (matches main run)",
+        silence_between_copies_s=SIL_S, vocabulary=words, k_list=K_LIST,
         by_k=by_k, rows=rows,
     )
 
@@ -341,7 +415,9 @@ def main() -> None:
     if not args.skip_a:
         result["decoding_consistency"] = run_part_a(proc, model, device, stimuli_by_id, {})
     if not args.skip_b:
-        result["synthetic_ground_truth"] = run_part_b(proc, model, device, Path(args.behavioural))
+        pool = build_pool(Path(args.behavioural))
+        result["synthetic_ground_truth"] = run_part_b(proc, model, device, pool)
+        result["synthetic_ground_truth_control"] = run_part_b_control(proc, model, device, pool)
 
     # -------------------------------------------------------------- verdict
     # Reasoned from the actual numbers above, not asserted independently of
@@ -360,12 +436,36 @@ def main() -> None:
     if "synthetic_ground_truth" in result:
         bk = result["synthetic_ground_truth"]["by_k"]
         lo_k = bk.get("2", {}).get("mean_ratio", float("nan"))
-        hi_ks = [bk[k]["mean_ratio"] for k in ("8", "16", "32") if k in bk]
-        hi_k_str = ", ".join(f"k={k}: {bk[k]['mean_ratio']:.2f}" for k in ("8", "16", "32") if k in bk)
+        hi_k_str = ", ".join(f"k={k}: {bk[k]['mean_ratio']:.2f}" for k in ("4", "8", "16", "32") if k in bk)
         verdict_bits.append(
-            f"synthetic ground truth: mean counted/true ratio is {lo_k:.2f} at k=2 "
-            f"and falls to [{hi_k_str}] at higher k -- Whisper itself undercounts "
-            f"genuinely-correct periodic material, and the undercount grows with k."
+            f"synthetic ground truth (repeated word): mean counted/true ratio is "
+            f"{lo_k:.2f} at k=2 vs [{hi_k_str}] at higher k -- Whisper undercounts "
+            f"genuinely-correct periodic material, severely at moderate k."
+        )
+    ctl = result.get("synthetic_ground_truth_control", {})
+    if ctl.get("by_k"):
+        bkc = ctl["by_k"]
+        rep_bk = result.get("synthetic_ground_truth", {}).get("by_k", {})
+        common_ks = [k for k in ("4", "8", "16", "32") if k in bkc and k in rep_bk]
+        matched = ", ".join(
+            f"k={k}: repeated={rep_bk[k]['mean_ratio']:.2f} vs distinct={bkc[k]['mean_ratio']:.2f}"
+            for k in common_ks
+        )
+        rep_avg = float(np.mean([rep_bk[k]["mean_ratio"] for k in common_ks])) if common_ks else float("nan")
+        ctl_avg = float(np.mean([bkc[k]["mean_ratio"] for k in common_ks])) if common_ks else float("nan")
+        if ctl_avg > rep_avg + 0.05:
+            direction = ("distinct-word sequences of matched length are transcribed more "
+                         "completely, so the undercount is specific to identical repeated "
+                         "material, not a generic long-audio artefact")
+        elif rep_avg > ctl_avg + 0.05:
+            direction = ("repeated-word sequences are transcribed MORE completely than "
+                         "distinct-word ones of matched length -- the undercount is not "
+                         "specific to periodicity")
+        else:
+            direction = "the two conditions are transcribed about equally (in)completely"
+        verdict_bits.append(
+            f"matched same-voice distinct-word control (mean ratio {ctl_avg:.2f} vs "
+            f"{rep_avg:.2f} repeated, k>=4): [{matched}] -- {direction}."
         )
     result["verdict"] = " ".join(verdict_bits) if verdict_bits else "insufficient data"
 
