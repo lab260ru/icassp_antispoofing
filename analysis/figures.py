@@ -36,10 +36,13 @@ LABEL = {"llasa1b": "Llasa-1B", "llasa3b": "Llasa-3B", "llasa8b": "Llasa-8B",
          "xtts2": "XTTS-v2", "qwen06b": "Qwen3-TTS-0.6B", "qwen17b": "Qwen3-TTS-1.7B"}
 COLOR = {"llasa1b": "#4C72B0", "llasa3b": "#DD8452", "llasa8b": "#55A868",
          "xtts2": "#C44E52", "qwen06b": "#8172B3", "qwen17b": "#937860"}
+# Ablation re-runs of a panel member. Kept out of the main figure for the same
+# reason they are kept out of pooled statistics: they are not extra checkpoints.
+ABLATIONS = {"xtts2norp"}
 
 
-def ordered(models) -> list[str]:
-    ms = set(models)
+def ordered(models, drop_ablations: bool = True) -> list[str]:
+    ms = set(models) - (ABLATIONS if drop_ablations else set())
     return [m for m in ORDER if m in ms] + sorted(ms - set(ORDER))
 
 
@@ -100,7 +103,7 @@ def fig_main(beh: pd.DataFrame, state: pd.DataFrame, cap: dict, out: Path) -> No
     ax.set_title("(c) states saturate")
 
     ax = axes[3]
-    cm = ordered(list(cap["models"].keys()))
+    cm = ordered(list(cap["models"].keys()))  # ablations dropped
     xs = np.arange(len(cm), dtype=float)
     w = 0.34
     for off, key, lab, col in ((-w / 2, "repeated", "rep.", "#C44E52"),

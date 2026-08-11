@@ -1,0 +1,2283 @@
+{
+  "asr_model": "openai/whisper-large-v3",
+  "main_run_config": "greedy, condition_on_prev_tokens=False (see src/common/asr_transcribe.py)",
+  "decoding_consistency": {
+    "alt_decoding_config": "beam_search(num_beams=5, do_sample=False), condition_on_prev_tokens=False (unchanged from main run)",
+    "n_total": 114,
+    "n_missing": 0,
+    "repeated": {
+      "n": 60,
+      "frac_same": 0.8333333333333334,
+      "mean_abs_diff": 33.833333333333336
+    },
+    "control": {
+      "n": 54,
+      "frac_same": 0.9629629629629629,
+      "mean_abs_diff": 0.9074074074074074
+    },
+    "by_k": {
+      "word_rep": {
+        "1": {
+          "n": 6,
+          "frac_same": 1.0,
+          "mean_abs_diff": 0.0
+        },
+        "2": {
+          "n": 6,
+          "frac_same": 1.0,
+          "mean_abs_diff": 0.0
+        },
+        "3": {
+          "n": 6,
+          "frac_same": 1.0,
+          "mean_abs_diff": 0.0
+        },
+        "4": {
+          "n": 6,
+          "frac_same": 1.0,
+          "mean_abs_diff": 0.0
+        },
+        "6": {
+          "n": 6,
+          "frac_same": 1.0,
+          "mean_abs_diff": 0.0
+        },
+        "8": {
+          "n": 6,
+          "frac_same": 0.8333333333333334,
+          "mean_abs_diff": 36.5
+        },
+        "12": {
+          "n": 6,
+          "frac_same": 0.8333333333333334,
+          "mean_abs_diff": 34.833333333333336
+        },
+        "16": {
+          "n": 6,
+          "frac_same": 0.6666666666666666,
+          "mean_abs_diff": 83.16666666666667
+        },
+        "24": {
+          "n": 6,
+          "frac_same": 0.16666666666666666,
+          "mean_abs_diff": 150.33333333333334
+        },
+        "32": {
+          "n": 6,
+          "frac_same": 0.8333333333333334,
+          "mean_abs_diff": 33.5
+        }
+      },
+      "control_word": {
+        "2": {
+          "n": 6,
+          "frac_same": 1.0,
+          "mean_abs_diff": 0.0
+        },
+        "3": {
+          "n": 6,
+          "frac_same": 1.0,
+          "mean_abs_diff": 0.0
+        },
+        "4": {
+          "n": 6,
+          "frac_same": 1.0,
+          "mean_abs_diff": 0.0
+        },
+        "6": {
+          "n": 6,
+          "frac_same": 1.0,
+          "mean_abs_diff": 0.0
+        },
+        "8": {
+          "n": 6,
+          "frac_same": 1.0,
+          "mean_abs_diff": 0.0
+        },
+        "12": {
+          "n": 6,
+          "frac_same": 1.0,
+          "mean_abs_diff": 0.0
+        },
+        "16": {
+          "n": 6,
+          "frac_same": 1.0,
+          "mean_abs_diff": 0.0
+        },
+        "24": {
+          "n": 6,
+          "frac_same": 1.0,
+          "mean_abs_diff": 0.0
+        },
+        "32": {
+          "n": 6,
+          "frac_same": 0.6666666666666666,
+          "mean_abs_diff": 8.166666666666666
+        }
+      }
+    },
+    "rows": [
+      {
+        "item_id": "ct_blue_t4_k02",
+        "model": "llasa1b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 2,
+        "expected": 2,
+        "main_count": 0,
+        "alt_count": 0,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_blue_t4_k03",
+        "model": "llasa3b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 3,
+        "expected": 3,
+        "main_count": 3,
+        "alt_count": 3,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_blue_t4_k04",
+        "model": "xtts2",
+        "seed": 0,
+        "family": "control_word",
+        "k": 4,
+        "expected": 4,
+        "main_count": 4,
+        "alt_count": 4,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_blue_t4_k06",
+        "model": "qwen17b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 6,
+        "expected": 6,
+        "main_count": 6,
+        "alt_count": 6,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_blue_t4_k08",
+        "model": "llasa1b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 8,
+        "expected": 8,
+        "main_count": 8,
+        "alt_count": 8,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_blue_t4_k12",
+        "model": "llasa3b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 12,
+        "expected": 12,
+        "main_count": 12,
+        "alt_count": 12,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_blue_t4_k16",
+        "model": "xtts2",
+        "seed": 0,
+        "family": "control_word",
+        "k": 16,
+        "expected": 16,
+        "main_count": 16,
+        "alt_count": 16,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_blue_t4_k24",
+        "model": "qwen17b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 24,
+        "expected": 24,
+        "main_count": 24,
+        "alt_count": 24,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_blue_t4_k32",
+        "model": "llasa1b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 32,
+        "expected": 32,
+        "main_count": 7,
+        "alt_count": 32,
+        "same": 0,
+        "abs_diff": 25
+      },
+      {
+        "item_id": "ct_far_t3_k02",
+        "model": "llasa3b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 2,
+        "expected": 2,
+        "main_count": 2,
+        "alt_count": 2,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_far_t3_k03",
+        "model": "xtts2",
+        "seed": 0,
+        "family": "control_word",
+        "k": 3,
+        "expected": 3,
+        "main_count": 3,
+        "alt_count": 3,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_far_t3_k04",
+        "model": "qwen17b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 4,
+        "expected": 4,
+        "main_count": 4,
+        "alt_count": 4,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_far_t3_k06",
+        "model": "llasa1b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 6,
+        "expected": 6,
+        "main_count": 6,
+        "alt_count": 6,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_far_t3_k08",
+        "model": "llasa3b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 8,
+        "expected": 8,
+        "main_count": 8,
+        "alt_count": 8,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_far_t3_k12",
+        "model": "xtts2",
+        "seed": 0,
+        "family": "control_word",
+        "k": 12,
+        "expected": 12,
+        "main_count": 7,
+        "alt_count": 7,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_far_t3_k16",
+        "model": "qwen17b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 16,
+        "expected": 16,
+        "main_count": 16,
+        "alt_count": 16,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_far_t3_k24",
+        "model": "llasa1b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 24,
+        "expected": 24,
+        "main_count": 24,
+        "alt_count": 24,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_far_t3_k32",
+        "model": "llasa3b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 32,
+        "expected": 32,
+        "main_count": 32,
+        "alt_count": 32,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_no_t2_k02",
+        "model": "xtts2",
+        "seed": 0,
+        "family": "control_word",
+        "k": 2,
+        "expected": 2,
+        "main_count": 2,
+        "alt_count": 2,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_no_t2_k03",
+        "model": "qwen17b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 3,
+        "expected": 3,
+        "main_count": 3,
+        "alt_count": 3,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_no_t2_k04",
+        "model": "llasa1b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 4,
+        "expected": 4,
+        "main_count": 0,
+        "alt_count": 0,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_no_t2_k06",
+        "model": "llasa3b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 6,
+        "expected": 6,
+        "main_count": 4,
+        "alt_count": 4,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_no_t2_k08",
+        "model": "xtts2",
+        "seed": 0,
+        "family": "control_word",
+        "k": 8,
+        "expected": 8,
+        "main_count": 7,
+        "alt_count": 7,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_no_t2_k12",
+        "model": "qwen17b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 12,
+        "expected": 12,
+        "main_count": 4,
+        "alt_count": 4,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_no_t2_k16",
+        "model": "llasa1b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 16,
+        "expected": 16,
+        "main_count": 13,
+        "alt_count": 13,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_no_t2_k24",
+        "model": "llasa3b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 24,
+        "expected": 24,
+        "main_count": 7,
+        "alt_count": 7,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_no_t2_k32",
+        "model": "xtts2",
+        "seed": 0,
+        "family": "control_word",
+        "k": 32,
+        "expected": 32,
+        "main_count": 7,
+        "alt_count": 31,
+        "same": 0,
+        "abs_diff": 24
+      },
+      {
+        "item_id": "ct_quick_t5_k02",
+        "model": "qwen17b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 2,
+        "expected": 2,
+        "main_count": 2,
+        "alt_count": 2,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_quick_t5_k03",
+        "model": "llasa1b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 3,
+        "expected": 3,
+        "main_count": 0,
+        "alt_count": 0,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_quick_t5_k04",
+        "model": "llasa3b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 4,
+        "expected": 4,
+        "main_count": 3,
+        "alt_count": 3,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_quick_t5_k06",
+        "model": "xtts2",
+        "seed": 0,
+        "family": "control_word",
+        "k": 6,
+        "expected": 6,
+        "main_count": 6,
+        "alt_count": 6,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_quick_t5_k08",
+        "model": "qwen17b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 8,
+        "expected": 8,
+        "main_count": 8,
+        "alt_count": 8,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_quick_t5_k12",
+        "model": "llasa1b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 12,
+        "expected": 12,
+        "main_count": 12,
+        "alt_count": 12,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_quick_t5_k16",
+        "model": "llasa3b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 16,
+        "expected": 16,
+        "main_count": 16,
+        "alt_count": 16,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_quick_t5_k24",
+        "model": "xtts2",
+        "seed": 0,
+        "family": "control_word",
+        "k": 24,
+        "expected": 24,
+        "main_count": 24,
+        "alt_count": 24,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_quick_t5_k32",
+        "model": "qwen17b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 32,
+        "expected": 32,
+        "main_count": 32,
+        "alt_count": 32,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_really_t6_k02",
+        "model": "llasa1b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 2,
+        "expected": 2,
+        "main_count": 2,
+        "alt_count": 2,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_really_t6_k03",
+        "model": "llasa3b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 3,
+        "expected": 3,
+        "main_count": 3,
+        "alt_count": 3,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_really_t6_k04",
+        "model": "xtts2",
+        "seed": 0,
+        "family": "control_word",
+        "k": 4,
+        "expected": 4,
+        "main_count": 4,
+        "alt_count": 4,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_really_t6_k06",
+        "model": "qwen17b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 6,
+        "expected": 6,
+        "main_count": 6,
+        "alt_count": 6,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_really_t6_k08",
+        "model": "llasa1b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 8,
+        "expected": 8,
+        "main_count": 8,
+        "alt_count": 8,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_really_t6_k12",
+        "model": "llasa3b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 12,
+        "expected": 12,
+        "main_count": 12,
+        "alt_count": 12,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_really_t6_k16",
+        "model": "xtts2",
+        "seed": 0,
+        "family": "control_word",
+        "k": 16,
+        "expected": 16,
+        "main_count": 16,
+        "alt_count": 16,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_really_t6_k24",
+        "model": "qwen17b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 24,
+        "expected": 24,
+        "main_count": 24,
+        "alt_count": 24,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_really_t6_k32",
+        "model": "llasa1b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 32,
+        "expected": 32,
+        "main_count": 24,
+        "alt_count": 24,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_very_t1_k02",
+        "model": "llasa3b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 2,
+        "expected": 2,
+        "main_count": 2,
+        "alt_count": 2,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_very_t1_k03",
+        "model": "xtts2",
+        "seed": 0,
+        "family": "control_word",
+        "k": 3,
+        "expected": 3,
+        "main_count": 3,
+        "alt_count": 3,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_very_t1_k04",
+        "model": "qwen17b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 4,
+        "expected": 4,
+        "main_count": 4,
+        "alt_count": 4,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_very_t1_k06",
+        "model": "llasa1b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 6,
+        "expected": 6,
+        "main_count": 6,
+        "alt_count": 6,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_very_t1_k08",
+        "model": "llasa3b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 8,
+        "expected": 8,
+        "main_count": 8,
+        "alt_count": 8,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_very_t1_k12",
+        "model": "xtts2",
+        "seed": 0,
+        "family": "control_word",
+        "k": 12,
+        "expected": 12,
+        "main_count": 12,
+        "alt_count": 12,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_very_t1_k16",
+        "model": "qwen17b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 16,
+        "expected": 16,
+        "main_count": 16,
+        "alt_count": 16,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_very_t1_k24",
+        "model": "llasa1b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 24,
+        "expected": 24,
+        "main_count": 24,
+        "alt_count": 24,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "ct_very_t1_k32",
+        "model": "llasa3b",
+        "seed": 0,
+        "family": "control_word",
+        "k": 32,
+        "expected": 32,
+        "main_count": 8,
+        "alt_count": 8,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_blue_t4_k01",
+        "model": "xtts2",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 1,
+        "expected": 1,
+        "main_count": 1,
+        "alt_count": 1,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_blue_t4_k02",
+        "model": "qwen17b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 2,
+        "expected": 2,
+        "main_count": 2,
+        "alt_count": 2,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_blue_t4_k03",
+        "model": "llasa1b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 3,
+        "expected": 3,
+        "main_count": 0,
+        "alt_count": 0,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_blue_t4_k04",
+        "model": "llasa3b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 4,
+        "expected": 4,
+        "main_count": 1,
+        "alt_count": 1,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_blue_t4_k06",
+        "model": "xtts2",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 6,
+        "expected": 6,
+        "main_count": 5,
+        "alt_count": 5,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_blue_t4_k08",
+        "model": "qwen17b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 8,
+        "expected": 8,
+        "main_count": 8,
+        "alt_count": 8,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_blue_t4_k12",
+        "model": "llasa1b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 12,
+        "expected": 12,
+        "main_count": 0,
+        "alt_count": 0,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_blue_t4_k16",
+        "model": "llasa3b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 16,
+        "expected": 16,
+        "main_count": 0,
+        "alt_count": 0,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_blue_t4_k24",
+        "model": "xtts2",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 24,
+        "expected": 24,
+        "main_count": 13,
+        "alt_count": 221,
+        "same": 0,
+        "abs_diff": 208
+      },
+      {
+        "item_id": "wr_blue_t4_k32",
+        "model": "qwen17b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 32,
+        "expected": 32,
+        "main_count": 221,
+        "alt_count": 221,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_far_t3_k01",
+        "model": "llasa1b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 1,
+        "expected": 1,
+        "main_count": 2,
+        "alt_count": 2,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_far_t3_k02",
+        "model": "llasa3b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 2,
+        "expected": 2,
+        "main_count": 2,
+        "alt_count": 2,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_far_t3_k03",
+        "model": "xtts2",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 3,
+        "expected": 3,
+        "main_count": 3,
+        "alt_count": 3,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_far_t3_k04",
+        "model": "qwen17b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 4,
+        "expected": 4,
+        "main_count": 4,
+        "alt_count": 4,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_far_t3_k06",
+        "model": "llasa1b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 6,
+        "expected": 6,
+        "main_count": 6,
+        "alt_count": 6,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_far_t3_k08",
+        "model": "llasa3b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 8,
+        "expected": 8,
+        "main_count": 8,
+        "alt_count": 8,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_far_t3_k12",
+        "model": "xtts2",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 12,
+        "expected": 12,
+        "main_count": 10,
+        "alt_count": 10,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_far_t3_k16",
+        "model": "qwen17b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 16,
+        "expected": 16,
+        "main_count": 442,
+        "alt_count": 17,
+        "same": 0,
+        "abs_diff": 425
+      },
+      {
+        "item_id": "wr_far_t3_k24",
+        "model": "llasa1b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 24,
+        "expected": 24,
+        "main_count": 476,
+        "alt_count": 675,
+        "same": 0,
+        "abs_diff": 199
+      },
+      {
+        "item_id": "wr_far_t3_k32",
+        "model": "llasa3b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 32,
+        "expected": 32,
+        "main_count": 221,
+        "alt_count": 221,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_no_t2_k01",
+        "model": "xtts2",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 1,
+        "expected": 1,
+        "main_count": 1,
+        "alt_count": 1,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_no_t2_k02",
+        "model": "qwen17b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 2,
+        "expected": 2,
+        "main_count": 2,
+        "alt_count": 2,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_no_t2_k03",
+        "model": "llasa1b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 3,
+        "expected": 3,
+        "main_count": 0,
+        "alt_count": 0,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_no_t2_k04",
+        "model": "llasa3b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 4,
+        "expected": 4,
+        "main_count": 0,
+        "alt_count": 0,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_no_t2_k06",
+        "model": "xtts2",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 6,
+        "expected": 6,
+        "main_count": 5,
+        "alt_count": 5,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_no_t2_k08",
+        "model": "qwen17b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 8,
+        "expected": 8,
+        "main_count": 8,
+        "alt_count": 8,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_no_t2_k12",
+        "model": "llasa1b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 12,
+        "expected": 12,
+        "main_count": 10,
+        "alt_count": 10,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_no_t2_k16",
+        "model": "llasa3b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 16,
+        "expected": 16,
+        "main_count": 14,
+        "alt_count": 14,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_no_t2_k24",
+        "model": "xtts2",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 24,
+        "expected": 24,
+        "main_count": 20,
+        "alt_count": 19,
+        "same": 0,
+        "abs_diff": 1
+      },
+      {
+        "item_id": "wr_no_t2_k32",
+        "model": "qwen17b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 32,
+        "expected": 32,
+        "main_count": 221,
+        "alt_count": 221,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_quick_t5_k01",
+        "model": "llasa1b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 1,
+        "expected": 1,
+        "main_count": 1,
+        "alt_count": 1,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_quick_t5_k02",
+        "model": "llasa3b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 2,
+        "expected": 2,
+        "main_count": 2,
+        "alt_count": 2,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_quick_t5_k03",
+        "model": "xtts2",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 3,
+        "expected": 3,
+        "main_count": 3,
+        "alt_count": 3,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_quick_t5_k04",
+        "model": "qwen17b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 4,
+        "expected": 4,
+        "main_count": 4,
+        "alt_count": 4,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_quick_t5_k06",
+        "model": "llasa1b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 6,
+        "expected": 6,
+        "main_count": 0,
+        "alt_count": 0,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_quick_t5_k08",
+        "model": "llasa3b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 8,
+        "expected": 8,
+        "main_count": 0,
+        "alt_count": 0,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_quick_t5_k12",
+        "model": "xtts2",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 12,
+        "expected": 12,
+        "main_count": 9,
+        "alt_count": 9,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_quick_t5_k16",
+        "model": "qwen17b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 16,
+        "expected": 16,
+        "main_count": 221,
+        "alt_count": 147,
+        "same": 0,
+        "abs_diff": 74
+      },
+      {
+        "item_id": "wr_quick_t5_k24",
+        "model": "llasa1b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 24,
+        "expected": 24,
+        "main_count": 441,
+        "alt_count": 147,
+        "same": 0,
+        "abs_diff": 294
+      },
+      {
+        "item_id": "wr_quick_t5_k32",
+        "model": "llasa3b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 32,
+        "expected": 32,
+        "main_count": 20,
+        "alt_count": 221,
+        "same": 0,
+        "abs_diff": 201
+      },
+      {
+        "item_id": "wr_really_t6_k01",
+        "model": "xtts2",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 1,
+        "expected": 1,
+        "main_count": 1,
+        "alt_count": 1,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_really_t6_k02",
+        "model": "qwen17b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 2,
+        "expected": 2,
+        "main_count": 2,
+        "alt_count": 2,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_really_t6_k03",
+        "model": "llasa1b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 3,
+        "expected": 3,
+        "main_count": 2,
+        "alt_count": 2,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_really_t6_k04",
+        "model": "llasa3b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 4,
+        "expected": 4,
+        "main_count": 0,
+        "alt_count": 0,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_really_t6_k06",
+        "model": "xtts2",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 6,
+        "expected": 6,
+        "main_count": 6,
+        "alt_count": 6,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_really_t6_k08",
+        "model": "qwen17b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 8,
+        "expected": 8,
+        "main_count": 8,
+        "alt_count": 8,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_really_t6_k12",
+        "model": "llasa1b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 12,
+        "expected": 12,
+        "main_count": 0,
+        "alt_count": 0,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_really_t6_k16",
+        "model": "llasa3b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 16,
+        "expected": 16,
+        "main_count": 13,
+        "alt_count": 13,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_really_t6_k24",
+        "model": "xtts2",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 24,
+        "expected": 24,
+        "main_count": 23,
+        "alt_count": 23,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_really_t6_k32",
+        "model": "qwen17b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 32,
+        "expected": 32,
+        "main_count": 221,
+        "alt_count": 221,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_very_t1_k01",
+        "model": "llasa1b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 1,
+        "expected": 1,
+        "main_count": 0,
+        "alt_count": 0,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_very_t1_k02",
+        "model": "llasa3b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 2,
+        "expected": 2,
+        "main_count": 2,
+        "alt_count": 2,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_very_t1_k03",
+        "model": "xtts2",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 3,
+        "expected": 3,
+        "main_count": 3,
+        "alt_count": 3,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_very_t1_k04",
+        "model": "qwen17b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 4,
+        "expected": 4,
+        "main_count": 4,
+        "alt_count": 4,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_very_t1_k06",
+        "model": "llasa1b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 6,
+        "expected": 6,
+        "main_count": 0,
+        "alt_count": 0,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_very_t1_k08",
+        "model": "llasa3b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 8,
+        "expected": 8,
+        "main_count": 2,
+        "alt_count": 221,
+        "same": 0,
+        "abs_diff": 219
+      },
+      {
+        "item_id": "wr_very_t1_k12",
+        "model": "xtts2",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 12,
+        "expected": 12,
+        "main_count": 221,
+        "alt_count": 12,
+        "same": 0,
+        "abs_diff": 209
+      },
+      {
+        "item_id": "wr_very_t1_k16",
+        "model": "qwen17b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 16,
+        "expected": 16,
+        "main_count": 19,
+        "alt_count": 19,
+        "same": 1,
+        "abs_diff": 0
+      },
+      {
+        "item_id": "wr_very_t1_k24",
+        "model": "llasa1b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 24,
+        "expected": 24,
+        "main_count": 21,
+        "alt_count": 221,
+        "same": 0,
+        "abs_diff": 200
+      },
+      {
+        "item_id": "wr_very_t1_k32",
+        "model": "llasa3b",
+        "seed": 0,
+        "family": "word_rep",
+        "k": 32,
+        "expected": 32,
+        "main_count": 0,
+        "alt_count": 0,
+        "same": 1,
+        "abs_diff": 0
+      }
+    ]
+  },
+  "synthetic_ground_truth": {
+    "condition": "repeated_word",
+    "main_decoding_config": "greedy, condition_on_prev_tokens=False (matches main run)",
+    "silence_between_copies_s": 0.25,
+    "donors": [
+      {
+        "model": "xtts2",
+        "item_id": "wr_very_t1_k01",
+        "seed": 0,
+        "template": "t1",
+        "target_word": "very"
+      },
+      {
+        "model": "xtts2",
+        "item_id": "wr_no_t2_k01",
+        "seed": 0,
+        "template": "t2",
+        "target_word": "no"
+      },
+      {
+        "model": "xtts2",
+        "item_id": "wr_far_t3_k01",
+        "seed": 0,
+        "template": "t3",
+        "target_word": "far"
+      },
+      {
+        "model": "xtts2",
+        "item_id": "wr_blue_t4_k01",
+        "seed": 0,
+        "template": "t4",
+        "target_word": "blue"
+      },
+      {
+        "model": "xtts2",
+        "item_id": "wr_quick_t5_k01",
+        "seed": 0,
+        "template": "t5",
+        "target_word": "quick"
+      },
+      {
+        "model": "xtts2",
+        "item_id": "wr_really_t6_k01",
+        "seed": 0,
+        "template": "t6",
+        "target_word": "really"
+      }
+    ],
+    "k_list": [
+      2,
+      4,
+      8,
+      16,
+      32
+    ],
+    "by_k": {
+      "2": {
+        "n": 6,
+        "mean_counted": 1.8333333333333333,
+        "mean_ratio": 0.9166666666666666,
+        "median_ratio": 1.0,
+        "frac_undercounted": 0.16666666666666666
+      },
+      "4": {
+        "n": 6,
+        "mean_counted": 2.0,
+        "mean_ratio": 0.5,
+        "median_ratio": 0.25,
+        "frac_undercounted": 0.6666666666666666
+      },
+      "8": {
+        "n": 6,
+        "mean_counted": 2.1666666666666665,
+        "mean_ratio": 0.2708333333333333,
+        "median_ratio": 0.125,
+        "frac_undercounted": 0.8333333333333334
+      },
+      "16": {
+        "n": 6,
+        "mean_counted": 10.333333333333334,
+        "mean_ratio": 0.6458333333333334,
+        "median_ratio": 0.71875,
+        "frac_undercounted": 1.0
+      },
+      "32": {
+        "n": 6,
+        "mean_counted": 17.0,
+        "mean_ratio": 0.53125,
+        "median_ratio": 0.5625,
+        "frac_undercounted": 1.0
+      }
+    },
+    "rows": [
+      {
+        "model": "xtts2",
+        "template": "t1",
+        "target_word": "very",
+        "k_true": 2,
+        "k_counted": 2,
+        "ratio": 1.0,
+        "seq_duration_s": 6.0953333333333335,
+        "transcript": " The dog was very big and it ran across the field. The dog was very big and it ran across the field."
+      },
+      {
+        "model": "xtts2",
+        "template": "t1",
+        "target_word": "very",
+        "k_true": 4,
+        "k_counted": 1,
+        "ratio": 0.25,
+        "seq_duration_s": 12.440666666666667,
+        "transcript": " The dog was very big and it ran across the field."
+      },
+      {
+        "model": "xtts2",
+        "template": "t1",
+        "target_word": "very",
+        "k_true": 8,
+        "k_counted": 8,
+        "ratio": 1.0,
+        "seq_duration_s": 25.131333333333334,
+        "transcript": " The dog was very big and it ran across the field. The dog was very big and it ran across the field. The dog was very big and it ran across the field. The dog was very big and it ran across the field. The dog was very big and it ran across the field. The dog was very big and it ran across the field. The dog was very big and it ran across the field. The dog was very big and it ran across the field."
+      },
+      {
+        "model": "xtts2",
+        "template": "t1",
+        "target_word": "very",
+        "k_true": 16,
+        "k_counted": 10,
+        "ratio": 0.625,
+        "seq_duration_s": 50.51266666666667,
+        "transcript": " The dog was very big and it ran across the field. The dog was very big and it ran across the field. The dog was very big and it ran across the field. The dog was very big and it ran across the field. The dog was very big and it ran across the field. The dog was very big and it ran across the field. The dog was very big and it ran across the field. The dog was very big and it ran across the field. The dog was very big and it ran across the field. The dog was very big and it ran across the field."
+      },
+      {
+        "model": "xtts2",
+        "template": "t1",
+        "target_word": "very",
+        "k_true": 32,
+        "k_counted": 15,
+        "ratio": 0.46875,
+        "seq_duration_s": 101.27533333333334,
+        "transcript": " The dog was very big and it ran across the field. The dog was very big and it ran across the field. The dog was very big and it ran across the field. The dog was very big and it ran across the field. The dog was very big and it ran across the field. The dog was very big and it ran across the field. The dog was very big and it ran across the field. The dog was very big and it ran across the field. The dog was very big and it ran across the field. The dog was very big and it ran across the field. and it ran across the field. The dog was very big and it ran across the field. field. The dog was very big and it ran across the field. The dog was very big and it ran across the field. The dog was very big and it ran across the field. The dog was very big and it ran across the field."
+      },
+      {
+        "model": "xtts2",
+        "template": "t2",
+        "target_word": "no",
+        "k_true": 2,
+        "k_counted": 2,
+        "ratio": 1.0,
+        "seq_duration_s": 5.263333333333334,
+        "transcript": " She said no to the offer and then left the room. She said no to the offer and then left the room."
+      },
+      {
+        "model": "xtts2",
+        "template": "t2",
+        "target_word": "no",
+        "k_true": 4,
+        "k_counted": 4,
+        "ratio": 1.0,
+        "seq_duration_s": 10.776666666666667,
+        "transcript": " She said no to the offer and then left the room. She said no to the offer and then left the room. She said no to the offer and then left the room. She said no to the offer and then left the room."
+      },
+      {
+        "model": "xtts2",
+        "template": "t2",
+        "target_word": "no",
+        "k_true": 8,
+        "k_counted": 1,
+        "ratio": 0.125,
+        "seq_duration_s": 21.803333333333335,
+        "transcript": " She said no to the offer and then left the room."
+      },
+      {
+        "model": "xtts2",
+        "template": "t2",
+        "target_word": "no",
+        "k_true": 16,
+        "k_counted": 12,
+        "ratio": 0.75,
+        "seq_duration_s": 43.85666666666667,
+        "transcript": " She said no to the offer and then left the room. She said no to the offer and then left the room. She said no to the offer and then left the room. She said no to the offer and then left the room. She said no to the offer and then left the room. She said no to the offer and then left the room. She said no to the offer and then left the room. She said no to the offer and then left the room. She said no to the offer and then left the room. She said no to the offer and then left the room. She said no to the offer and then left the room. She said no to the offer and then left the room."
+      },
+      {
+        "model": "xtts2",
+        "template": "t2",
+        "target_word": "no",
+        "k_true": 32,
+        "k_counted": 13,
+        "ratio": 0.40625,
+        "seq_duration_s": 87.96333333333334,
+        "transcript": " She said no to the offer and then left the room. She said no to the offer and then left the room. She said no to the offer and then left the room. She said no to the offer and then left the room. She said no to the offer and then left the room. She said no to the offer and then left the room. She said no to the offer and then left the room. She said no to the offer and then left the room. She said no to the offer and then left the room. She said no to the offer and then left the room. She said no to the offer and then left the room. She said no to the offer and then left the room. She said no to the offer and then left the room."
+      },
+      {
+        "model": "xtts2",
+        "template": "t3",
+        "target_word": "far",
+        "k_true": 2,
+        "k_counted": 1,
+        "ratio": 0.5,
+        "seq_duration_s": 5.540666666666667,
+        "transcript": " He walked far into the forest before turning back."
+      },
+      {
+        "model": "xtts2",
+        "template": "t3",
+        "target_word": "far",
+        "k_true": 4,
+        "k_counted": 4,
+        "ratio": 1.0,
+        "seq_duration_s": 11.331333333333333,
+        "transcript": " He walked far into the forest before turning back. He walked far into the forest before turning back. He walked far into the forest before turning back. He walked far into the forest before turning back."
+      },
+      {
+        "model": "xtts2",
+        "template": "t3",
+        "target_word": "far",
+        "k_true": 8,
+        "k_counted": 1,
+        "ratio": 0.125,
+        "seq_duration_s": 22.912666666666667,
+        "transcript": " He walked far into the forest before turning back."
+      },
+      {
+        "model": "xtts2",
+        "template": "t3",
+        "target_word": "far",
+        "k_true": 16,
+        "k_counted": 11,
+        "ratio": 0.6875,
+        "seq_duration_s": 46.07533333333333,
+        "transcript": " He walked far into the forest before turning back. He walked far into the forest before turning back. He walked far into the forest before turning back. He walked far into the forest before turning back. He walked far into the forest before turning back. He walked far into the forest before turning back. He walked far into the forest before turning back. He walked far into the forest before turning back. He walked far into the forest before turning back. He walked far into the forest before turning back. He walked far into the forest before turning back."
+      },
+      {
+        "model": "xtts2",
+        "template": "t3",
+        "target_word": "far",
+        "k_true": 32,
+        "k_counted": 21,
+        "ratio": 0.65625,
+        "seq_duration_s": 92.40066666666667,
+        "transcript": " He walked far into the forest before turning back. He walked far into the forest before turning back. He walked far into the forest before turning back. He walked far into the forest before turning back. He walked far into the forest before turning back. He walked far into the forest before turning back. He walked far into the forest before turning back. He walked far into the forest before turning back. He walked far into the forest before turning back. He walked far into the forest before turning back. He walked far into the forest before turning back. back he walked far into the forest before turning back he walked far into the forest before turning back he walked far into the forest before turning back he walked far into the forest before turning back he walked far into the forest before turning back he walked far into the forest before turning back he walked far into the forest before turning back he walked far into the forest before turning back he walked far into the forest before turning back he He walked far into the forest before turning back."
+      },
+      {
+        "model": "xtts2",
+        "template": "t4",
+        "target_word": "blue",
+        "k_true": 2,
+        "k_counted": 2,
+        "ratio": 1.0,
+        "seq_duration_s": 4.516666666666667,
+        "transcript": " The light was blue before the storm arrived. The light was blue before the storm arrived."
+      },
+      {
+        "model": "xtts2",
+        "template": "t4",
+        "target_word": "blue",
+        "k_true": 4,
+        "k_counted": 1,
+        "ratio": 0.25,
+        "seq_duration_s": 9.283333333333333,
+        "transcript": " The light was blue before the storm arrived."
+      },
+      {
+        "model": "xtts2",
+        "template": "t4",
+        "target_word": "blue",
+        "k_true": 8,
+        "k_counted": 1,
+        "ratio": 0.125,
+        "seq_duration_s": 18.816666666666666,
+        "transcript": " The light was blue before the storm arrived."
+      },
+      {
+        "model": "xtts2",
+        "template": "t4",
+        "target_word": "blue",
+        "k_true": 16,
+        "k_counted": 2,
+        "ratio": 0.125,
+        "seq_duration_s": 37.88333333333333,
+        "transcript": " The light was blue before the storm arrived. The light was blue before the storm arrived."
+      },
+      {
+        "model": "xtts2",
+        "template": "t4",
+        "target_word": "blue",
+        "k_true": 32,
+        "k_counted": 3,
+        "ratio": 0.09375,
+        "seq_duration_s": 76.01666666666667,
+        "transcript": " The light was blue before the storm arrived. The light was blue before the storm arrived. The light was blue before the storm arrived."
+      },
+      {
+        "model": "xtts2",
+        "template": "t5",
+        "target_word": "quick",
+        "k_true": 2,
+        "k_counted": 2,
+        "ratio": 1.0,
+        "seq_duration_s": 4.41,
+        "transcript": " The runner moved quick along the narrow path. The runner moved quick along the narrow path."
+      },
+      {
+        "model": "xtts2",
+        "template": "t5",
+        "target_word": "quick",
+        "k_true": 4,
+        "k_counted": 1,
+        "ratio": 0.25,
+        "seq_duration_s": 9.07,
+        "transcript": " The runner moved quick along the narrow pass."
+      },
+      {
+        "model": "xtts2",
+        "template": "t5",
+        "target_word": "quick",
+        "k_true": 8,
+        "k_counted": 1,
+        "ratio": 0.125,
+        "seq_duration_s": 18.39,
+        "transcript": " The runner moved quick along the narrow pass."
+      },
+      {
+        "model": "xtts2",
+        "template": "t5",
+        "target_word": "quick",
+        "k_true": 16,
+        "k_counted": 14,
+        "ratio": 0.875,
+        "seq_duration_s": 37.03,
+        "transcript": " The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass."
+      },
+      {
+        "model": "xtts2",
+        "template": "t5",
+        "target_word": "quick",
+        "k_true": 32,
+        "k_counted": 26,
+        "ratio": 0.8125,
+        "seq_duration_s": 74.31,
+        "transcript": " The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass. The runner moved quick along the narrow pass."
+      },
+      {
+        "model": "xtts2",
+        "template": "t6",
+        "target_word": "really",
+        "k_true": 2,
+        "k_counted": 2,
+        "ratio": 1.0,
+        "seq_duration_s": 4.794,
+        "transcript": " They were really tired after the long journey. They were really tired after the long journey."
+      },
+      {
+        "model": "xtts2",
+        "template": "t6",
+        "target_word": "really",
+        "k_true": 4,
+        "k_counted": 1,
+        "ratio": 0.25,
+        "seq_duration_s": 9.838,
+        "transcript": " They were really tired after the long journey."
+      },
+      {
+        "model": "xtts2",
+        "template": "t6",
+        "target_word": "really",
+        "k_true": 8,
+        "k_counted": 1,
+        "ratio": 0.125,
+        "seq_duration_s": 19.926,
+        "transcript": " They were really tired after the long journey."
+      },
+      {
+        "model": "xtts2",
+        "template": "t6",
+        "target_word": "really",
+        "k_true": 16,
+        "k_counted": 13,
+        "ratio": 0.8125,
+        "seq_duration_s": 40.102,
+        "transcript": " They were really tired after the long journey. They were really tired after the long journey. They were really tired after the long journey. They were really tired after the long journey. They were really tired after the long journey. They were really tired after the long journey. They were really tired after the long journey. They were really tired after the long journey. They were really tired after the long journey. They were really tired after the long journey. They were really tired after the long journey. They were really tired after the long journey. They were really tired after the long journey."
+      },
+      {
+        "model": "xtts2",
+        "template": "t6",
+        "target_word": "really",
+        "k_true": 32,
+        "k_counted": 24,
+        "ratio": 0.75,
+        "seq_duration_s": 80.454,
+        "transcript": " They were really tired after the long journey. They were really tired after the long journey. They were really tired after the long journey. They were really tired after the long journey. They were really tired after the long journey. They were really tired after the long journey. They were really tired after the long journey. They were really tired after the long journey. They were really tired after the long journey. They were really tired after the long journey. They were really tired after the long journey. They were really tired after the long journey. They were really tired after the long journey. They were really tired after the long journey. They were really tired after the long journey. They were really tired after the long journey. They were really tired after the long journey. They were really tired after the long journey. They were really tired after the long journey. They were really tired after the long journey. They were really tired after the long journey. They were really tired after the long journey. They were really tired after the long journey. They were really tired after the long journey."
+      }
+    ]
+  },
+  "synthetic_ground_truth_control": {
+    "condition": "distinct_words",
+    "voice": "xtts2",
+    "n_rotations": 3,
+    "main_decoding_config": "greedy, condition_on_prev_tokens=False (matches main run)",
+    "silence_between_copies_s": 0.25,
+    "vocabulary": [
+      "very",
+      "no",
+      "far",
+      "blue",
+      "quick",
+      "really"
+    ],
+    "k_list": [
+      2,
+      4,
+      8,
+      16,
+      32
+    ],
+    "by_k": {
+      "2": {
+        "n": 3,
+        "mean_counted": 2.0,
+        "mean_ratio": 1.0,
+        "median_ratio": 1.0,
+        "frac_undercounted": 0.0
+      },
+      "4": {
+        "n": 3,
+        "mean_counted": 4.0,
+        "mean_ratio": 1.0,
+        "median_ratio": 1.0,
+        "frac_undercounted": 0.0
+      },
+      "8": {
+        "n": 3,
+        "mean_counted": 8.0,
+        "mean_ratio": 1.0,
+        "median_ratio": 1.0,
+        "frac_undercounted": 0.0
+      },
+      "16": {
+        "n": 3,
+        "mean_counted": 16.0,
+        "mean_ratio": 1.0,
+        "median_ratio": 1.0,
+        "frac_undercounted": 0.0
+      },
+      "32": {
+        "n": 3,
+        "mean_counted": 32.0,
+        "mean_ratio": 1.0,
+        "median_ratio": 1.0,
+        "frac_undercounted": 0.0
+      }
+    },
+    "rows": [
+      {
+        "offset": 0,
+        "k_true": 2,
+        "k_counted": 2,
+        "ratio": 1.0,
+        "seq_duration_s": 5.679333333333333,
+        "transcript": " The dog was very big and it ran across the field. She said no to the offer and then left the room.",
+        "words_used": [
+          "very",
+          "no"
+        ]
+      },
+      {
+        "offset": 0,
+        "k_true": 4,
+        "k_counted": 4,
+        "ratio": 1.0,
+        "seq_duration_s": 10.958,
+        "transcript": " The dog was very big and it ran across the field. She said no to the offer and then left the room. He walked far into the forest before turning back. The light was blue before the storm arrived.",
+        "words_used": [
+          "very",
+          "no",
+          "far",
+          "blue"
+        ]
+      },
+      {
+        "offset": 0,
+        "k_true": 8,
+        "k_counted": 8,
+        "ratio": 1.0,
+        "seq_duration_s": 21.739333333333335,
+        "transcript": " The dog was very big and it ran across the field. She said no to the offer and then left the room. He walked far into the forest before turning back. The light was blue before the storm arrived. The runner moved quick along the narrow path. They were really tired after the long journey. The dog was very big and it ran across the field. She said no to the offer and then left the room.",
+        "words_used": [
+          "very",
+          "no",
+          "far",
+          "blue",
+          "quick",
+          "really",
+          "very",
+          "no"
+        ]
+      },
+      {
+        "offset": 0,
+        "k_true": 16,
+        "k_counted": 16,
+        "ratio": 1.0,
+        "seq_duration_s": 43.078,
+        "transcript": " The dog was very big and it ran across the field. She said no to the offer and then left the room. He walked far into the forest before turning back. The light was blue before the storm arrived. The runner moved quick along the narrow path. They were really tired after the long journey. The dog was very big and it ran across the field. She said no to the offer and then left the room. He walked far into the forest before turning back. The light was blue before the storm arrived. The runner moved quick along the narrow path. They were really tired after the long journey. The dog was very big and it ran across the field. She said no to the offer and then left the room. He walked far into the forest before turning back. The light was blue before the storm arrived.",
+        "words_used": [
+          "very",
+          "no",
+          "far",
+          "blue",
+          "quick",
+          "really",
+          "very",
+          "no",
+          "far",
+          "blue",
+          "quick",
+          "really",
+          "very",
+          "no",
+          "far",
+          "blue"
+        ]
+      },
+      {
+        "offset": 0,
+        "k_true": 32,
+        "k_counted": 32,
+        "ratio": 1.0,
+        "seq_duration_s": 85.97933333333333,
+        "transcript": " The dog was very big and it ran across the field. She said no to the offer and then left the room. He walked far into the forest before turning back. The light was blue before the storm arrived. The runner moved quick along the narrow path. They were really tired after the long journey. The dog was very big and it ran across the field. She said no to the offer and then left the room. He walked far into the forest before turning back. The light was blue before the storm arrived. The runner moved quick along the narrow path. They were really tired after the long journey. The dog was very big and it ran across the field. She said no to the offer and then left the room. He walked far into the forest before turning back. The light was blue before the storm arrived. The runner moved quick along the narrow path. They were really tired after the long journey. The dog was very big and it ran across the field. She said no to the offer and then left the room. He walked far into the forest before turning back. The light was blue before the storm arrived. The runner moved quick along the narrow path. They were really tired after the long journey. The dog was very big and it ran across the field. She said no to the offer and then left the room. He walked far into the forest before turning back. The light was blue before the storm arrived. The runner moved quick along the narrow path. They were really tired after the long journey. The dog was very big and it ran across the field. She said no to the offer and then left the room.",
+        "words_used": [
+          "very",
+          "no",
+          "far",
+          "blue",
+          "quick",
+          "really",
+          "very",
+          "no",
+          "far",
+          "blue",
+          "quick",
+          "really",
+          "very",
+          "no",
+          "far",
+          "blue",
+          "quick",
+          "really",
+          "very",
+          "no",
+          "far",
+          "blue",
+          "quick",
+          "really",
+          "very",
+          "no",
+          "far",
+          "blue",
+          "quick",
+          "really",
+          "very",
+          "no"
+        ]
+      },
+      {
+        "offset": 1,
+        "k_true": 2,
+        "k_counted": 2,
+        "ratio": 1.0,
+        "seq_duration_s": 5.402,
+        "transcript": " She said no to the offer and then left the room. He walked far into the forest before turning back.",
+        "words_used": [
+          "no",
+          "far"
+        ]
+      },
+      {
+        "offset": 1,
+        "k_true": 4,
+        "k_counted": 4,
+        "ratio": 1.0,
+        "seq_duration_s": 10.115333333333334,
+        "transcript": " She said no to the offer and then left the room. He walked far into the forest before turning back. The light was blue before the storm arrived. The runner moved quick along the narrow path.",
+        "words_used": [
+          "no",
+          "far",
+          "blue",
+          "quick"
+        ]
+      },
+      {
+        "offset": 1,
+        "k_true": 8,
+        "k_counted": 8,
+        "ratio": 1.0,
+        "seq_duration_s": 21.462,
+        "transcript": " She said no to the offer and then left the room. He walked far into the forest before turning back. The light was blue before the storm arrived. The runner moved quick along the narrow path. They were really tired after the long journey. The dog was very big and it ran across the field. She said no to the offer and then left the room. He walked far into the forest before turning back.",
+        "words_used": [
+          "no",
+          "far",
+          "blue",
+          "quick",
+          "really",
+          "very",
+          "no",
+          "far"
+        ]
+      },
+      {
+        "offset": 1,
+        "k_true": 16,
+        "k_counted": 16,
+        "ratio": 1.0,
+        "seq_duration_s": 42.23533333333334,
+        "transcript": " She said no to the offer and then left the room. He walked far into the forest before turning back. The light was blue before the storm arrived. The runner moved quick along the narrow path. They were really tired after the long journey. The dog was very big and it ran across the field. She said no to the offer and then left the room. He walked far into the forest before turning back. The light was blue before the storm arrived. The runner moved quick along the narrow path. They were really tired after the long journey. the dog was very big and it ran across the field she said no to the offer and then left the room he walked far into the forest before turning back the light was blue before the storm arrived the runner moved quick along the narrow path",
+        "words_used": [
+          "no",
+          "far",
+          "blue",
+          "quick",
+          "really",
+          "very",
+          "no",
+          "far",
+          "blue",
+          "quick",
+          "really",
+          "very",
+          "no",
+          "far",
+          "blue",
+          "quick"
+        ]
+      },
+      {
+        "offset": 1,
+        "k_true": 32,
+        "k_counted": 32,
+        "ratio": 1.0,
+        "seq_duration_s": 85.702,
+        "transcript": " She said no to the offer and then left the room. He walked far into the forest before turning back. The light was blue before the storm arrived. The runner moved quick along the narrow path. They were really tired after the long journey. The dog was very big and it ran across the field. She said no to the offer and then left the room. He walked far into the forest before turning back. The light was blue before the storm arrived. The runner moved quick along the narrow path. They were really tired after the long journey. The dog was very big and it ran across the field She said no to the offer and then left the room He walked far into the forest before turning back the light was blue before the storm arrived The runner moved quick along the narrow path. They were really tired after the long journey The dog was very big and it ran across the field She said no to the offer and then left the room He walked far into the forest before turning back the light was blue before the storm arrived The runner moved quick along the narrow path They were really tired after the long journey. The dog was very big and it ran across the field. She said no to the offer and then left the room. He walked far into the forest before turning back. The light was blue before the storm arrived. The runner moved quick along the narrow path. They were really tired after the long journey. The dog was very big and it ran across the field. She said no to the offer and then left the room. He walked far into the forest before turning back.",
+        "words_used": [
+          "no",
+          "far",
+          "blue",
+          "quick",
+          "really",
+          "very",
+          "no",
+          "far",
+          "blue",
+          "quick",
+          "really",
+          "very",
+          "no",
+          "far",
+          "blue",
+          "quick",
+          "really",
+          "very",
+          "no",
+          "far",
+          "blue",
+          "quick",
+          "really",
+          "very",
+          "no",
+          "far",
+          "blue",
+          "quick",
+          "really",
+          "very",
+          "no",
+          "far"
+        ]
+      },
+      {
+        "offset": 2,
+        "k_true": 2,
+        "k_counted": 2,
+        "ratio": 1.0,
+        "seq_duration_s": 5.028666666666667,
+        "transcript": " He walked far into the forest before turning back. The light was blue before the storm arrived.",
+        "words_used": [
+          "far",
+          "blue"
+        ]
+      },
+      {
+        "offset": 2,
+        "k_true": 4,
+        "k_counted": 4,
+        "ratio": 1.0,
+        "seq_duration_s": 9.880666666666666,
+        "transcript": " He walked far into the forest before turning back. The light was blue before the storm arrived. The runner moved quick along the narrow path. They were really tired after the long journey.",
+        "words_used": [
+          "far",
+          "blue",
+          "quick",
+          "really"
+        ]
+      },
+      {
+        "offset": 2,
+        "k_true": 8,
+        "k_counted": 8,
+        "ratio": 1.0,
+        "seq_duration_s": 21.088666666666665,
+        "transcript": " He walked far into the forest before turning back. The light was blue before the storm arrived. The runner moved quick along the narrow path. They were really tired after the long journey. The dog was very big and it ran across the field. She said no to the offer and then left the room. He walked far into the forest before turning back. The light was blue before the storm arrived.",
+        "words_used": [
+          "far",
+          "blue",
+          "quick",
+          "really",
+          "very",
+          "no",
+          "far",
+          "blue"
+        ]
+      },
+      {
+        "offset": 2,
+        "k_true": 16,
+        "k_counted": 16,
+        "ratio": 1.0,
+        "seq_duration_s": 42.00066666666667,
+        "transcript": " He walked far into the forest before turning back. The light was blue before the storm arrived. The runner moved quick along the narrow path. They were really tired after the long journey. The dog was very big and it ran across the field. She said no to the offer and then left the room. He walked far into the forest before turning back. The light was blue before the storm arrived. The runner moved quick along the narrow path. They were really tired after the long journey. The dog was very big and it ran across the field. She said no to the offer and then left the room. He walked far into the forest before turning back. The light was blue before the storm arrived. The runner moved quick along the narrow path. They were really tired after the long journey.",
+        "words_used": [
+          "far",
+          "blue",
+          "quick",
+          "really",
+          "very",
+          "no",
+          "far",
+          "blue",
+          "quick",
+          "really",
+          "very",
+          "no",
+          "far",
+          "blue",
+          "quick",
+          "really"
+        ]
+      },
+      {
+        "offset": 2,
+        "k_true": 32,
+        "k_counted": 32,
+        "ratio": 1.0,
+        "seq_duration_s": 85.32866666666666,
+        "transcript": " He walked far into the forest before turning back. The light was blue before the storm arrived. The runner moved quick along the narrow path. They were really tired after the long journey. The dog was very big and it ran across the field. She said no to the offer and then left the room. He walked far into the forest before turning back. The light was blue before the storm arrived. The runner moved quick along the narrow path. They were really tired after the long journey. The dog was very big and it ran across the field. She said no to the offer and then left the room. He walked far into the forest before turning back. The light was blue before the storm arrived. The runner moved quick along the narrow path. They were really tired after the long journey. The dog was very big and it ran across the field. She said no to the offer and then left the room. He walked far into the forest before turning back. The light was blue before the storm arrived. The runner moved quick along the narrow path. They were really tired after the long journey. The dog was very big and it ran across the field. She said no to the offer and then left the room. He walked far into the forest before turning back. The light was blue before the storm arrived. The runner moved quick along the narrow path. They were really tired after the long journey. The dog was very big and it ran across the field. She said no to the offer and then left the room. He walked far into the forest before turning back. The light was blue before the storm arrived.",
+        "words_used": [
+          "far",
+          "blue",
+          "quick",
+          "really",
+          "very",
+          "no",
+          "far",
+          "blue",
+          "quick",
+          "really",
+          "very",
+          "no",
+          "far",
+          "blue",
+          "quick",
+          "really",
+          "very",
+          "no",
+          "far",
+          "blue",
+          "quick",
+          "really",
+          "very",
+          "no",
+          "far",
+          "blue",
+          "quick",
+          "really",
+          "very",
+          "no",
+          "far",
+          "blue"
+        ]
+      }
+    ]
+  },
+  "verdict": "decoding-consistency: Whisper agrees with itself on 83% of repeated items (mean|diff|=33.83) vs 96% of control items (mean|diff|=0.91). synthetic ground truth (repeated word): mean counted/true ratio is 0.92 at k=2 vs [k=4: 0.50, k=8: 0.27, k=16: 0.65, k=32: 0.53] at higher k -- Whisper undercounts genuinely-correct periodic material, severely at moderate k. matched same-voice distinct-word control (mean ratio 1.00 vs 0.49 repeated, k>=4): [k=4: repeated=0.50 vs distinct=1.00, k=8: repeated=0.27 vs distinct=1.00, k=16: repeated=0.65 vs distinct=1.00, k=32: repeated=0.53 vs distinct=1.00] -- distinct-word sequences of matched length are transcribed more completely, so the undercount is specific to identical repeated material, not a generic long-audio artefact."
+}

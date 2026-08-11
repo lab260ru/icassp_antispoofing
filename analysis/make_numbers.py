@@ -152,8 +152,12 @@ def main() -> None:
         macros["CapRatioPct"] = fmt(100 * cap.get("ratio_median", np.nan), 0)
         macros["NCapSep"] = str(cap.get("n_separated", 0))
         macros["NCapModels"] = str(cap.get("n_models", 0))
-        macros["NCapSepWord"] = WORDS.get(cap.get("n_separated", 0),
-                                          str(cap.get("n_separated", 0)))
+        n_sep, n_tot = cap.get("n_separated", 0), cap.get("n_models", 0)
+        # Reads as prose either way: "all six" when the panel is unanimous,
+        # "4 of 6" when it is not.
+        macros["CapSepPhrase"] = (f"all {WORDS.get(n_tot, n_tot)}"
+                                  if n_sep == n_tot and n_tot
+                                  else f"{n_sep} of {n_tot}")
         gaps = [v["paired"]["gap"] for v in cap["models"].values()
                 if np.isfinite(v["paired"].get("gap", np.nan))]
         fpos = [v["paired"]["frac_pos"] for v in cap["models"].values()
@@ -244,7 +248,9 @@ def main() -> None:
             macros["ProbeRetCtl"] = fmt(np.median(rets_c), 2)
         macros["ProbeNBelow"] = str(n_below)
         macros["ProbeNModels"] = str(len(pr))
-        macros["ProbeNBelowWord"] = WORDS.get(n_below, str(n_below))
+        macros["ProbePhrase"] = (f"all {WORDS.get(len(pr), len(pr))}"
+                                 if n_below == len(pr) and pr
+                                 else f"{n_below} of {len(pr)}")
 
     # LaTeX macro names may not contain digits, so "r2" must be spelled out.
     p2 = summ.get("p2", {})
