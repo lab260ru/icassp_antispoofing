@@ -71,7 +71,37 @@ by construction: the flatter the attention over repeated spans (Lemma B), the
 worse any attention-based localiser gets. Reported in the paper, kept in
 `src/common/boundaries.py`.
 
+### Alternatives tested and ruled out
+
+Four competing explanations were raised in review and answered with measurements,
+not argument:
+
+| alternative | test | result |
+|---|---|---|
+| repeated text is just improbable text | per-token NLL of matched pairs under an LM outside the panel (phi-2) | control is the *less* probable member in 87% of 54 pairs; naturalness runs opposite to the effect |
+| the attractor is acoustic, not text-side | word vs sentence repetition, whose units differ several-fold in token cost | k* differs by 1.7 repetitions while token count at collapse differs 1.34×; the horizon is counted in repetitions |
+| effective-rank decline is tautological — repeated audio *is* monotonous | add realised output diversity as covariates; and restrict to correct renderings | ratio 0.50 raw, 0.50 adjusted, 0.47 correct-only |
+| the count survives and only the output policy fails (as in text LMs, arXiv:2605.09239) | ridge probe, early vs late third of the *same* trajectory | retention 0.97 repeated vs 1.12 control, repeated lower in 7/7; degradation, not erasure |
+
+### The XTTS ablation
+
+Disabling XTTS-v2's shipped `repetition_penalty=5.0` makes the model *worse*
+(k* 4 → 2) while the repeated-vs-control gap persists (0.02 vs 0.15). The penalty
+was masking the collapse, not causing it, so the penalised model is the
+conservative member of the panel. Its capacity contrast loses significance
+because disabling the penalty compresses the dynamic range of both conditions —
+reported, not glossed.
+
 ## Lessons and Constraints (added)
+
+- **Never pool an ablation variant into panel statistics.** `xtts2norp` is a
+  re-run of `xtts2` under a changed decoding setting; counting it as a seventh
+  checkpoint inflated the panel size and every pooled number. Caught in review.
+- Report proportions with Wilson intervals and per-cell n. Several cells sit at
+  0% or 100% where the normal approximation is degenerate.
+- A naturalness referee drawn from the tested panel is not a referee. The
+  Llasa-1B and phi-2 scorers agree on the headline (87–89% of pairs) but *not* on
+  the trend at high k, so only the direction is claimed.
 
 - **Do not name a module `tokenizers.py` under `src/common/`.** Running a script
   from that directory shadows the real package and breaks `transformers`.

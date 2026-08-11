@@ -49,11 +49,12 @@ Models that cannot say \emph{very} six times in a row will say twelve or sixteen
 One alternative deserves ruling out: repeated text is unusual text, so perhaps
 models fail on it because it is improbable rather than because it is periodic.
 That would require the controls to be the more natural member of each pair. They
-are not. Scored under a general-purpose causal LM, the control is the \emph{less}
-probable member in \NllCtlHigherPct{}\% of the \NllPairs{} matched pairs (mean
-per-token NLL \NllCtl{} vs.\ \NllRep{}), and the gap widens monotonically with
-$k$. The harder-to-predict text is the one models render correctly, so
-naturalness runs opposite to the effect.
+are not. Scored under an independent causal LM --- one outside the panel and not
+a backbone of any panel member --- the control is the \emph{less} probable member
+in \NllIndCtlHigherPct{}\% of the \NllIndPairs{} matched pairs (mean per-token NLL
+\NllIndCtl{} vs.\ \NllIndRep{}), and the gap is largest precisely in the
+$k\!=\!4$--$12$ range where the collapse happens. The harder-to-predict text is
+the one models render correctly, so naturalness runs opposite to the effect.
 
 A second alternative locates the collapse in acoustic rather than text space: an
 attractor reached once enough near-identical frames accumulate, with the text

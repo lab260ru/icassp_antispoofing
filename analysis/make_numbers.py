@@ -202,15 +202,22 @@ def main() -> None:
             macros[f"Abl{tag}KStar"] = str(int(above.max())) if len(above) else "0"
 
     # ---- naturalness control -------------------------------------------
-    nll_path = Path("data/results/text_nll.json")
-    if nll_path.exists():
-        nll = json.loads(nll_path.read_text())
-        if "diff_mean" in nll:
-            macros["NllDiff"] = fmt(nll["diff_mean"], 2)
-            macros["NllCtlHigherPct"] = fmt(100 * nll["frac_ctl_higher"], 0)
-            macros["NllRep"] = fmt(nll["rep_mean"], 1)
-            macros["NllCtl"] = fmt(nll["ctl_mean"], 1)
-            macros["NllPairs"] = str(nll["n_pairs"])
+    # Two scorers: a panel backbone (Llasa-1B) and an independent LM outside the
+    # panel. The paper quotes the independent one, because a referee drawn from
+    # the tested models is not a referee.
+    for path, pre in (("data/results/text_nll.json", "Nll"),
+                      ("data/results/text_nll_independent.json", "NllInd")):
+        p = Path(path)
+        if not p.exists():
+            continue
+        nll = json.loads(p.read_text())
+        if "diff_mean" not in nll:
+            continue
+        macros[pre + "Diff"] = fmt(nll["diff_mean"], 2)
+        macros[pre + "CtlHigherPct"] = fmt(100 * nll["frac_ctl_higher"], 0)
+        macros[pre + "Rep"] = fmt(nll["rep_mean"], 2)
+        macros[pre + "Ctl"] = fmt(nll["ctl_mean"], 2)
+        macros[pre + "Pairs"] = str(nll["n_pairs"])
 
     # ---- probe -----------------------------------------------------------
     probe_path = Path("data/results/probe.json")
