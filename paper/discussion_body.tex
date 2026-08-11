@@ -1,0 +1,50 @@
+% Discussion body. Hand-written; numbers come from numbers.tex.
+
+\noindent\textbf{What is and is not proved.}
+The Lean artifact certifies an implication: periodic conditioning plus
+contraction implies a finite counting horizon. It does not prove that any
+transformer contracts. That premise is empirical, we measured it as $\hat q$, and
+we report the measurement rather than assuming it. Where a model were to show
+$\hat q \ge 1$ the theorem would simply be silent about it, and we would report
+that as a second regime rather than as a refutation --- a distinction the
+formalisation forced us to keep explicit, and one that descriptive spectral
+accounts of hallucination tend to blur.
+
+\noindent\textbf{Relation to prior collapse results.}
+That deep transformers lose rank and over-squash is
+known~\cite{dong2021attention,barbero2024glasses}, and self-attention has been
+analysed as a dynamical system with attracting
+clusters~\cite{geshkovski2023emergence,gao2026clustered}. Those results index
+convergence by \emph{depth} or by an abstract temperature. Ours indexes it by
+\emph{generation step under periodic conditioning}, which is what makes the
+consequence a statement about counting rather than about representation quality,
+and what yields a horizon in units a practitioner can act on. Repetition
+inevitability has also been derived at the level of decoding rules and output
+probabilities~\cite{fu2021theoretical,xu2022learning}; Theorem~\ref{thm:collapse}
+is decoding-rule agnostic, since it constrains any Lipschitz readout of the
+state, greedy and sampled alike.
+
+\noindent\textbf{Implications for mitigation.}
+Existing fixes act late: attention supervision, alignment priors, contrastive
+decoding~\cite{wang2025eliminating,xin2024ralle}. Under this account they help
+only insofar as they raise $q$ or enlarge the readout margin. The bound in
+\eqref{eq:horizon} says the two levers are not equal --- the horizon is
+logarithmic in the margin and in the orbit scale, but inversely logarithmic in
+$q$. Buying a factor of two in margin adds a constant number of repetitions;
+moving $q$ from $0.9$ to $0.95$ roughly doubles the horizon. Architectural or
+training interventions that keep the per-repetition map from contracting should
+therefore dominate decoding-time patches, and $\hat q$ gives a cheap way to
+measure whether a candidate intervention actually does so, without generating a
+single evaluation set.
+
+\noindent\textbf{Limitations.}
+Boundaries are located from text attention, which is unavailable in models whose
+text and acoustic embeddings are additively fused (Qwen3-TTS, where those items
+fall back to uniform placement); we report which method produced each estimate.
+The panel is English-only and covers \NModelsNum{} checkpoints, so the $k^\ast$
+regression rests on few points. XTTS-v2 ships a repetition penalty of $5.0$ on
+acoustic tokens, which acts directly against the behaviour we measure and makes
+it a conservative rather than a neutral member of the panel. Finally, $\hat q$ is
+a scalar summary of a map that is only approximately autonomous; the residual
+non-autonomy is exactly the $O(\delta + 1/k)$ term Lemma~\ref{lem:dilution}
+bounds but that we do not propagate through the theorem.

@@ -136,6 +136,23 @@ def main() -> None:
         spec.hf_id, dtype=torch.bfloat16, attn_implementation="eager"
     ).to(device).eval()
 
+    def set_attn(mode: str) -> None:
+        """Swap the attention kernel between passes.
+
+        Sampling is the bulk of the cost and does not need attention weights, so
+        it runs under SDPA; only the single teacher-forced instrumentation pass
+        needs eager, which is the only kernel that materialises the weights our
+        hooks read. Dispatch reads `config._attn_implementation` at forward
+        time, so flipping it per pass is sufficient.
+        """
+        model.config._attn_implementation = mode
+        inner = getattr(model, "model", None)
+        if inner is not None and hasattr(inner, "config"):
+            inner.config._attn_implementation = mode
+            for lyr in getattr(inner, "layers", []):
+                if hasattr(lyr, "self_attn") and hasattr(lyr.self_attn, "config"):
+                    lyr.self_attn.config._attn_implementation = mode
+
     n_layers = model.config.num_hidden_layers
     probes = probe_layer_indices(n_layers, spec.probe_layers)
     # attention probes: early / mid / late / last, a subset of the state probes
@@ -177,6 +194,7 @@ def main() -> None:
             lo, hi = text_span(tok, ids)
             plen = ids.shape[1]
 
+            set_attn("sdpa")
             with torch.no_grad():
                 out = model.generate(
                     ids, max_new_tokens=args.max_new_tokens, eos_token_id=eos,
@@ -203,6 +221,7 @@ def main() -> None:
                 full = out[0][: plen + gen_no_eos.shape[0]].unsqueeze(0)
                 recorder = TextAttentionRecorder(lo, hi)
                 recorder.attach(model, attn_probes)
+                set_attn("eager")
                 with torch.no_grad():
                     fwd = model(full, output_hidden_states=True, output_attentions=True)
                 recorder.detach()
@@ -218,14 +237,17 @@ def main() -> None:
                 pr = torch.softmax(logits, dim=-1)
                 ent = (-(pr * torch.log(pr.clamp_min(1e-12))).sum(-1)).cpu().numpy()
                 top1 = pr.max(-1).values.cpu().numpy()
-                np.savez_compressed(
+                # Uncompressed: zlib on a 150 MB fp16 array costs more CPU and
+                # peak RSS than the disk it saves, and disk is not the scarce
+                # resource here.
+                np.savez(
                     act_dir / f"{it['item_id']}_s{seed}.npz",
                     hidden=hs, probe_layers=np.array(probes),
                     entropy=ent.astype(np.float32), top1=top1.astype(np.float32),
                     **attn,
                 )
                 rec["instrumented"] = True
-                del fwd, hs
+                del fwd, hs, attn, logits, pr
             meta_f.write(json.dumps(rec) + "\n")
             meta_f.flush()
             n_done += 1

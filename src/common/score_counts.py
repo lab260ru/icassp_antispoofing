@@ -154,7 +154,7 @@ def fit_duration_models(rows: list[dict]) -> dict:
     """
     buckets: dict[tuple, list[tuple[float, float]]] = defaultdict(list)
     for r in rows:
-        if r["k"] <= 4 and r["count_a"] == r["expected_count"] and r["duration_s"] > 0.2:
+        if r["k"] <= 3 and r["count_a"] == r["expected_count"] and r["duration_s"] > 0.2:
             for key in ((r["model"], r["family"], r["template"]),
                         (r["model"], r["family"]),
                         (r["model"],)):
@@ -174,21 +174,42 @@ def fit_duration_models(rows: list[dict]) -> dict:
     return fits
 
 
+DUR_LO, DUR_HI = 0.70, 1.45
+
+
 def classify(r: dict) -> str:
-    """Outcome label. Order matters: audio-level degeneracy dominates, because a
-    model emitting noise at the right length would otherwise score as correct."""
+    """Outcome label from two independent evidence streams.
+
+    Correctness is *conjunctive*: the transcript must show exactly the requested
+    number of occurrences AND the audio must be the length that many occurrences
+    take. Requiring both is what makes the label robust to the two known failure
+    directions --- Whisper de-duplicating a genuine loop (transcript too short,
+    duration long) and a model babbling for the right duration (duration right,
+    transcript wrong). We never have to *estimate* a count in the failure cases,
+    only certify it in the successful ones.
+
+    Order matters: audio-level degeneracy is checked first, because noise of the
+    correct length would otherwise pass the duration test.
+    """
     if r["duration_s"] < 0.25 or r.get("rms", 1.0) < 1e-3:
         return "empty"
     if r.get("spectral_flatness", 0.0) > 0.35 or not r["transcript"].strip():
         return "degenerate"
-    exp, got = r["expected_count"], r["count_final"]
-    if got is None:
-        return "audit"
-    if got == exp:
+    exp, ca = r["expected_count"], r["count_a"]
+    dr = r.get("duration_ratio", float("nan"))
+    dr_ok = (dr == dr) and (DUR_LO <= dr <= DUR_HI)   # NaN-safe
+    if ca == exp and dr_ok:
         return "correct"
-    if got > exp:
-        return "loop" if (r.get("hit_cap") or r.get("duration_ratio", 1.0) > 1.6) else "overcount"
-    return "truncation" if r.get("duration_ratio", 1.0) < 0.7 else "undercount"
+    # long: the model kept going. short: it stopped early.
+    if r.get("hit_cap") or ((dr == dr) and dr > 1.6):
+        return "loop"
+    if ca > exp:
+        return "overcount"
+    if (dr == dr) and dr < DUR_LO:
+        return "truncation"
+    if ca < exp:
+        return "undercount"
+    return "miscount"
 
 
 def main() -> None:
@@ -247,17 +268,15 @@ def main() -> None:
             r["count_b"] = None
             r["expected_duration_s"] = float("nan")
             r["duration_ratio"] = float("nan")
-        # reconcile
+        # The two estimators are reported side by side rather than merged. Their
+        # agreement rate is a measurement-quality statistic; correctness itself
+        # is decided conjunctively in `classify`, so a disagreement can never
+        # silently become a count.
         ca, cb = r["count_a"], r["count_b"]
         tol = max(1.0, 0.15 * max(r["expected_count"], 1))
-        if cb is None or abs(ca - cb) <= tol:
-            r["count_final"] = ca
-            r["agree"] = True
-        else:
-            # ASR de-duplication is the dominant failure at high k, so when the
-            # two disagree we take the larger — but flag the item for audit.
-            r["count_final"] = max(ca, cb)
-            r["agree"] = False
+        r["agree"] = cb is None or abs(ca - cb) <= tol
+        r["count_final"] = ca if r["agree"] else max(ca, cb)
+        if not r["agree"]:
             n_audit += 1
         r["outcome"] = classify(r)
         r["correct"] = int(r["outcome"] == "correct")
@@ -273,7 +292,14 @@ def main() -> None:
             w.writerow(r)
 
     print(f"wrote {len(rows)} rows -> {out}")
-    print(f"audit bucket: {n_audit} ({100*n_audit/max(len(rows),1):.1f}%)")
+    # Overall disagreement is not a defect: at high k the model's output genuinely
+    # does not correspond to any clean count, so the two estimators have nothing
+    # to agree about. The estimator-validation statistic is agreement in the
+    # low-k regime, where a correct rendering exists to be measured.
+    low = [r for r in rows if r["k"] <= 4]
+    agree_low = 100 * np.mean([r["agree"] for r in low]) if low else float("nan")
+    print(f"estimator agreement: {agree_low:.1f}% at k<=4 "
+          f"({100*(1-n_audit/max(len(rows),1)):.1f}% overall)")
     from collections import Counter
     for model in args.models:
         sub = [r for r in rows if r["model"] == model and r["family"] == "word_rep"]

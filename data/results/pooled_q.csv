@@ -1,0 +1,7 @@
+model,family,q,lo,hi,n_items,r2,method
+llasa1b,control_word,1.002945009757812,0.985969996095961,1.021527291904442,20,0.0007551561047567379,attention
+llasa1b,sentence_rep,1.0346537230373285,1.0008307216929142,1.1152104203151596,5,-0.06074114953800169,attention
+llasa1b,word_rep,0.9818149949963549,0.9391621502039772,1.0203479130895867,12,0.014753816270530518,attention
+xtts2,control_word,nan,nan,nan,0,nan,attention
+xtts2,sentence_rep,nan,nan,nan,0,nan,attention
+xtts2,word_rep,nan,nan,nan,0,nan,attention

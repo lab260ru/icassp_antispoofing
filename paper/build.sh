@@ -4,11 +4,16 @@
 #   bash paper/build.sh [--no-numbers]
 set -uo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-cd "$REPO_ROOT/paper"
 
+# make_numbers.py resolves its inputs relative to the repo root, so it must run
+# from there -- not from paper/.
 if [ "${1:-}" != "--no-numbers" ]; then
-  python3 "$REPO_ROOT/analysis/make_numbers.py" || echo "[build] numbers step failed; using existing numbers.tex"
+  ( cd "$REPO_ROOT" && python3 analysis/make_numbers.py ) \
+    || echo "[build] numbers step failed; using existing numbers.tex"
 fi
+
+cd "$REPO_ROOT/paper"
+mkdir -p build
 
 mkdir -p build
 tectonic -X compile main.tex --outdir build --keep-intermediates --synctex=0 2>&1 \
@@ -16,10 +21,9 @@ tectonic -X compile main.tex --outdir build --keep-intermediates --synctex=0 2>&
 
 if [ -f build/main.pdf ]; then
   PAGES=$(python3 - <<'EOF'
-import re, sys
 try:
-    data = open("build/main.pdf", "rb").read()
-    print(max(len(re.findall(rb"/Type\s*/Page[^s]", data)), 1))
+    import pypdf
+    print(len(pypdf.PdfReader("build/main.pdf").pages))
 except Exception:
     print("?")
 EOF

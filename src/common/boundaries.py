@@ -43,8 +43,12 @@ def unit_columns(tokenizer, text: str, units: list[str]) -> list[int]:
     """
     if not units:
         return []
-    enc = tokenizer(text, add_special_tokens=False, return_offsets_mapping=True)
-    offsets = enc["offset_mapping"]
+    # `tokenizer` is an OffsetTokenizer (src/common/tokenizers.py), which hides
+    # the difference between HF fast tokenizers and raw `tokenizers` files, and
+    # applies each model's own text transform before tokenizing. Units must be
+    # searched in the transformed string, not the raw one.
+    text = tokenizer.prepare(text)
+    offsets = tokenizer.offsets(text)
     cols: list[int] = []
     pos = 0
     for u in units:
@@ -64,29 +68,54 @@ def occurrence_columns(tokenizer, text: str, unit: str, k: int) -> list[int]:
     return unit_columns(tokenizer, text, [unit] * k)
 
 
-def boundary_steps_from_attention(attn: np.ndarray, cols: list[int]) -> np.ndarray:
-    """Step index at which each occurrence column receives its peak attention.
+def read_head(attn: np.ndarray, smooth: int = 5) -> np.ndarray:
+    """Attention centroid per generation step: where in the text the decoder is.
 
-    `attn` is [T_steps, text_len]. Enforces monotone non-decreasing boundaries:
-    the decoder renders the text left to right, so a later occurrence cannot
-    peak earlier than an earlier one, and letting it would manufacture spurious
-    small distances.
+    Per-column argmax is the obvious way to locate an occurrence, and it fails
+    here for exactly the reason the paper is about: when the k spans are
+    near-identical, their attention columns are near-identical too, so the argmax
+    over steps collapses to the same step for every occurrence. The centroid
+    `sum_j j p(t,j)` degrades gracefully instead --- it still advances through the
+    text even when no single column dominates.
+    """
+    a = np.asarray(attn, dtype=np.float32)
+    if a.ndim != 2 or a.size == 0:
+        return np.array([], dtype=np.float32)
+    p = a / np.maximum(a.sum(axis=1, keepdims=True), 1e-8)
+    c = (p * np.arange(a.shape[1], dtype=np.float32)).sum(axis=1)
+    if smooth > 1 and c.size > smooth:
+        k = np.ones(smooth, dtype=np.float32) / smooth
+        c = np.convolve(c, k, mode="same")
+    return c
+
+
+def boundary_steps_from_attention(attn: np.ndarray, cols: list[int]) -> np.ndarray:
+    """First step at which the read head has reached each occurrence column.
+
+    Monotone by construction, and robust to the flat attention profiles that
+    repeated text produces.
     """
     if attn.ndim != 2 or not cols:
         return np.array([], dtype=int)
-    a = attn.astype(np.float32)
-    T, L = a.shape
+    c = read_head(attn)
+    if c.size == 0:
+        return np.array([], dtype=int)
+    # The centroid is pulled toward the middle of the attended mass, so it spans
+    # a compressed range; rescale the target columns onto the range it actually
+    # traverses rather than assuming it reaches the raw column index.
+    lo_c, hi_c = float(np.percentile(c, 2)), float(np.percentile(c, 98))
+    if hi_c - lo_c < 1e-6:
+        return np.array([], dtype=int)
+    span = max(max(cols), 1)
+    targets = [lo_c + (hi_c - lo_c) * (col / span) for col in cols]
     steps: list[int] = []
-    lo = 0
-    for c in cols:
-        if c >= L:
+    t = 0
+    for tgt in targets:
+        hits = np.nonzero(c[t:] >= tgt)[0]
+        if hits.size == 0:
             break
-        col = a[:, c]
-        if lo >= T:
-            break
-        t = int(np.argmax(col[lo:])) + lo
+        t = int(hits[0]) + t
         steps.append(t)
-        lo = max(lo, t)  # monotone, but ties are allowed
     return np.asarray(steps, dtype=int)
 
 

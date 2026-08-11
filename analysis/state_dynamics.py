@@ -35,6 +35,7 @@ from common.boundaries import (  # noqa: E402
     boundary_distances, boundary_steps_from_attention, boundary_steps_uniform,
     fit_geometric, horizon, horizon_scale, unit_columns,
 )
+from common.dispersion import dispersion_profile, fit_dispersion  # noqa: E402
 from common.registry import BY_KEY, DATA_ROOT  # noqa: E402
 
 
@@ -94,7 +95,7 @@ def main() -> None:
         it = json.loads(line)
         stim[it["item_id"]] = it
 
-    from transformers import AutoTokenizer
+    from common import tokenizers as tokmod
 
     rows: list[dict] = []
     for model in args.models:
@@ -103,11 +104,9 @@ def main() -> None:
         if not act_dir.exists():
             print(f"[{model}] no activations, skipping")
             continue
-        try:
-            tok = AutoTokenizer.from_pretrained(spec.hf_id)
-        except Exception as e:  # noqa: BLE001
-            print(f"[{model}] tokenizer unavailable ({e}); uniform boundaries only")
-            tok = None
+        tok = tokmod.load(spec)
+        if tok is None:
+            print(f"[{model}] no offset tokenizer; uniform boundaries only")
 
         files = sorted(act_dir.glob(f"*_s{args.seed}.npz"))
         print(f"[{model}] {len(files)} instrumented items", flush=True)
@@ -143,10 +142,8 @@ def main() -> None:
             if steps.size < 3:
                 steps = boundary_steps_uniform(T, k)
                 method = "uniform"
-            if steps.size < 3:
-                continue
-
-            d = boundary_distances(hidden, steps)      # [k-1, P]
+            d = (boundary_distances(hidden, steps) if steps.size >= 3
+                 else np.zeros((0, hidden.shape[1]), dtype=np.float32))
             base = dict(model=model, item_id=item_id, family=it["family"],
                         template=it["template"], k=k, n_steps=T,
                         n_boundaries=int(steps.size), method=method,
@@ -173,12 +170,20 @@ def main() -> None:
             n_sp = max(1, min(args.spectral_layers, len(probes)))
             sp_idx = set(np.linspace(0, len(probes) - 1, n_sp).astype(int).tolist())
             for pi, layer in enumerate(probes):
-                fit = fit_geometric(d[:, pi])
+                # primary: boundary-free dispersion decay (see common/dispersion)
+                disp = fit_dispersion(dispersion_profile(hidden[:, pi, :]), k)
+                # secondary: the boundary-difference estimator, kept for the
+                # supplementary comparison of the two operationalisations
+                bfit = (fit_geometric(d[:, pi]) if d.size
+                        else dict(q_hat=np.nan, r2=np.nan, n=0, d1=np.nan))
                 sp = (spectral_proxies(hidden[:, pi, :]) if pi in sp_idx
                       else dict(n_eff=np.nan, alpha=np.nan, log_kf=np.nan))
                 rows.append(dict(
                     **base, layer=int(layer), layer_frac=pi / max(len(probes) - 1, 1),
-                    d1=fit["d1"], q_hat=fit["q_hat"], r2=fit["r2"], n_fit=fit["n"],
+                    q_hat=disp["q_hat"], r2=disp["r2"], slope=disp["slope"],
+                    sigma_early=disp["sigma_early"], sigma_late=disp["sigma_late"],
+                    sigma_ratio=disp["sigma_ratio"],
+                    q_bnd=bfit["q_hat"], r2_bnd=bfit["r2"], d1=bfit["d1"],
                     d_median=float(np.median(d[:, pi])) if d.size else np.nan,
                     **sp,
                 ))
