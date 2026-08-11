@@ -1,0 +1,60 @@
+# Central state for the AR-TTS counting-collapse study.
+# A fresh agent should be able to resume from THIS FILE + findings.md alone.
+project: "Counting Collapse in Autoregressive TTS"
+venue: "ICASSP 2026 (4 pages + refs)"
+started: "2026-08-11"
+branch: "research/ar-tts-counting-collapse"
+remote: "https://github.com/lab260ru/icassp_antispoofing.git"
+
+question: >
+  Autoregressive TTS models mis-render text containing many repetitions
+  (looping, truncating, or losing count). Is this a *structural* consequence of
+  the decoder's state dynamics under periodic conditioning, rather than a
+  stochastic sampling artifact? If the per-repetition state map contracts, the
+  model provably cannot count past a finite horizon.
+
+lineage:
+  prior_paper: "arXiv:2604.08591 — From Dispersion to Attraction (Whisper, spectral regimes)"
+  relation: >
+    Same authors, same conceptual frame (failure = geometry of signal
+    propagation, not noise), moved from encoder-decoder ASR to decoder-only TTS.
+    Novelty over prior work: the central theorem is machine-checked in Lean 4.
+
+theory:
+  theorem_A: "Counting Collapse — Banach contraction at repetition boundaries => finite counting horizon N*"
+  lemma_B: "Attention Dilution — softmax over k near-identical keys gives weight in [e^-d/k, e^d/k], entropy >= log k - 2d"
+  honesty_note: >
+    Contraction (q<1) is a HYPOTHESIS about the empirical decoder, measured per
+    model as q_hat. It is NOT proved about transformers. The Lean artifact proves
+    the implication, not the premise. Say this explicitly in the paper.
+  fallback_narrative: >
+    If some model shows q_hat >= 1, that is the dispersion/Regime-II analog and
+    the contrapositive of Theorem A carries the story. Any outcome publishes.
+
+predictions:
+  P1: "boundary-state distances d_m decay geometrically; fit q_hat per model/layer"
+  P2: "predicted horizon N*(q_hat) tracks the measured behavioural collapse point k*"
+  P3: "attention mass per repeated occurrence ~ 1/k; text-attention entropy ~ log k"
+  P4: "spectral proxies (N_eff, alpha, Kf) shift between faithful and hallucinated generations"
+
+model_panel:
+  - {id: "HKUSTAudio/Llasa-1B",  family: llasa, params: 1B,   instrumented: true,  status: pending}
+  - {id: "HKUSTAudio/Llasa-3B",  family: llasa, params: 3B,   instrumented: true,  status: pending}
+  - {id: "HKUSTAudio/Llasa-8B",  family: llasa, params: 8B,   instrumented: true,  status: pending}
+  - {id: "coqui/XTTS-v2",        family: xtts,  params: 0.4B, instrumented: true,  status: pending}
+  - {id: "Qwen/Qwen3-TTS-12Hz-0.6B-Base", family: qwen, params: 0.6B, instrumented: unknown, status: pending}
+  - {id: "Qwen/Qwen3-TTS-12Hz-1.7B-Base", family: qwen, params: 1.7B, instrumented: unknown, status: pending}
+asr_judge: "openai/whisper-large-v3"
+
+phase: "P0-scaffold"
+gates_passed: []
+active_background_jobs:
+  - "scripts/setup_lean.sh  -> logs/lean_setup.log (elan + mathlib cache)"
+  - "env/setup_envs.sh all  -> logs/env_*.log (base, qwen, coqui, xcodec2)"
+  - "scripts/download_models.sh -> logs/download_models.log"
+  - "literature survey subagent -> literature/survey.md, literature/gaps.md, paper/refs.bib"
+
+next_actions:
+  - "write lean/SpectralTTS/SpectralTTS/{CountingCollapse,AttentionDilution}.lean"
+  - "generate data/stimuli/stimuli.jsonl"
+  - "smoke-test each checkpoint, validate hooks"

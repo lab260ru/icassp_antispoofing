@@ -1,0 +1,37 @@
+# secrets
+.env
+.env.*
+!.env.example
+
+# skills (local copies)
+.claude/skills/
+
+# heavy data lives on HDD via symlink
+data/generated
+data/results/**/*.npz
+data/results/**/*.wav
+
+# python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+
+# lean build
+lean/**/.lake/
+lean/**/build/
+lean/**/lakefile.olean
+
+# latex build
+paper/build/
+*.aux
+*.log
+*.out
+*.bbl
+*.blg
+*.synctex.gz
+
+# logs
+logs/*.log
+logs/*.out
+*.tmp
