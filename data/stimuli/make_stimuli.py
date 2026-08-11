@@ -41,19 +41,22 @@ WORD_TEMPLATES = [
 # Number phrases. English number words are the natural repetition stress test:
 # the same digit-word recurs at several magnitudes and the model must keep an
 # internal place-value counter that repetition-attractor dynamics would destroy.
+# The repetition count of these is derived from the text, never hand-written:
+# "sixty" is not a whole-word occurrence of "six", and hand-counting got that
+# wrong on the first pass, which silently made every numbers item unscoreable.
 NUMBER_PHRASES = [
-    ("n01", "six hundred sixty six thousand six hundred sixty six", "six", 6),
-    ("n02", "seven hundred seventy seven thousand seven hundred seventy seven", "seven", 6),
-    ("n03", "nine hundred ninety nine thousand nine hundred ninety nine", "nine", 6),
-    ("n04", "three hundred thirty three thousand three hundred thirty three", "three", 6),
+    ("n01", "six hundred sixty six thousand six hundred sixty six", "six"),
+    ("n02", "seven hundred seventy seven thousand seven hundred seventy seven", "seven"),
+    ("n03", "nine hundred ninety nine thousand nine hundred ninety nine", "nine"),
+    ("n04", "three hundred thirty three thousand three hundred thirty three", "three"),
     ("n05", "six hundred sixty six million six hundred sixty six thousand six hundred sixty six",
-     "six", 9),
-    ("n06", "eight hundred eighty eight thousand eight hundred eighty eight", "eight", 6),
-    ("n07", "five hundred fifty five", "five", 3),
-    ("n08", "four hundred forty four", "four", 3),
+     "six"),
+    ("n06", "eight hundred eighty eight thousand eight hundred eighty eight", "eight"),
+    ("n07", "five hundred fifty five", "five"),
+    ("n08", "four hundred forty four", "four"),
     ("n09", "two hundred twenty two million two hundred twenty two thousand two hundred twenty two",
-     "two", 9),
-    ("n10", "one hundred eleven thousand one hundred eleven", "one", 5),
+     "two"),
+    ("n10", "one hundred eleven thousand one hundred eleven", "one"),
 ]
 
 SENTENCES = [
@@ -119,11 +122,13 @@ def word_rep_items() -> list[dict]:
 
 def number_items() -> list[dict]:
     items = []
-    for nid, text, target, count in NUMBER_PHRASES:
+    for nid, text, target in NUMBER_PHRASES:
+        count = sum(1 for w in text.split() if w == target)
         items.append(dict(
             item_id=f"nm_{nid}", family="numbers", template=nid,
             text=text.capitalize() + ".", target_unit=target, k=count,
             expected_count=count, expected_words=len(text.split()), control_of=None,
+            boundary_units=[target] * count,
         ))
     return items
 

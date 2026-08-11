@@ -33,9 +33,12 @@ done
 
 echo "=== score"
 conda activate base
+# Score EVERY model that has transcripts, not just the ones this invocation
+# generated: behavioural.csv is a single shared table, so scoring a subset would
+# silently drop the other models' rows from the paper's inputs.
 AVAIL=()
-for m in "${MODELS[@]}"; do
-  [ -f "/home/kirill/mnt/hdd_6tb_1/icassp_tts/asr/$m.jsonl" ] && AVAIL+=("$m")
+for f in /home/kirill/mnt/hdd_6tb_1/icassp_tts/asr/*.jsonl; do
+  [ -s "$f" ] && AVAIL+=("$(basename "$f" .jsonl)")
 done
 if [ ${#AVAIL[@]} -gt 0 ]; then
   python src/common/score_counts.py --models "${AVAIL[@]}" --out data/results/behavioural.csv

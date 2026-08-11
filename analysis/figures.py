@@ -43,6 +43,88 @@ def ordered(models) -> list[str]:
     return [m for m in ORDER if m in ms] + sorted(ms - set(ORDER))
 
 
+def fig_main(beh: pd.DataFrame, state: pd.DataFrame, cap: dict, out: Path) -> None:
+    """The paper's single figure: behaviour, the control contrast, and the
+    capacity mechanism, in one full-width row.
+
+    Four panels in a row rather than two stacked two-panel figures: an ICASSP
+    page is 4 pages and two figure environments cost roughly a third of one.
+    """
+    models = ordered(beh.model.unique())
+    fig, axes = plt.subplots(1, 4, figsize=(7.0, 1.62))
+
+    ax = axes[0]
+    for m in models:
+        s = beh[(beh.model == m) & (beh.family.isin(["word_rep", "sentence_rep"]))]
+        if s.empty:
+            continue
+        acc = s.groupby("k")["correct"].mean().sort_index()
+        ax.plot(acc.index, acc.values, "o-", color=COLOR.get(m), label=LABEL.get(m, m))
+    ax.set_xscale("log", base=2)
+    ax.set_xlabel(r"repetitions $k$")
+    ax.set_ylabel("counting accuracy")
+    ax.set_ylim(-0.03, 1.05)
+    ax.set_title("(a) collapse")
+    ax.legend(fontsize=4.6, loc="upper right", handlelength=1.2)
+
+    ax = axes[1]
+    for m in models:
+        rep = beh[(beh.model == m) & (beh.family == "word_rep")]
+        ctl = beh[(beh.model == m) & (beh.family == "control_word")]
+        if rep.empty or ctl.empty:
+            continue
+        r = rep.groupby("k")["correct"].mean().sort_index()
+        c = ctl.groupby("k")["correct"].mean().sort_index()
+        ax.plot(r.index, r.values, "o-", color=COLOR.get(m))
+        ax.plot(c.index, c.values, "s--", color=COLOR.get(m), alpha=0.55)
+    ax.plot([], [], "ko-", label="repeated")
+    ax.plot([], [], "ks--", alpha=0.55, label="control")
+    ax.set_xscale("log", base=2)
+    ax.set_xlabel(r"$k$")
+    ax.set_ylim(-0.03, 1.05)
+    ax.set_title("(b) periodicity, not length")
+    ax.legend(fontsize=5, loc="lower left", handlelength=1.4)
+
+    st = state[state.layer_frac > 0.6]
+    ax = axes[2]
+    for m in ordered(st.model.unique()):
+        for fam, ls, mk, al in (("word_rep", "-", "o", 1.0),
+                                ("control_word", "--", "s", 0.55)):
+            g = st[(st.model == m) & (st.family == fam)].groupby("k")["n_eff"].median()
+            if g.empty:
+                continue
+            ax.plot(g.index, g.values, ls, marker=mk, color=COLOR.get(m), alpha=al)
+    ax.set_xscale("log", base=2)
+    ax.set_xlabel(r"$k$")
+    ax.set_ylabel(r"$\mathcal{N}_{\mathrm{eff}}$")
+    ax.set_title("(c) states saturate")
+
+    ax = axes[3]
+    cm = ordered(list(cap["models"].keys()))
+    xs = np.arange(len(cm), dtype=float)
+    w = 0.34
+    for off, key, lab, col in ((-w / 2, "repeated", "rep.", "#C44E52"),
+                               (w / 2, "control", "ctrl.", "#4C72B0")):
+        v = [cap["models"][m][key]["gain"] for m in cm]
+        lo = [cap["models"][m][key]["lo"] for m in cm]
+        hi = [cap["models"][m][key]["hi"] for m in cm]
+        err = np.array([[max(a - b, 0) for a, b in zip(v, lo)],
+                        [max(b - a, 0) for a, b in zip(v, hi)]])
+        ax.bar(xs + off, v, w, label=lab, color=col, alpha=1.0 if key == "repeated" else 0.8)
+        ax.errorbar(xs + off, v, yerr=err, fmt="none", ecolor="0.2", elinewidth=0.6,
+                    capsize=1.4)
+    ax.set_xticks(xs)
+    ax.set_xticklabels([LABEL.get(m, m) for m in cm], rotation=32, ha="right", fontsize=4.8)
+    ax.set_ylabel(r"$\mathrm{d}\mathcal{N}_{\mathrm{eff}}/\mathrm{d}\log k$")
+    ax.set_title("(d) capacity gain")
+    ax.legend(fontsize=5, loc="upper right", handlelength=1.2)
+
+    fig.tight_layout(pad=0.25, w_pad=0.7)
+    fig.savefig(out)
+    plt.close(fig)
+    print(f"  {out}")
+
+
 def fig_dissociation(beh: pd.DataFrame, out: Path) -> None:
     """Counting accuracy against k, with the length-matched control overlaid.
 
@@ -205,7 +287,7 @@ def fig_attention(state: pd.DataFrame, out: Path) -> None:
 
     ax = axes[1]
     for m in models:
-        g = s[(s.model == m) & (s.k >= 2)].groupby("k")["attn_entropy"].median()
+        g = s[(s.model == m) & (s.k >= 2)].groupby("k")["attn_text_entropy"].median()
         if g.empty:
             continue
         ax.plot(np.log(g.index.to_numpy(dtype=float)), g.values, "o-",
@@ -233,14 +315,19 @@ def main() -> None:
     outdir.mkdir(parents=True, exist_ok=True)
     print("figures:")
 
-    if Path(args.behavioural).exists():
-        fig_dissociation(pd.read_csv(args.behavioural), outdir / "fig1_dissociation.pdf")
-    if Path(args.state).exists():
-        state = pd.read_csv(args.state)
-        cap_path = Path("data/results/capacity.json")
-        if cap_path.exists():
-            fig_mechanism(state, json.loads(cap_path.read_text()),
-                          outdir / "fig2_mechanism.pdf")
+    beh = pd.read_csv(args.behavioural) if Path(args.behavioural).exists() else None
+    state = pd.read_csv(args.state) if Path(args.state).exists() else None
+    cap_path = Path("data/results/capacity.json")
+    cap = json.loads(cap_path.read_text()) if cap_path.exists() else None
+
+    if beh is not None and state is not None and cap is not None:
+        fig_main(beh, state, cap, outdir / "fig_main.pdf")
+    # supplementary figures
+    if beh is not None:
+        fig_dissociation(beh, outdir / "fig1_dissociation.pdf")
+    if state is not None:
+        if cap is not None:
+            fig_mechanism(state, cap, outdir / "fig2_mechanism.pdf")
         fig_decay(state[state.layer_frac.notna()], outdir / "fig3_depth.pdf")
         fig_attention(state, outdir / "fig4_attention.pdf")
 

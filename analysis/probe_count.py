@@ -49,7 +49,16 @@ TAIL_FRAC = 1.0 / 3.0
 
 
 def load_features(model: str, stim: dict, seed: int = 0) -> dict:
-    """Per family: X [n_items, n_probes, d], k [n_items], template [n_items]."""
+    """Per family: early/late window summaries, k, template.
+
+    Two windows, not one. The theory does not predict that the count is *never*
+    represented --- at the start of generation the decoder has just read the text
+    and the count is plainly available there. It predicts the representation
+    *degrades as generation proceeds under periodic conditioning*. Probing the
+    first and last third of the same trajectory turns that into a within-item
+    contrast, so a difference cannot be explained by probe capacity, item count,
+    or how hard the k values are to tell apart in general.
+    """
     act_dir = Path(DATA_ROOT) / "activations" / model
     out: dict[str, dict] = {}
     for f in sorted(act_dir.glob(f"*_s{seed}.npz")):
@@ -65,15 +74,19 @@ def load_features(model: str, stim: dict, seed: int = 0) -> dict:
         T = h.shape[0]
         if T < 24:
             continue
-        tail = h[int(T * (1 - TAIL_FRAC)):].astype(np.float32)
-        v = tail.mean(axis=0)                       # [n_probes, d]
-        v = v / np.maximum(np.linalg.norm(v, axis=-1, keepdims=True), 1e-6)
-        d = out.setdefault(it["family"], dict(X=[], k=[], tmpl=[]))
-        d["X"].append(v)
+        w = max(4, int(T * TAIL_FRAC))
+        early = h[:w].astype(np.float32).mean(axis=0)
+        late = h[-w:].astype(np.float32).mean(axis=0)
+        norm = lambda v: v / np.maximum(np.linalg.norm(v, axis=-1, keepdims=True), 1e-6)
+        d = out.setdefault(it["family"], dict(Xe=[], Xl=[], k=[], tmpl=[]))
+        d["Xe"].append(norm(early))
+        d["Xl"].append(norm(late))
         d["k"].append(it["k"])
         d["tmpl"].append(it["template"])
     for fam, d in out.items():
-        d["X"] = np.stack(d["X"])                   # [n, P, d]
+        d["Xe"] = np.stack(d["Xe"])                 # [n, P, d]
+        d["Xl"] = np.stack(d["Xl"])
+        d["X"] = d["Xl"]                            # default view: terminal state
         d["k"] = np.asarray(d["k"], dtype=float)
         d["tmpl"] = np.asarray(d["tmpl"])
     return out
@@ -156,42 +169,33 @@ def main() -> None:
         entry: dict = {}
         for fam in ("word_rep", "control_word"):
             d = feats.get(fam)
-            if d is None or d["X"].shape[0] < 8:
+            if d is None or d["Xl"].shape[0] < 8:
                 continue
-            P = d["X"].shape[1]
+            P = d["Xl"].shape[1]
             y = np.log2(d["k"])
-            per_layer = []
-            for p in range(P):
-                per_layer.append(ridge_loto(d["X"][:, p, :], y, d["tmpl"]))
-            best = int(np.nanargmax([r["r2"] if np.isfinite(r["r2"]) else -9
-                                     for r in per_layer]))
-            deep = per_layer[-1]
-            entry[fam] = dict(
-                best_layer_idx=best, best=per_layer[best], deep=deep,
-                n_items=int(d["X"].shape[0]),
-                by_layer=[r["r2"] for r in per_layer],
-                pairwise=pairwise_sep(d["X"][:, -1, :], d["k"], d["tmpl"]),
-            )
+            fam_entry: dict = dict(n_items=int(d["Xl"].shape[0]))
+            for win, key in (("Xe", "early"), ("Xl", "late")):
+                per_layer = [ridge_loto(d[win][:, p, :], y, d["tmpl"]) for p in range(P)]
+                r2s = [r["r2"] if np.isfinite(r["r2"]) else -9 for r in per_layer]
+                best = int(np.argmax(r2s))
+                fam_entry[key] = dict(best_layer_idx=best, best=per_layer[best],
+                                      deep=per_layer[-1],
+                                      by_layer=[r["r2"] for r in per_layer])
+            fam_entry["retention"] = (
+                fam_entry["late"]["best"]["r2"] / fam_entry["early"]["best"]["r2"]
+                if np.isfinite(fam_entry["early"]["best"]["r2"])
+                and fam_entry["early"]["best"]["r2"] > 0.05 else np.nan)
+            fam_entry["pairwise"] = pairwise_sep(d["Xl"][:, -1, :], d["k"], d["tmpl"])
+            entry[fam] = fam_entry
         result["models"][model] = entry
 
-        print(f"\n[{model}] linear probe decoding log2(k) from terminal states")
+        print(f"\n[{model}] ridge probe decoding log2(k), leave-one-template-out")
         for fam, e in entry.items():
+            eb, lb = e["early"]["best"], e["late"]["best"]
             print(f"  {fam:14s} n={e['n_items']:3d}  "
-                  f"deep-layer R2={e['deep']['r2']:.3f} MAE={e['deep']['mae']:.3f}  "
-                  f"best-layer R2={e['best']['r2']:.3f} (idx {e['best_layer_idx']})")
-            pw = e["pairwise"]
-            if pw:
-                adj = {p: v for p, v in pw.items()
-                       if abs(int(p.split("v")[0]) - int(p.split("v")[1]))
-                       <= 0.5 * int(p.split("v")[0])}
-                lo = {p: v for p, v in pw.items() if int(p.split("v")[1]) <= 6}
-                hi = {p: v for p, v in pw.items() if int(p.split("v")[0]) >= 12}
-                if lo:
-                    print(f"     pairwise acc, both k<=6 : {np.mean(list(lo.values())):.3f}"
-                          f"  (n_pairs={len(lo)})")
-                if hi:
-                    print(f"     pairwise acc, both k>=12: {np.mean(list(hi.values())):.3f}"
-                          f"  (n_pairs={len(hi)})")
+                  f"early R2={eb['r2']:.3f} (MAE {eb['mae']:.2f})  "
+                  f"late R2={lb['r2']:.3f} (MAE {lb['mae']:.2f})  "
+                  f"retention={e['retention']:.2f}")
 
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
