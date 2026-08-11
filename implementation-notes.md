@@ -599,3 +599,17 @@
 - Boundary: The protocol precedes target acquisition. It reuses every sealed
   H9 source decision, requires a two-pass label firewall and all-12-checkpoint
   terminal call, and has no retuning path after the result.
+
+## 2026-08-11 - H10 CD-ADD terminal follow-up
+
+- Result: The complete all-trial CD-ADD run replayed H9's source ledger,
+  found zero exact source--target canonical-audio collisions, and wrote all
+  raw predictions before its label join. P reduces EER against both controls
+  and both shared-bootstrap CIs are below zero.
+- Stop: The locked P-versus-B1 practical threshold is 10% relative EER
+  reduction; the observed 8.30% misses it. The gate is therefore false even
+  though the interval is below zero. No threshold, target, source, checkpoint,
+  model, or paper claim may be changed in response.
+- Validation: The H10/H9 focused synthetic adapter/evaluator suite passed 13
+  tests before target access. The result note pins the materialization,
+  prediction, metrics, bootstrap, and decision hashes.

@@ -10,6 +10,24 @@ provisional story is now a negative portability/quality-gate audit, not a
 causal effect or feature-conditioned fix, unless a new independently frozen
 protocol supplies the missing evidence.
 
+## Current checkpoint — 2026-08-11 — H10 CD-ADD terminal stop
+
+This section supersedes any prospective H10 direction below.
+
+- **Result:** H10's source-frozen CD-ADD terminal run is complete. The exact
+  H9 P ensemble is lower at 41.655% EER than B1 (45.425%) and B2 (48.921%),
+  and both 2,000-draw paired bootstrap intervals are below zero. Its 8.30%
+  relative reduction against B1 nevertheless misses the committed 10% H10
+  gate. The full decision is false.
+- **Authority:** Read
+  `experiments/future_directions/H10_CDADD_EXTERNAL_REPLICATION_PROTOCOL.md`,
+  `H10_DECISION_RECORD_20260811.md`, and
+  `results/H10_CDADD_TERMINAL_EVALUATION_001.md`. Large artifacts are below
+  `runs/h10_cdadd/` on the HDD.
+- **Hard boundary:** H10 does not change the paper or H9. Do not relax the
+  10% rule, select another target or subset, or change the H9 checkpoints,
+  seeds, source pool, loss, bootstrap, or architecture after seeing it.
+
 ## Current checkpoint — 2026-08-11 — H9-PCR terminal positive result
 
 This section supersedes the earlier H9 source-selection checkpoint below.

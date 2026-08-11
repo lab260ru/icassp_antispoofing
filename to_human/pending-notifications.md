@@ -501,3 +501,16 @@ loop. A new two-pass materializer will write label-free records and predictions
 before labels, with an exact collision audit and one all-12-checkpoint terminal
 call. This can strengthen the paper only if its predeclared gate passes; there
 is no target swap or retuning path if it fails.
+
+## 2026-08-11 — H10 CD-ADD terminal follow-up stopped at its fixed gate
+
+The complete new-target H10 evaluation is finished and reproducible: it
+replayed all 12 sealed H9 checkpoints on every one of 20,786 CD-ADD trials,
+with raw predictions written before the single label join and zero exact
+source--target waveform collisions. Same-item P reached 41.66% EER, better
+than BCE (45.42%) and random-pair ranking (48.92%); both 2,000-draw paired
+bootstrap intervals are below zero. But the P-versus-BCE relative reduction is
+8.30%, below the precommitted 10% practical threshold. I am recording this as
+a terminal no-retune follow-up—not weakening the threshold or adding it to the
+paper claim. The H9 draft remains the readable, pushed positive two-target
+result.

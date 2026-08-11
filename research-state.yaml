@@ -80,12 +80,17 @@ hypotheses:
     status: complete_positive_terminal_gate_passed
     motivation: "A documented same-item pair comparison tests whether the pairing key helps while holding the compact transparent architecture, data volume, batch schedule, and margin term fixed; it does not itself prove a linguistic or causal internal mechanism."
     priority: highest
+  - id: H10
+    statement: "The exact sealed H9 checkpoint panel meets a predeclared practical-effect gate on a new CD-ADD external target."
+    status: complete_terminal_gate_failed_no_retune
+    motivation: "A source-frozen third target can test transfer direction without reopening H9; it must retain its effect-size boundary rather than equate statistical significance with a passing replication."
+    priority: highest
 
 experiments:
   proxy_metric: "H9 fixed two-target macro EER (lower is better); earlier feature and fusion metrics remain archived."
   baseline_value: 0.5178435137891154
   best_value: 0.4502404297125705
-  total_runs: 44
+  total_runs: 45
   trajectory:
     - run_id: run_001
       hypothesis: H1
@@ -325,11 +330,18 @@ experiments:
       wall_time_min: 6.3
       change_summary: "Completed the fixed two-target terminal evaluation after sealing the 12 source checkpoints. Content-aligned P reaches 45.024% macro EER versus B1 51.784% and B2 52.014%; both fixed shared-ID bootstrap 95% CIs for P-minus-control are below zero, all eight decision rules pass, and zero source-target canonical waveform collisions are observed."
       timestamp: "2026-08-11"
+    - run_id: h10_cdadd_terminal_evaluation_001
+      hypothesis: H10
+      metric_value: 0.416552854411363
+      delta: -0.03769461895656895
+      wall_time_min: 18.0
+      change_summary: "Replayed the complete H9 B1/B2/P × four-seed checkpoint ledger on every CD-ADD trial after a two-pass label firewall. P reaches 41.655% EER versus B1 45.425% and B2 48.921%; both shared-ID bootstrap CIs are below zero, but the 8.30% relative P-versus-B1 reduction misses the locked 10% gate. The terminal follow-up is preserved without retuning or paper integration."
+      timestamp: "2026-08-11"
 
 outer_loop:
-  cycle: 13
-  last_direction: "h9_terminal_positive_result_review_and_paper"
-  last_reflection: "H9-PCR passed its complete locked two-target gate after source-only selection and a sealed checkpoint handoff. The observed effect is controlled and statistically stable for the frozen ensemble but absolute EER and seed heterogeneity require a deliberately narrow paper claim. The next work is Codex-only claim review and a paper rewrite, not H9 retuning."
+  cycle: 14
+  last_direction: "h10_source_frozen_cdadd_replication"
+  last_reflection: "H10's fresh-target follow-up reproduces the P direction and below-zero paired contrasts but fails its locked 10% practical-effect condition against B1. Preserve it as a no-retune boundary. H9 remains the only paper result; any architecture replication requires a wholly new, pre-data protocol."
   pivot_policy: "After the first association/intervention matrix or five completed runs, choose deepen, broaden, pivot, or conclude and record the evidence."
 
 workspace:

@@ -48,6 +48,17 @@ versus BCE (95% CI [-8.25, -5.25]) and -6.97 pp versus random-pair ranking
 ([-8.54, -5.30]). The full interpretation and hashes are in
 `experiments/h9_paired_counterfactual/results/H9_TERMINAL_EVALUATION_001.md`.
 
+## H10 fresh-target follow-up status
+
+H10 replayed the sealed H9 twelve-checkpoint panel on the independently
+declared CD-ADD target after a two-pass label firewall. P improves EER to
+41.66% versus B1 45.42% and B2 48.92%, and both fixed paired bootstrap
+intervals are below zero. However, its 8.30% relative reduction versus B1
+misses H10's predeclared 10% practical-effect rule. H10 is therefore a
+terminal no-retune follow-up, not an added paper claim or a reason to select a
+new target. See
+`experiments/future_directions/results/H10_CDADD_TERMINAL_EVALUATION_001.md`.
+
 ## Key Results
 
 - Input-integrity validation: all 71,237 published Spectra-AASIST scores joined
