@@ -170,6 +170,20 @@ def _extract_audio_payload(row: Mapping[str, object], *, shard: Path) -> tuple[s
     return raw_path, bytes(payload)
 
 
+def _target_payload_suffix(payload: bytes) -> str:
+    """Allow only the two pinned, soundfile-decodable Hub containers.
+
+    The target materializer copies payloads byte-for-byte, so their output
+    suffix must describe the actual container rather than relabelling FLAC as
+    WAV.  Any other container remains a fail-closed schema/content error.
+    """
+    if len(payload) >= 12 and payload[:4] == b"RIFF" and payload[8:12] == b"WAVE":
+        return ".wav"
+    if payload.startswith(b"fLaC"):
+        return ".flac"
+    raise ValueError("H9 target payload must be a RIFF/WAVE or FLAC byte stream")
+
+
 def _read_record_phase(
     shards: Sequence[Path], *, dataset: str, stage: Path, published_output: Path
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -192,9 +206,12 @@ def _read_record_phase(
                 if sample_id in sample_ids:
                     raise ValueError("H9 target deterministic sample ID collision")
                 sample_ids.add(sample_id)
-                fingerprint, frames, pcm_bytes = canonical_mono16k_pcm_fingerprint(payload)
+                suffix = _target_payload_suffix(payload)
+                fingerprint, frames, pcm_bytes = canonical_mono16k_pcm_fingerprint(
+                    payload, require_riff_wave=False
+                )
                 payload_hash = hashlib.sha256(payload).hexdigest()
-                copied = waveforms / f"{sample_id}.wav"
+                copied = waveforms / f"{sample_id}{suffix}"
                 copied.write_bytes(payload)
                 copied_hash = sha256_file(copied)
                 if copied_hash != payload_hash or copied.stat().st_size != len(payload):
