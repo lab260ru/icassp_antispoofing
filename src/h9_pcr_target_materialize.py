@@ -103,7 +103,17 @@ def _raw_target_shards(raw_shard_dir: str | Path, *, dataset: str) -> list[Path]
             "H9 target raw-shard input must be the pinned target revision's "
             f"<revision>/raw/data directory for {dataset}"
         )
-    shards = sorted(path for path in directory.iterdir() if path.is_file() and path.suffix.lower() == ".parquet")
+    # Hugging Face dataset snapshots place a separate ``labels.parquet`` next
+    # to the audio-bearing dataset shards.  It is deliberately *not* an input
+    # to this adapter: each audio shard must carry its own path/audio/label
+    # columns, while the standalone label index is outside the terminal
+    # materialization contract.  Excluding only this exact conventional file
+    # keeps any unexpected Parquet file fail-closed in schema validation.
+    shards = sorted(
+        path
+        for path in directory.iterdir()
+        if path.is_file() and path.suffix.lower() == ".parquet" and path.name != "labels.parquet"
+    )
     if not shards:
         raise FileNotFoundError(f"H9 target raw-shard directory has no Parquet files: {directory}")
     return shards

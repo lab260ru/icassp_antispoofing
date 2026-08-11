@@ -43,6 +43,12 @@ def _raw_target(tmp_path: Path, *, dataset: str = "SONAR", labels: list[int] | N
         for index, label in enumerate(labels)
     ]
     pq.write_table(pa.Table.from_pylist(rows), raw / "data-00000.parquet")
+    # Match the Hub layout: this standalone label index must never be
+    # mistaken for an audio-bearing target shard.
+    pq.write_table(
+        pa.Table.from_pydict({"path": [row["path"] for row in rows], "label": labels}),
+        raw / "labels.parquet",
+    )
     return raw
 
 
