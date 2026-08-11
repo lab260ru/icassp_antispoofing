@@ -196,3 +196,14 @@ bulk-send historical notifications.
 This is the eighteenth explicitly selected message in this log. The sender used
 the environment only for delivery and did not expose a credential or
 bulk-send historical notifications.
+
+## H9 source-only selection confirmation
+
+- Heading: 2026-08-11 — H9 source-only selection is frozen
+- Delivery status: success
+- Telegram message ID: 153
+- Text length: 483
+
+This is the nineteenth explicitly selected message in this log. The sender used
+the environment only for delivery and did not expose a credential or bulk-send
+historical notifications.
