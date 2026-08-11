@@ -21,6 +21,10 @@ LABEL = {"llasa1b": "Llasa-1B", "llasa3b": "Llasa-3B", "llasa8b": "Llasa-8B",
 PARAMS = {"llasa1b": "1B", "llasa3b": "3B", "llasa8b": "8B",
           "xtts2": "0.4B", "qwen06b": "0.6B", "qwen17b": "1.7B"}
 ORDER = ["llasa1b", "llasa3b", "llasa8b", "xtts2", "qwen06b", "qwen17b"]
+# Re-runs of a panel member under a changed decoding setting. Reported on their
+# own, never pooled into panel statistics -- pooling inflates the panel with a
+# non-independent copy, which a reviewer caught us doing.
+ABLATIONS = {"xtts2norp"}
 # LaTeX macro names cannot contain digits, so each model key gets an explicit
 # spelled-out tag. An explicit map beats string munging: it is what the .tex
 # files are written against, and a silent mismatch shows up as an undefined
@@ -36,6 +40,32 @@ def fmt(x, nd=2, dash="--"):
     if x is None or (isinstance(x, float) and not np.isfinite(x)):
         return dash
     return f"{x:.{nd}f}"
+
+
+def wilson(successes: int, n: int, z: float = 1.96) -> tuple[float, float]:
+    """Wilson score interval for a proportion, in percent.
+
+    Wilson rather than normal-approximation because several cells sit at or near
+    0% and 100%, where the normal interval is degenerate or runs outside [0,1].
+    """
+    if n == 0:
+        return float("nan"), float("nan")
+    p = successes / n
+    d = 1 + z * z / n
+    c = (p + z * z / (2 * n)) / d
+    h = z * np.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / d
+    return 100 * max(c - h, 0.0), 100 * min(c + h, 1.0)
+
+
+def prop_macros(macros: dict, name: str, sub, col: str = "correct") -> None:
+    """Emit percentage, Wilson CI bounds and n for one proportion."""
+    n = int(len(sub))
+    k = int(sub[col].sum()) if n else 0
+    lo, hi = wilson(k, n)
+    macros[name] = fmt(100 * k / n, 1) if n else "--"
+    macros[name + "Lo"] = fmt(lo, 1)
+    macros[name + "Hi"] = fmt(hi, 1)
+    macros[name + "N"] = str(n)
 
 
 def main() -> None:
@@ -104,6 +134,15 @@ def main() -> None:
         ks = [v for v in ks if v is not None and np.isfinite(v)]
         if ks:
             macros["kStarMin"], macros["kStarMax"] = fmt(min(ks), 0), fmt(max(ks), 0)
+
+    # ---- capacity confound check -----------------------------------------
+    cc_path = Path("data/results/capacity_confound.json")
+    if cc_path.exists():
+        cc = json.loads(cc_path.read_text())
+        macros["CapRawRatio"] = fmt(cc.get("ratio_raw_median"), 2)
+        macros["CapAdjRatio"] = fmt(cc.get("ratio_adjusted_median"), 2)
+        macros["CapCorrRatio"] = fmt(cc.get("ratio_correct_only_median"), 2)
+        macros["CapCorrN"] = str(cc.get("ratio_correct_only_n", 0))
 
     # ---- capacity: the central state measurement -------------------------
     cap_path = Path("data/results/capacity.json")
@@ -207,25 +246,20 @@ def main() -> None:
     if "n" in p2:
         macros["PTwoN"] = str(p2["n"])
 
-    # ---- the dissociation, pooled over the panel ------------------------
+    # ---- the dissociation, pooled over the PANEL (ablations excluded) -----
     if len(beh):
-        hi = beh[beh.k >= 6]
-        rep = hi[hi.family == "word_rep"]
-        ctl = hi[hi.family == "control_word"]
-        if len(rep):
-            macros["AccRepHigh"] = fmt(100 * rep.correct.mean(), 1)
-        if len(ctl):
-            ok = (ctl.outcome.isin(["correct", "overcount", "undercount"])
-                  & (ctl.duration_ratio > 0.7) & (ctl.spectral_flatness < 0.35))
-            macros["AccCtlHigh"] = fmt(100 * ok.mean(), 1)
-        lo = beh[(beh.family == "word_rep") & (beh.k <= 3)]
-        if len(lo):
-            macros["AccRepLow"] = fmt(100 * lo.correct.mean(), 1)
-        loops = beh[(beh.family == "word_rep") & (beh.k >= 8)]
+        panel_beh = beh[~beh.model.isin(ABLATIONS)]
+        hi = panel_beh[panel_beh.k >= 6]
+        prop_macros(macros, "AccRepHigh", hi[hi.family == "word_rep"])
+        prop_macros(macros, "AccCtlHigh", hi[hi.family == "control_word"])
+        prop_macros(macros, "AccRepLow",
+                    panel_beh[(panel_beh.family == "word_rep") & (panel_beh.k <= 3)])
+        loops = panel_beh[(panel_beh.family == "word_rep") & (panel_beh.k >= 8)]
         if len(loops):
             macros["LoopPct"] = fmt(100 * loops.outcome.isin(["loop", "overcount"]).mean(), 1)
             macros["TruncPct"] = fmt(
                 100 * loops.outcome.isin(["truncation", "undercount"]).mean(), 1)
+            macros["LoopN"] = str(len(loops))
 
     # ---- attention dilution (Lemma B) -----------------------------------
     # Measured on the softmax renormalised over the k repeated columns, which is

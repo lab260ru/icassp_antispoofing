@@ -219,7 +219,10 @@
       "ci_separated": false
     }
   },
-  "n_models": 7,
+  "n_models": 6,
   "n_separated": 6,
-  "ratio_median": 0.5687143061756698
+  "ablations": [
+    "xtts2norp"
+  ],
+  "ratio_median": 0.49951343308548435
 }

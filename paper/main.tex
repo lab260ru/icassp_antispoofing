@@ -159,21 +159,20 @@ carries explicit constants rather than an asymptotic.
 \label{sec:method}
 
 \noindent\textbf{Stimuli.}
-A parametric repetition ladder of \NStimuli{} items. \emph{Word repetition}:
-carrier sentences with a target word repeated $k \in \{1,2,3,4,6,8,12,16,24,32\}$
-times. \emph{Numbers}: English number phrases with intrinsic digit-word
-repetition, e.g.\ \emph{six hundred sixty-six thousand six hundred sixty-six}.
-\emph{Sentence repetition} and \emph{tongue twisters} extend the unit size.
-Crucially, every word- and sentence-repetition item at $k\ge2$ has a
-\emph{length-matched control}: the same carrier and the same word count, with
-the repeated token replaced by $k$ distinct fillers. The control isolates
-periodicity from length.
+A parametric repetition ladder of \NStimuli{} items: carrier sentences with a
+target word repeated $k \in \{1,2,3,4,6,8,12,16,24,32\}$ times, plus repeated
+sentences, tongue twisters, and English number phrases with intrinsic digit-word
+repetition. Crucially, every word- and sentence-repetition item at $k\ge2$ has a
+\emph{length-matched control}: the same carrier and word count, with the repeated
+token replaced by $k$ distinct fillers, isolating periodicity from length.
 
 \noindent\textbf{Models.}
-\NModels{} checkpoints: the Llasa family at 1B/3B/8B (Llama backbones over
-X-codec2 tokens~\cite{ye2025llasa}) as a within-architecture scale ladder, plus
-XTTS-v2~\cite{casanova2024xtts} and Qwen3-TTS at 0.6B/1.7B for cross-family
-coverage. Each item is generated with \NSeeds{} seeds.
+\NModels{} checkpoints spanning \NFamilies{} families: Llasa at 1B/3B/8B (Llama
+backbones over X-codec2 tokens~\cite{ye2025llasa}), a within-architecture scale
+ladder; XTTS-v2~\cite{casanova2024xtts}; and Qwen3-TTS at 0.6B/1.7B. Each item is
+generated with \NSeeds{} seeds. A seventh run, XTTS-v2 with its shipped
+repetition penalty disabled, is an ablation of a panel member and is reported
+separately, never pooled.
 
 \noindent\textbf{Behavioural measurement.}
 Generated audio is transcribed with Whisper large-v3~\cite{radford2023whisper}.

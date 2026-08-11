@@ -1,0 +1,293 @@
+{
+  "models": {
+    "llasa1b": {
+      "word_rep": {
+        "raw": {
+          "slope": 22.023626719064893,
+          "n": 108
+        },
+        "adjusted": {
+          "slope": 24.082435446733864,
+          "n": 108
+        },
+        "correct_only": {
+          "slope": 0.4734353601347035,
+          "n": 14
+        },
+        "covariates": [
+          "ttr",
+          "rep_rate",
+          "n_tok"
+        ]
+      },
+      "control_word": {
+        "raw": {
+          "slope": 52.6821231379962,
+          "n": 108
+        },
+        "adjusted": {
+          "slope": 48.64262726629736,
+          "n": 108
+        },
+        "correct_only": {
+          "slope": 50.434528605081674,
+          "n": 32
+        },
+        "covariates": [
+          "ttr",
+          "rep_rate",
+          "n_tok"
+        ]
+      },
+      "ratio": {
+        "raw": 0.4180474401416195,
+        "adjusted": 0.49508911833427377,
+        "correct_only": 0.009387127692653822
+      }
+    },
+    "llasa3b": {
+      "word_rep": {
+        "raw": {
+          "slope": 15.376242870860223,
+          "n": 108
+        },
+        "adjusted": {
+          "slope": 18.791057972152103,
+          "n": 108
+        },
+        "correct_only": {
+          "slope": 56.27736997312364,
+          "n": 24
+        },
+        "covariates": [
+          "ttr",
+          "rep_rate",
+          "n_tok"
+        ]
+      },
+      "control_word": {
+        "raw": {
+          "slope": 55.84519918130503,
+          "n": 108
+        },
+        "adjusted": {
+          "slope": 54.9290523517413,
+          "n": 108
+        },
+        "correct_only": {
+          "slope": 70.3284586554728,
+          "n": 22
+        },
+        "covariates": [
+          "ttr",
+          "rep_rate",
+          "n_tok"
+        ]
+      },
+      "ratio": {
+        "raw": 0.27533687937865997,
+        "adjusted": 0.34209688985388825,
+        "correct_only": 0.8002076406766845
+      }
+    },
+    "llasa8b": {
+      "word_rep": {
+        "raw": {
+          "slope": 19.42625919432922,
+          "n": 108
+        },
+        "adjusted": {
+          "slope": 28.659558319546363,
+          "n": 108
+        },
+        "correct_only": {
+          "slope": NaN,
+          "n": 0
+        },
+        "covariates": [
+          "ttr",
+          "rep_rate",
+          "n_tok"
+        ]
+      },
+      "control_word": {
+        "raw": {
+          "slope": 45.14453213854941,
+          "n": 108
+        },
+        "adjusted": {
+          "slope": 38.21797439270912,
+          "n": 108
+        },
+        "correct_only": {
+          "slope": NaN,
+          "n": 0
+        },
+        "covariates": [
+          "ttr",
+          "rep_rate",
+          "n_tok"
+        ]
+      },
+      "ratio": {
+        "raw": 0.4303125599952984,
+        "adjusted": 0.7498973657016678,
+        "correct_only": NaN
+      }
+    },
+    "qwen06b": {
+      "word_rep": {
+        "raw": {
+          "slope": 19.87009183490567,
+          "n": 108
+        },
+        "adjusted": {
+          "slope": NaN,
+          "n": 0
+        },
+        "correct_only": {
+          "slope": 11.223448562951344,
+          "n": 42
+        },
+        "covariates": []
+      },
+      "control_word": {
+        "raw": {
+          "slope": 34.938617895024436,
+          "n": 108
+        },
+        "adjusted": {
+          "slope": NaN,
+          "n": 0
+        },
+        "correct_only": {
+          "slope": 35.645485697716225,
+          "n": 84
+        },
+        "covariates": []
+      },
+      "ratio": {
+        "raw": 0.56871430617567,
+        "adjusted": NaN,
+        "correct_only": 0.31486311220807467
+      }
+    },
+    "qwen17b": {
+      "word_rep": {
+        "raw": {
+          "slope": 31.25205396970978,
+          "n": 108
+        },
+        "adjusted": {
+          "slope": NaN,
+          "n": 0
+        },
+        "correct_only": {
+          "slope": 18.98296018070279,
+          "n": 64
+        },
+        "covariates": []
+      },
+      "control_word": {
+        "raw": {
+          "slope": 40.19321580054167,
+          "n": 108
+        },
+        "adjusted": {
+          "slope": NaN,
+          "n": 0
+        },
+        "correct_only": {
+          "slope": 40.07278467362928,
+          "n": 82
+        },
+        "covariates": []
+      },
+      "ratio": {
+        "raw": 0.7775454973495454,
+        "adjusted": NaN,
+        "correct_only": 0.47371203012988805
+      }
+    },
+    "xtts2": {
+      "word_rep": {
+        "raw": {
+          "slope": 21.58308331866157,
+          "n": 54
+        },
+        "adjusted": {
+          "slope": NaN,
+          "n": 0
+        },
+        "correct_only": {
+          "slope": 19.695166824263378,
+          "n": 22
+        },
+        "covariates": []
+      },
+      "control_word": {
+        "raw": {
+          "slope": 36.06835596529903,
+          "n": 54
+        },
+        "adjusted": {
+          "slope": NaN,
+          "n": 0
+        },
+        "correct_only": {
+          "slope": 35.059600924345276,
+          "n": 41
+        },
+        "covariates": []
+      },
+      "ratio": {
+        "raw": 0.598393875768178,
+        "adjusted": NaN,
+        "correct_only": 0.5617624361088239
+      }
+    },
+    "xtts2norp": {
+      "word_rep": {
+        "raw": {
+          "slope": 7.738556635032934,
+          "n": 54
+        },
+        "adjusted": {
+          "slope": NaN,
+          "n": 0
+        },
+        "correct_only": {
+          "slope": NaN,
+          "n": 9
+        },
+        "covariates": []
+      },
+      "control_word": {
+        "raw": {
+          "slope": 8.665802141148614,
+          "n": 54
+        },
+        "adjusted": {
+          "slope": NaN,
+          "n": 0
+        },
+        "correct_only": {
+          "slope": 21.272696734438142,
+          "n": 22
+        },
+        "covariates": []
+      },
+      "ratio": {
+        "raw": 0.8929994602908419,
+        "adjusted": NaN,
+        "correct_only": NaN
+      }
+    }
+  },
+  "ratio_raw_median": 0.4995134330854842,
+  "ratio_raw_n": 6,
+  "ratio_adjusted_median": 0.49508911833427377,
+  "ratio_adjusted_n": 3,
+  "ratio_correct_only_median": 0.47371203012988805,
+  "ratio_correct_only_n": 5
+}

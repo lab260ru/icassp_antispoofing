@@ -1,42 +1,37 @@
 % Discussion body. Hand-written; numbers come from numbers.tex.
 
-\noindent\textbf{What is and is not proved.}
+\noindent\textbf{What is proved, and what is not.}
 The Lean artifact certifies an implication: periodic conditioning plus
 contraction implies a finite counting horizon. It does not prove that any
-transformer contracts. That premise is empirical, and where a model fails it the
-theorem is silent --- a distinction the formalisation forced us to keep explicit,
-and one that descriptive accounts of hallucination tend to blur.
+transformer contracts, and our attempt to measure that premise directly failed
+(Section~\ref{sec:negative}). What we establish empirically is the theorem's
+\emph{consequence} --- capacity saturation under periodicity --- not its
+antecedent. Formalisation is what forced us to keep the two apart.
 
-\noindent\textbf{Relation to prior results.}
 That deep transformers lose rank and over-squash is
 known~\cite{dong2021attention,barbero2024glasses}, and self-attention has been
 analysed as a dynamical system with attracting
 clusters~\cite{geshkovski2023emergence,gao2026clustered}. Those results index
 convergence by \emph{depth} or an abstract temperature; ours indexes it by
 \emph{generation step under periodic conditioning}, which turns the consequence
-into a statement about counting and yields a horizon in actionable units.
-Repetition inevitability has also been derived at the level of decoding
-rules~\cite{fu2021theoretical,xu2022learning}; Theorem~\ref{thm:collapse}
-constrains any Lipschitz readout and so is decoding-rule agnostic. A competing
-account holds that in text LMs the count survives in the residual stream and only
-the output policy fails~\cite{venkatesh2026repeated}; our probes favour
-representational degradation, but the two are not exclusive and separating them
-is the obvious next experiment.
+into a statement about counting. A competing account holds that in text LMs the
+count survives in the residual stream and only the output policy
+fails~\cite{venkatesh2026repeated}; our probes favour representational
+degradation, but the two are not exclusive.
 
 \noindent\textbf{Implications and limits.}
-Existing mitigations act late: attention supervision, alignment priors,
-contrastive decoding~\cite{wang2025eliminating,xin2024ralle}. Under this account
-they help only insofar as they raise $q$ or enlarge the readout margin, and
-\eqref{eq:horizon} says the levers are not equal --- the horizon is logarithmic
-in the margin but inversely logarithmic in $q$, so moving $q$ from $0.9$ to
-$0.95$ roughly doubles it while doubling the margin adds a constant. XTTS-v2 is
-itself a case in point: it ships a repetition penalty of $5.0$ on acoustic
-tokens, and rerunning it with that penalty disabled moves $k^\ast$ from
-\AblRpKStar{} to \AblNoRpKStar{} while the repeated-vs-control gap persists
-(\AblNoRpRep{}\% vs.\ \AblNoRpCtl{}\% at $k\ge6$). The penalty was masking the
-collapse, not causing it, which makes the penalised model the conservative member
-of our panel. Remaining limits: the panel is English-only; text attention is
-unavailable where text and acoustic embeddings are additively fused (Qwen3-TTS);
+Existing mitigations act late~\cite{wang2025eliminating,xin2024ralle}. Under this
+account they help only insofar as they raise $q$ or enlarge the readout margin,
+and \eqref{eq:horizon} says the levers are unequal: the horizon is logarithmic in
+the margin but inversely logarithmic in $q$. XTTS-v2 is a case in point --- with
+its shipped repetition penalty disabled, $k^\ast$ falls from \AblRpKStar{} to
+\AblNoRpKStar{} while the repeated-vs-control gap persists
+(\AblNoRpRep{}\% vs.\ \AblNoRpCtl{}\%), so the penalty was masking the collapse,
+not causing it. Limits: the panel is English-only and all six checkpoints are
+codec-language models with softmax attention over text, so the claim is about
+that architecture class rather than AR TTS in general; the capacity ratio does
+not order $k^\ast$ across models, and we do not claim it does; text attention is
+unreachable where text and acoustic embeddings are additively fused (Qwen3-TTS);
 and we do not propagate the residual $O(\delta + 1/k)$ term of
-Lemma~\ref{lem:dilution} through the theorem, so the machine-checked bound
-applies to the idealised periodic map rather than the measured one.
+Lemma~\ref{lem:dilution} through the theorem, so the machine-checked bound applies
+to the idealised periodic map rather than the measured one.

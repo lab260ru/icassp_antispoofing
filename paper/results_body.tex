@@ -40,9 +40,11 @@ same carrier sentence and the same word count as its repeated twin, and differs
 only in that the $k$ copies of one word are replaced by $k$ distinct words. If
 the failure were about sequence length, attention span, or accumulated exposure
 bias, the two curves would coincide. They do not: at $k\ge6$, repeated items are
-rendered correctly \AccRepHigh{}\% of the time against \AccCtlHigh{}\% for
-controls. Models that cannot say \emph{very} six times in a row will say twelve
-or sixteen \emph{different} adverbs without difficulty.
+rendered correctly \AccRepHigh{}\% $[\AccRepHighLo{}, \AccRepHighHi{}]$ of the
+time against \AccCtlHigh{}\% $[\AccCtlHighLo{}, \AccCtlHighHi{}]$ for controls
+(Wilson intervals, $n=\AccRepHighN{}$ generations per condition, panel only).
+Models that cannot say \emph{very} six times in a row will say twelve or sixteen
+\emph{different} adverbs without difficulty.
 
 One alternative deserves ruling out: repeated text is unusual text, so perhaps
 models fail on it because it is improbable rather than because it is periodic.
@@ -76,35 +78,40 @@ controls.}
 
 \subsection{The states the decoder visits stop multiplying}
 
-Theorem~\ref{thm:collapse}(ii) says that under periodic conditioning the states a
-decoder visits stop being mutually distinguishable. The observable consequence is
-that asking for more repetitions should stop buying the decoder more distinct
-internal states, while the same amount of non-repetitive text should keep buying
-them. We measure the number of distinguishable states as the effective rank
-$\mathcal{N}_{\mathrm{eff}} = \exp(-\sum_i p_i \log p_i)$ of the generation
-trajectory over normalised singular values, and the statistic is the
+Theorem~\ref{thm:collapse}(ii) says the states a decoder visits under periodic
+conditioning stop being mutually distinguishable, so asking for more repetitions
+should stop buying it distinct internal states while the same amount of
+non-repetitive text keeps buying them. We count distinguishable states by the
+effective rank $\mathcal{N}_{\mathrm{eff}} = \exp(-\sum_i p_i \log p_i)$ of the
+generation trajectory over normalised singular values; the statistic is the
 \emph{capacity gain} $\mathrm{d}\mathcal{N}_{\mathrm{eff}}/\mathrm{d}\log k$,
 with intervals bootstrapped over stimulus templates.
 
 Figure~\ref{fig:main}(c,d) shows the result. On repeated text the capacity gain
 is a factor \CapRatio{} of the control gain, with disjoint 95\% intervals for
-\NCapSepWord{} of the \NCapModels{} instrumented checkpoints; the matched-pair
-form of the comparison gives a positive gap in \CapFracPos{}\% of pairs. The
-decoder does not merely make mistakes on repeated text --- it runs out of
-internal states in which a mistake and a correct continuation could differ.
+\NCapSepWord{} of the \NCapModels{} panel checkpoints; the matched-pair form of
+the comparison gives a positive gap in \CapFracPos{}\% of pairs.
 
-Lemma~\ref{lem:dilution} is checkable in the same recordings, and it concerns the
-softmax \emph{restricted to the $k$ repeated keys}: raw attention weight is
-normalised over the whole sequence, whose length itself grows with $k$, so it
-confounds dilution with sequence growth. Renormalised over the occurrence
-columns, the profile entropy grows with $\log k$ at slope
+An obvious objection is that this is circular: if a model correctly renders
+\emph{very} sixteen times the audio really is monotonous, so a low-rank
+trajectory would follow from the stimulus rather than from any loss of capacity.
+Two checks say otherwise. Adding realised output diversity --- type/token ratio
+over emitted acoustic tokens, the rate at which a token repeats its predecessor,
+and length --- as covariates leaves the ratio at \CapAdjRatio{}. Restricting to
+the items each model rendered \emph{correctly}, where the audio is by
+construction what was asked for, leaves it at \CapCorrRatio{}
+($\CapCorrN{}$ checkpoints with sufficient correct items). The decoder does not
+merely make mistakes on repeated text --- it runs out of internal states in which
+a mistake and a correct continuation could differ.
+
+Lemma~\ref{lem:dilution} concerns the softmax \emph{restricted to the $k$ repeated
+keys}: raw attention weight is normalised over the whole sequence, whose length
+grows with $k$, confounding dilution with sequence growth. Renormalised over the
+occurrence columns, the profile entropy grows with $\log k$ at slope
 \BlockEntropySlope{}, the implied spread is $\delta \le 0.06$ nats across the
-whole ladder, and no occurrence --- not even the most attended --- ever captures
-more than $1.9/k$ of the block's mass. Attention over the repeated spans is
-within a few percent of uniform, which is what Assumption~\ref{ass:periodic}
-needs. The trajectories also reproduce the spectral signature the companion ASR
-study reported under stress: reduced effective rank and hardened spectra in
-hallucinated generations. Per-model tables are in the supplement.
+ladder, and no occurrence --- not even the most attended --- captures more than
+$1.9/k$ of the block's mass. Attention over the repeated spans is within a few
+percent of uniform, which is what Assumption~\ref{ass:periodic} needs.
 
 \subsection{Two things we could not establish}
 \label{sec:negative}
@@ -120,12 +127,10 @@ Lemma~\ref{lem:dilution} predicts, the worse any attention-based localiser gets.
 The capacity measure needs no boundaries, which is why we adopted it.
 
 Second, we cannot claim the count is \emph{absent}. A ridge probe recovering
-$\log_2 k$ from trajectory summaries, cross-validated across carrier templates,
-decodes it only coarsely (median $R^2 = \ProbeLateRTwo{}$ late in generation),
-far from the near-perfect decodability reported for text
-LMs~\cite{venkatesh2026repeated}. Contrasting the first and last third of the
-\emph{same} trajectory, so that probe capacity cancels, the count is retained at
-\ProbeRetRep{} of its early level on repeated text against \ProbeRetCtl{} on
-controls, repeated being the lower of the pair in \ProbeNBelowWord{} of
-\ProbeNModels{} variants. The direction is consistent, but this is degradation,
-not erasure, and a stronger probe could change the picture.
+$\log_2 k$ from trajectory summaries decodes it only coarsely (median
+$R^2 = \ProbeLateRTwo{}$ late in generation), and contrasting the first and last
+third of the \emph{same} trajectory --- so that probe capacity cancels --- the
+count is retained at \ProbeRetRep{} of its early level on repeated text against
+\ProbeRetCtl{} on controls, repeated being lower in \ProbeNBelowWord{} of
+\ProbeNModels{} variants. Consistent in direction, but this is degradation, not
+erasure.
