@@ -87,6 +87,12 @@ def word_rep_items() -> list[dict]:
                 family="word_rep", template=tid, text=text,
                 target_unit=target, k=k, expected_count=k,
                 expected_words=len(text.split()), control_of=None,
+                # The k words whose text positions delimit repetition
+                # boundaries. Stated explicitly so that repeated and control
+                # items get boundaries by the *same* procedure — otherwise the
+                # control would fall back to uniform placement and the
+                # comparison of decay rates would be confounded by method.
+                boundary_units=[target] * k,
             ))
             # Matched control: same length, same syntax, distinct adverbs. Only
             # meaningful for k>=2 (k=1 IS its own control).
@@ -96,13 +102,17 @@ def word_rep_items() -> list[dict]:
                 distinct = [d for d in distinct if d != target]
                 while len(distinct) < k:
                     distinct.append(fillers[(len(distinct) + 3) % len(fillers)])
-                ctext = f"{prefix} {' '.join(distinct[:k])} {suffix}"
+                used = distinct[:k]
+                ctext = f"{prefix} {' '.join(used)} {suffix}"
                 items.append(dict(
                     item_id=f"ct_{target}_{tid}_k{k:02d}",
                     family="control_word", template=tid, text=ctext,
                     target_unit=target, k=k, expected_count=0,
                     expected_words=len(ctext.split()),
                     control_of=f"wr_{target}_{tid}_k{k:02d}",
+                    boundary_units=list(used),
+                    # scored on whether the k distinct fillers are all rendered
+                    control_units=list(used),
                 ))
     return items
 
@@ -127,6 +137,7 @@ def sentence_items() -> list[dict]:
                 item_id=f"sr_{sid}_k{k:02d}", family="sentence_rep", template=sid,
                 text=text, target_unit=target, k=k, expected_count=k,
                 expected_words=len(text.split()), control_of=None,
+                boundary_units=[target] * k,
             ))
     return items
 
