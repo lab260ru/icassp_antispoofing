@@ -462,3 +462,17 @@ dev EER; alternatives 25.92% and 33.60%). This value is now fixed for both
 content-aligned P and random-pair B2; no target data or target label has been
 read. The four B1 final fits are running now, followed by the fixed B2 and P
 fits before the one terminal SONAR/ArAD evaluation.
+
+## 2026-08-11 — H9 paired-ranking result passed its locked external gate
+
+The terminal H9 evaluation is complete. Content-aligned pair ranking reached
+45.02% mean EER across the two predeclared external targets, compared with
+51.78% for the same-data BCE baseline and 52.01% for the equal-budget
+random-pair ranking control. The improvement holds on both targets; the two
+fixed 2,000-replicate paired bootstrap intervals are entirely below zero
+(-8.25 to -5.25 pp versus BCE and -8.54 to -5.30 pp versus random-pair).
+All source choices were sealed first, the target prediction table was written
+before labels were read, and the source/target waveform-fingerprint audit found
+zero exact collisions. I am now rebuilding the paper around this controlled,
+narrow result; I will report its weak absolute EER and seed variability rather
+than present it as SOTA.

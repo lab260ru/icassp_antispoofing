@@ -3,6 +3,23 @@
 No training run or target metric exists yet. This file is append-only after the
 locked protocol.
 
+## 2026-08-11 — terminal evaluation 001
+
+The complete source-only selection and final B1/B2/P checkpoint matrix was
+sealed before either target was materialized. The only terminal target call
+then byte-validated both canonical record tables, found zero exact
+source--target waveform-fingerprint collisions, wrote all raw predictions
+before label access, and evaluated both targets/all methods/all seeds together
+with the fixed evaluator.
+
+P passes every locked decision rule: its four-seed ensemble has 45.02%
+two-target macro EER versus B1 51.78% and B2 52.01%, with lower point EER on
+both SONAR and ArAD. Fixed shared-ID bootstrap differences are P--B1 -6.70 pp
+(95% CI [-8.25, -5.25]) and P--B2 -6.97 pp ([-8.54, -5.30]). The result is a
+controlled two-target transfer improvement, not a SOTA, causal-mechanism, or
+arbitrary-corpus claim; individual seed results are heterogeneous. The full
+hash ledger and bounded interpretation are in `results/H9_TERMINAL_EVALUATION_001.md`.
+
 ## 2026-08-10 — source schema / pairing eligibility audit
 
 Only the pinned ODSS source metadata and `path`, `label`, and JSON `notes`
