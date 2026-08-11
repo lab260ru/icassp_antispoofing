@@ -158,9 +158,19 @@ def count_units(tokens: list[str], units: list[str]) -> int:
     return c
 
 
-def load(model: str) -> tuple[dict, dict]:
+def load(model: str, judge: str = "whisper") -> tuple[dict, dict]:
+    """Load transcripts from the chosen judge.
+
+    `whisper` is Whisper large-v3 (autoregressive); `ctc` is
+    wav2vec2-large-960h-lv60-self, which has no autoregressive decoder and no
+    language model. The choice matters: the AR judge de-duplicates repeated
+    speech and so undercounts exactly the material this study is about, whereas a
+    CTC judge's output length is governed by the acoustics. See
+    `analysis/asr_reliability.py` for the audit that forced this option to exist.
+    """
     asr = {}
-    p = Path(DATA_ROOT) / "asr" / f"{model}.jsonl"
+    sub = "asr" if judge == "whisper" else "asr_ctc"
+    p = Path(DATA_ROOT) / sub / f"{model}.jsonl"
     if p.exists():
         for line in open(p):
             try:
@@ -253,6 +263,8 @@ def main() -> None:
     ap.add_argument("--models", nargs="+", required=True)
     ap.add_argument("--stimuli", default="data/stimuli/stimuli.jsonl")
     ap.add_argument("--out", default="data/results/behavioural.csv")
+    ap.add_argument("--judge", choices=["whisper", "ctc"], default="whisper",
+                    help="which recogniser scores the transcripts")
     args = ap.parse_args()
 
     stim = {}
@@ -262,7 +274,11 @@ def main() -> None:
 
     rows: list[dict] = []
     for model in args.models:
-        asr, meta = load(model)
+        asr, meta = load(model, args.judge)
+        # degeneracy flags (rms, spectral flatness, ...) are computed once,
+        # during the Whisper pass, and are judge-independent properties of
+        # the audio; borrow them when scoring with the CTC judge.
+        flags = load(model, 'whisper')[0] if args.judge != 'whisper' else asr
         for stem, a in asr.items():
             if "_s" not in stem:
                 continue
@@ -296,10 +312,12 @@ def main() -> None:
                 target_unit=it["target_unit"], transcript=a.get("text", ""),
                 n_words=len(toks), duration_s=a.get("duration_s", 0.0),
                 count_a=cnt,
-                rms=a.get("rms", float("nan")),
-                spectral_flatness=a.get("spectral_flatness", float("nan")),
-                trailing_silence_s=a.get("trailing_silence_s", float("nan")),
-                loop_ac_peak=a.get("loop_ac_peak", float("nan")),
+                rms=flags.get(stem, {}).get("rms", float("nan")),
+                spectral_flatness=flags.get(stem, {}).get(
+                    "spectral_flatness", float("nan")),
+                trailing_silence_s=flags.get(stem, {}).get(
+                    "trailing_silence_s", float("nan")),
+                loop_ac_peak=flags.get(stem, {}).get("loop_ac_peak", float("nan")),
                 n_speech_tokens=m.get("n_speech_tokens", -1),
                 hit_cap=bool(m.get("hit_cap", False)),
             ))

@@ -50,10 +50,12 @@ Repetition Hallucination in Autoregressive Text-to-Speech}
 \emph{This document accompanies the 4-page ICASSP 2026 submission and is
 self-contained. It reproduces the formal artifact in full, states precisely
 what it does and does not certify, documents the benchmark and measurement
-protocol down to the level a re-implementer needs, and reports the negative
-result of Section~4.4 of the main paper in the detail it deserves. Every claim
-below is traceable to a specific file in the project repository, cited inline
-by path.}
+protocol down to the level a re-implementer needs, reports the negative
+result of Section~4.4 of the main paper in the detail it deserves, and
+answers, with new measurements rather than argument, five alternative
+explanations for the main results raised across two rounds of review
+(Section~\ref{sec:s8}). Every claim below is traceable to a specific file in
+the project repository, cited inline by path.}
 \end{center}
 
 \tableofcontents
@@ -1567,7 +1569,16 @@ than silent.
 Table~\ref{tab:panel} reproduces the model panel
 (\texttt{src/common/registry.py}) in full; the notes below detail how
 instrumentation was obtained for each family and, for Qwen3-TTS, precisely
-what could not be.
+what could not be. The panel is exactly these six checkpoints. The registry
+also carries a seventh entry, \texttt{xtts2norp} -- XTTS-v2 with its shipped
+repetition penalty disabled -- which is an ablation of the \texttt{xtts2} row,
+not an independent seventh checkpoint, and is deliberately omitted from
+Table~\ref{tab:panel} for that reason; every panel-pooled statistic in the
+main paper and in this document excludes it by construction
+(\texttt{ABLATIONS = \{"xtts2norp"\}} in \texttt{analysis/make\_numbers.py},
+\texttt{analysis/capacity.py}, \texttt{analysis/capacity\_confound.py}, and
+\texttt{analysis/unit\_invariance.py}). The ablation is documented on its own
+terms in Section~\ref{sec:s8-ablation}.
 
 \begin{table}[h]
 \centering

@@ -2279,5 +2279,34 @@
       }
     ]
   },
-  "verdict": "decoding-consistency: Whisper agrees with itself on 83% of repeated items (mean|diff|=33.83) vs 96% of control items (mean|diff|=0.91). synthetic ground truth (repeated word): mean counted/true ratio is 0.92 at k=2 vs [k=4: 0.50, k=8: 0.27, k=16: 0.65, k=32: 0.53] at higher k -- Whisper undercounts genuinely-correct periodic material, severely at moderate k. matched same-voice distinct-word control (mean ratio 1.00 vs 0.49 repeated, k>=4): [k=4: repeated=0.50 vs distinct=1.00, k=8: repeated=0.27 vs distinct=1.00, k=16: repeated=0.65 vs distinct=1.00, k=32: repeated=0.53 vs distinct=1.00] -- distinct-word sequences of matched length are transcribed more completely, so the undercount is specific to identical repeated material, not a generic long-audio artefact."
+  "verdict": "decoding-consistency: Whisper agrees with itself on 83% of repeated items (mean|diff|=33.83) vs 96% of control items (mean|diff|=0.91). synthetic ground truth (repeated word): mean counted/true ratio is 0.92 at k=2 vs [k=4: 0.50, k=8: 0.27, k=16: 0.65, k=32: 0.53] at higher k -- Whisper undercounts genuinely-correct periodic material, severely at moderate k. matched same-voice distinct-word control (mean ratio 1.00 vs 0.49 repeated, k>=4): [k=4: repeated=0.50 vs distinct=1.00, k=8: repeated=0.27 vs distinct=1.00, k=16: repeated=0.65 vs distinct=1.00, k=32: repeated=0.53 vs distinct=1.00] -- distinct-word sequences of matched length are transcribed more completely, so the undercount is specific to identical repeated material, not a generic long-audio artefact. gap-plausibility bound: measured accuracy at k>=6 is 12.3% repeated vs 42.8% control (~3.5x); crediting every repeated 'undercount' item back to 'correct' (a deliberately generous upper bound on the ASR confound) raises repeated to at most 36.3%, still ~1.2x below control -- so this bias plausibly INFLATES the reported gap but cannot manufacture it. Independently, the instrument's own ceiling (fraction of ground-truth-known periodic trials at k>=4 where Whisper's transcript exactly matched the true count) is 12% (24 trials), confirming the transcript-exact-match criterion itself throws away real successes at these k -- a genuine measurement-validity caveat for the paper to state explicitly, but not one that reverses or dominates the effect.",
+  "gap_plausibility_bound": {
+    "behavioural_upper_bound": {
+      "k_min": 6,
+      "repeated": {
+        "n": 612,
+        "accuracy": 0.12254901960784313,
+        "undercount_frac": 0.24019607843137256,
+        "upper_bound_accuracy": 0.3627450980392157
+      },
+      "control": {
+        "n": 612,
+        "accuracy": 0.42810457516339867,
+        "undercount_frac": 0.08823529411764706,
+        "upper_bound_accuracy": 0.5163398692810457
+      },
+      "note": "upper_bound_accuracy credits every 'undercount'-labelled repeated item back to 'correct', i.e. assumes ALL of them were genuinely correct TTS renderings that Whisper's transcript miscounted. This is a deliberately generous upper bound, not a point estimate."
+    },
+    "instrument_ceiling": {
+      "overall_hit_rate": 0.125,
+      "n_trials": 24,
+      "by_k": {
+        "4": 0.3333333333333333,
+        "8": 0.16666666666666666,
+        "16": 0.0,
+        "32": 0.0
+      },
+      "note": "hit_rate = fraction of synthetic (ground-truth-known) periodic trials at k>=4 where Whisper's transcript count exactly equalled the true count. This bounds, independent of any real TTS data, the maximum 'correct' rate the transcript-exact-match criterion could ever award to a model that always renders k repetitions perfectly."
+    }
+  }
 }

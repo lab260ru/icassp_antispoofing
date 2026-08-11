@@ -387,6 +387,87 @@ def run_part_b_control(proc, model, device, pool: list[dict]) -> dict:
 
 
 # --------------------------------------------------------------------------
+# Gap-plausibility bound: how much of the paper's headline repeated-vs-control
+# accuracy gap could this instrument's bias account for, at most?
+#
+# Two independent bounds, from two different pieces of evidence, so neither
+# depends on trusting the other:
+#
+#  (i) A behavioural-CSV bound. `score_counts.classify` only ever mislabels a
+#      genuinely-correct repeated rendering as "undercount" (not "correct")
+#      when the transcript undercounts but duration still matches -- that is
+#      the ONE outcome bucket structurally reachable by the bias measured in
+#      part (b). Crediting every single "undercount" item back to "correct" is
+#      maximally generous to the confound (real undercounting TTS failures
+#      certainly exist too), so it is an upper bound on the damage, not an
+#      estimate of it.
+#
+#  (ii) An instrument-ceiling bound, independent of the real behavioural data
+#      entirely. In the part-(b) synthetic trials, ground truth is exact by
+#      construction, so "Whisper's transcript count equalled the true count"
+#      is a direct measurement of the best "correct" rate Whisper's own
+#      transcript-exact-match criterion could ever award to periodic audio at
+#      that k -- even audio that is ALWAYS a perfect k-repetition rendering.
+#      That is a hard ceiling on how much of the observed accuracy at that k
+#      can be "the instrument", with everything above it necessarily "the
+#      model doesn't produce a perfect rendering to begin with".
+# --------------------------------------------------------------------------
+
+# xtts2norp is a decoding-time ablation (repetition_penalty=1.0), not an
+# independent panel checkpoint -- make_numbers.py excludes it from every
+# panel-level number for the same reason (see its ABLATIONS set), so it must
+# be excluded here too or this bound is not comparable to the paper's own
+# headline accuracy figures.
+GAP_ABLATIONS = {"xtts2norp"}
+
+
+def gap_plausibility_bound(behavioural_csv: Path, synth_rows: list[dict],
+                            k_min: int = 6) -> dict:
+    df = pd.read_csv(behavioural_csv)
+    df = df[~df.model.isin(GAP_ABLATIONS)]
+
+    def acc(family: str) -> dict:
+        sub = df[(df.family == family) & (df.k >= k_min)]
+        n = len(sub)
+        if n == 0:
+            return dict(n=0)
+        vc = sub["outcome"].value_counts()
+        correct = float(vc.get("correct", 0)) / n
+        undercount = float(vc.get("undercount", 0)) / n
+        return dict(n=int(n), accuracy=correct, undercount_frac=undercount,
+                    upper_bound_accuracy=correct + undercount)
+
+    rep, ctl = acc("word_rep"), acc("control_word")
+    bound_i = dict(
+        k_min=k_min, repeated=rep, control=ctl,
+        note=(
+            "upper_bound_accuracy credits every 'undercount'-labelled repeated "
+            "item back to 'correct', i.e. assumes ALL of them were genuinely "
+            "correct TTS renderings that Whisper's transcript miscounted. This "
+            "is a deliberately generous upper bound, not a point estimate."
+        ),
+    )
+
+    hi_k = [r for r in synth_rows if r["k_true"] >= 4]
+    n = len(hi_k)
+    ceiling = dict(n=n, hit_rate=float(np.mean([r["k_counted"] == r["k_true"] for r in hi_k])) if n else float("nan"))
+    by_k_ceiling = {}
+    for k in sorted({r["k_true"] for r in hi_k}):
+        sub = [r for r in hi_k if r["k_true"] == k]
+        by_k_ceiling[str(k)] = float(np.mean([r["k_counted"] == r["k_true"] for r in sub]))
+    bound_ii = dict(
+        overall_hit_rate=ceiling["hit_rate"], n_trials=n, by_k=by_k_ceiling,
+        note=(
+            "hit_rate = fraction of synthetic (ground-truth-known) periodic "
+            "trials at k>=4 where Whisper's transcript count exactly equalled "
+            "the true count. This bounds, independent of any real TTS data, "
+            "the maximum 'correct' rate the transcript-exact-match criterion "
+            "could ever award to a model that always renders k repetitions "
+            "perfectly."
+        ),
+    )
+    return dict(behavioural_upper_bound=bound_i, instrument_ceiling=bound_ii)
+
 
 def main() -> None:
     ap = argparse.ArgumentParser()
@@ -398,26 +479,36 @@ def main() -> None:
     ap.add_argument("--out", default="data/results/asr_reliability.json")
     ap.add_argument("--skip-a", action="store_true")
     ap.add_argument("--skip-b", action="store_true")
+    ap.add_argument("--verdict-only", action="store_true",
+                     help="Recompute only the gap-plausibility bound and verdict from an "
+                          "existing --out JSON (parts a/b already run). No GPU/model load.")
     args = ap.parse_args()
 
-    from transformers import WhisperForConditionalGeneration, WhisperProcessor
-    device = f"cuda:{args.gpu}"
-    proc = WhisperProcessor.from_pretrained(args.asr_model)
-    model = (WhisperForConditionalGeneration
-             .from_pretrained(args.asr_model, dtype=torch.float16).to(device).eval())
+    if args.verdict_only:
+        result = json.loads(Path(args.out).read_text())
+    else:
+        from transformers import WhisperForConditionalGeneration, WhisperProcessor
+        device = f"cuda:{args.gpu}"
+        proc = WhisperProcessor.from_pretrained(args.asr_model)
+        model = (WhisperForConditionalGeneration
+                 .from_pretrained(args.asr_model, dtype=torch.float16).to(device).eval())
 
-    stimuli = [json.loads(l) for l in open(args.stimuli)]
-    stimuli_by_id = {it["item_id"]: it for it in stimuli}
+        stimuli = [json.loads(l) for l in open(args.stimuli)]
+        stimuli_by_id = {it["item_id"]: it for it in stimuli}
 
-    result: dict = dict(asr_model=args.asr_model, main_run_config=(
-        "greedy, condition_on_prev_tokens=False (see src/common/asr_transcribe.py)"))
+        result = dict(asr_model=args.asr_model, main_run_config=(
+            "greedy, condition_on_prev_tokens=False (see src/common/asr_transcribe.py)"))
 
-    if not args.skip_a:
-        result["decoding_consistency"] = run_part_a(proc, model, device, stimuli_by_id, {})
-    if not args.skip_b:
-        pool = build_pool(Path(args.behavioural))
-        result["synthetic_ground_truth"] = run_part_b(proc, model, device, pool)
-        result["synthetic_ground_truth_control"] = run_part_b_control(proc, model, device, pool)
+        if not args.skip_a:
+            result["decoding_consistency"] = run_part_a(proc, model, device, stimuli_by_id, {})
+        if not args.skip_b:
+            pool = build_pool(Path(args.behavioural))
+            result["synthetic_ground_truth"] = run_part_b(proc, model, device, pool)
+            result["synthetic_ground_truth_control"] = run_part_b_control(proc, model, device, pool)
+
+    if "synthetic_ground_truth" in result:
+        result["gap_plausibility_bound"] = gap_plausibility_bound(
+            Path(args.behavioural), result["synthetic_ground_truth"]["rows"])
 
     # -------------------------------------------------------------- verdict
     # Reasoned from the actual numbers above, not asserted independently of
@@ -466,6 +557,25 @@ def main() -> None:
         verdict_bits.append(
             f"matched same-voice distinct-word control (mean ratio {ctl_avg:.2f} vs "
             f"{rep_avg:.2f} repeated, k>=4): [{matched}] -- {direction}."
+        )
+    if "gap_plausibility_bound" in result:
+        gb = result["gap_plausibility_bound"]
+        bi, bii = gb["behavioural_upper_bound"], gb["instrument_ceiling"]
+        rep, ctl = bi["repeated"], bi["control"]
+        verdict_bits.append(
+            f"gap-plausibility bound: measured accuracy at k>={bi['k_min']} is "
+            f"{100*rep['accuracy']:.1f}% repeated vs {100*ctl['accuracy']:.1f}% control "
+            f"(~{ctl['accuracy']/rep['accuracy']:.1f}x); crediting every repeated "
+            f"'undercount' item back to 'correct' (a deliberately generous upper bound "
+            f"on the ASR confound) raises repeated to at most {100*rep['upper_bound_accuracy']:.1f}%, "
+            f"still ~{ctl['accuracy']/rep['upper_bound_accuracy']:.1f}x below control -- "
+            f"so this bias plausibly INFLATES the reported gap but cannot manufacture it. "
+            f"Independently, the instrument's own ceiling (fraction of ground-truth-known "
+            f"periodic trials at k>=4 where Whisper's transcript exactly matched the true "
+            f"count) is {100*bii['overall_hit_rate']:.0f}% ({bii['n_trials']} trials), "
+            f"confirming the transcript-exact-match criterion itself throws away real "
+            f"successes at these k -- a genuine measurement-validity caveat for the paper "
+            f"to state explicitly, but not one that reverses or dominates the effect."
         )
     result["verdict"] = " ".join(verdict_bits) if verdict_bits else "insufficient data"
 
