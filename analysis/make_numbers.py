@@ -245,6 +245,30 @@ def main() -> None:
             above = acc.index[acc > 0.5]
             macros[f"Abl{tag}KStar"] = str(int(above.max())) if len(above) else "0"
 
+    # ---- mitigation sweep --------------------------------------------------
+    ms_path = Path("data/results/mitigation_sweep.json")
+    if ms_path.exists():
+        ms = json.loads(ms_path.read_text())
+        arms = ms.get("arms", {})
+        usable = [a for a in arms.values()
+                  if np.isfinite(a["ctl"]["median"]) and abs(a["ctl"]["median"]) < 0.05]
+        if usable:
+            lo_p = min(a["penalty"] for a in usable)
+            hi_p = max(a["penalty"] for a in usable)
+            errs = [a["rep"]["median"] for a in usable]
+            macros["MitNArms"] = WORDS.get(len(usable), str(len(usable)))
+            macros["MitPenLo"] = fmt(lo_p, 0)
+            macros["MitPenHi"] = fmt(hi_p, 0)
+            macros["MitErrBest"] = fmt(100 * max(errs), 1)
+            macros["MitErrWorst"] = fmt(100 * min(errs), 1)
+            macros["MitSpan"] = fmt(100 * (max(errs) - min(errs)), 1)
+        if np.isfinite(ms.get("slope_per_penalty_unit", np.nan)):
+            macros["MitSlope"] = fmt(100 * ms["slope_per_penalty_unit"], 1)
+        broken = [a for a in arms.values()
+                  if np.isfinite(a["ctl"]["median"]) and abs(a["ctl"]["median"]) >= 0.05]
+        if broken:
+            macros["MitBrokenPen"] = fmt(min(a["penalty"] for a in broken), 0)
+
     # ---- naturalness control -------------------------------------------
     # Two scorers: a panel backbone (Llasa-1B) and an independent LM outside the
     # panel. The paper quotes the independent one, because a referee drawn from

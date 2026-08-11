@@ -8,14 +8,13 @@ transformer contracts, and our attempt to measure that premise directly failed
 \emph{consequence}, not its antecedent.
 
 A conditional account risks being unfalsifiable, so we state what would refute
-it: a control showing the same deficit as its repeated twin (blaming length, not
-periodicity); a model with the deficit whose capacity gain matches its control
-(severing mechanism from behaviour); or a probe recovering the count from late
-states as well as early ones (placing the failure in the readout). Our data could
-have shown any of the three. \ErrBestModel{} is instructive: no count deficit yet
-still a capacity gap, so capacity loss is necessary but not sufficient ---
-consistent with \eqref{eq:horizon}, where a large readout margin buys horizon
-even under contraction.
+it: a control showing the same deficit as its repeated twin; a model with the
+deficit whose capacity gain matches its control; or a probe recovering the count
+from late states as well as early ones. Our data could have shown any of the
+three. \ErrBestModel{} is instructive: no count deficit yet still a capacity gap,
+so capacity loss is necessary but not sufficient --- consistent with
+\eqref{eq:horizon}, where a large readout margin buys horizon even under
+contraction.
 
 The closest prior result is representational
 collapse~\cite{barbero2024glasses}: as a sequence grows, distinct prefixes map to
@@ -33,17 +32,20 @@ fails~\cite{venkatesh2026repeated}; our probes favour representational
 degradation, but the two are not exclusive.
 
 \noindent\textbf{Implications and limits.}
-Existing mitigations act late~\cite{wang2025eliminating,xin2024ralle}. Under this
-account they help only insofar as they raise $q$ or enlarge the readout margin,
-and \eqref{eq:horizon} says the levers are unequal: the horizon is logarithmic in
-the margin but inversely logarithmic in $q$. XTTS-v2 is a case in point: its shipped
-repetition penalty of $5.0$ acts directly against the behaviour we measure, and
-disabling it degrades both conditions so far that the ablation is uninformative,
-leaving the penalised model the conservative panel member. Limits: the panel is
-English-only and all six checkpoints are
+Existing mitigations act late~\cite{wang2025eliminating,xin2024ralle}, and under
+this account they help only insofar as they raise $q$ or enlarge the readout
+margin. We tested that rather than asserting it, sweeping XTTS-v2's repetition
+penalty --- the most widely deployed such fix --- over
+$\{\MitPenLo{},3,5,\MitPenHi{}\}$, the arms whose controls stay exact. The
+deficit moves only from \MitErrBest{}\% to \MitErrWorst{}\%, a \MitSpan{}-point
+span across a fourfold change in the penalty, sloping \MitSlope{} points per unit
+--- slightly the \emph{wrong} way. Disabling the penalty entirely
+($\!=\!\MitBrokenPen{}$) breaks the control too, so no setting both preserves
+general quality and removes the deficit: this lever does not act on the quantity
+that sets the horizon.
+Limits: the panel is English-only and all six checkpoints are
 codec-language models with softmax attention over text, so the claim concerns
 that architecture class, not AR TTS in general; capacity ratio and count error
 correlate in the predicted direction (Spearman $+0.49$) but $n{=}6$ cannot
-establish it; and Lemma~\ref{lem:dilution}'s residual $O(\delta + 1/k)$ term is
-not propagated through the theorem, so the machine-checked bound is about the
-idealised periodic map (supplement, S2).
+establish it; and the theorem's bound is about the idealised periodic map, since
+Lemma~\ref{lem:dilution}'s residual term is not propagated through it.
