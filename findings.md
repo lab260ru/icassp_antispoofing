@@ -2,18 +2,21 @@
 
 ## Research Question
 
-Which waveform-level signal cues associate causally, rather than merely
-correlationally, with speech anti-spoofing detector scores across datasets and
-architectures, and can the resulting evidence improve robustness?
+Can documented content-aligned natural/synthetic pair-ranking supervision
+improve the external transfer of a compact speech anti-spoofing detector beyond
+same-data BCE and an equal-budget random-pair ranking control?
 
 ## Current Understanding
 
-The five-corpus H1 screen now establishes that some registered feature/view/class
-units satisfy the study's descriptive cross-corpus association rule. It also
-rules out the central frozen crest-factor candidate as a portable adjusted
-association: its ASVspoof5 adjusted estimate is null. No causal
-shortcut-sensitivity claim has been established; only a completed,
-quality-frozen paired detector intervention can test that third question.
+The original feature/intervention investigation remains valuable boundary
+evidence, but its crest result is negative and cannot be the paper's primary
+contribution. H9-PCR supplies a clean positive controlled-transfer result:
+under a locked ODSS-only training protocol, content-aligned pair ranking lowers
+two-target macro EER to 45.02%, versus 51.78% for same-pool BCE and 52.01% for
+an equal-budget random-pair control. The effect is lower on both fixed targets
+and both 2,000-replicate shared-ID bootstrap intervals lie below zero. This is
+a narrow training-method result, not a statement about universal cue causality
+or state-of-the-art anti-spoofing.
 
 ## H8 positive-pivot status
 
@@ -29,21 +32,21 @@ falsification: Spectra-AASIST has 0.185% mean target EER while GroupDRO has
 ## H9 paired-counterfactual status
 
 H9-PCR is a new, protocolled training study, not a reinterpretation of any
-earlier detector-score or feature result. It asks whether content-aligned
-natural/synthetic ranking on ODSS transfers better than same-data BCE and a
-random-pair margin control to two fixed external corpora, SONAR and ArAD. Its
-source-metadata pairing freeze and source-only waveform materialization are
-complete, but no model has been fit and no target data or H9 target metric has
-been read. The training input is exactly the 23,883-record canonical manifest
-hash-bound in `H9_SOURCE_MATERIALIZATION_001.md`; the source-pairing contract,
-provenance audit, and two-target success gate are in
-`experiments/h9_paired_counterfactual/PLAN.md`.
+earlier detector-score or feature result. It uses 7,961 documented ODSS
+natural/VITS/FastPitch--HiFi-GAN groups (23,883 shared B1/B2/P trials), a
+voice-disjoint source development split, and 15,922 edges for both the
+content-aligned P and the language/corpus/generator-stratified random-pair B2
+control. A fresh 172,102-parameter Res2TCNGuard is trained in BF16 from four
+fixed initializations; no historical pretrained checkpoint is loaded.
 
-The freeze contains 7,961 documented ODSS natural/TTS groups, a shared
-23,883-trial B1/B2/P pool, and 15,922 edges for each ranking condition. Its
-language-stratified voice-disjoint split and the 3,071 excluded unmatched VITS
-rows are hash-bound. This establishes a fair training input, not an accuracy
-result.
+After the source-only lambda/checkpoint choices were sealed, the terminal
+evaluator materialized SONAR and ArAD, found no exact canonical source--target
+waveform collision, wrote raw predictions before label access, and evaluated
+all 12 method--seed checkpoints in one call. P's EER is 47.07% on SONAR and
+42.98% on ArAD, below both controls on each. Its macro improvement is -6.70 pp
+versus BCE (95% CI [-8.25, -5.25]) and -6.97 pp versus random-pair ranking
+([-8.54, -5.30]). The full interpretation and hashes are in
+`experiments/h9_paired_counterfactual/results/H9_TERMINAL_EVALUATION_001.md`.
 
 ## Key Results
 
@@ -114,6 +117,13 @@ result.
   quality-calibration source, and its balanced 256-identity calibration
   manifest is frozen from labels only. This establishes a clean score-blind
   input boundary, not waveform-quality feasibility.
+- H9 controlled transfer: all eight predeclared terminal gate conditions pass
+  after a fully source-only selection stage. P's four-seed ensemble improves
+  relative to both same-pool controls on both fixed external targets, and its
+  two fixed paired bootstrap intervals exclude zero. Absolute target EER is
+  still weak and individual seed results vary; this supports a narrow
+  controlled-transfer claim, not SOTA, a causal representation explanation,
+  or arbitrary-corpus generalization.
 - H4 score-free label--cue atlas: all 420 locked feature--label AUROC/bootstrap
   cells and 84 aggregations completed from revalidated feature tables only;
   23 units meet the terminal descriptive rule. Full-waveform crest factor has
@@ -131,10 +141,13 @@ result.
 
 ## Patterns and Insights
 
-The study is designed to prevent label, corpus, duration, loudness, codec, and
-speaker effects from being mistaken for detector reliance. Existing Arena score
-artifacts provide broad architecture coverage without spending GPU time on
-baseline reproduction.
+The decisive H9 pattern is that the same rank-margin term is not sufficient:
+random pairing (B2) fails to match content-aligned P despite identical source
+pool, edge count, rank weight, architecture, optimizer, batch schedule, source
+selection, and target evaluation. This is consistent with pair alignment being
+useful, while the current data do not identify which learned representation
+property causes that transfer effect. Existing H1--H7 evidence remains a
+separate caution against overgeneralizing waveform-cue stories.
 
 ## Lessons and Constraints
 
@@ -161,19 +174,19 @@ baseline reproduction.
   grid after inspection; Q2--Q4 are not licensed by this outcome.
 - H4's 23 stable label--cue units are terminal descriptive atlas entries. They
   must not be used as new H1/H2/H2B/H3 candidates or a model-training signal.
+- H9's target panel is complete. Do not tune its rank weight, source split,
+  epochs, checkpoint, seed ensemble, loss, target subset, or bootstrap after
+  observing the result. Report the heterogeneous individual seeds and weak
+  absolute EER alongside the passing ensemble gate.
 
 ## Open Questions
 
-- Which public score artifacts expose stable sample IDs that can join audio
-  manifests without heuristic matching?
-- Does the already-frozen exploratory crest intervention show paired score
-  sensitivity after quality gates? No: its frozen arms fail before scoring;
-  a future test would require a new, independently frozen outer-loop protocol.
-- Is the strongest paper a principled negative crest-factor result plus an
-  architecture-sensitivity atlas rather than a mitigation story?
-- Can a newly predeclared transformation family, on a newly frozen cohort,
-  clear the quality-first gate without material collateral changes? The first
-  H2B grid does not.
+- Can a fresh independently frozen replication add a third external target or
+  a second transparent architecture without using the completed H9 targets to
+  tune that extension?
+- How can content alignment be characterized more directly (for example with
+  independently obtained transcript/content metadata) without turning the
+  filename-derived ODSS pair key into an overclaimed causal mechanism?
 - If a future study examines an H4 unit, can it declare a fresh score-independent
   discovery/confirmation/intervention design without using the H4 atlas for
   post-hoc cue selection?

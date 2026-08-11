@@ -10,6 +10,31 @@ provisional story is now a negative portability/quality-gate audit, not a
 causal effect or feature-conditioned fix, unless a new independently frozen
 protocol supplies the missing evidence.
 
+## Current checkpoint — 2026-08-11 — H9-PCR terminal positive result
+
+This section supersedes the earlier H9 source-selection checkpoint below.
+
+- **Result:** The locked H9-PCR terminal evaluator passed all eight decision
+  rules. The four-seed P ensemble reaches 45.02% macro EER across SONAR and
+  ArAD, versus 51.78% for same-pool BCE (B1) and 52.01% for the equal-budget
+  random-pair ranking control (B2). The fixed shared-ID bootstrap differences
+  P--B1 and P--B2 are -6.70 pp [-8.25, -5.25] and -6.97 pp [-8.54, -5.30].
+- **Authority:** Read `experiments/h9_paired_counterfactual/PLAN.md`, then
+  `results/H9_TERMINAL_EVALUATION_001.md`, before interpreting or extending
+  H9. Full terminal artifacts are on the HDD at
+  `runs/h9_paired_counterfactual/h9_terminal_evaluation_001/`; the compact
+  result figure is hash-bound by `H9_RESULT_FIGURE_PROTOCOL.md`.
+- **Hard boundary:** This supports only the controlled, two-target transfer
+  claim for fresh 172k-parameter Res2TCNGuard trained on ODSS. It is not a
+  SOTA result, causal representation proof, or arbitrary-corpus claim. Do not
+  retune H9's source pool, seeds, checkpoints, lambda, target set, loss, or
+  bootstrap after this result. Individual seeds are heterogeneous; the locked
+  four-seed probability ensemble remains authoritative.
+- **Paper transition:** The prior crest/quality paper must be replaced rather
+  than blended with H9. Before editing `paper/main.tex`, conduct a Codex-only
+  claim review. Every `main.tex` edit must immediately rebuild
+  `paper/build/main.pdf` and commit the PDF with the source.
+
 ## Resume order
 
 1. Read `research-state.yaml`, `findings.md`, and the latest entry in

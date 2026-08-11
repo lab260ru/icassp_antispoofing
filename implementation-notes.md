@@ -544,3 +544,24 @@
 - Next: Run the fixed fresh-init BF16 P lambda-selection grid using only this
   manifest and source development split. The selection can choose only the
   predeclared lambda and cannot alter the source pool or controls.
+
+## 2026-08-11 - H9 terminal target handoff and result rendering
+
+- Changed: The pinned SONAR snapshot contains FLAC audio while ArAD contains
+  RIFF/WAVE. The target materializer now accepts exactly those two audited
+  containers, preserves each byte-identical payload and real suffix, and
+  applies the unchanged decoded-PCM fingerprint policy. It still excludes the
+  standalone `labels.parquet` index from audio-shard validation.
+- Validation: The materializer/ledger/evaluator focused suite passed 15 tests
+  before target materialization. SONAR and ArAD were materialized only after
+  the complete source checkpoint ledger existed; the terminal evaluator found
+  zero canonical waveform collisions and passed all locked H9 decision rules.
+- Presentation: The H9 result renderer is hash-bound to terminal metrics,
+  bootstrap, decision, and provenance only. The first layout iteration had
+  overlapping legend/interval labels; the inspected `figures_terminal_002`
+  revision changes only layout and retains the identical sealed scientific
+  inputs and encodings.
+- Follow-up: Treat the passing effect as a narrow controlled-transfer result.
+  The red-team audit identifies weak absolute EER and frozen-ensemble seed
+  heterogeneity as paper-reporting limitations; do not repair H9 after seeing
+  them.
