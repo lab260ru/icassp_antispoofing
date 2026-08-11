@@ -94,23 +94,29 @@ def load_features(model: str, stim: dict, seed: int = 0) -> dict:
 
 def ridge_loto(X: np.ndarray, y: np.ndarray, tmpl: np.ndarray,
                alpha: float = 1.0) -> dict:
-    """Leave-one-template-out ridge. Returns R^2 and MAE in log2 k units."""
+    """Leave-one-template-out ridge. Returns R^2 and MAE in log2 k units.
+
+    Solved in the dual: there are ~50 items and 1-4k features, so the primal
+    normal equations are a d-by-d solve (minutes per layer at d=4096) while the
+    equivalent dual is n-by-n (microseconds). Same estimator, same predictions.
+    """
     if X.shape[0] < 8 or len(set(tmpl.tolist())) < 3:
         return dict(r2=np.nan, mae=np.nan, n=int(X.shape[0]))
+    X = X.astype(np.float64)
     preds = np.full(y.shape, np.nan)
     for t in sorted(set(tmpl.tolist())):
         te = tmpl == t
         tr = ~te
         if tr.sum() < 6 or te.sum() < 1:
             continue
-        A = X[tr]
-        mu = A.mean(0, keepdims=True)
-        A = A - mu
-        b = y[tr] - y[tr].mean()
-        # closed-form ridge in feature space
-        G = A.T @ A + alpha * np.eye(A.shape[1])
-        w = np.linalg.solve(G, A.T @ b)
-        preds[te] = (X[te] - mu) @ w + y[tr].mean()
+        mu = X[tr].mean(0, keepdims=True)
+        A = X[tr] - mu
+        ybar = y[tr].mean()
+        b = y[tr] - ybar
+        # w = A^T (A A^T + alpha I)^-1 b  ==  (A^T A + alpha I)^-1 A^T b
+        K = A @ A.T + alpha * np.eye(A.shape[0])
+        dual = np.linalg.solve(K, b)
+        preds[te] = ((X[te] - mu) @ (A.T @ dual)) + ybar
     ok = np.isfinite(preds)
     if ok.sum() < 4:
         return dict(r2=np.nan, mae=np.nan, n=int(ok.sum()))
