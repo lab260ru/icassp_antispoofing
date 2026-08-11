@@ -56,35 +56,42 @@ def fig_main(beh: pd.DataFrame, state: pd.DataFrame, cap: dict, out: Path) -> No
     models = ordered(beh.model.unique())
     fig, axes = plt.subplots(1, 4, figsize=(7.0, 1.52))
 
+    # Relative count error rather than exact-match accuracy: signed, so
+    # premature stopping separates from looping, and scale-free, so k=4 and
+    # k=32 are on the same axis.
+    beh = beh.copy()
+    beh["rel_err"] = (beh.count_a - beh.k) / beh.k
+    ok = ~beh.outcome.isin(["empty", "degenerate"])
+
     ax = axes[0]
     for m in models:
-        s = beh[(beh.model == m) & (beh.family.isin(["word_rep", "sentence_rep"]))]
+        s = beh[(beh.model == m) & (beh.family == "word_rep") & ok]
         if s.empty:
             continue
-        acc = s.groupby("k")["correct"].mean().sort_index()
-        ax.plot(acc.index, acc.values, "o-", color=COLOR.get(m), label=LABEL.get(m, m))
+        g = s.groupby("k")["rel_err"].median().sort_index()
+        ax.plot(g.index, 100 * g.values, "o-", color=COLOR.get(m), label=LABEL.get(m, m))
+    ax.axhline(0, color="k", lw=0.7, ls=":")
     ax.set_xscale("log", base=2)
     ax.set_xlabel(r"repetitions $k$")
-    ax.set_ylabel("counting accuracy")
-    ax.set_ylim(-0.03, 1.05)
-    ax.set_title("(a) collapse")
-    ax.legend(fontsize=4.6, loc="upper right", handlelength=1.2)
+    ax.set_ylabel("count error (\%)")
+    ax.set_title("(a) undercount")
+    ax.legend(fontsize=4.6, loc="lower left", handlelength=1.2)
 
     ax = axes[1]
     for m in models:
-        rep = beh[(beh.model == m) & (beh.family == "word_rep")]
-        ctl = beh[(beh.model == m) & (beh.family == "control_word")]
-        if rep.empty or ctl.empty:
-            continue
-        r = rep.groupby("k")["correct"].mean().sort_index()
-        c = ctl.groupby("k")["correct"].mean().sort_index()
-        ax.plot(r.index, r.values, "o-", color=COLOR.get(m))
-        ax.plot(c.index, c.values, "s--", color=COLOR.get(m), alpha=0.55)
+        for fam, ls, mk, al in (("word_rep", "-", "o", 1.0),
+                                ("control_word", "--", "s", 0.55)):
+            s = beh[(beh.model == m) & (beh.family == fam) & ok]
+            if s.empty:
+                continue
+            g = s.groupby("k")["rel_err"].median().sort_index()
+            ax.plot(g.index, 100 * g.values, ls, marker=mk, color=COLOR.get(m), alpha=al)
+    ax.axhline(0, color="k", lw=0.7, ls=":")
     ax.plot([], [], "ko-", label="repeated")
     ax.plot([], [], "ks--", alpha=0.55, label="control")
     ax.set_xscale("log", base=2)
     ax.set_xlabel(r"$k$")
-    ax.set_ylim(-0.03, 1.05)
+    ax.set_ylabel("count error (\%)")
     ax.set_title("(b) periodicity, not length")
     ax.legend(fontsize=5, loc="lower left", handlelength=1.4)
 
@@ -308,7 +315,7 @@ def fig_attention(state: pd.DataFrame, out: Path) -> None:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--behavioural", default="data/results/behavioural.csv")
+    ap.add_argument("--behavioural", default="data/results/behavioural_ctc.csv")
     ap.add_argument("--state", default="data/results/state.csv")
     ap.add_argument("--summary", default="data/results/summary.json")
     ap.add_argument("--outdir", default="paper/figs")

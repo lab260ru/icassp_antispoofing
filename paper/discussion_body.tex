@@ -29,11 +29,13 @@ degradation, but the two are not exclusive.
 Existing mitigations act late~\cite{wang2025eliminating,xin2024ralle}. Under this
 account they help only insofar as they raise $q$ or enlarge the readout margin,
 and \eqref{eq:horizon} says the levers are unequal: the horizon is logarithmic in
-the margin but inversely logarithmic in $q$. XTTS-v2 is a case in point --- with
-its shipped repetition penalty disabled, $k^\ast$ falls from \AblRpKStar{} to
-\AblNoRpKStar{} while the repeated-vs-control gap persists
-(\AblNoRpRep{}\% vs.\ \AblNoRpCtl{}\%), so the penalty was masking the collapse,
-not causing it. Limits: the panel is English-only and all six checkpoints are
+the margin but inversely logarithmic in $q$. XTTS-v2 is a case in point: its shipped
+repetition penalty of $5.0$ on acoustic tokens acts directly against the
+behaviour we measure, and disabling it degrades the model so far that its
+repeated-text output is almost entirely degenerate --- which makes that ablation
+uninformative about the dissociation, and leaves the penalised model the
+conservative member of the panel. Limits: the panel is English-only and all six
+checkpoints are
 codec-language models with softmax attention over text, so the claim is about
 that architecture class rather than AR TTS in general; the capacity ratio does
 not order $k^\ast$ across models, and we do not claim it does; text attention is

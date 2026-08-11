@@ -1876,7 +1876,10 @@ per-model quantities in the main paper's Table~1 and Table~2 are
 recomputed automatically the next time \texttt{paper/build.sh} runs against a
 more complete \texttt{data/results/} directory; this document has
 deliberately favoured describing method over quoting point-in-time numbers
-for exactly that reason.
+for exactly that reason. Section~\ref{sec:s8} inherits the same discipline,
+and in one case (Section~\ref{sec:s8-unit}) reports a concrete instance of
+exactly this kind of point-in-time drift, caught by re-running an unmodified
+analysis script against the current \texttt{data/results/} directory.
 
 \subsection{The verification gate}
 
@@ -1889,6 +1892,639 @@ the formal artifact: no result in the main paper or in this document should
 be read as resting on a machine-checked guarantee unless this script has
 been run against the exact commit being cited and has printed
 \texttt{PASS: formal artifact verified}.
+
+% ============================================================
+\section{Answering the alternatives}
+\label{sec:s8}
+
+Two rounds of review produced five distinct, falsifiable alternative
+explanations for the main paper's results -- not stylistic objections, but
+specific mechanisms that, if true, would mean the paper is measuring
+something other than what it claims. Each is answered here with a new
+measurement rather than a rebuttal in prose, following the same discipline as
+the rest of this document: state the objection the way a reviewer stated it,
+state precisely what would have to be true in the data for the alternative to
+explain the main result, describe the test and why it is the right test for
+that alternative specifically, give the numbers as they appear in the
+committed result file, and say plainly where the evidence is strong and where
+it is not. Section~\ref{sec:s8-stats} then collects the statistical
+machinery used throughout -- Wilson intervals, the template bootstrap, and an
+explicit, uncorrected count of the comparisons made -- in one place.
+
+\subsection{Naturalness: is the dissociation just improbability?}
+\label{sec:s8-natural}
+
+\textbf{The objection.} Section~\ref{sec:s3} constructs every repeated item's
+control by replacing $k$ copies of one word with $k$ distinct fillers from the
+same template's pool. A skeptical reading of the main paper's
+Figure~1(b) dissociation does not need periodicity at all: twelve identical
+copies of \emph{very} is a far more out-of-distribution string, under any
+reasonable model of English, than twelve of \emph{quite, really, truly,
+fairly, \dots} strung together in the same carrier. If a decoder's failure
+tracks how unlikely its input is rather than how periodic it is, the paper's
+sharpest test would be confounding the two variables it claims to have
+separated.
+
+\textbf{What would have to be true.} For naturalness to explain the gap, the
+repeated item in a matched pair would have to be the \emph{more} improbable
+member -- lower likelihood, higher per-token surprisal -- under a competent,
+independent model of English, and this would have to hold broadly across the
+54 matched pairs the dissociation is built from, not just in a handful of
+cases.
+
+\textbf{Test design.} \texttt{analysis/text\_perplexity.py} scores every
+stimulus's raw text under a causal LM's per-token cross-entropy
+(\texttt{model(ids, labels=ids).loss}, which Hugging Face already averages
+over tokens) and compares each \texttt{control\_word} item against the
+\texttt{word\_rep} item named in its \texttt{control\_of} field -- the
+identical 54 matched pairs used throughout Section~\ref{sec:s3}. Its first
+run used \texttt{HKUSTAudio/Llasa-1B} as the scorer, on the pragmatic grounds
+that the checkpoint was already local; a reviewer correctly pointed out that
+this is not a neutral referee, since Llasa-1B's backbone (Llama-3.2) is
+literally one of the panel's own architectures, and a naturalness check that
+answers "is this text unlike what a member of the tested family expects"
+cannot rule out the panel's own inductive bias leaking into the measurement.
+\texttt{analysis/naturalness\_independent.py} reruns the identical
+per-token-NLL procedure under \texttt{microsoft/phi-2} (2.7B) as the primary
+scorer -- a different lab, a different training recipe, and, critically, a
+different architecture family from all three panel backbones (Llama-3.2 for
+Llasa, the GPT-2-style AR decoder for XTTS-v2, Qwen3 for Qwen3-TTS), so no
+panel member's failure can be attributed to sharing an inductive bias with the
+referee. \texttt{gpt2-large} is reported alongside it as a secondary
+cross-check only, because XTTS-v2's own AR decoder is itself a GPT-2-style
+architecture; a GPT-2-family LM is therefore not fully independent for that
+one panel member, and the paper's naturalness claim never rests on it alone.
+Confidence intervals on the mean paired gap are built by resampling the six
+stimulus \emph{templates} with replacement, not the 54 pairs, for the reason
+given in Section~\ref{sec:s4} and restated in this script's own docstring:
+the 54 pairs are $6$ templates $\times$ $9$ values of $k$, so pairs sharing a
+template are correlated draws and treating all 54 as independent would
+understate the true sampling variance.
+
+\textbf{Numbers.} Table~\ref{tab:naturalness} reports all three scorers. Under
+the panel-backbone scorer (\texttt{data/results/text\_nll.json}), the control
+is the less probable member of the pair in 89\% of the 54
+pairs (mean per-token cross-entropy 16.05 for controls vs.\ 14.85 for
+repeated items, gap 1.20 nats). Under the independent primary scorer,
+phi-2 (\texttt{data/results/text\_nll\_independent.json}), the control is
+still the less probable member in 87\% of the 54 pairs
+(4.89 vs.\ 3.69, gap 1.20 nats, $95\%$ template-bootstrap
+CI $[0.58, 1.67]$). The secondary cross-check, gpt2-large, agrees even more
+strongly: the control is less probable in every one of the 54 pairs (gap
+$1.98$ nats, CI $[1.80, 2.17]$) -- a Wilson interval on that $54/54$
+proportion is $[93.4, 100.0]\%$ (Section~\ref{sec:s8-stats}), which is the
+cleanest illustration in this project of why Wilson rather than the normal
+approximation is used: a normal interval around $p=1$ is degenerate and would
+have to be truncated by hand, while Wilson returns a legitimate bounded
+interval directly.
+
+\begin{table}[h]
+\centering
+\caption{Naturalness check, three scorers, 54 matched pairs.
+``Ctl.\ higher'' is the fraction of pairs in which the control has the
+higher (less probable) per-token cross-entropy.}
+\label{tab:naturalness}
+\small
+\begin{tabular}{@{}lp{2.1cm}rrrr@{}}
+\toprule
+Scorer & Role & Rep.\ mean & Ctl.\ mean & Gap & Ctl.\ higher \\
+\midrule
+Llasa-1B & panel backbone & 14.85 & 16.05 & 1.20 & 89\% \\
+phi-2 & independent, primary & 3.69 & 4.89 & 1.20 & 87\% \\
+gpt2-large & secondary cross-check & 3.36 & 5.34 & 1.98 & 100\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{The disagreement, stated honestly.} All three scorers agree on the
+headline direction and on the pooled magnitude of the gap ($\approx 1.2$--$2.0$
+nats, control less probable in $87$--$100\%$ of pairs). They do \emph{not}
+agree on the shape of the gap across $k$, and the main paper's text is
+deliberately worded to claim only what both the panel-backbone and the
+independent scorer support. Under Llasa-1B, the per-$k$ gap widens
+monotonically across the entire ladder, from $0.37$ nats at $k{=}2$ to $1.95$
+nats at $k{=}32$ (\texttt{by\_k} in \texttt{text\_nll.json}). Under phi-2, the
+gap widens similarly at first -- $0.34$ nats at $k{=}2$, rising to a peak of
+$2.62$ nats at $k{=}8$ -- but then \emph{narrows}: $2.12$ at $k{=}12$, $1.45$
+at $k{=}16$, $0.24$ at $k{=}24$, and by $k{=}32$ it has reversed sign to
+$-0.62$ nats, with the fraction of pairs in which the control is less probable
+falling from $100\%$ at $k{=}3$--$12$ to $33\%$ at $k{=}32$
+(\texttt{by\_k\_frac\_ctl\_higher} in \texttt{text\_nll\_independent.json}).
+At the very top of the ladder, in other words, phi-2 finds 32 verbatim copies
+of one word \emph{easier} to predict than the length-matched control, which is
+plausible on its own terms -- a small, locally-conditioned LM's induction-head
+copying becomes close to trivial once a token has already repeated a dozen
+times, whereas the control at $k{=}32$ is 32 fillers cycled four times through
+an eight-word pool, which is repetitive in a different, less exploitable way.
+This reversal sits entirely past every panel checkpoint's own $k^\ast$
+(1--8, Table~1 of the main paper): by the $k$ range where
+counting collapse actually happens, both scorers agree without qualification.
+The paper's claim is accordingly the conjunction, not the union, of what the
+two scorers show: the control is the less probable member of the pair in the
+large majority of cases and across the range where the phenomenon occurs, and
+naturalness therefore runs opposite to, not in support of, the alternative
+explanation. A claim that the gap \emph{widens monotonically with $k$}, which
+only the non-independent scorer supports, is not made.
+
+\textbf{Conclusion.} Naturalness does not explain the dissociation. If
+anything, the harder-to-predict member of each pair -- the control, under
+every scorer used -- is the one the panel renders correctly, which is the
+reverse of what the alternative needs. The evidence for the headline
+direction is strong (three scorers, two of them mutually independent, agree);
+the evidence for any particular trend of the gap across $k$ is weak past the
+point where collapse has already occurred, and the paper does not lean on it.
+
+\subsection{Unit invariance: repetitions, or acoustic tokens?}
+\label{sec:s8-unit}
+
+\textbf{The objection.} A second alternative locates the attractor on the
+acoustic side entirely, with text playing no causal role: perhaps a decoder
+simply loses its place once it has emitted enough near-identical codec frames
+in a row, regardless of why those frames are near-identical. Under this
+account, ``periodicity'' is doing no work beyond producing repetitive audio,
+and the same collapse should occur for any input that yields enough
+near-duplicate acoustic tokens, text-side repetition structure notwithstanding.
+
+\textbf{What would have to be true.} A whole repeated sentence costs several
+times more acoustic tokens per repetition than a single repeated word. An
+acoustic-token-budget account therefore predicts that sentence repetition
+should collapse at a substantially \emph{smaller} $k$ than word repetition
+(fewer repetitions are needed to accumulate the same token budget), and that
+the \emph{token count} at the collapse point should be roughly equal across
+the two families. Theorem~A predicts the opposite on both counts: collapse at
+a comparable number of repetitions regardless of unit, and a token count at
+collapse that differs in proportion to the unit's cost.
+
+\textbf{Test design.} \texttt{analysis/unit\_invariance.py} computes, per
+model, $k^\ast$ separately for \texttt{word\_rep} and \texttt{sentence\_rep}
+using the same chance-adjusted threshold as the main paper's Table~1 (largest
+$k$ with accuracy $>0.5$), together with the median number of realised
+acoustic tokens (\texttt{n\_speech\_tokens}) at that $k$. Comparing $k^\ast$
+directly tests the repetition-count account; comparing the token count at
+$k^\ast$ tests the token-budget account; running both on the same models from
+the same behavioural table lets the two predictions be checked against each
+other rather than against different data.
+
+\textbf{Numbers.} Table~\ref{tab:unitinv} reproduces
+\texttt{data/results/unit\_invariance.json} as committed: mean
+$|k^\ast_{\mathrm{word}} - k^\ast_{\mathrm{sent}}| = 1.7$ repetitions
+across 6 models, against a mean token-count ratio at collapse of
+1.34$\times$ -- repetitions differ by less than two units while
+tokens differ by a third, which is the pattern Theorem~A predicts and the
+token-budget account does not.
+
+\begin{table}[h]
+\centering
+\caption{Unit invariance, as committed in
+\texttt{data/results/unit\_invariance.json}. Token counts are medians at the
+reported $k^\ast$; \texttt{n/a} where no $k$ cleared the $0.5$ threshold.}
+\label{tab:unitinv}
+\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Model & $k^\ast_{\mathrm{word}}$ & tok.\ (word) & $k^\ast_{\mathrm{sent}}$ & tok.\ (sent) \\
+\midrule
+Llasa-1B & 0 & n/a & 3 & 351 \\
+Llasa-3B & 1 & 209 & 3 & 457 \\
+Qwen3-TTS-0.6B & 4 & 53 & 4 & 80 \\
+Qwen3-TTS-1.7B & 8 & 80 & 4 & 86 \\
+XTTS-v2 & 4 & 89 & 4 & 128 \\
+XTTS-v2 (no penalty, ablation) & 2 & 63 & 1 & 29 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{A data-integrity caveat, found while verifying this section.} The
+committed \texttt{unit\_invariance.json}'s six-model set is
+$\{$\texttt{llasa1b}, \texttt{llasa3b}, \texttt{qwen06b}, \texttt{qwen17b},
+\texttt{xtts2}, \texttt{xtts2norp}$\}$ -- it includes the \texttt{xtts2norp}
+ablation and omits Llasa-8B entirely, in tension with the rule stated in
+Section~\ref{sec:s6} and enforced everywhere else in this project's pipeline
+that the ablation is never pooled as if it were an independent checkpoint. The
+cause, verified directly: at the time this file was written,
+\texttt{data/results/behavioural.csv} carried only $319$ of $540$ expected
+rows for Llasa-8B ($59\%$), and for at least one of its two families
+(\texttt{word\_rep} or \texttt{sentence\_rep}) accuracy had not yet cleared the
+$0.5$ threshold at any $k$, so \texttt{unit\_invariance.py}'s own finiteness
+check dropped it from the output, leaving \texttt{xtts2norp} as the sixth
+entry by coincidence of ordering rather than by design -- the script itself
+(re-inspected for this section) does correctly exclude \texttt{ABLATIONS} by
+construction, so this is a snapshot-timing issue in the committed artifact,
+not a logic error in the analysis code. Re-running the identical, unmodified
+script against the current \texttt{data/results/behavioural.csv} -- performed
+here for verification, and not written back to the repository, since this
+document's brief is to report on committed results rather than to regenerate
+them -- gives the true six-panel-member set with Llasa-8B in place of the
+ablation: $k^\ast_{\mathrm{word}}{=}4$ (median $328$ tokens),
+$k^\ast_{\mathrm{sent}}{=}3$ (median $424$ tokens) for Llasa-8B, and an
+across-panel mean $|k^\ast_{\mathrm{word}}-k^\ast_{\mathrm{sent}}|$ of $1.7$
+repetitions (unchanged to one decimal) against a mean token ratio of
+$1.50\times$ (vs.\ the committed file's 1.34$\times$). The
+qualitative conclusion is unaffected by the correction -- repetitions, not
+tokens, is still the unit that predicts the collapse point -- but the
+committed file, and the 6-model statistic quoted from it in the
+main paper, should be regenerated once Llasa-8B's behavioural generation
+completes, and the corrected number should read as a true six-of-six-panel
+statistic rather than a six-of-seven-including-the-ablation one.
+
+\textbf{Conclusion.} The horizon is counted in repetitions, not accumulated
+acoustic tokens: $k^\ast$ moves by under two repetitions between a unit that
+costs one token and one that costs several times more, while the token count
+at collapse tracks the unit's cost almost exactly. The evidence is
+qualitatively robust to the data-integrity issue just described; the point
+estimate of the token-count ratio is not, and should be treated as
+provisional until the artifact is regenerated. One further per-cell caveat:
+Llasa-1B's word-repetition accuracy never exceeds $0.5$ even at $k{=}1$
+(Table~\ref{tab:unitinv}, \texttt{n/a}), so no token count at collapse is
+defined for that cell; the mean token-count ratio is accordingly computed over
+five models for the word side of the comparison, not six, a distinction the
+committed JSON's flat \texttt{mean\_tok\_ratio} field does not surface on its
+own.
+
+\subsection{Capacity confound: is effective-rank decline tautological?}
+\label{sec:s8-capacity}
+
+\textbf{The objection.} A model that correctly renders \emph{very} sixteen
+times in a row produces audio that genuinely is more acoustically monotonous
+than a control rendering sixteen distinct words. A shrinking effective rank on
+repeated-text trajectories could then be measuring nothing but this surface
+fact about the stimulus -- the audio the prompt asked for -- rather than any
+loss of the decoder's capacity to represent \emph{how many} repetitions have
+occurred. Under this reading, the main paper's capacity-gain ratio
+(0.50, Section~4.3) would be a restatement of the stimulus design, not
+a discovery about the decoder.
+
+\textbf{What would have to be true.} For the tautology objection to fully
+account for the ratio, the repeated-vs-control gap in effective-rank growth
+would have to close once (i) the trajectory's own realised output diversity is
+held constant by regression, so ``more repetitions requested'' is separated
+from ``less varied audio produced,'' and (ii) the comparison is restricted to
+items the model rendered \emph{correctly}, where the audio is by construction
+exactly what was asked for and no degenerate-output confound can apply.
+
+\textbf{Test design.} \texttt{analysis/capacity\_confound.py} implements both
+checks on data already collected, per model and per family
+(\texttt{word\_rep}, \texttt{control\_word}). The \emph{adjusted} test
+regresses $\mathcal{N}_{\mathrm{eff}}$ on $\log k$ together with three
+$z$-scored covariates of the emitted acoustic-token sequence: the type/token
+ratio, the immediate-repeat rate (the fraction of tokens equal to their
+immediate predecessor, a direct index of local acoustic monotony), and the raw
+token count; the reported quantity is the $\log k$ coefficient with the
+covariates included, i.e.\ the capacity gain that remains after realised
+output diversity is partialled out. These covariates are only available for
+checkpoints whose acoustic-token ids are persisted to disk, which in this
+panel is the Llasa family only -- XTTS-v2 and Qwen3-TTS contribute a token
+count but not the distinct-token identities needed for type/token ratio or
+repeat rate, so their adjusted cells are inestimable rather than zero. The
+\emph{correct-only} test refits the same unadjusted regression restricted to
+items labelled \texttt{correct} at seed $0$ (Section~\ref{sec:s4}); coverage
+thins sharply at high $k$ precisely because correct renderings become rare
+there, which is the phenomenon under study rather than a defect of the test,
+so per-model $n$ is reported alongside every ratio rather than suppressed.
+
+\textbf{Numbers.} Table~\ref{tab:capconf} reproduces
+\texttt{data/results/capacity\_confound.json}'s per-model ratios (repeated
+slope over control slope; smaller means the repeated-text trajectory gains
+fewer distinguishable states per doubling of $k$ than its control). The panel
+median is 0.50 unadjusted ($n{=}6$ checkpoints), 0.50
+after controlling for output diversity ($n{=}3$, the Llasa sub-family only,
+for the reason above), and 0.47 restricted to correct-only
+renderings ($n{=}5$).
+
+\begin{table}[h]
+\centering
+\caption{Capacity-confound ratios (repeated/control slope of
+$\mathcal{N}_{\mathrm{eff}}$ against $\log k$), from
+\texttt{data/results/capacity\_confound.json}. $n$ pairs are (word\_rep,
+control\_word) item-layer rows entering each regression; \texttt{---} marks an
+inestimable cell (fewer than 12 usable rows, or fewer than 4 distinct $k$
+values).}
+\label{tab:capconf}
+\small
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Model & Raw & +diversity & correct-only \\
+\midrule
+Llasa-1B & 0.42 & 0.50 & 0.01 ($n{=}14$/32) \\
+Llasa-3B & 0.28 & 0.34 & 0.80 ($n{=}24$/22) \\
+Llasa-8B & 0.43 & 0.75 & --- ($n{=}0$/0) \\
+Qwen3-TTS-0.6B & 0.57 & --- & 0.31 ($n{=}42$/84) \\
+Qwen3-TTS-1.7B & 0.78 & --- & 0.47 ($n{=}64$/82) \\
+XTTS-v2 & 0.60 & --- & 0.56 ($n{=}22$/41) \\
+\midrule
+\textbf{Panel median} & \textbf{0.50} & \textbf{0.50} & \textbf{0.47} \\
+XTTS-v2 (no penalty, abl., not pooled) & 0.89 & --- & --- ($n{=}9$/22) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The three medians agree to within two hundredths of each other, which is the
+central result: neither control moves the ratio meaningfully away from the
+unadjusted panel figure. Two per-model cells deserve a direct flag rather than
+being folded silently into the median. Llasa-1B's correct-only ratio, $0.01$,
+looks like the tautology objection winning outright for one checkpoint, but it
+rests on $14$ repeated-side and $32$ control-side items -- a small-sample cell
+in which the repeated-side slope is itself measured at $0.47$, i.e.\
+essentially flat, and a single noisy near-zero slope in the denominator's
+counterpart is enough to send the ratio close to zero without implying the
+gap has actually closed; read this cell as unstable, not as evidence the
+effect vanishes. Llasa-8B's correct-only cell is empty ($n{=}0$): none of its
+seed-$0$, $k\ge2$ \texttt{word\_rep} items were labelled \texttt{correct},
+consistent with the low $k^\ast$ reported for that checkpoint elsewhere in
+this document (Section~\ref{sec:s8-unit}) rather than with any failure of the
+confound test itself.
+
+\textbf{Conclusion.} The tautology objection is answered, with two honest
+qualifications. Holding realised output diversity fixed and restricting to
+demonstrably correct renderings both leave the panel-median ratio within
+rounding of the raw figure (0.50 raw vs.\ 0.50 adjusted
+vs.\ 0.47 correct-only), so the capacity-gain gap is not an
+artifact of repeated audio being acoustically monotonous by construction. The
+qualification: the diversity-adjusted control is well-powered for only three
+of the six panel checkpoints, because acoustic-token identities are persisted
+for the Llasa family alone, so 0.50 is a narrower claim than the
+raw, six-checkpoint 0.50; and the correct-only control has two
+unstable or empty per-model cells at the extremes of the panel's capability
+range, so it should be read as directionally corroborating the raw result
+rather than as an independently decisive test in its own right.
+
+\subsection{The competing account: does the count survive in the representation?}
+\label{sec:s8-probe}
+
+\textbf{The objection.} Venkatesh~\cite{venkatesh2026repeated} reports that in
+text-only autoregressive LMs performing repeated-token counting, a linear
+probe on the residual stream decodes the true count near-perfectly at every
+layer, including the exact layer where the model's own output is already
+wrong: the count is not erased, only unused by the output pathway. A trained
+linear probe is precisely the $L$-Lipschitz readout class
+Theorem~A(iii)/(iv) (main paper, Section~2) constrains, so if the same
+dissociation holds for TTS decoders, the effective-rank account of
+Section~4.3 would be measuring the wrong thing: a small, count-specific
+subspace could persist and remain linearly readable inside a trajectory whose
+\emph{aggregate} rank still looks low, since a whole-trajectory
+participation-ratio statistic like $\mathcal{N}_{\mathrm{eff}}$ has no reason
+to be sensitive to a low-dimensional signal buried inside it.
+
+\textbf{What would have to be true.} For the competing account to hold here, a
+linear probe would have to recover $k$ about as well from the \emph{late}
+part of a repeated-text trajectory as from the \emph{early} part -- no
+within-trajectory degradation -- and about as well on repeated text as on the
+length-matched control. Representational degradation, by contrast, predicts
+within-trajectory loss specific to periodic conditioning: better decodability
+early (when the boundary between ``count so far'' and ``count remaining'' is
+still information the decoder has just read off the text) than late (once
+Theorem~A(ii)'s indistinguishability has had repetitions to bite), and no
+comparable loss on the non-repetitive control.
+
+\textbf{Test design.} \texttt{analysis/probe\_count.py} fits a ridge
+regression predicting $\log_2 k$ from the mean hidden state over,
+separately, the first third and the last third of each instrumented
+trajectory, at every probe layer, scored by leave-one-template-out
+cross-validation so a probe is never evaluated on a carrier sentence it was
+fitted on -- solved in the dual ($n\approx54$ items against up to $4096$
+features per layer) purely for tractability, with identical predictions to
+the primal. This is not an analogy to Theorem~A(iii); a linear, cross-validated
+probe with a reported $R^2$ is exactly the readout class the theorem
+constrains, so the test evaluates the theorem's own claim directly.
+\emph{Retention} is defined per model and family as the best-layer late-window
+$R^2$ divided by the best-layer early-window $R^2$: because the same probe
+class, the same items, and independently the best layer for each window are
+used at both ends, retention cancels probe capacity and item-difficulty
+confounds, leaving only the within-trajectory change. The matched control
+makes the comparison interpretable: the identical probe, the identical model,
+the identical layer-selection procedure, decoding the identical quantity from
+non-repetitive text of equal length.
+
+\textbf{Numbers.} Table~\ref{tab:probe} reports retention for every model and
+condition in \texttt{data/results/probe.json}. Across the six true panel
+checkpoints, median retention on repeated text is $0.97$ against $1.11$ on
+controls, and repeated-text retention is lower than its own control in all six
+of six. Best-layer $R^2$ decoding $\log_2 k$ is modest even at its best: the
+panel median late-window best-layer $R^2$ on \texttt{word\_rep} is
+$\approx0.48$ -- well short of the near-perfect decodability
+\cite{venkatesh2026repeated} reports for text LMs -- so the count is only
+ever coarsely recoverable here, at either end of the trajectory.
+
+\begin{table}[h]
+\centering
+\caption{Ridge-probe retention (late-window best-layer $R^2$ / early-window
+best-layer $R^2$), from \texttt{data/results/probe.json}. All entries $n{=}54$
+items.}
+\label{tab:probe}
+\small
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Model & \texttt{word\_rep} retention & \texttt{control\_word} retention \\
+\midrule
+Llasa-1B & 0.97 & 1.09 \\
+Llasa-3B & 0.87 & 0.99 \\
+Llasa-8B & 0.96 & 1.09 \\
+Qwen3-TTS-0.6B & 1.46 & 1.74 \\
+Qwen3-TTS-1.7B & 0.77 & 1.12 \\
+XTTS-v2 & 1.92 & 2.85 \\
+\midrule
+\textbf{Panel median} & \textbf{0.97} & \textbf{1.11} \\
+XTTS-v2 (no penalty, abl., not pooled) & 1.37 & 1.40 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{A second pooling caveat, found while verifying this section.} The main
+paper's probe statistics (0.97 repeated, 1.12 control,
+``repeated lower in seven of 7 variants'') are
+computed by \texttt{analysis/make\_numbers.py} over every entry in
+\texttt{probe.json}, including \texttt{xtts2norp}. Unlike that same script's
+behavioural-dissociation aggregation, which explicitly filters
+\texttt{beh[\textasciitilde{}beh.model.isin(ABLATIONS)]}
+(Section~\ref{sec:s8-ablation}), its probe-aggregation loop iterates
+\texttt{pr.values()} with no corresponding filter, so the reported ``$7$''
+variants are the six true panel checkpoints plus the ablation counted as a
+nominal seventh -- exactly the double-counting Section~\ref{sec:s6} and
+\texttt{findings.md}'s own ``Lessons and Constraints'' warn against elsewhere
+in this project. Recomputed over the six true panel checkpoints alone
+(Table~\ref{tab:probe}), the medians are $0.97$ repeated and $1.11$ control --
+materially identical to the pooled-with-ablation figures -- and repeated
+retention is still lower in six of six. The ablation's inclusion therefore
+does not manufacture this particular result; the correct fix is that
+\texttt{make\_numbers.py}'s probe section should apply the same
+\texttt{ABLATIONS} filter its behavioural section already applies, and the
+main paper's ``seven of 7'' should read ``six of 6,'' with \texttt{xtts2norp}
+reported as a consistent seventh, separate data point rather than folded into
+the panel statistic. This document does not modify that script; it reports
+the discrepancy and gives the corrected, panel-only numbers above so that the
+supplementary record is self-consistent even where the generating script
+currently is not.
+
+\textbf{Conclusion.} The representational-degradation account is favoured over
+the output-policy account, but only on qualified terms that this document
+states plainly rather than rounds up. On the affirmative side: retention is
+below $1$ -- within-trajectory loss -- on repeated text in every panel
+checkpoint, and at or above $1$ -- flat or improving -- on the matched control
+in five of six (Llasa-3B's control retention, $0.99$, is essentially flat
+rather than clearly improving). On the qualified side: best-layer $R^2$ never
+approaches the near-perfect decodability the competing account reports for
+text LMs, so even early in generation the count is only coarsely present; and
+retention below $1$ is degradation, not erasure -- the probe still recovers a
+non-trivial signal late in most trajectories, so this test cannot rule out
+that some of the count remains linearly readable somewhere the aggregate
+effective-rank statistic of Section~\ref{sec:s8-capacity} would not detect.
+As the main paper's Discussion already states, the two accounts are not
+mutually exclusive, and this probe result is evidence for representational
+degradation over pure output-policy failure, not proof against the latter.
+
+\subsection{The XTTS repetition-penalty ablation}
+\label{sec:s8-ablation}
+
+\textbf{The objection.} XTTS-v2 ships \texttt{repetition\_penalty}$=5.0$ on
+its acoustic-token decoding (Section~\ref{sec:s6}), an aggressive built-in
+anti-repetition mechanism active during every sampling pass this study
+measures. A skeptical reading: XTTS-v2's comparatively high $k^\ast$ among the
+panel is an artifact of this decoding-time crutch rather than evidence
+bearing on Theorem~A at all, and any argument built on contrasting XTTS-v2
+against the Llasa scale ladder -- e.g.\ that capacity alone does not order
+$k^\ast$ -- is confounded by an uncontrolled decoding-rule difference between
+the two families.
+
+\textbf{What would have to be true.} If the penalty, not the mechanism the
+paper argues for, were responsible for XTTS-v2's collapse-resistance, then
+disabling it should make the periodicity-vs-length \emph{dissociation}
+disappear or shrink toward a decoding-rule artifact -- the model should stop
+showing a repeated-vs-control gap once the crutch is removed, because there
+would be no underlying mechanism left for the gap to reflect.
+
+\textbf{Test design.} The registry (Section~\ref{sec:s6},
+\texttt{src/common/registry.py}) carries \texttt{xtts2norp} as a seventh
+entry: the identical XTTS-v2 checkpoint, generated by
+\texttt{src/models/xtts\_gen.py --repetition-penalty 1.0} (penalty disabled),
+scored and instrumented through the identical pipeline as every panel member,
+under a separate registry key so its outputs never mix with \texttt{xtts2}'s
+on disk. This is the right design for the objection specifically because it
+manipulates exactly one decoding-time knob while holding the checkpoint
+weights, the stimuli, and every other setting fixed -- and because it is a
+within-model manipulation rather than a new independent system, it is
+excluded by construction from every panel-pooled statistic in this project
+(\texttt{ABLATIONS = \{"xtts2norp"\}}, enforced in
+\texttt{analysis/make\_numbers.py}, \texttt{capacity.py},
+\texttt{capacity\_confound.py}, and \texttt{unit\_invariance.py}, modulo the
+one gap in the probe aggregation noted in Section~\ref{sec:s8-probe}).
+Pooling it would silently inflate the panel size and double-count XTTS-v2's
+architecture -- precisely the failure \texttt{findings.md}'s ``Lessons and
+Constraints'' records was caught and fixed once already in this project.
+
+\textbf{Numbers.} With the penalty (\texttt{xtts2}): $k^\ast=4$,
+accuracy at $k\ge6$ is 13.9\% repeated vs.\ 59.3\% control.
+Without it (\texttt{xtts2norp}): $k^\ast=2$, 1.9\%
+repeated vs.\ 14.8\% control. Disabling the penalty makes the model
+strictly worse at counting -- $k^\ast$ falls from $4$ to $2$ and both
+accuracies drop -- while the relative dissociation not only survives but
+widens: the control-to-repeated accuracy ratio is $\approx4.3\times$ with the
+penalty and $\approx7.8\times$ without it. On the capacity side
+(\texttt{data/results/capacity.json}), disabling the penalty compresses the
+entire dynamic range of the measurement: repeated-text gain falls from
+$21.6\ [14.1,28.7]$ to $7.7\ [4.6,10.8]$ and control gain falls from $36.1\
+[31.2,40.9]$ to $8.7\ [5.1,12.4]$, so the ratio moves from $0.60$ to $0.89$
+and the paired-gap confidence interval, which excludes zero with the penalty
+on ($[6.0,20.8]$), crosses it with the penalty off ($[-1.8,6.3]$,
+\texttt{ci\_separated: false}). This is the single checkpoint-level cell in
+the entire panel-plus-ablation set where the capacity contrast does not reach
+significance, and it is reported here as such rather than omitted.
+
+\textbf{Conclusion.} The penalty is masking the collapse, not producing it:
+the model counts worse without it, and the periodicity-vs-length behavioural
+gap persists -- indeed strengthens in relative terms -- once the crutch is
+removed, which is the opposite of what the objection needs. XTTS-v2's place
+in the panel \emph{with} the penalty is accordingly a conservative test of the
+theory, not an inflated one. The qualification is on the capacity side
+specifically: removing the penalty shrinks both conditions' dynamic range so
+much that the effective-rank contrast, though still pointed the same
+direction (ratio $0.89 < 1$), is no longer statistically resolved for this one
+ablated checkpoint. That instability is itself informative -- it is consistent
+with the penalty's role being to inject additional acoustic-token diversity
+into \emph{every} generation, repeated or not, which is exactly the kind of
+output-diversity confound Section~\ref{sec:s8-capacity} controls for
+directly on the unablated panel -- but it means the ablation corroborates the
+behavioural dissociation more strongly than it corroborates the capacity
+measurement, and the two should not be conflated.
+
+\subsection{Statistical treatment}
+\label{sec:s8-stats}
+
+\textbf{Wilson intervals for proportions.} Every proportion reported as a
+percentage with an interval in the main paper and in this document -- counting
+accuracy, the fraction of matched pairs with the control less probable, the
+fraction of repeated-vs-control paired differences that are positive -- uses
+the Wilson score interval (\texttt{wilson} in
+\texttt{analysis/make\_numbers.py}), not the normal approximation. The reason
+is not a stylistic preference: several of this project's cells sit at or near
+$0\%$ or $100\%$ (word-repetition accuracy at high $k$ for the weaker
+checkpoints; the gpt2-large naturalness check at exactly $54/54$,
+Section~\ref{sec:s8-natural}), where the normal interval's half-width
+$z\sqrt{p(1-p)/n}$ degenerates toward zero or produces bounds outside
+$[0,1]$ that then have to be clipped by hand. Wilson's interval, derived by
+inverting the normal test for $p$ rather than plugging $\hat p$ into a
+symmetric approximation around it, stays inside $[0,1]$ by construction and
+remains informative at the boundary: the gpt2-large cell, $54/54$, has an
+undefined normal interval (zero estimated variance) but a Wilson interval of
+$[93.4,100.0]\%$, which is the number actually reported.
+
+\textbf{Bootstrap over templates, not items.} Every confidence interval on a
+\emph{mean} or \emph{slope} in this project -- the capacity-gain intervals of
+Section~\ref{sec:s4}, the naturalness-gap interval of
+Section~\ref{sec:s8-natural} -- resamples the finite set of stimulus
+\emph{templates} with replacement, never the larger set of items or pairs
+built from them. The reason is structural, not a robustness nicety: the 54
+naturalness pairs are $6$ templates $\times$ $9$ values of $k$, and the
+panel's capacity-gain fits are built from a handful of carrier sentences
+crossed with many $k$ and (for the instrumented pass) one seed; items sharing
+a template share carrier syntax, word count, and, for word-repetition items,
+seven of eight possible filler choices, so they are correlated draws rather
+than independent ones. Resampling items directly would treat, e.g., the 54
+naturalness pairs as 54 independent observations when the design in fact
+contains six independent units; the resulting interval would be too narrow,
+understating genuine uncertainty in exactly the comparisons this section
+exists to get right.
+
+\textbf{Per-cell sample sizes.} This document reports $n$ alongside every
+point estimate in Sections~\ref{sec:s8-natural}--\ref{sec:s8-ablation} rather
+than only in a methods paragraph, because several cells are close to the
+floor at which an effect can be resolved at all: the diversity-adjusted
+capacity-confound test is estimable for only $3$ of $6$ panel checkpoints
+(Table~\ref{tab:capconf}); its correct-only variant has one cell at $n{=}0$
+(Llasa-8B) and one at $n{=}14$ (Llasa-1B, repeated side) that produces a
+ratio ($0.01$) this document explicitly flags as unstable rather than
+load-bearing; the linear-probe retention statistic is computed from $n{=}54$
+instrumented items per model and family throughout, the same instrumented
+subset documented in Section~\ref{sec:s3}. Reporting these $n$'s is what
+makes it possible to tell an unstable small-sample cell (Llasa-1B's
+correct-only ratio) from a stable one (the panel medians, which agree to
+within two hundredths across three different controls) without re-deriving
+the analysis from source.
+
+\textbf{No multiple-comparison correction, stated so a reader can apply their
+own.} Nowhere in this project's analysis pipeline -- confirmed by reading
+every script cited in this section -- is a Bonferroni, Holm, or
+Benjamini--Hochberg correction applied across the per-model tests that make up
+the panel-level claims. The count a reader wanting a family-wise guarantee
+would need depends on which family of tests they consider the relevant unit.
+The primary capacity-gain contrast of Section~4.3 (main paper) is six
+per-model disjoint-interval tests, one per panel checkpoint
+(\texttt{ci\_separated} in \texttt{capacity.json}). The confound checks of
+Section~\ref{sec:s8-capacity} add up to two further ratio estimates per model
+(diversity-adjusted, correct-only) on top of the raw one, for as many as
+eighteen nominal model-level cells across the three variants, of which
+fourteen are actually estimable ($6$ raw $+$ $3$ adjusted $+$ $5$
+correct-only, Table~\ref{tab:capconf}). The probe-retention comparison of
+Section~\ref{sec:s8-probe} is six per-model directional tests (repeated
+retention below control retention). The naturalness by-$k$ breakdown of
+Section~\ref{sec:s8-natural} is nine $k$-values reported under two mutually
+scrutinised scorers. None of these is adjusted for having been looked at
+together. A reader who wants a Bonferroni-style family-wise error rate should
+divide the nominal $\alpha=0.05$ by six for the primary capacity contrast
+alone, or by the low twenties if every per-model cell across
+Sections~\ref{sec:s8-capacity} and~\ref{sec:s8-probe} is treated as one
+family; this document supplies the counts rather than picking a family on the
+reader's behalf, because the right grouping depends on which claim in the
+main paper the reader is trying to stress-test.
 
 \bibliographystyle{IEEEtran}
 \bibliography{../refs}

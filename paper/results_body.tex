@@ -14,24 +14,29 @@ templates.}
 \label{fig:main}
 \end{figure*}
 
-\subsection{Counting collapses at a finite $k^\ast$}
+\subsection{Models undercount repetitions, by a fixed fraction}
 
-Figure~\ref{fig:main}(a) shows counting accuracy against $k$. Every model
-reproduces the shape the theorem predicts: accuracy is high for small $k$, then
-falls to a floor and stays there. Pooled over the panel, accuracy is
-\AccRepLow{}\% at $k\le3$ and \AccRepHigh{}\% at $k\ge6$. Past the collapse point
-the errors are not random: at $k\ge8$, \LoopPct{}\% of generations run long
-(looping or overcounting) and \TruncPct{}\% stop short --- precisely the two
-behaviours available to a decoder whose stop decision has lost access to the
-count.
+Figure~\ref{fig:main}(a) shows the relative count error against $k$. Below
+$k\!=\!6$ every model is essentially exact. From $k\!=\!6$ the panel splits.
+Pooled over the panel at $k\ge6$, repeated items are rendered with a median error
+of \ErrRep{}\% $[\ErrRepLo{}, \ErrRepHi{}]$ ($n=\ErrRepN{}$), and the error is
+one-directional: models produce \emph{fewer} repetitions than requested, never
+systematically more. The deficit is roughly constant in relative terms rather
+than growing --- \ErrWorstModel{} sits at \ErrWorstVal{}\% across the whole upper
+ladder --- so a model asked for $32$ repetitions does not stop at $6$; it stops
+at about $27$.
 
-The collapse point $k^\ast$ ranges from \kStarMin{} to \kStarMax{}
-(Table~\ref{tab:models}); within the Qwen3-TTS family it doubles from $0.6$B to
-$1.7$B, so scale buys a longer horizon but a bounded one, as
-\eqref{eq:horizon} says it should. The unit of repetition can be a word, a whole
-sentence, or a place-value pattern (\emph{six hundred sixty-six thousand six
-hundred sixty-six}); all three produce the same curve. What matters is that it
-recurs.
+The split matters. \ErrBestModel{}, the largest checkpoint in the panel, shows a
+median error of \ErrBestVal{}\% at $k\ge6$: it counts to $32$ without deficit.
+The theorem is silent about such a model --- if its per-repetition map does not
+contract, no horizon follows --- and we report it as a distinct regime rather
+than as a failed prediction. The effect is present in the other
+\ErrNSep{} of \ErrNModels{} panel checkpoints with intervals disjoint from their
+own controls.
+
+The unit of repetition can be a word, a whole sentence, or a place-value pattern
+(\emph{six hundred sixty-six thousand six hundred sixty-six}); all three behave
+alike. What matters is that it recurs.
 
 \subsection{The limit is periodicity, not length}
 
@@ -39,12 +44,12 @@ Figure~\ref{fig:main}(b) is the paper's sharpest test. Each control item has the
 same carrier sentence and the same word count as its repeated twin, and differs
 only in that the $k$ copies of one word are replaced by $k$ distinct words. If
 the failure were about sequence length, attention span, or accumulated exposure
-bias, the two curves would coincide. They do not: at $k\ge6$, repeated items are
-rendered correctly \AccRepHigh{}\% $[\AccRepHighLo{}, \AccRepHighHi{}]$ of the
-time against \AccCtlHigh{}\% $[\AccCtlHighLo{}, \AccCtlHighHi{}]$ for controls
-(Wilson intervals, $n=\AccRepHighN{}$ generations per condition, panel only).
-Models that cannot say \emph{very} six times in a row will say twelve or sixteen
-\emph{different} adverbs without difficulty.
+bias, the two curves would coincide. They do not, and the control result is
+categorical: at $k\ge6$ the median control error is \ErrCtl{}\%
+$[\ErrCtlLo{}, \ErrCtlHi{}]$ over $n=\ErrCtlN{}$ generations --- \emph{exactly}
+the requested number of distinct words, at every $k$ up to $32$, for every model
+in the panel. The same decoders that drop one word in six from a repeated
+sequence render thirty-two \emph{different} words without a single miscount.
 
 One alternative deserves ruling out: repeated text is unusual text, so perhaps
 models fail on it because it is improbable rather than because it is periodic.

@@ -179,6 +179,43 @@ def main() -> None:
             macros[f"SatRep{tag}"] = fmt(v["repeated"]["sat"], 0)
             macros[f"SatCtl{tag}"] = fmt(v["control"]["sat"], 0)
 
+    # ---- count error: the behavioural measurement (CTC judge) -------------
+    ce_path = Path("data/results/count_error.json")
+    if ce_path.exists():
+        ce = json.loads(ce_path.read_text())
+        for key, tag in (("pooled_rep", "Rep"), ("pooled_ctl", "Ctl")):
+            v = ce.get(key, {})
+            macros[f"Err{tag}"] = fmt(100 * v.get("median", np.nan), 1)
+            macros[f"Err{tag}Lo"] = fmt(100 * v.get("lo", np.nan), 1)
+            macros[f"Err{tag}Hi"] = fmt(100 * v.get("hi", np.nan), 1)
+            macros[f"Err{tag}N"] = str(v.get("n", 0))
+        n_sep, n_tot = ce.get("n_separated", 0), ce.get("n_models", 0)
+        macros["ErrSepPhrase"] = (f"all {WORDS.get(n_tot, n_tot)}"
+                                  if n_sep == n_tot and n_tot else f"{n_sep} of {n_tot}")
+        macros["ErrNSep"] = str(n_sep)
+        macros["ErrNModels"] = str(n_tot)
+        for m, v in ce.get("models", {}).items():
+            tag = TAG.get(m)
+            if tag is None:
+                continue
+            macros[f"Err{tag}"] = fmt(100 * v["rep"]["median"], 1)
+            macros[f"ErrCtl{tag}"] = fmt(100 * v["ctl"]["median"], 1)
+        # worst and best panel members, for the two-regime sentence
+        panel = {m: v for m, v in ce.get("models", {}).items()
+                 if m not in ABLATIONS and np.isfinite(v["rep"]["median"])}
+        if panel:
+            worst = min(panel, key=lambda m: panel[m]["rep"]["median"])
+            best = max(panel, key=lambda m: panel[m]["rep"]["median"])
+            macros["ErrWorstModel"] = LABEL.get(worst, worst)
+            macros["ErrWorstVal"] = fmt(100 * panel[worst]["rep"]["median"], 1)
+            macros["ErrBestModel"] = LABEL.get(best, best)
+            macros["ErrBestVal"] = fmt(100 * panel[best]["rep"]["median"], 1)
+
+    # ---- ASR instrument audit ---------------------------------------------
+    ar_path = Path("data/results/asr_reliability.json")
+    if ar_path.exists():
+        macros["AsrAuditPresent"] = "1"
+
     # ---- unit invariance --------------------------------------------------
     ui_path = Path("data/results/unit_invariance.json")
     if ui_path.exists():
@@ -332,6 +369,7 @@ def main() -> None:
 
     # ---- Table 1: per-model summary --------------------------------------
     capm = (json.loads(cap_path.read_text())["models"] if cap_path.exists() else {})
+    ce_models = (json.loads(ce_path.read_text())["models"] if ce_path.exists() else {})
     rows = []
     for m in models:
         e = summ.get("models", {}).get(m, {})
@@ -343,20 +381,20 @@ def main() -> None:
                & (ctl.duration_ratio > 0.7) & (ctl.spectral_flatness < 0.35)).mean()
               if len(ctl) else np.nan)
         gr, gc = c.get("repeated", {}), c.get("control", {})
+        ce_m = ce_models.get(m, {})
         rows.append((
             LABEL.get(m, m), PARAMS.get(m, "--"),
-            fmt(e.get("k_star"), 0),
-            fmt(100 * rep.correct.mean(), 1) if len(rep) else "--",
-            fmt(100 * ok, 1),
+            fmt(100 * ce_m.get("rep", {}).get("median", np.nan), 1),
+            fmt(100 * ce_m.get("ctl", {}).get("median", np.nan), 1),
             fmt(gr.get("gain"), 1), fmt(gc.get("gain"), 1),
             fmt(c.get("ratio"), 2),
         ))
     tbl = [
-        r"\begin{tabular}{lrrrrrrr}", r"\toprule",
-        r"Model & Par. & $k^\ast$ & \multicolumn{2}{c}{acc.\ $k\!\ge\!6$ (\%)} "
+        r"\begin{tabular}{lrrrrrr}", r"\toprule",
+        r"Model & Par. & \multicolumn{2}{c}{count err.\ $k\!\ge\!6$ (\%)} "
         r"& \multicolumn{3}{c}{capacity gain $\mathrm{d}\mathcal{N}_{\mathrm{eff}}/\mathrm{d}\log k$} \\",
-        r"\cmidrule(lr){4-5}\cmidrule(l){6-8}",
-        r" & & & rep. & ctl. & rep. & ctl. & ratio \\", r"\midrule",
+        r"\cmidrule(lr){3-4}\cmidrule(l){5-7}",
+        r" & & rep. & ctl. & rep. & ctl. & ratio \\", r"\midrule",
     ]
     for r in rows:
         tbl.append(" & ".join(r) + r" \\")
