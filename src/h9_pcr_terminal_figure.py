@@ -24,7 +24,7 @@ INPUTS = {
     "decision": (TERMINAL_DIR / "h9_terminal_decision_gate.json", "a4e5f118cd34af6ae2e728e094d2ad9e9e6ebf1a8ebe1fb2d841b191c3753852"),
     "provenance": (TERMINAL_DIR / "h9_terminal_evaluation_provenance.json", "af0b85c8f05ad9f2b70cad83b45db7922cd9422732c4630dbb17d1ad2821d2f4"),
 }
-OUTPUT_DIR = REPOSITORY_ROOT / "experiments/h9_paired_counterfactual/results/h9_terminal_evaluation_001/figures_terminal_001"
+OUTPUT_DIR = REPOSITORY_ROOT / "experiments/h9_paired_counterfactual/results/h9_terminal_evaluation_001/figures_terminal_002"
 OUTPUT_FILES = ("h9_pcr_terminal_eer.pdf", "h9_pcr_terminal_eer.png", "h9_pcr_terminal_eer.metadata.json")
 DATASETS = ("SONAR", "ArAD")
 METHODS = ("B1", "B2", "P")
@@ -129,7 +129,7 @@ def render(
         "savefig.bbox": "tight", "axes.spines.top": False, "axes.spines.right": False,
         "axes.grid": True, "grid.alpha": 0.16, "grid.linestyle": "-",
     })
-    figure, (bar_axis, delta_axis) = plt.subplots(1, 2, figsize=(6.75, 2.55), gridspec_kw={"width_ratios": [1.28, 0.92]})
+    figure, (bar_axis, delta_axis) = plt.subplots(1, 2, figsize=(6.75, 2.75), gridspec_kw={"width_ratios": [1.28, 0.92]})
     categories = ("SONAR", "ArAD", "Macro")
     x = np.arange(len(categories), dtype=float)
     width = 0.22
@@ -142,10 +142,10 @@ def render(
             bar_axis.text(bar.get_x() + bar.get_width() / 2, value + 1.0, f"{value:.1f}", ha="center", va="bottom", fontsize=6.9, color="#27313A")
     bar_axis.set_xticks(x)
     bar_axis.set_xticklabels(categories)
-    bar_axis.set_ylim(0.0, 67.0)
+    bar_axis.set_ylim(0.0, 76.0)
     bar_axis.set_ylabel("EER (%) ↓")
     bar_axis.set_title("External terminal EER")
-    bar_axis.legend(loc="upper left", bbox_to_anchor=(-0.03, 1.03), ncol=1, handlelength=1.1)
+    bar_axis.legend(loc="upper center", bbox_to_anchor=(0.5, 1.01), ncol=3, fontsize=6.7, handlelength=1.0, columnspacing=0.75, handletextpad=0.3)
 
     bootstrap = decision["bootstrap"]
     rows = (("P − B1", "p_minus_b1"), ("P − B2", "p_minus_b2"))
@@ -155,7 +155,7 @@ def render(
         low = float(interval["ci_low"]) * 100.0
         high = float(interval["ci_high"]) * 100.0
         delta_axis.errorbar(center, y, xerr=np.array([[center - low], [high - center]]), fmt="o", color="#009E73", ecolor="#009E73", elinewidth=1.8, capsize=3.1, markersize=5.5, zorder=3)
-        delta_axis.text(high - 0.15, y + 0.17, f"[{low:.1f}, {high:.1f}]", ha="right", va="bottom", fontsize=7.0, color="#27313A")
+        delta_axis.text((low + high) / 2.0, y - 0.20, f"95% CI [{low:.1f}, {high:.1f}]", ha="center", va="center", fontsize=6.7, color="#27313A")
     delta_axis.axvline(0.0, color="#6B7280", linewidth=1.0, linestyle="--", zorder=1)
     delta_axis.set_yticks([0, 1])
     delta_axis.set_yticklabels([label for label, _ in rows])
