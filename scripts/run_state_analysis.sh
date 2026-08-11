@@ -12,6 +12,19 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 mkdir -p data/results/state_shards logs
 
+# Cap BLAS threading. Unbounded, each numpy SVD grabs all 48 cores, so two of
+# these running at once spend their time in scheduler contention rather than
+# arithmetic. Bounded, the run coexists with the generation jobs on the GPUs.
+export OMP_NUM_THREADS=8 OPENBLAS_NUM_THREADS=8 MKL_NUM_THREADS=8 \
+       NUMEXPR_NUM_THREADS=8
+
+# Refuse to start if another copy is already working; duplicate drivers writing
+# the same shards was a real failure mode, not a hypothetical one.
+if pgrep -f "state_dynamics.py --models" >/dev/null; then
+  echo "state_dynamics already running; refusing to start a second driver" >&2
+  exit 1
+fi
+
 MODELS=("$@")
 [ ${#MODELS[@]} -eq 0 ] && MODELS=(llasa1b llasa3b llasa8b xtts2 qwen06b qwen17b xtts2norp)
 

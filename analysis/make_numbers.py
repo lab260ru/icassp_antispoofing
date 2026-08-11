@@ -136,6 +136,15 @@ def main() -> None:
             macros[f"SatRep{tag}"] = fmt(v["repeated"]["sat"], 0)
             macros[f"SatCtl{tag}"] = fmt(v["control"]["sat"], 0)
 
+    # ---- unit invariance --------------------------------------------------
+    ui_path = Path("data/results/unit_invariance.json")
+    if ui_path.exists():
+        ui = json.loads(ui_path.read_text())
+        if "mean_abs_k_diff" in ui:
+            macros["UnitKDiff"] = fmt(ui["mean_abs_k_diff"], 1)
+            macros["UnitTokRatio"] = fmt(ui["mean_tok_ratio"], 2)
+            macros["UnitNModels"] = str(ui.get("n_models", 0))
+
     # ---- XTTS repetition-penalty ablation --------------------------------
     # XTTS-v2 ships repetition_penalty=5.0 on acoustic tokens, which acts
     # directly against the behaviour under study. If the dissociation survives
@@ -168,16 +177,26 @@ def main() -> None:
     probe_path = Path("data/results/probe.json")
     if probe_path.exists():
         pr = json.loads(probe_path.read_text()).get("models", {})
-        rets_r, rets_c = [], []
+        rets_r, rets_c, late_r, n_below = [], [], [], 0
         for v in pr.values():
-            for fam, bucket in (("word_rep", rets_r), ("control_word", rets_c)):
-                e = v.get(fam)
-                if e and np.isfinite(e.get("retention", np.nan)):
-                    bucket.append(e["retention"])
+            r, c = v.get("word_rep"), v.get("control_word")
+            if r and np.isfinite(r.get("retention", np.nan)):
+                rets_r.append(r["retention"])
+                late_r.append(r["late"]["best"]["r2"])
+            if c and np.isfinite(c.get("retention", np.nan)):
+                rets_c.append(c["retention"])
+            if r and c and np.isfinite(r.get("retention", np.nan)) \
+                    and np.isfinite(c.get("retention", np.nan)) \
+                    and r["retention"] < c["retention"]:
+                n_below += 1
         if rets_r:
             macros["ProbeRetRep"] = fmt(np.median(rets_r), 2)
+            macros["ProbeLateRTwo"] = fmt(np.median(late_r), 2)
         if rets_c:
             macros["ProbeRetCtl"] = fmt(np.median(rets_c), 2)
+        macros["ProbeNBelow"] = str(n_below)
+        macros["ProbeNModels"] = str(len(pr))
+        macros["ProbeNBelowWord"] = WORDS.get(n_below, str(n_below))
 
     p2 = summ.get("p2", {})
     for k, nd in (("r2", 2), ("spearman", 2), ("beta", 2), ("alpha", 2)):

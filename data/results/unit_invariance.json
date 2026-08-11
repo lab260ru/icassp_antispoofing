@@ -1,0 +1,38 @@
+{
+  "models": {
+    "llasa1b": {
+      "k_word": 0.0,
+      "k_sent": 3.0,
+      "tok_word": NaN,
+      "tok_sent": 350.5
+    },
+    "llasa3b": {
+      "k_word": 1.0,
+      "k_sent": 3.0,
+      "tok_word": 209.0,
+      "tok_sent": 456.5
+    },
+    "qwen06b": {
+      "k_word": 4.0,
+      "k_sent": 4.0,
+      "tok_word": 52.5,
+      "tok_sent": 80.0
+    },
+    "qwen17b": {
+      "k_word": 8.0,
+      "k_sent": 4.0,
+      "tok_word": 79.5,
+      "tok_sent": 85.5
+    },
+    "xtts2": {
+      "k_word": 4.0,
+      "k_sent": 4.0,
+      "tok_word": 89.0,
+      "tok_sent": 128.0
+    }
+  },
+  "mean_abs_k_diff": 1.8,
+  "mean_k_ratio": 1.375,
+  "mean_tok_ratio": 1.555423498857383,
+  "n_models": 5
+}
