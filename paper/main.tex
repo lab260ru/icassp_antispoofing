@@ -73,13 +73,14 @@ boundary, so the map carrying it from one boundary to the next is approximately
 autonomous. If that map contracts, the decoder's internal record of how many
 repetitions it has produced is erased at a geometric rate, and past a computable
 horizon no Lipschitz function of the state---the stop-token logit
-included---can recover the count (Theorem~\ref{thm:collapse}). Looping and
-truncation are then the only behaviours available.
+included---can recover the count (Theorem~\ref{thm:collapse}). Stopping early or
+running on are then the only behaviours available.
 
 The failure is thus predicted to depend on \emph{periodicity}, not on length: a
 sequence of $k$ distinct words should survive where $k$ identical ones do not.
-That contrast is the sharpest empirical test we run, and models pass and fail it
-exactly as predicted.
+That contrast is the sharpest test we run. Five of our six checkpoints show it
+and one does not, which is the outcome a conditional theorem should produce ---
+the bound applies where its premise holds.
 
 We contribute a quantitative impossibility result for repetition counting in AR
 decoders, with an explicit horizon in terms of the contraction factor, the orbit
@@ -106,8 +107,8 @@ There is a single map $F : S \to S$ with $s_{m+1} = F(s_m)$ for all $m$.
 \end{assumption}
 
 This is what the following lemma buys: if the decoder cannot distinguish the $k$
-text spans, the update it applies between consecutive boundaries is the same to
-within $O(\delta + 1/k)$.
+spans, its update between consecutive boundaries is the same to within
+$O(\delta + 1/k)$.
 
 \begin{lemma}[Attention dilution]\label{lem:dilution}
 Let $z_1,\dots,z_k$ be attention logits over the $k$ repeated spans with
@@ -143,8 +144,9 @@ counts $m \le n$ with decision margin $\mu>0$, then $\mu \le 2LCq^m$ and
 
 Part~(iv) is the operative statement: the number of repetitions an AR decoder can
 count is bounded by how fast its per-repetition map contracts, how large its
-orbit is, and how much separation its readout needs. No property of the decoding
-rule enters, so the bound applies to greedy, sampled and beam decoding alike.
+orbit is, and how much separation its readout needs --- with no property of the
+decoding rule entering, so the bound holds for greedy, sampled and beam decoding
+alike.
 
 \noindent\textbf{Formal verification.}
 Both results are formalised in Lean~4 against \texttt{mathlib}. Part~(i)
@@ -205,12 +207,11 @@ $k$; Section~\ref{sec:negative} explains why we do not measure $q$ by
 differencing boundary states.
 
 \noindent\textbf{Code and data.}
-The Lean development, the stimulus set, all generation and analysis code, and the
-per-item result tables are released at
-\url{https://github.com/lab260ru/icassp_antispoofing}. A single command
-(\texttt{scripts/check\_lean.sh}) rebuilds the formal artifact and reprints the
-axiom audit; \texttt{paper/build.sh} regenerates every number in this paper from
-the released tables.
+The Lean development, stimuli, generation and analysis code, and per-item result
+tables are released at \url{https://github.com/lab260ru/icassp_antispoofing}.
+\texttt{scripts/check\_lean.sh} rebuilds the formal artifact and reprints the
+axiom audit; \texttt{paper/build.sh} regenerates every number here from the
+released tables.
 
 \section{Results}
 \label{sec:results}

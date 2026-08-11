@@ -51,24 +51,18 @@ the requested number of distinct words, at every $k$ up to $32$, for every model
 in the panel. The same decoders that drop one word in six from a repeated
 sequence render thirty-two \emph{different} words without a single miscount.
 
-One alternative deserves ruling out: repeated text is unusual text, so perhaps
-models fail on it because it is improbable rather than because it is periodic.
-That would require the controls to be the more natural member of each pair. They
-are not. Scored under an independent causal LM --- one outside the panel and not
-a backbone of any panel member --- the control is the \emph{less} probable member
-in \NllIndCtlHigherPct{}\% of the \NllIndPairs{} matched pairs (mean per-token NLL
-\NllIndCtl{} vs.\ \NllIndRep{}), and the gap is largest precisely in the
-$k\!=\!4$--$12$ range where the collapse happens. The harder-to-predict text is
-the one models render correctly, so naturalness runs opposite to the effect.
-
-A second alternative locates the collapse in acoustic rather than text space: an
-attractor reached once enough near-identical frames accumulate, with the text
-playing no part. That predicts a horizon counted in tokens, so sentence
-repetition --- whose unit costs several times more tokens than a word --- should
-collapse after far fewer repetitions. It does not. Across \UnitNModels{} models
-$k^\ast$ differs between the two families by \UnitKDiff{} repetitions on average
-while the token count at collapse differs by \UnitTokRatio{}$\times$. The horizon
-is counted in applications of the periodic map, the unit
+Two further alternatives fail on their own predictions. If repeated text simply
+being improbable were the cause, the controls would have to be the more natural
+member of each pair; scored under a causal LM outside the panel, the control is
+the \emph{less} probable member in \NllIndCtlHigherPct{}\% of the
+\NllIndPairs{} matched pairs, so naturalness runs opposite to the effect. If the
+attractor were acoustic --- reached once enough near-identical frames accumulate,
+with the text playing no part --- the horizon would be counted in tokens, and
+sentence repetition, whose unit costs several times more tokens than a word,
+would fail after far fewer repetitions. It does not: across \UnitNModels{} models
+the collapse point differs between the two families by \UnitKDiff{} repetitions
+while the token count there differs by \UnitTokRatio{}$\times$. The horizon is
+counted in applications of the periodic map, the unit
 Theorem~\ref{thm:collapse} says it should be.
 
 \begin{table}[t]
@@ -96,17 +90,15 @@ is a factor \CapRatio{} of the control gain, with disjoint 95\% intervals for
 \CapSepPhrase{} panel checkpoints; the matched-pair form of
 the comparison gives a positive gap in \CapFracPos{}\% of pairs.
 
-An obvious objection is that this is circular: if a model correctly renders
-\emph{very} sixteen times the audio really is monotonous, so a low-rank
-trajectory would follow from the stimulus rather than from any loss of capacity.
-Two checks say otherwise. Adding realised output diversity --- type/token ratio
-over emitted acoustic tokens, the rate at which a token repeats its predecessor,
-and length --- as covariates leaves the ratio at \CapAdjRatio{}. Restricting to
-the items each model rendered \emph{correctly}, where the audio is by
-construction what was asked for, leaves it at \CapCorrRatio{}
-($\CapCorrN{}$ checkpoints with sufficient correct items). The decoder does not
-merely make mistakes on repeated text --- it runs out of internal states in which
-a mistake and a correct continuation could differ.
+An obvious objection is that this is circular: correctly rendering \emph{very}
+sixteen times really does produce monotonous audio, so a low-rank trajectory
+might follow from the stimulus rather than from lost capacity. It does not.
+Adding realised output diversity (type/token ratio over emitted acoustic tokens,
+adjacent-repeat rate, length) as covariates leaves the ratio at \CapAdjRatio{};
+restricting to items each model rendered \emph{correctly}, where the audio is by
+construction what was asked for, leaves it at \CapCorrRatio{}. The decoder does
+not merely err on repeated text --- it runs out of internal states in which an
+error and a correct continuation could differ.
 
 Lemma~\ref{lem:dilution} concerns the softmax \emph{restricted to the $k$ repeated
 keys}: raw attention weight is normalised over the whole sequence, whose length
@@ -129,10 +121,10 @@ over repeated spans --- exactly what Lemma~\ref{lem:dilution} predicts --- the
 worse any attention-based localiser gets. The capacity measure needs no
 boundaries, which is why we adopted it.
 
-Nor can we claim the count is \emph{absent}. A ridge probe recovering $\log_2 k$
-from trajectory summaries decodes it only coarsely (median
-$R^2 = \ProbeLateRTwo{}$ late in generation); contrasting the first and last third
-of the \emph{same} trajectory, so probe capacity cancels, the count is retained at
-\ProbeRetRep{} of its early level on repeated text against \ProbeRetCtl{} on
-controls, repeated being lower in \ProbePhrase{} panel checkpoints.
-Consistent in direction, but degradation rather than erasure.
+Nor can we claim the count is \emph{absent}: a ridge probe recovers $\log_2 k$
+from trajectory summaries only coarsely (median $R^2 = \ProbeLateRTwo{}$ late in
+generation), and contrasting the first and last third of the \emph{same}
+trajectory, so probe capacity cancels, it is retained at \ProbeRetRep{} of its
+early level on repeated text against \ProbeRetCtl{} on controls --- repeated
+lower in \ProbePhrase{} checkpoints, consistent in direction, but degradation
+rather than erasure.
