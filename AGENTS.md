@@ -162,7 +162,7 @@ threshold, sample, transform, scorer, feature, or model after seeing results.
   --outdir build main.tex` **and commit the refreshed `paper/build/main.pdf`
   in the same paper change.**
 - **Delivery and resume:** The last delivered Telegram milestone is message ID
-  155, with a redacted receipt in `to_human/TELEGRAM_DELIVERY_LOG_20260810.md`.
+  157, with a redacted receipt in `to_human/TELEGRAM_DELIVERY_LOG_20260810.md`.
   The H9 paper handoff is tagged `h9pcr-d1` and pushed to
   `origin/research/icassp-signal-audit`; use `git log`, `git tag --contains
   HEAD`, and `git status --branch` to confirm the exact remote/local head

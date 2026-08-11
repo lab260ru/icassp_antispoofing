@@ -240,3 +240,14 @@ bulk-send historical notifications.
 This is the twenty-second explicitly selected message in this log. The sender
 used the environment only for delivery and did not expose a credential or
 bulk-send historical notifications.
+
+## H10 CD-ADD terminal-stop confirmation
+
+- Heading: 2026-08-11 — H10 CD-ADD terminal follow-up stopped at its fixed gate
+- Delivery status: success
+- Telegram message ID: 157
+- Text length: 759
+
+This is the twenty-third explicitly selected message in this log. The sender
+used the environment only for delivery and did not expose a credential or
+bulk-send historical notifications.
