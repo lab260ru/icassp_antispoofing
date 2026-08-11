@@ -19,8 +19,10 @@ from src.paper_pdf_checks import audit_working_draft_pdf
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--pdf", type=Path, default=REPO_ROOT / "paper" / "build" / "main.pdf")
+    # Defaults track the active H9 working draft. Callers can still supply
+    # explicit landmarks for a later layout revision.
     parser.add_argument("--expected-pages", type=int, default=5)
-    parser.add_argument("--table-page", type=int, default=3)
+    parser.add_argument("--table-page", type=int, default=2)
     parser.add_argument("--references-page", type=int, default=5)
     parser.add_argument(
         "--review-stage",

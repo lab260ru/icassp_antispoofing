@@ -1,16 +1,19 @@
-# Signal-feature causality in speech anti-spoofing
+# Same-item pair ranking in speech deepfake detection
 
-This repository is the complete research record for an ICASSP 2027 draft on
-cross-dataset signal cues in speech anti-spoofing detectors, beginning with
-`lab260/Spectra-AASIST` and extending to published SpeechAntiSpoofingBenchmarks
-models and datasets.
+This repository is the complete research record for an ICASSP working draft on
+controlled cross-corpus speech deepfake detection. It began with a signal-cue
+audit around `lab260/Spectra-AASIST` and published
+SpeechAntiSpoofingBenchmarks models, then pivoted through a sealed independent
+protocol to its current H9 paired-ranking study.
 
-The current evidence-conservative title is **Beyond Crest Factor: A
-Five-Corpus Audit of Signal Associations in Speech Anti-Spoofing**. The paper
-reports a failed portability test for one discovery-frozen crest slice and a
-quality-gate stop before detector scoring; it makes no causal or mitigation
-claim. The title and main claim may change only through the documented
-outer-loop pivot policy in `research-state.yaml`.
+The current working title is **Same-Item Pair Ranking for Cross-Corpus
+Speech Deepfake Detection**. The paper reports a narrow controlled result:
+under one fresh Res2TCNGuard/ODSS protocol, documented same-item ranking
+outperforms same-pool BCE and an equal-budget random-pair ranking control on
+two fixed external targets. It makes no state-of-the-art,
+architecture-general, causal-representation, or blind-evaluation claim. The
+failed crest study remains preserved as prior research history, not paper
+evidence. Read `AGENTS.md` before extending any result.
 
 Start with `AGENTS.md`, then read `research-state.yaml`, `findings.md`, and the
 relevant experiment protocol. Human-readable artifacts are versioned here;
@@ -24,7 +27,7 @@ ledger, paper artifact, and external continuation condition, read
 
 ## Current objective
 
-Through 2026-08-10 20:00 UTC, maintain an evidence-backed ICASSP-format
-initial paper draft, reproducible experiment artifacts, a Codex-only internal
-review bundle, and a prioritized continuation roadmap. Existing Arena scores
-are treated as authoritative and are not reproduced with new inference.
+Through 2026-08-11 13:00 UTC, maintain the H9 initial ICASSP paper draft,
+reproducible experiment artifacts, and a Codex-only internal review bundle.
+Existing Arena scores are treated as authoritative and are not reproduced with
+new inference.

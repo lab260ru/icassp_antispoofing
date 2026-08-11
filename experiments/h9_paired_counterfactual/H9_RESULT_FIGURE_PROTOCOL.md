@@ -30,7 +30,7 @@ checkpoints, audio, or a score artifact.
 
 - Panel A: grouped bars of terminal EER (%) for the fixed order `SONAR`,
   `ArAD`, and unweighted two-target macro EER; methods are B1 (BCE), B2
-  (random-pair ranking), and P (content-aligned ranking).
+  (random-pair ranking), and P (same-item ranking).
 - Panel B: the two fixed two-sided 95% percentile intervals for the shared-ID
   bootstrap macro-EER differences P--B1 and P--B2, in percentage points. The
   vertical zero reference is descriptive; there are no newly calculated p
@@ -40,12 +40,15 @@ checkpoints, audio, or a score artifact.
   four-seed probability-ensemble / 2,000-replicate context.
 - The renderer rejects input hash/schema/cardinality/provenance drift and
   refuses to overwrite its output directory. It writes PDF, PNG, and a JSON
-  metadata record with all input/output hashes.
+  metadata record with all input/output hashes. Rendering revision 003 changes
+  only reader-facing terminology from ``content-aligned'' to ``same-item'' and
+  neutralizes the contrast-panel title; it uses the exact same four sealed
+  inputs and makes no numerical or analytical change.
 
 ## Claim boundary
 
 The display may report the locked terminal result only: under this fresh-init
-compact Res2TCNGuard/ODSS protocol, content-aligned ranking had lower EER than
-both same-pool controls on both fixed external targets. It cannot claim
+compact Res2TCNGuard/ODSS protocol, same-item ranking had lower EER than both
+same-pool controls on both fixed external targets. It cannot claim
 causality, state-of-the-art performance, generalization beyond these targets,
 or that a representation discarded any particular shortcut.

@@ -565,3 +565,25 @@
   The red-team audit identifies weak absolute EER and frozen-ensemble seed
   heterogeneity as paper-reporting limitations; do not repair H9 after seeing
   them.
+
+## 2026-08-11 - H9 paper-review resolution and final figure wording
+
+- Review: Three independent Codex-only manuscript reviews found the sealed
+  terminal result reproducible but rejected a linguistic-content mechanism
+  reading. The paper now calls P a documented same-item natural--synthetic
+  pairing and explicitly says the filename-derived key can bundle other
+  correspondence.
+- Reporting: Added primary-source related work, the published Res2TCNGuard
+  citation, full terminal EER/AUROC/count diagnostics, spoof-positive score
+  orientation, EER definition, ensemble-conditional trial-bootstrap wording,
+  B2 inherited-lambda/equal-edge scope, and B1 compute qualification. No
+  terminal data or configuration was reread for selection.
+- Figure: Revision `figures_terminal_003` is a deterministic, hash-validated
+  label-only render of the same four sealed terminal artifacts. It replaces
+  obsolete ``content-aligned'' language with ``same-item'' and uses a neutral
+  contrast-panel title; its PDF/PNG/metadata hashes are in
+  `paper/figures/FIGURE_H9_PCR_TERMINAL.md`.
+- Build: Every `paper/main.tex` edit was immediately compiled. The final local
+  single-anonymous preflight confirms five US-letter pages, Table 1 on page 2,
+  References on page 5, and 13 embedded fonts. The only Tectonic messages are
+  non-fatal underfull-box/bibliography rerun warnings.

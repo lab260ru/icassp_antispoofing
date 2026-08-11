@@ -207,3 +207,14 @@ bulk-send historical notifications.
 This is the nineteenth explicitly selected message in this log. The sender used
 the environment only for delivery and did not expose a credential or bulk-send
 historical notifications.
+
+## H9 terminal controlled-transfer result confirmation
+
+- Heading: 2026-08-11 — H9 terminal controlled-transfer result
+- Delivery status: success
+- Telegram message ID: 154
+- Text length: 853
+
+This is the twentieth explicitly selected message in this log. The sender used
+the environment only for delivery and did not expose a credential or bulk-send
+historical notifications.

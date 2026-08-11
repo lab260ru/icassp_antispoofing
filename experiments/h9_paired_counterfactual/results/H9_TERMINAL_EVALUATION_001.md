@@ -88,14 +88,18 @@ Large outputs are on the HDD at
 | terminal provenance | `af0b85c8f05ad9f2b70cad83b45db7922cd9422732c4630dbb17d1ad2821d2f4` |
 
 The final inspected display-only result figure is
-`results/h9_terminal_evaluation_001/figures_terminal_002/h9_pcr_terminal_eer.pdf`
-(PDF SHA-256 `165e0ad8e922878568d3d6033fd4b18076c10471808effc3b4211ebea57eda7b`)
+`results/h9_terminal_evaluation_001/figures_terminal_003/h9_pcr_terminal_eer.pdf`
+(PDF SHA-256 `f159a577aae21cca1fc89818a5431da9147528d04d2963e1ad1b8a87f7288f49`)
 and its 300-DPI PNG has SHA-256
-`2bcae387a963f3144195c7351e19d50d7987fd0a297f8e9fc5e7b86e2211df16`.
+`7459c38822cd14b478a4522abda4d20ed38ea23656e791160d77e52701978bd9`.
+Its metadata has SHA-256
+`dac28d06c3180eb051356299d853279e4ce55cb26e2f34afdc0d1be82c617d1c`.
 It is bound to the four terminal input hashes in
 `H9_RESULT_FIGURE_PROTOCOL.md`. The earlier `figures_terminal_001` layout is
-preserved as a non-authoritative visual iteration; it has identical scientific
-inputs and encoding but an overlapping legend/annotation layout.
+preserved as a non-authoritative visual iteration; `figures_terminal_002`
+fixes the overlap, and final revision 003 changes only reader-facing
+``content-aligned'' wording to ``same-item'' plus the contrast-panel title.
+All three revisions have identical sealed scientific inputs and encoding.
 
 ## Independent review
 
