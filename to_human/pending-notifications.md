@@ -489,3 +489,15 @@ technical pages plus references and passes the local US-letter, landmark, and
 embedded-font preflight. The paper makes a narrow controlled-transfer claim,
 not a SOTA, causal-mechanism, or deployment claim. All code, figure inputs,
 reviews, ledgers, and the compiled draft are in the pushed repository.
+
+## 2026-08-11 — H10 fresh-target replication is locked
+
+I have preserved and reconciled two independent readiness audits, then pushed
+a new H10 protocol before accessing any new target row, audio, label, score,
+or metric. It keeps all sealed H9 source checkpoints and methods fixed and
+adds only one genuinely fresh external target, CD-ADD; the faster LibriSeVoc
+option was rejected because it had already appeared in the earlier score-fusion
+loop. A new two-pass materializer will write label-free records and predictions
+before labels, with an exact collision audit and one all-12-checkpoint terminal
+call. This can strengthen the paper only if its predeclared gate passes; there
+is no target swap or retuning path if it fails.
