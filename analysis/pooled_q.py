@@ -34,7 +34,7 @@ os.environ.setdefault("HF_HOME", "/home/kirill/mnt/hdd_6tb_1/icassp_tts/hf_cache
 
 import numpy as np  # noqa: E402
 
-from common import tokenizers as tokmod  # noqa: E402
+from common import offset_tok as tokmod  # noqa: E402
 from common.boundaries import (  # noqa: E402
     boundary_distances, boundary_steps_from_attention, boundary_steps_uniform,
     unit_columns,

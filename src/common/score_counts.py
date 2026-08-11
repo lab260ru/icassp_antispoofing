@@ -57,6 +57,12 @@ def expand_number_token(tok: str) -> list[str]:
     t = tok.replace(",", "")
     if not t.isdigit():
         return [tok]
+    # A looping model produces numerals of absurd length -- Whisper has rendered
+    # a runaway "six six six ..." as a 700-digit integer. Place-value expansion
+    # is undefined past `billion` anyway, and for a loop the digit-wise reading
+    # is the semantically correct one: each digit was one spoken word.
+    if len(t) > 12:
+        return [DIGIT_WORDS[c] for c in t]
     out: list[str] = []
 
     def under_thousand(n: int) -> list[str]:
@@ -119,6 +125,36 @@ def count_occurrences(tokens: list[str], unit: str) -> int:
             i += n
         else:
             i += 1
+    return c
+
+
+def count_units(tokens: list[str], units: list[str]) -> int:
+    """How many of an ordered unit list the transcript delivers, in order.
+
+    One rule serves both item types, which is what makes them comparable. For a
+    repeated item the list is k copies of one word, so this counts occurrences of
+    that word. For its length-matched control the list is k *distinct* fillers,
+    so this counts how many of them were rendered. In both cases the answer to
+    "how many of the k requested units came out?" is computed the same way, and
+    matching never rewinds, so a model that repeats one filler cannot score for
+    the others.
+    """
+    if not units:
+        return 0
+    i, c = 0, 0
+    for u in units:
+        parts = normalise(u)
+        if not parts:
+            continue
+        n = len(parts)
+        while i + n <= len(tokens):
+            if tokens[i:i + n] == parts:
+                c += 1
+                i += n
+                break
+            i += 1
+        else:
+            break
     return c
 
 
@@ -237,13 +273,29 @@ def main() -> None:
             seed = int(seed_s)
             m = meta.get((item_id, seed), {})
             toks = normalise(a.get("text", ""))
+            # Repeated and control items are scored by the same question: how
+            # many of the k requested units were rendered? `boundary_units`
+            # carries the k copies for a repeated item and the k distinct
+            # fillers for its control, so one call covers both. Families without
+            # a unit list (numbers, twisters) keep the occurrence count.
+            units = it.get("boundary_units")
+            if units and len(set(units)) > 1:
+                # distinct units (a control): how many of the k were rendered
+                cnt, exp = count_units(toks, units), len(units)
+            elif units:
+                # identical units (a repeated item): the *total* occurrence
+                # count, deliberately unbounded so that a model producing more
+                # than k is visible as an overcount rather than capped at k
+                cnt, exp = count_occurrences(toks, units[0]), len(units)
+            else:
+                cnt, exp = count_occurrences(toks, it["target_unit"]), it["expected_count"]
             rows.append(dict(
                 model=model, item_id=item_id, seed=seed, family=it["family"],
                 template=it["template"], k=it["k"],
-                expected_count=it["expected_count"], expected_words=it["expected_words"],
+                expected_count=exp, expected_words=it["expected_words"],
                 target_unit=it["target_unit"], transcript=a.get("text", ""),
                 n_words=len(toks), duration_s=a.get("duration_s", 0.0),
-                count_a=count_occurrences(toks, it["target_unit"]),
+                count_a=cnt,
                 rms=a.get("rms", float("nan")),
                 spectral_flatness=a.get("spectral_flatness", float("nan")),
                 trailing_silence_s=a.get("trailing_silence_s", float("nan")),
@@ -261,7 +313,10 @@ def main() -> None:
         if fit:
             a, b, _ = fit
             r["count_b"] = max(0, int(round((r["duration_s"] - a) / b)))
-            r["expected_duration_s"] = a + b * r["expected_count"] if r["expected_count"] else a + b
+            # The fit regresses duration on k, so the expectation must use k too
+            # -- using expected_count here silently gave every control the
+            # duration of a k=1 item and labelled all of them runaway loops.
+            r["expected_duration_s"] = a + b * max(r["k"], 1)
             r["duration_ratio"] = (r["duration_s"] / r["expected_duration_s"]
                                    if r["expected_duration_s"] > 1e-6 else float("nan"))
         else:

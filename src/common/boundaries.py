@@ -1,22 +1,23 @@
 """Locate repetition boundaries in a decoder's generation trajectory.
 
-The theory is about the hidden state *at repetition boundaries*: the state the
-decoder is in each time it has finished rendering one more copy of the repeated
-phrase. To test it we need to say, for a given generated sequence, which step
-index corresponds to boundary m.
+SUPERSEDED as the paper's primary measurement -- see `common/dispersion.py`.
 
-We read that off the model's own text attention rather than off the audio. For
-each occurrence j of the repeated unit we know its column in the text span
-(exactly, from the tokenizer's character offsets); the step at which that column
-receives peak attention is the step at which the decoder is rendering it. This
-is self-contained — it needs no ASR, no alignment model, and no assumption that
-the audio was rendered at a constant rate — and the attention trace is data we
-capture anyway for the dilution measurement.
+The idea was to read boundaries off the model's own text attention: for each
+occurrence of the repeated unit we know its column in the text span (exactly,
+from the tokenizer's character offsets), so the step at which the attention read
+head reaches that column is the step at which the decoder is rendering it. That
+is self-contained -- no ASR, no alignment model, no constant-tempo assumption.
 
-Fallback: if attention is unavailable or uninformative, boundaries are placed by
-equal division of the generated sequence. That is unbiased with respect to the
-hypothesis (it assumes constant tempo, which if anything *inflates* apparent
-regularity), and every result carries which method produced it.
+It does not work on these decoders. The deep-layer attention centroid advances on
+roughly half of generation steps rather than sweeping left to right, so boundary
+estimates collapse onto near-duplicate positions and the resulting distances
+measure localisation error, not state dynamics. The failure is systematic rather
+than incidental: the flatter the attention over repeated spans, which is what
+Lemma B predicts, the worse any attention-based localiser gets.
+
+Kept because the paper reports this negative result, and because the estimator is
+still the natural one for any model that *does* have a monotone read head. Every
+row it produces carries which method placed its boundaries.
 """
 from __future__ import annotations
 
@@ -43,7 +44,7 @@ def unit_columns(tokenizer, text: str, units: list[str]) -> list[int]:
     """
     if not units:
         return []
-    # `tokenizer` is an OffsetTokenizer (src/common/tokenizers.py), which hides
+    # `tokenizer` is an OffsetTokenizer (src/common/offset_tok.py), which hides
     # the difference between HF fast tokenizers and raw `tokenizers` files, and
     # applies each model's own text transform before tokenizing. Units must be
     # searched in the transformed string, not the raw one.

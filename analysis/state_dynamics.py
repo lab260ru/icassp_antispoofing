@@ -95,7 +95,7 @@ def main() -> None:
         it = json.loads(line)
         stim[it["item_id"]] = it
 
-    from common import tokenizers as tokmod
+    from common import offset_tok as tokmod
 
     rows: list[dict] = []
     for model in args.models:
