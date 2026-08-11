@@ -1,0 +1,56 @@
+tree:
+  - id: N01
+    type: question
+    title: Cross-corpus anti-spoofing contribution
+    provenance: user
+    timestamp: "2026-08-09T00:00Z"
+    description: >
+      Find a strong, reproducible ICASSP contribution while preserving all
+      artifacts and avoiding unsupported causal or portability claims.
+    children:
+      - id: N02
+        type: dead_end
+        title: Signal-feature portability and quality-gate route
+        provenance: ai-executed
+        timestamp: "2026-08-10T00:00Z"
+        hypothesis: >
+          Stable signal-feature associations could identify an intervention or
+          mitigation.
+        failure_mode: >
+          Crest-factor portability failed and the detector-free intervention
+          quality gate did not yield a score-eligible panel.
+        lesson: >
+          Preserve descriptive diagnostics, but do not promote them to a paper
+          mitigation claim.
+      - id: N03
+        type: experiment
+        title: H9 same-item pair-ranking terminal evaluation
+        provenance: ai-executed
+        timestamp: "2026-08-11T00:00Z"
+        result: >
+          Same-item P reached 45.02% two-target macro EER versus BCE 51.78% and
+          random-pair B2 52.01%; both locked paired intervals were below zero.
+        evidence: [C01, "experiments/h9_paired_counterfactual/results/H9_TERMINAL_EVALUATION_001.md"]
+        children:
+          - id: N04
+            type: experiment
+            title: H10 frozen-panel CD-ADD replication
+            provenance: ai-executed
+            timestamp: "2026-08-11T00:00Z"
+            result: >
+              P was lower than both controls, but its 8.30% P-versus-B1
+              relative reduction missed the fixed 10% practical-effect gate.
+            evidence: [C02, "experiments/future_directions/results/H10_CDADD_TERMINAL_EVALUATION_001.md"]
+            children:
+              - id: N05
+                type: pivot
+                title: Counterpart Specificity Ladder
+                provenance: ai-suggested
+                timestamp: "2026-08-11T08:45Z"
+                from: H9/H10 single-backbone pair-ranking evidence
+                to: >
+                  Fresh-architecture relation decomposition: same-item versus
+                  same-voice/different-item, random-pair, and BCE controls.
+                trigger: >
+                  H9 leaves the relation mechanism under-identified and H10 is
+                  terminal under its own predeclared practical gate.
