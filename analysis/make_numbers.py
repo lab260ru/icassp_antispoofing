@@ -136,6 +136,23 @@ def main() -> None:
             macros[f"SatRep{tag}"] = fmt(v["repeated"]["sat"], 0)
             macros[f"SatCtl{tag}"] = fmt(v["control"]["sat"], 0)
 
+    # ---- XTTS repetition-penalty ablation --------------------------------
+    # XTTS-v2 ships repetition_penalty=5.0 on acoustic tokens, which acts
+    # directly against the behaviour under study. If the dissociation survives
+    # with it disabled, that decoding-time intervention is not what produces it.
+    if len(beh) and {"xtts2", "xtts2norp"} <= set(beh.model):
+        for key, tag in (("xtts2", "Rp"), ("xtts2norp", "NoRp")):
+            b = beh[beh.model == key]
+            rep = b[(b.family == "word_rep") & (b.k >= 6)]
+            ctl = b[(b.family == "control_word") & (b.k >= 6)]
+            if len(rep):
+                macros[f"Abl{tag}Rep"] = fmt(100 * rep.correct.mean(), 1)
+            if len(ctl):
+                macros[f"Abl{tag}Ctl"] = fmt(100 * ctl.correct.mean(), 1)
+            acc = b[b.family == "word_rep"].groupby("k")["correct"].mean()
+            above = acc.index[acc > 0.5]
+            macros[f"Abl{tag}KStar"] = str(int(above.max())) if len(above) else "0"
+
     # ---- naturalness control -------------------------------------------
     nll_path = Path("data/results/text_nll.json")
     if nll_path.exists():
