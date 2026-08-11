@@ -453,3 +453,12 @@ fingerprint. The matched and random-pair tables remain unchanged. No SONAR or
 ArAD data, no target label, and no H9 model result has been accessed. I am now
 launching the source-only BF16 lambda-selection grid across the four GPUs;
 the only allowable choice from it is the predeclared P/B2 rank-loss weight.
+
+## 2026-08-11 — H9 source-only selection is frozen
+
+All 12 predeclared source-only P fits completed on the four GPUs. The sealed
+voice-disjoint ODSS development rule selected rank weight 1.00 (22.05% mean
+dev EER; alternatives 25.92% and 33.60%). This value is now fixed for both
+content-aligned P and random-pair B2; no target data or target label has been
+read. The four B1 final fits are running now, followed by the fixed B2 and P
+fits before the one terminal SONAR/ArAD evaluation.
