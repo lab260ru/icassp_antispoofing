@@ -1,5 +1,15 @@
 # Findings — Counting Collapse in Autoregressive TTS
 
+> **Read this box first.** The single most important thing learned in this
+> project is a measurement result, not a model result: **Whisper cannot be used
+> to score repetition counting.** Its decoder is autoregressive with an LM prior,
+> so it de-duplicates repeated speech. On concatenative audio with exact ground
+> truth it counts at ratio 0.19 for k≥4 while a CTC recogniser counts at 1.00 on
+> the same files. Every behavioural number in this project was wrong until the
+> judge was replaced. If you extend this work, score with CTC.
+
+
+
 *Project memory. Read this first on every session/loop tick. Append after every
 milestone; never rewrite history, mark superseded claims as ~~struck~~.*
 
@@ -23,7 +33,28 @@ own stop-token head — can distinguish "m repetitions done" from "n repetitions
 done". Looping or premature truncation is then not a sampling accident but the
 only available behaviour.
 
-## Status
+## Final results (T+23h)
+
+| claim | measurement | status |
+|---|---|---|
+| Models undercount repeated text | median rel. count error −8.3% [−12.5,−8.3] at k≥6, n=586, CTC judge | **confirmed**, 5/6 checkpoints with CIs disjoint from their own control |
+| Controls are unaffected | median control error **0.0%** at every k up to 32, every model | **confirmed** |
+| One model is exempt | Qwen3-TTS-1.7B: 0.0% error, yet still a capacity gap | **second regime**, reported as such |
+| Capacity saturates under repetition | gain ratio 0.50; 0.50 controlling output diversity; 0.52 on correct renderings only | **confirmed**, 6/6 disjoint CIs |
+| Lemma B (attention dilution) | block entropy = 0.98·log k, δ ≤ 0.06 nats, max share ≤ 1.9/k | **confirmed** |
+| Theorem A premise (q<1) | not measurable — the boundary estimator is unsound here | **open**, reported as a negative result |
+| Capacity predicts count error across models | Spearman +0.49, n=6 | **underpowered**, not claimed |
+
+Per-model count error at k≥6 (CTC judge): Llasa-1B −16.1%, Llasa-3B −12.5%,
+Llasa-8B −25.0%, XTTS-v2 −15.6%, Qwen-0.6B −8.3%, Qwen-1.7B 0.0%. Control: 0.0%
+for all six.
+
+## Status (SUPERSEDED — Whisper-judged, kept for the record)
+
+> Everything from here to "Lessons and Constraints" was measured with the
+> Whisper judge and is superseded by the "Final results" table above. It is kept
+> because the *shape* of the reasoning still holds and because the contrast shows
+> how much the instrument mattered.
 
 | Prediction | Status |
 |---|---|
@@ -83,14 +114,14 @@ not argument:
 | effective-rank decline is tautological — repeated audio *is* monotonous | add realised output diversity as covariates; and restrict to correct renderings | ratio 0.50 raw, 0.50 adjusted, 0.47 correct-only |
 | the count survives and only the output policy fails (as in text LMs, arXiv:2605.09239) | ridge probe, early vs late third of the *same* trajectory | retention 0.97 repeated vs 1.12 control, repeated lower in 7/7; degradation, not erasure |
 
-### The XTTS ablation
+### The XTTS ablation (revised under the CTC judge)
 
-Disabling XTTS-v2's shipped `repetition_penalty=5.0` makes the model *worse*
-(k* 4 → 2) while the repeated-vs-control gap persists (0.02 vs 0.15). The penalty
-was masking the collapse, not causing it, so the penalised model is the
-conservative member of the panel. Its capacity contrast loses significance
-because disabling the penalty compresses the dynamic range of both conditions —
-reported, not glossed.
+Disabling XTTS-v2's shipped `repetition_penalty=5.0` degrades *both* conditions
+severely (repeated −58.3%, control −66.7% count error), so the ablation is
+uninformative about the dissociation rather than confirming it. The earlier
+reading — that the penalty was masking the collapse — was based on Whisper-judged
+data and is withdrawn. The penalised model remains the conservative panel member,
+since the penalty acts against the behaviour under study.
 
 ## Lessons and Constraints (added)
 
