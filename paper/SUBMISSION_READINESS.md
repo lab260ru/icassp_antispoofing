@@ -2,8 +2,8 @@
 
 The repository provides a narrow, reproducible check for the readable working
 draft. It verifies US-letter geometry, exact layout landmarks, and embedded
-fonts. The current named-author draft has four technical pages followed by a
-references-only fifth page, permitted by the stated ICASSP page policy, and
+fonts. The current named-author H9 draft has four technical pages followed by
+a references-only fifth page, permitted by the stated ICASSP page policy, and
 uses the single-anonymous submission stage.
 
 Run it after compiling the manuscript:
@@ -16,7 +16,7 @@ PYTHONPATH=. python3 scripts/check_paper_pdf.py \
 ~~~
 
 A passing report has five US-letter pages, recovers the exact Table 1/I label
-from page 3 and References from page 5, and reports all fonts embedded. The
+from page 2 and References from page 5, and reports all fonts embedded. The
 fifth page is reserved for references by the manuscript source. The command
 emits JSON so its result can be stored with a future submission package.
 

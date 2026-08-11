@@ -24,14 +24,14 @@ INPUTS = {
     "decision": (TERMINAL_DIR / "h9_terminal_decision_gate.json", "a4e5f118cd34af6ae2e728e094d2ad9e9e6ebf1a8ebe1fb2d841b191c3753852"),
     "provenance": (TERMINAL_DIR / "h9_terminal_evaluation_provenance.json", "af0b85c8f05ad9f2b70cad83b45db7922cd9422732c4630dbb17d1ad2821d2f4"),
 }
-OUTPUT_DIR = REPOSITORY_ROOT / "experiments/h9_paired_counterfactual/results/h9_terminal_evaluation_001/figures_terminal_002"
+OUTPUT_DIR = REPOSITORY_ROOT / "experiments/h9_paired_counterfactual/results/h9_terminal_evaluation_001/figures_terminal_003"
 OUTPUT_FILES = ("h9_pcr_terminal_eer.pdf", "h9_pcr_terminal_eer.png", "h9_pcr_terminal_eer.metadata.json")
 DATASETS = ("SONAR", "ArAD")
 METHODS = ("B1", "B2", "P")
 METRIC_COLUMNS = ("dataset", "method", "n_trials", "n_bonafide", "n_spoof", "eer", "eer_percent", "auroc", "score_aggregation")
 BOOTSTRAP_COLUMNS = ("replicate", "macro_eer_difference_p_minus_b1", "macro_eer_difference_p_minus_b2")
 COLORS = {"B1": "#0072B2", "B2": "#E69F00", "P": "#009E73"}
-METHOD_LABELS = {"B1": "B1: BCE", "B2": "B2: random-pair", "P": "P: content-aligned"}
+METHOD_LABELS = {"B1": "B1: BCE", "B2": "B2: random-pair", "P": "P: same-item"}
 
 
 def _sha256(path: Path) -> str:
@@ -163,7 +163,7 @@ def render(
     delta_axis.set_xlim(-10.0, 1.0)
     delta_axis.set_xticks([-10, -7.5, -5, -2.5, 0])
     delta_axis.set_xlabel("Macro EER difference (pp), 95% CI")
-    delta_axis.set_title("Content-aligned advantage")
+    delta_axis.set_title("P minus control macro EER")
     figure.text(0.5, 0.005, "4-seed probability ensemble | 2 fixed external targets | 2,000 shared-ID stratified bootstrap replicates", ha="center", va="bottom", fontsize=7.1, color="#374151")
     figure.subplots_adjust(left=0.075, right=0.99, top=0.84, bottom=0.24, wspace=0.45)
     figure.savefig(pdf_path)
@@ -176,7 +176,7 @@ def render(
         "kind": "display_only_h9_pcr_terminal_eer_and_bootstrap_contrasts",
         "input_hashes": dict(input_hashes), "output_hashes": output_hashes,
         "datasets": list(DATASETS), "methods": list(METHODS), "metric": "terminal_eer_percent",
-        "uncertainty": "95% percentile interval from fixed 2,000 shared-ID label-stratified bootstrap replicates (seed 2909)",
+        "uncertainty": "95% percentile interval from fixed 2,000 shared-ID label-stratified trial-bootstrap replicates (seed 2909), conditional on the frozen four-seed ensemble",
         "terminal_device": provenance["evaluation_device"], "terminal_precision": provenance["evaluation_precision"],
         "claims_not_supported": ["causality", "state_of_the_art", "arbitrary_target_generalization", "representation_mechanism"],
         "renderer": {"matplotlib": matplotlib.__version__, "python": platform.python_version()},

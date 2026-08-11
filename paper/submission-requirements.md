@@ -44,6 +44,6 @@ again.
 
 scripts/check_paper_pdf.py is a deliberately narrower preflight. It verifies
 US-letter geometry, exact Table 1/References landmarks, and embedded fonts.
-The current named-author build has four technical pages plus a references-only
-fifth page and uses its single-anonymous-submission stage; usage and limits are
-in SUBMISSION_READINESS.md.
+The current named-author H9 working build has four technical pages plus a
+references-only fifth page and uses its single-anonymous-submission stage;
+usage and limits are in SUBMISSION_READINESS.md.

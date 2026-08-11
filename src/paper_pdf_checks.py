@@ -105,8 +105,9 @@ def audit_working_draft_pdf(
 
     The caller owns any submission-policy decision. A report with ``ok=False``
     is a local failure that should be corrected before treating the PDF as a
-    readable handoff artifact. The default landmarks match the current draft:
-    Table 1 on page 3, the atlas on page 4, and a references-only fifth page.
+    readable handoff artifact. The command-line wrapper supplies the current
+    H9 landmarks (Table 1 on page 2 and references on page 5); these reusable
+    function defaults retain the generic five-page checker fixture.
     """
     path = Path(pdf_path)
     if not path.is_file():

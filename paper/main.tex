@@ -1,22 +1,15 @@
-% Initial ICASSP 2027 draft.  This file intentionally reports only results
-% backed by committed artifacts; conditional future stages are not reported as
-% completed experiments.
-% Use the user-provided ICASSP 2026 spconf bundle pinned in this repository;
-% reconcile with the official ICASSP 2027 kit when it becomes available.
+% ICASSP working draft. Quantitative claims are restricted to the sealed H9
+% terminal evaluation documented in experiments/h9_paired_counterfactual/.
 \documentclass{article}
 \usepackage{template/ICASSP2026/spconf}
 
 \usepackage{cite}
 \usepackage{booktabs}
-\usepackage{url}
 \usepackage{amsmath}
 \usepackage{graphicx}
+\usepackage{url}
 
-\newcommand{\scorepanel}{Spectra-AASIST, AASIST, Res2TCNGuard, RawTFNet,
-WhisperMFCCMesoNet, W2V2-AASIST, XLSR-SLS, and RawBMamba}
-
-\title{BEYOND CREST FACTOR: A FIVE-CORPUS AUDIT OF SIGNAL ASSOCIATIONS IN
-SPEECH ANTI-SPOOFING}
+\title{SAME-ITEM PAIR RANKING FOR CROSS-CORPUS SPEECH DEEPFAKE DETECTION}
 
 \name{Kirill Borodin$^{1,2}$}
 \address{$^{1}$\;lab260, Moscow, Russia\\
@@ -26,274 +19,297 @@ $^{2}$\;BitmanagerAI, Dubai, UAE}
 \maketitle
 
 \begin{abstract}
-Speech anti-spoofing systems can obtain convincing benchmark scores while
-responding to corpus-specific acoustic cues rather than synthesis artifacts.
-We distinguish three propositions: that a waveform feature separates labels,
-associates with a detector score within label, and changes a score under an
-intervention passing prespecified audio-quality gates. The locked audit registers 28 descriptors on
-three waveform views, eight published detector score artifacts, three discovery
-corpora, and two held-out confirmation corpora. Across 6,720 within-class
-screen cells, the exploratory, discovery-frozen Spectra-AASIST/full-waveform/spoof-class
-crest-factor candidate is negative in all three discovery corpora but attenuates sharply. In
-In-the-Wild its adjusted association is small ($\rho=-0.0326$), while in
-ASVspoof5 it is null after the registered controls ($\rho=0.0014$), despite a
-negative unadjusted association. Thus this candidate fails the fixed five-corpus
-portability condition. Nineteen other registered feature/view/class units
-meet the descriptive association rule, but are not promoted post hoc to paired
-interventions. The frozen crest/control panel also fails its 90\% per-arm
-quality-retention gate before detector scoring. The result is a conservative
-negative portability finding for the frozen crest-factor candidate, together
-with a reproducible association atlas; it makes no causal shortcut claim.
+Pairwise objectives are used in speech anti-spoofing, but it is unclear whether
+matching a documented natural--synthetic source item, rather than an arbitrary
+opposite-class item, improves transfer. We test this question with a controlled
+three-way comparison. A compact, fresh-initialized Res2TCNGuard detector is
+trained on a shared ODSS source pool using (i) binary cross-entropy (B1), (ii)
+the same loss plus random opposite-class ranking (B2), or (iii) same-item
+natural--synthetic ranking (P). Source-only selection fixes all hyperparameters,
+checkpoints, and the four-seed ensemble before two fixed external evaluations.
+P obtains 47.07\%/42.98\%/45.02\% equal error rate (EER) on
+SONAR/ArAD/macro, versus 58.88\%/44.69\%/51.78\% for B1 and
+56.09\%/47.93\%/52.01\% for B2. Paired trial-bootstrap intervals,
+conditional on the frozen ensemble, are P--B1 $[-8.25,-5.25]$ and P--B2
+$[-8.54,-5.30]$ percentage points. Thus, under this protocol, same-item
+ranking lowers the predeclared two-target macro EER beyond an equal-edge
+random-pair control. The documented key is not a transcript-level semantic
+annotation; we make no state-of-the-art or causal representation claim.
 \end{abstract}
 
 \begin{keywords}
-speech deepfake detection, anti-spoofing, shortcut learning, evidence audit,
-robustness
+speech deepfake detection, anti-spoofing, pairwise ranking, cross-corpus
+generalization, controlled evaluation
 \end{keywords}
 
 \section{Introduction}
-\label{sec:introduction}
+\label{sec:intro}
 
-Speech anti-spoofing countermeasures must distinguish bona fide speech from
-synthetic, converted, or replayed speech. Modern systems can learn effective
-spectro-temporal representations; for example, AASIST uses integrated
-spectro-temporal graph attention~\cite{jung2022aasist}. However, strong scores
-do not by themselves establish that a system responds to the intended
-manipulation artifacts. Müller et al. found that silence duration can correlate
-with the target label in ASVspoof data and that this cue alone can yield strong
-discrimination~\cite{muller2021silence}. More generally, controlled shortcut
-conditions can produce near-perfect or worse-than-chance countermeasures
-without a reliable signal of the intended task competence~\cite{shim2023shortcut}.
-Recent cross-domain evidence further indicates that audio-deepfake
-generalization gaps can reflect distributional difference, rather than only a
-harder version of the same task~\cite{muller2024harder}.
+Speech anti-spoofing can fail when a detector is moved to a new corpus or
+generator family. Such shifts are often differences in data distribution,
+rather than simply a harder instance of the original task~\cite{muller2024harder}.
+Pairwise learning is one route to improve a representation: a Siamese
+anti-spoofing system learns class agreement between two samples~\cite{xie2021siamese},
+supervised contrastive learning has been combined with cross-entropy for spoof
+detection~\cite{tran2024contrastive}, and bonafide-pair learning aligns two
+augmentations of a bonafide utterance~\cite{kim2025bpl}. We do not claim
+pairwise supervision as new. Instead, we ask whether a documented same-item
+pairing changes transfer relative to a fixed, equal-edge random-pair control.
 
-The present study begins with a practical observation: an interpretable
-feature---including crest factor---may be label-discriminative, correlated with
-a detector score, or sensitive to a waveform-family transformation targeted at
-it; these are different claims. Confusing them risks attributing model reliance to a
-feature that merely tracks label prevalence, corpus identity, duration, or
-loudness. We therefore audit published per-sample scores without recomputing
-baseline inference and use a staged, locked decision process.
+We test this with naturally paired resynthesis data. ODSS provides documented
+natural and synthetic variants of source utterances~\cite{yaroshchuk2023odss}.
+We compare same-item ranking to two controls that preserve the source
+pool, network, binary objective, number of ranking edges, rank weight,
+optimizer, and selection procedure. The random-pair control is important:
+without it, a gain could be attributed to any added margin term rather than the
+documented same-item relation.
 
-This paper makes two completed contributions and one explicitly conditional
-design contribution.
+Our contributions are:
 \begin{itemize}
-  \item It registers a cross-dataset, multi-model association design that
-  separates label effects from within-class score-feature associations and
-  fixes the acceptance criterion before confirmation data are analyzed.
-  \item It reports the exploratory discovery-frozen crest slice's failed
-  five-corpus portability test, preserves the separate 19-unit descriptive
-  atlas without post-hoc intervention promotion, and records a stopped
-  quality-gated crest/control panel before detector scoring.
-  \item It provides a conditional mitigation \emph{protocol}, not an evaluated
-  method, that activates only after a future valid sensitivity result.
+  \item a same-item paired-ranking objective and an equal-edge,
+  stratum-matched random-ranking control for separating the documented pairing
+  key from generic rank regularization;
+  \item a source-only training/selection protocol with fresh initialization,
+  voice-disjoint source development, target-label firewall, and source--target
+  waveform-fingerprint audit; and
+  \item a two-target, four-seed terminal evaluation in which same-item ranking
+  lowers EER relative to both controls under a precommitted,
+  ensemble-conditional trial-bootstrap gate.
 \end{itemize}
 
-We report only stages that completed their predeclared evidence gates.
-Sections~\ref{sec:study}--\ref{sec:results} distinguish locked methodology,
-three discovery screens, held-out confirmation, and a quality-gated
-intervention attempt.
+\section{Controlled same-item ranking}
+\label{sec:method}
 
-\section{Background and audit target}
-\label{sec:background}
+\subsection{Matched source pool}
 
-The ASVspoof 2019 challenge provides a common setting for logical-access
-spoofing research~\cite{todisco2019asvspoof}. Let $y_i\in\{0,1\}$ denote the
-registered label of utterance $i$ ($0$ bona fide and $1$ spoof), $f_i$ an interpretable waveform feature, and
-$s_{m,i}$ the published score of model $m$. Each score artifact is oriented to
-increasing spoof evidence only after a label-direction check; artifacts that
-fail an exact sample-ID join or an orientation check are excluded rather than
-heuristically repaired. Let $c_i$ contain registered nuisance variables such
-as duration, integrated loudness, and available speaker or attack metadata.
+We use ODSS revision \texttt{1968e6d0} as the only training source. Its
+metadata yields 7,961 complete groups, each containing one natural recording,
+a VITS resynthesis, and a FastPitch/HiFiGAN resynthesis. Groups are keyed by
+corpus, speaker, and stem. We retain 23,883 trials (7,961 bona fide and
+15,922 spoof) and remove 3,071 unmatched VITS rows from \emph{all} methods.
+Thus BCE does not receive additional unpaired data. A deterministic
+language-stratified split assigns each source voice key to either train or
+source development.
 
-The first audit target is the within-class association
-$\rho_{m,y}=\operatorname{Spearman}(f_i,s_{m,i}\mid y_i=y)$ and its
-rank-residual analogue after controlling for $c_i$. This target is not a
-causal estimand: a residual association may still be caused by unobserved
-corpus properties. A subsequent paired waveform-family transformation supplies
-the sensitivity target $\Delta s_{m,i}=s_m(T_\theta(x_i))-s_m(x_i)$, subject to
-prespecified quality gates on intelligibility proxies, transcript agreement,
-loudness, and transform-induced clipping. Such a transformation is targeted at
-a cue but is not an isolated intervention on that cue. The distinction
-structures the three hypotheses below.
+Let $z(x)$ be a spoof-evidence logit and $(x_s,x_b)$ a spoof--bona-fide edge.
+Every method receives the same class-balanced BCE batches. B1 minimizes
+$\mathcal{L}_{\mathrm{BCE}}$. For $m\in\{\mathrm{B2},\mathrm{P}\}$, the
+objective is
+\begin{equation}
+\begin{aligned}
+\mathcal{L}_{m} &= \mathcal{L}_{\mathrm{BCE}} \\
+                 &\quad + \lambda\mathcal{L}_{\mathrm{rank}},
+\end{aligned}
+\label{eq:total}
+\end{equation}
+where
+\begin{equation}
+\mathcal{L}_{\mathrm{rank}}=
+\frac{1}{|E|}\sum_{(x_s,x_b)\in E}
+\max\{0,1-[z(x_s)-z(x_b)]\}.
+\label{eq:rank}
+\end{equation}
 
-\section{Locked study design}
-\label{sec:study}
+\begin{figure*}[!t]
+  \centering
+  \includegraphics[width=\textwidth]{figures/fig_h9_pcr_terminal_eer.pdf}
+  \caption{Sealed terminal evaluation. \textbf{Left:} EER of the four-seed
+  probability ensemble on the two fixed external targets and their unweighted
+  macro average (lower is better). \textbf{Right:} fixed 95\% percentile
+  intervals from 2,000 shared-ID, label-stratified bootstrap resamples of
+  macro-EER differences, conditional on the frozen four-seed ensemble. The
+  figure is display-only: it reads hash-pinned
+  terminal metrics, decision, bootstrap, and provenance but no raw prediction
+  or label table.}
+  \label{fig:terminal}
+\end{figure*}
 
-\subsection{Inputs, feature registry, and provenance}
+P uses the 15,922 natural--synthetic edges from the same documented group. B2
+uses exactly the same spoof endpoints and edge count, but pairs each with a
+different-group bona-fide trial selected deterministically within its
+split/language/source-corpus/generator stratum. Thus the intended B2--P
+difference is same-item versus different-item pairing. The key is metadata,
+not a transcript or semantic-equivalence proof; it can bundle speaker,
+recording, duration, and phonetic correspondence with the documented item.
 
-All datasets, model revisions, and published score artifacts are pinned in the
-repository manifest. Discovery uses ASVspoof 2019 LA, ASVspoof 2021 LA, and
-ASVspoof 2021 DF; In-the-Wild and ASVspoof 5~\cite{wang2024asvspoof5} are
-held out for confirmation.
-The 2021 challenge adds channel/compression variation and unmatched evaluation
-conditions, so these corpora are not treated as interchangeable replications
-of the 2019 setting~\cite{yamagishi2021asvspoof}.
-The score panel consists of \scorepanel. Where a published score artifact is
-absent, the cell is reported as missing and is never imputed. This design uses
-the Arena score artifacts as published evidence, rather than spending
-additional compute to reproduce their baseline inference.
-Accordingly, its estimands concern pinned released score artifacts, not
-re-executed current implementations or independent architectural mechanisms.
-The accompanying artifact bundle preserves the pinned manifest, executable
-analysis, and compact hash-sealed results; raw corpora remain external to the
-repository. A citable archival locator will be added when disclosure policy
-permits.
+\subsection{Frozen optimization and terminal firewall}
 
-The frozen \texttt{v1\_28} registry extracts 28 amplitude, spectral,
-excitation, phase, and modulation descriptors from full-waveform,
-deterministic-crop, and pre-emphasized views. Voice-dependent descriptors retain
-missing values for unvoiced or unsuitable signals; they are not converted to
-zero. For corpora above 50,000 examples, the analysis selects a deterministic,
-class-balanced subset using seed 2609 and at most 5,000 examples per class.
+All models are freshly initialized instances of the public 172k-parameter
+Res2TCNGuard architecture~\cite{borodin2024res2tcn}; its released
+ASVspoof-pretrained checkpoint is prohibited. We use BF16 autocast, batch 24,
+AdamW ($10^{-4}$ learning rate, $10^{-2}$ weight decay), no augmentation, and
+at most six epochs. A source-only grid over rank weight $\{0.1,0.3,1.0\}$
+selects $1.0$ by mean voice-disjoint development EER; that P-selected value is
+imposed unchanged on B2. Four fixed seeds use the lowest-development-EER
+checkpoint (lower epoch on a tie). No target audio, label, metric, or score
+selects a source choice.
 
-\subsection{H1: association and portability}
-
-For each dataset, feature, and waveform view, H1 reports feature-label AUROC.
-For each model, dataset, class, feature, and waveform view, it reports
-within-class Spearman association and partial rank association. The latter is
-the correlation of rank residuals after an intercept, ranked duration and
-integrated loudness, and available speaker/attack indicators; a tested feature
-or score is removed from its own control set. P-values receive
-Benjamini--Hochberg correction across the complete 1,344-cell screen within
-each corpus. Candidate estimates from the frozen manifest receive 2,000
-label-stratified clustered bootstrap replicates during held-out confirmation,
-using speaker ID when available and otherwise source utterance ID. Exclusions are limited to missing
-stable IDs, unreadable waveforms, required labels, or published scores; every
-count is preserved in the accompanying artifacts.
-
-A feature/view/class unit is portable only if at least five of eight models
-each have the same direction in at least four of the five core datasets, are
-BH-significant in both held-out confirmation datasets, and match the held-out
-direction. This full model-level criterion is fixed before confirmation
-analysis. Crest factor is one candidate in this registry, not the pre-supposed
-conclusion.
-
-\subsection{H2: planned quality-gated paired interventions}
-
-The planned quality-gated H2 sensitivity study requires an H1-frozen candidate, 500 examples per
-class per core dataset, and a four-model panel. A future transformed example is
-retained only if STOI is at least 0.95, original-to-transformed transcript WER
-is at most 5\%, loudness drift is at most 0.2 LU, and no transform-induced
-clipping occurs, and the registered target-feature direction holds; an arm is
-dropped below 90\% retention. A future sensitivity claim also requires a
-nonzero bootstrap interval, standardized paired score change of at least 0.2,
-and consistent direction in at least three datasets and three of four models.
-
-Only its score-blind exploratory component has completed: a 1,000-clip
-ASVspoof 2019 LA crest/control quality screen with DRC-3, DRC-6, +0.1-dB gain,
-and polarity. It stopped before detector scoring because three arms fail the
-locked retention gate. It is therefore neither a completed four-model,
-multi-dataset H2 nor evidence of isolated crest-factor causality.
-The currently instantiated crest follow-up is exploratory because its
-discovery-to-H2 candidate rule was introduced during the discovery loop.
-
-\subsection{H3: conditional feature-conditioned mitigation}
-
-H3 is not run. It is confirmatory only after an H2 sensitivity result, at which
-point an equivalent-recipe baseline and feature-conditioned head would be
-compared under fixed BF16 seeds, throughput settings, and held-out EER gates.
-This conditional design does not assume that feature conditioning is
-beneficial~\cite{pascu2024generalizable}.
+The terminal targets are fixed SONAR (3,948 trials) and ArAD (3,570 trials)
+releases from the Speech DF Arena ecosystem~\cite{dowerah2026arena}. After all
+12 source checkpoints are hash-sealed, we materialize label-free target records
+and separately hash labels. The evaluator verifies every audio byte hash and
+canonical 16-kHz waveform fingerprint, writes all raw predictions, then opens
+labels once. It rejects any exact source--target fingerprint collision; none is
+observed. We report EER (the threshold at which false-accept and false-reject
+rates are equal; lower is better) and AUROC with spoof as the positive class
+from the mean spoof probability of the four frozen seeds. Target metrics never
+enter model selection; we nevertheless do not call this evaluation blind because
+historical target rows for the excluded public checkpoint were visible during
+the architecture-provenance audit.
 
 \section{Results}
 \label{sec:results}
 
-Table~\ref{tab:status} records the completed evidence and H2 quality-gate
-outcome, and
-Fig.~\ref{fig:crest-evidence-boundary} makes the frozen crest slice and the
-quality-gate stop directly inspectable. The 19 fixed-rule registry entries are
-preserved as a complete descriptive table, not a post-hoc intervention
-selector. No H2 delta, EER, or causal claim is reported. Eighteen of the 19
-units are bona-fide-class associations; the remaining spoof-class unit is
-pre-emphasized spectral flatness. The registry also includes a separate
-bona-fide/full-waveform crest-factor association, which is distinct from the
-frozen spoof-class crest candidate and is not reused for H2.
+\subsection{Source-only selection}
 
-\begin{table}[!t]
-  \caption{Completed evidence and H2 quality-gate outcome. The five-corpus
-  association outcome is not a causal result and does not select new H2
-  candidates.}
-  \label{tab:status}
+The rank weight is the only loss hyperparameter selected from source
+development. Before any target materialization, we run the fixed P grid with
+four seeds per value and choose lower mean development EER (lower weight on a
+tie). Table~\ref{tab:lambda} shows the complete selection evidence. The chosen
+$\lambda=1.0$ is then imposed on B2 as well as P, so a terminal difference
+cannot be caused by a different ranking scale. B2 is deliberately not tuned at
+its own optimum: it is the fixed P-lambda, equal-edge control. All methods
+share four fresh initializations, BF16 batch 24, four workers, and at most six
+epochs; B1 does not execute rank-edge forwards, so this is a matched training
+envelope rather than equal wall-clock compute across all three methods.
+
+\begin{table}[t]
+  \caption{Complete source-only P rank-weight selection. Mean development EER
+  is over four fixed seeds; lower is better. The selected value is reused
+  unchanged for B2 and P terminal fits.}
+  \label{tab:lambda}
   \centering
   \footnotesize
-  \begin{tabular}{p{0.40\linewidth}p{0.46\linewidth}}
+  \begin{tabular}{lrrr}
     \toprule
-    Artifact & Observed status \\
+    $\lambda$ & 0.1 & 0.3 & 1.0 \\
     \midrule
-    H1 screens on three discovery plus two held-out corpora & 6,720
-    within-class tests (5 corpora $\times$ 8 models $\times$ 2 classes $\times$
-    3 views $\times$ 28 features), with exact joins for every model and corpus. \\
-    Fixed crest-factor slice: full waveform, spoof class & Spectra-AASIST
-    partial $\rho$ is $-0.454$, $-0.099$, and $-0.065$ on 2019 LA, 2021 LA,
-    and 2021 DF. It is $-0.0326$ in In-the-Wild ($q=0.000523$) but $0.0014$
-    in ASVspoof5 ($q=0.937089$) after registered adjustment; it therefore
-    fails portability. \\
-    Registered five-corpus association rule & 19/168 feature/view/class units
-    meet the full fixed sign, held-out-confirmation, and $\geq5/8$-model
-    subcriterion;
-    none is added post hoc to H2. \\
-    Frozen H2 crest/control quality panel & DRC-3, DRC-6, and gain retain
-    18.1\%, 0.6\%, and 64.6\%, respectively, below 90\%; polarity alone
-    retains 99.9\%. No detector scores, paired deltas, or H3 training are
-    produced. \\
+    Mean dev. EER (\%) & 33.60 & 25.92 & \textbf{22.05} \\
     \bottomrule
   \end{tabular}
 \end{table}
 
-\begin{figure*}[t]
+\subsection{Terminal external evaluation}
+
+Figure~\ref{fig:terminal} reports the complete predeclared primary EER
+comparison. P has lower ensemble EER than B1 and B2 on both targets. Its
+45.02\% macro EER is 13.05\% relatively lower than B1 (51.78\%) and 13.44\%
+relatively lower than B2 (52.01\%). The predefined 2,000-replicate,
+label-stratified shared-ID trial bootstrap (seed 2909), conditional on the
+frozen four-seed ensemble, gives P--B1 $-6.70$ pp (95\% CI $[-8.25,-5.25]$)
+and P--B2 $-6.97$ pp (95\% CI $[-8.54,-5.30]$). Both intervals are below zero,
+and all precommitted terminal checks pass.
+
+Table~\ref{tab:diagnostics} gives score diagnostics and class counts. P has
+the highest AUROC on both targets, but all values and the weak absolute EERs
+must be read as a narrow transfer comparison rather than a deployment result.
+
+\begin{table}[t]
+  \caption{Terminal score diagnostics. Scores are mean spoof probabilities;
+  AUROC treats spoof as positive. Target counts are bona-fide/spoof.}
+  \label{tab:diagnostics}
   \centering
-  \includegraphics[width=\textwidth]{figures/fig_crest_evidence_boundary_main_v2.pdf}
-  \caption{Evidence boundary for the discovery-frozen
-  Spectra-AASIST/full-waveform/spoof crest-factor slice. (A) Fixed-analysis
-  adjusted associations across the fixed five-corpus order, separated into
-  locked discovery and held-out confirmation; 95\% clustered intervals appear
-  only for the two sealed held-out confirmations. The slice fails the paper's
-  fixed model-level portability condition. (B) Detector-free H2 retention for four fixed
-  crest/control arms on the 1,000-clip ASVspoof2019 LA quality panel against
-  the locked 90\% gate. Polarity alone clears the per-arm rate, but three arms
-  fall below it, so no score-eligible retained-pair manifest was frozen and no
-  detector scoring was performed. The panels are descriptive displays only;
-  no cross-panel relationship, pooled estimate, ranking, new test, or causal
-  inference is computed.}
-  \label{fig:crest-evidence-boundary}
-\end{figure*}
+  \footnotesize
+  \begin{tabular}{llrr}
+    \toprule
+    Target (bona/spoof) & Method & EER (\%) & AUROC \\
+    \midrule
+    SONAR (2274/1674) & B1 & 58.88 & .411 \\
+                      & B2 & 56.09 & .428 \\
+                      & P  & \textbf{47.07} & \textbf{.557} \\
+    \midrule
+    ArAD (484/3086) & B1 & 44.69 & .586 \\
+                    & B2 & 47.93 & .519 \\
+                    & P  & \textbf{42.98} & \textbf{.615} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
-\section{Limitations and responsible reporting}
-\label{sec:limitations}
+\begin{table}[t]
+  \caption{Per-seed macro EER (\%). Each value averages SONAR and ArAD for
+  one frozen seed; the predeclared probability ensemble in Fig.~\ref{fig:terminal}
+  is the primary endpoint.}
+  \label{tab:seeds}
+  \centering
+  \footnotesize
+  \begin{tabular}{lrrrr}
+    \toprule
+    Method & 9101 & 9102 & 9103 & 9104 \\
+    \midrule
+    B1 & 50.00 & 50.59 & 53.78 & 46.26 \\
+    B2 & 53.05 & 50.67 & 54.47 & 47.58 \\
+    P  & 53.30 & 49.26 & 45.92 & 41.10 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
-The proposed audit cannot prove that every unmeasured cue is irrelevant, and
-its interventions cover only registered transformations that pass automated
-quality gates. Metadata availability differs by corpus, so the partial analyses
-must report which controls are present rather than implying uniform adjustment.
-Exact corpus--class coverage and the held-out bootstrap cluster context are
-preserved in the accompanying hash-bound reproducibility material.
-Published score artifacts broaden architecture coverage but do not replace
-access to all model internals. The conditional mitigation can establish only a
-bounded robustness result under the registered splits and transformations, not
-universal safety against new generators or post-processing pipelines.
+The result should not be confused with a strong absolute detector. P remains
+at 47.07\% EER on SONAR and 42.98\% on ArAD. Further, the decision concerns a
+predeclared four-seed ensemble: individual-seed macro EER varies from 41.10\%
+to 53.30\% for P. The trial-bootstrap intervals do not resample source voices,
+training seeds, or a new random-pair draw. We therefore interpret the result
+as controlled evidence that documented same-item pairing matters beyond the
+random-pair margin in this protocol, rather than evidence that linguistic
+content has been causally removed from a representation.
 
-The H1 matrix now contains two held-out corpora, which expose why a repeated
-discovery direction alone is insufficient: the frozen
-Spectra-AASIST/full-waveform/spoof crest candidate is null after
-adjustment in ASVspoof5. The 19 registry-wide associations are descriptive
-screen results, so they neither identify a causal mechanism nor authorize
-post-hoc waveform transformations. The H2 crest run was frozen before those
-confirmation outcomes, but three of its four arms fail the 90\% retention gate
-before detector scoring. It therefore supplies no paired-sensitivity estimate.
+\section{Protocol checks and scope}
+\label{sec:scope}
+
+The comparison has four deliberate safeguards. First, B1, B2, and P share the
+complete matched-only source pool, so P is not given extra examples or an
+easier class mix. Second, B2 reuses every P spoof endpoint, the rank-edge
+count, the selected $\lambda$, and the split/language/source/generator
+marginals; it changes the bona-fide partner from same-group to different-group.
+Third, the public checkpoint is excluded and each result is
+from a fresh initialization, avoiding undeclared pretraining. Fourth, the
+source checkpoint ledger is complete before either target is materialized;
+target records omit labels until all raw predictions are emitted. The evaluator
+also byte-verifies every copied target payload and rejects exact canonical
+source--target waveform duplicates. These checks do not prove that source and
+target have no speaker, text, or generator lineage in common, but they rule out
+the defined direct-content and selection failures.
+
+The result is not a generic claim for pairwise learning. B2 is sometimes worse
+than BCE (52.01\% versus 51.78\% macro EER), so the observed gain is not
+explained by adding Eq.~\eqref{eq:rank} alone. Nor is it a claim that P is the
+best anti-spoofing model: the absolute EERs remain high. The appropriate
+interpretation is a controlled interaction in one source/architecture/target
+configuration: documented natural--synthetic pairing provides useful
+supervision beyond a random opposite-class partner under the fixed protocol.
+
+For reproducibility, the public lab260ru GitHub organization hosts repository
+``icassp\_antispoofing'' at immutable tag ``h9pcr-d1.'' It contains the source
+code, frozen protocol, compact ledgers, and result note under the paired-
+counterfactual experiment directory. The release records source pairing/
+exclusion and selection ledgers, checkpoint hashes, separate target record/
+label manifests, raw-prediction hash, metrics, seed metrics, bootstrap draws,
+and a decision record; source and target audio remain under their original
+dataset licenses. The figure reads only four hash-pinned compact terminal
+artifacts. These materials make the result auditable but do not turn the
+completed targets into a tuning set for a future extension.
+
+\section{Discussion and limitations}
+\label{sec:discussion}
+
+The B2 result is informative: adding a rank loss alone does not reproduce P,
+despite its matched edge count and strata. This pattern is consistent with the
+value of pairing natural and synthetic versions of the documented source item.
+However, the filename-derived content key is not a transcript-level proof of
+semantic equivalence, and the experiment does not measure which representation
+attribute changes. It uses one compact architecture, one source dataset, two
+fixed targets, and a four-seed ensemble. The weak absolute EER and seed
+heterogeneity limit deployment claims. A new target or architecture replication
+must be independently predeclared; it cannot tune the completed protocol.
 
 \section{Conclusion}
 
-We present a reproducible association-portability audit and a path toward a
-future test of detector sensitivity: exact artifact joins, within-class adjusted
-associations, quality-gated paired interventions, and a conditional robustness
-test. Five corpora show that the exploratory, discovery-frozen
-Spectra-AASIST/full-waveform/spoof crest-factor direction does not survive the
-registered portability condition. The result also exposes
-a broader association atlas without converting it into post-hoc interventions.
-The pre-frozen crest transformations fail their own quality gate before score
-measurement. The paper therefore makes no causal feature-reliance claim.
+Same-item pair ranking lowers the locked two-target transfer EER of a fresh
+compact anti-spoofing detector relative to both same-pool BCE and an equal-edge
+random-pair ranking control. The result is supported by a source-only selection
+chain, target-label firewall, zero exact waveform collisions, and
+ensemble-conditional paired trial-bootstrap intervals. It motivates further
+independently frozen replications, not a claim of universal robustness or a
+causal linguistic-content mechanism.
 
 \clearpage
 \bibliographystyle{template/ICASSP2026/IEEEbib}

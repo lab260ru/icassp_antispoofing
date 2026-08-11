@@ -133,23 +133,22 @@ threshold, sample, transform, scorer, feature, or model after seeing results.
   approved but is not a main-paper figure; read
   `experiments/h7_feature_transfer/results/h7_analysis_001/H7_SUPPLEMENTARY_FIGURE_001.md`.
 - **Paper handoff:** `paper/main.tex` and `paper/build/main.pdf` are the
-  current readable named-author ICASSP-2026-template working draft. Its
-  reviewed Figure 1 v2 directly displays the frozen H1 crest slice and the
-  one-corpus H2 quality stop from eight hash-pinned inputs; read
-  `paper/figures/FIGURE_CREST_EVIDENCE_BOUNDARY_MAIN.md` and
-  `paper/reviews/codex_main_figure_20260810/`. The local preflight passes
-  (four technical US-letter pages, references-only fifth page, Table 1 and
-  reference landmarks, embedded fonts) and the full test suite passes 149.
-  H5, H6, and S1 remain supplementary-only unless a new submission-package
-  decision is recorded.
+  current readable named-author ICASSP-2026-template H9 working draft. Its
+  Figure 1 displays the hash-pinned P/B1/B2 terminal EER comparison; read
+  `paper/figures/FIGURE_H9_PCR_TERMINAL.md` and the H9 terminal result note.
+  The local preflight passes with four technical US-letter pages, a
+  references-only fifth page, Table 1 on page 2, and embedded fonts. The
+  earlier H1/H2/H5/H6/S1 materials remain archival/supplementary only and must
+  not be blended into H9.
   **Every `paper/main.tex` edit must immediately run** `cd paper && tectonic
   --outdir build main.tex` **and commit the refreshed `paper/build/main.pdf`
   in the same paper change.**
-- **Delivery and resume:** `origin/research/icassp-signal-audit` has been
-  pushed through the deadline-handoff verification checkpoint (`088d293`)
-  and the last Telegram milestone is message ID 147, with a redacted receipt in
-  `to_human/TELEGRAM_DELIVERY_LOG_20260810.md`. Use `git log` and
-  `git status --branch` to confirm the exact remote/local head before resuming.
+- **Delivery and resume:** The last delivered Telegram milestone is message ID
+  154, with a redacted receipt in `to_human/TELEGRAM_DELIVERY_LOG_20260810.md`.
+  The H9 paper handoff is tagged `h9pcr-d1` and pushed to
+  `origin/research/icassp-signal-audit`; use `git log`, `git tag --contains
+  HEAD`, and `git status --branch` to confirm the exact remote/local head
+  before resuming.
   Never stage the
   user-provided `ICASSP2026_Paper_Templates.zip` or any `.env` file. No active
   training, scoring, ASR, or download job is expected; check before assuming
