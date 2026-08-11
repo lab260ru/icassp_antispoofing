@@ -46,6 +46,7 @@ H10_CDADD_CARD_URL = (
 H9_FROZEN_CHECKPOINT_LEDGER_SHA256 = "3e0530e2b850cbb08329d14a8982a7448a319a4a30e75ee2d51dc4ecb7f2325d"
 H9_PLAN_PATH = Path("experiments/h9_paired_counterfactual/PLAN.md")
 H9_DATA_CONTRACT_PATH = Path("experiments/h9_paired_counterfactual/DATA.md")
+H10_PROTOCOL_PATH = Path("experiments/future_directions/H10_CDADD_EXTERNAL_REPLICATION_PROTOCOL.md")
 H10_TARGET_MATERIALIZATION_VERSION = "h10_cdadd_target_materialization_v1"
 
 TARGET_RECORD_COLUMNS: tuple[str, ...] = (
@@ -131,6 +132,23 @@ def _validate_h9_source_ledger(path: str | Path) -> object:
         plan_path=H9_PLAN_PATH,
         data_contract_path=H9_DATA_CONTRACT_PATH,
     )
+
+
+def locked_protocol_bindings() -> dict[str, dict[str, str]]:
+    """Hash the three fixed protocol documents before target materialization.
+
+    The H9 loader independently replays the H9 PLAN/DATA values while it
+    validates the source ledger.  Persisting the same hashes in H10 artifacts
+    makes the cross-study dependency explicit and gives the terminal evaluator
+    a second, direct provenance check.
+    """
+    bindings: dict[str, dict[str, str]] = {}
+    for name, path in (("h10_protocol", H10_PROTOCOL_PATH), ("h9_plan", H9_PLAN_PATH), ("h9_data", H9_DATA_CONTRACT_PATH)):
+        resolved = path.expanduser().resolve()
+        if not resolved.is_file():
+            raise FileNotFoundError(f"H10 locked {name.replace('_', ' ')} is unavailable: {resolved}")
+        bindings[name] = {"path": str(resolved), "sha256": sha256_file(resolved)}
+    return bindings
 
 
 def _raw_target_shards(raw_shard_dir: str | Path) -> list[Path]:
@@ -344,6 +362,7 @@ def materialize_h10_cdadd_target(
     # This must be first: no target directory, metadata-audit, shard schema,
     # row, audio, or label is opened before the immutable H9 source handoff.
     _source_ledger_validator(checkpoint_ledger)
+    protocol_bindings = locked_protocol_bindings()
     audit_path, audit_sha256, audit = _validate_metadata_audit(metadata_audit)
     shards = _raw_target_shards(raw_shard_dir)
     shard_audits = [_validate_target_shard_schema(shard) for shard in shards]
@@ -372,6 +391,15 @@ def materialize_h10_cdadd_target(
             "dataset": H10_CDADD_DATASET,
             "dataset_repository": H10_CDADD_REPOSITORY,
             "dataset_revision": H10_CDADD_REVISION,
+            "locked_protocols": protocol_bindings,
+            "target_construction": {
+                "all_audio_bearing_parquet_trials": True,
+                "target_subset": None,
+                "generator_stratum": None,
+                "path_based_exclusions": None,
+                "raw_shard_count": len(shard_audits),
+                "raw_trial_count": int(len(records)),
+            },
             "records_path": str((output / records_path.name).resolve()),
             "records_sha256": records_sha256_before_label_access,
             "labels": {"path": str((output / labels_path.name).resolve()), "sha256": sha256_file(labels_path)},
@@ -398,6 +426,15 @@ def materialize_h10_cdadd_target(
                 "checkpoint_ledger_sha256": H9_FROZEN_CHECKPOINT_LEDGER_SHA256,
                 "required_h9_checkpoint_ledger_sha256": H9_FROZEN_CHECKPOINT_LEDGER_SHA256,
                 "validated_before_target_access": True,
+            },
+            "locked_protocols": protocol_bindings,
+            "target_construction": {
+                "all_audio_bearing_parquet_trials": True,
+                "target_subset": None,
+                "generator_stratum": None,
+                "path_based_exclusions": None,
+                "raw_shard_count": len(shard_audits),
+                "raw_trial_count": int(len(records)),
             },
             "metadata_audit": {"path": str(audit_path), "sha256": audit_sha256, "card_sha256": audit["card_sha256"]},
             "raw_target_shards": shard_audits,

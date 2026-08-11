@@ -35,10 +35,12 @@ from src.h10_cdadd_target_materialize import (
     H9_FROZEN_CHECKPOINT_LEDGER_SHA256,
     H9_DATA_CONTRACT_PATH,
     H9_PLAN_PATH,
+    H10_PROTOCOL_PATH,
     TARGET_AUDIO_AUDIT_COLUMNS,
     TARGET_LABEL_COLUMNS,
     TARGET_RECORD_COLUMNS,
     _validate_h9_source_ledger,
+    locked_protocol_bindings,
 )
 from src.h9_odss_materialize import HDD_ROOT
 from src.h9_pcr_evaluation import EVALUATION_BATCH_SIZE, FrozenCheckpoint, FrozenCheckpointLedger, METHODS
@@ -177,6 +179,9 @@ def _validate_materialization_provenance(
         raise ValueError("H10 CD-ADD materialization provenance artifact kind drift")
     if provenance.get("version") != H10_TARGET_MATERIALIZATION_VERSION:
         raise ValueError("H10 CD-ADD materialization provenance version drift")
+    expected_protocols = locked_protocol_bindings()
+    if provenance.get("locked_protocols") != expected_protocols:
+        raise ValueError("H10 CD-ADD materialization H10/H9 protocol-hash binding drift")
     dataset = provenance.get("dataset")
     if not isinstance(dataset, Mapping):
         raise ValueError("H10 CD-ADD materialization provenance lacks dataset binding")
@@ -196,6 +201,15 @@ def _validate_materialization_provenance(
         raise ValueError("H10 CD-ADD materialization has a changed required H9 ledger hash")
     if source.get("validated_before_target_access") is not True:
         raise ValueError("H10 CD-ADD materialization lacks pre-target H9-ledger validation")
+    construction = provenance.get("target_construction")
+    if not isinstance(construction, Mapping):
+        raise ValueError("H10 CD-ADD materialization lacks all-trials target construction")
+    if construction.get("all_audio_bearing_parquet_trials") is not True:
+        raise ValueError("H10 CD-ADD target construction did not require all audio-bearing trials")
+    if any(construction.get(key) is not None for key in ("target_subset", "generator_stratum", "path_based_exclusions")):
+        raise ValueError("H10 CD-ADD materialization records an impermissible target subset/stratum/exclusion")
+    if construction.get("raw_trial_count") != n_records:
+        raise ValueError("H10 CD-ADD all-trials count disagrees with canonical records")
     metadata = provenance.get("metadata_audit")
     if not isinstance(metadata, Mapping):
         raise ValueError("H10 CD-ADD materialization lacks card/lineage audit binding")
@@ -259,6 +273,8 @@ def _validate_materialization_provenance(
         audited_rows += int(parquet.metadata.num_rows)
     if audited_rows != n_records:
         raise ValueError("H10 CD-ADD raw shard audits do not reconstruct canonical trial count")
+    if construction.get("raw_shard_count") != len(shard_audits):
+        raise ValueError("H10 CD-ADD all-trials raw-shard count disagrees with provenance")
 
 
 def load_h10_cdadd_target_manifest(path: str | Path) -> H10TargetManifest:
@@ -273,6 +289,15 @@ def load_h10_cdadd_target_manifest(path: str | Path) -> H10TargetManifest:
         raise ValueError("H10 CD-ADD target manifest revision drift")
     if manifest.get("target_labels_read") is not False or manifest.get("target_metrics_read") is not False:
         raise ValueError("H10 CD-ADD manifest was not created under the label firewall")
+    if manifest.get("locked_protocols") != locked_protocol_bindings():
+        raise ValueError("H10 CD-ADD manifest H10/H9 protocol-hash binding drift")
+    construction = manifest.get("target_construction")
+    if not isinstance(construction, Mapping):
+        raise ValueError("H10 CD-ADD manifest lacks all-trials target construction")
+    if construction.get("all_audio_bearing_parquet_trials") is not True:
+        raise ValueError("H10 CD-ADD manifest did not bind every audio-bearing trial")
+    if any(construction.get(key) is not None for key in ("target_subset", "generator_stratum", "path_based_exclusions")):
+        raise ValueError("H10 CD-ADD manifest records a prohibited target filter")
     records_path = _path_from(manifest.get("records_path"), description="CD-ADD target records")
     records_sha256 = _hash_matches(records_path, manifest.get("records_sha256"), description="CD-ADD target records")
     records = _read_table(records_path, description="CD-ADD target records")
@@ -310,6 +335,8 @@ def load_h10_cdadd_target_manifest(path: str | Path) -> H10TargetManifest:
         labels_sha256=labels_sha256,
         n_records=len(records),
     )
+    if construction.get("raw_trial_count") != len(records):
+        raise ValueError("H10 CD-ADD manifest all-trials count disagrees with canonical records")
     return H10TargetManifest(
         manifest_path=manifest_path,
         manifest_sha256=sha256_file(manifest_path),
@@ -689,6 +716,14 @@ def terminal_evaluate_h10_cdadd(
         "evaluation_device": device,
         "evaluation_batch_size": EVALUATION_BATCH_SIZE,
         "evaluation_precision": "cuda_bfloat16_autocast",
+        "locked_protocols": locked_protocol_bindings(),
+        "target_construction": {
+            "all_audio_bearing_parquet_trials": True,
+            "target_subset": None,
+            "generator_stratum": None,
+            "path_based_exclusions": None,
+            "raw_trial_count": int(len(target.records)),
+        },
         "target_manifest": {
             "path": str(target.manifest_path),
             "sha256": target.manifest_sha256,

@@ -35,6 +35,12 @@ pre-target, score-free object with this required shape:
 }
 ```
 
+Each manifest, materialization provenance, and terminal provenance also records
+the SHA-256 of this locked H10 protocol plus the frozen H9 `PLAN.md` and
+`DATA.md`. It declares a literal all-audio-bearing-Parquet-trials contract:
+no target subset, generator stratum, or path-based exclusion is representable
+in the command or in a valid manifest.
+
 The values are statements from the dedicated card/lineage audit; the adapter
 does not infer them from a zero waveform collision. Any known or unresolved
 ODSS recording-source, speaker-list, or released-item overlap blocks target

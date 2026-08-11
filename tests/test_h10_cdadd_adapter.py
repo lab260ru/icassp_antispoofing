@@ -181,6 +181,15 @@ def test_h10_materializer_writes_two_separate_synthetic_artifacts(tmp_path: Path
     assert records["sample_id"].tolist() == labels["sample_id"].tolist()
     assert set(labels["label"]) == {0, 1}
     assert manifest["target_labels_read"] is False
+    assert set(manifest["locked_protocols"]) == {"h10_protocol", "h9_plan", "h9_data"}
+    assert manifest["target_construction"] == {
+        "all_audio_bearing_parquet_trials": True,
+        "target_subset": None,
+        "generator_stratum": None,
+        "path_based_exclusions": None,
+        "raw_shard_count": 1,
+        "raw_trial_count": 4,
+    }
     assert provenance["access_boundary"]["record_phase_opened_columns"] == ["path", "audio"]
     assert provenance["access_boundary"]["record_phase_raw_label_values_read"] is False
     assert provenance["access_boundary"]["label_artifact_phase_opened_columns"] == ["path", "label"]
@@ -261,6 +270,8 @@ def test_h10_terminal_evaluator_writes_complete_label_free_matrix_before_labels(
     assert len(bootstrap) == 2_000
     assert provenance["target_labels_read"] is True
     assert provenance["source_target_canonical_fingerprint_collision_count"] == 0
+    assert set(provenance["locked_protocols"]) == {"h10_protocol", "h9_plan", "h9_data"}
+    assert provenance["target_construction"]["all_audio_bearing_parquet_trials"] is True
     assert decision["rules"]["complete_label_free_prediction_matrix_written_before_labels"] is True
 
 
