@@ -587,3 +587,15 @@
   single-anonymous preflight confirms five US-letter pages, Table 1 on page 2,
   References on page 5, and 13 embedded fonts. The only Tectonic messages are
   non-fatal underfull-box/bibliography rerun warnings.
+
+## 2026-08-11 - H10 fresh-target replication decision
+
+- Decision: Freeze CD-ADD as one new external target for a source-frozen H9
+  checkpoint replication, rather than treat the faster LibriSeVoc option as
+  independent after its earlier H8 score-panel exposure.
+- Tradeoff: A fresh AASIST plus two-target replication would be stronger but
+  cannot be honestly completed in this bounded window; H10 tests a new target
+  only and cannot support an architecture-general claim.
+- Boundary: The protocol precedes target acquisition. It reuses every sealed
+  H9 source decision, requires a two-pass label firewall and all-12-checkpoint
+  terminal call, and has no retuning path after the result.
