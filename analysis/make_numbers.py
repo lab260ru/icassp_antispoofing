@@ -179,6 +179,15 @@ def main() -> None:
             macros[f"SatRep{tag}"] = fmt(v["repeated"]["sat"], 0)
             macros[f"SatCtl{tag}"] = fmt(v["control"]["sat"], 0)
 
+    # ---- Lemma B coverage --------------------------------------------------
+    # Text attention is not separable in every architecture, so the dilution
+    # evidence covers a subset of the panel. State the subset rather than
+    # implying panel-wide support.
+    if len(state) and "attn_block_entropy" in state.columns:
+        have = set(state[state.attn_block_entropy.notna()].model.unique()) - ABLATIONS
+        macros["LemBModels"] = WORDS.get(len(have), str(len(have)))
+        macros["LemBModelsNum"] = str(len(have))
+
     # ---- count error: the behavioural measurement (CTC judge) -------------
     ce_path = Path("data/results/count_error.json")
     if ce_path.exists():

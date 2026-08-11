@@ -52,6 +52,17 @@ PANEL = [
     ModelSpec("xtts2norp", "coqui/XTTS-v2", "xtts", "0.4B", "coqui",
               21.53, 24000, "every3", True,
               "XTTS-v2 with repetition_penalty=1.0 (ablation)"),
+    # Mitigation sweep. The repetition penalty is the standard decoding-rule
+    # remedy for this failure, and the paper argues such remedies treat a
+    # symptom. Sweeping it on one model turns that from an assertion into a
+    # measurement: if the count deficit is roughly flat in the penalty, the
+    # lever is not acting on the quantity that governs the horizon.
+    ModelSpec("xtts2rp2", "coqui/XTTS-v2", "xtts", "0.4B", "coqui",
+              21.53, 24000, "every3", False, "XTTS-v2, repetition_penalty=2.0"),
+    ModelSpec("xtts2rp3", "coqui/XTTS-v2", "xtts", "0.4B", "coqui",
+              21.53, 24000, "every3", False, "XTTS-v2, repetition_penalty=3.0"),
+    ModelSpec("xtts2rp8", "coqui/XTTS-v2", "xtts", "0.4B", "coqui",
+              21.53, 24000, "every3", False, "XTTS-v2, repetition_penalty=8.0"),
 ]
 
 BY_KEY = {m.key: m for m in PANEL}

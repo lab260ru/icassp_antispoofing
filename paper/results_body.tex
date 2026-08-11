@@ -34,8 +34,7 @@ than as a failed prediction. The effect is present in the other
 \ErrNSep{} of \ErrNModels{} panel checkpoints with intervals disjoint from their
 own controls.
 
-The repeated unit can be a word, a sentence, or a place-value pattern; all three
-behave alike.
+The repeated unit can be a word, a sentence, or a place-value pattern alike.
 
 \subsection{The limit is periodicity, not length}
 
@@ -102,8 +101,11 @@ grows with $k$, confounding dilution with sequence growth. Renormalised over the
 occurrence columns, the profile entropy grows with $\log k$ at slope
 \BlockEntropySlope{}, the implied spread is $\delta \le 0.06$ nats across the
 ladder, and no occurrence --- not even the most attended --- captures more than
-$1.9/k$ of the block's mass. Attention over the repeated spans is within a few
-percent of uniform, which is what Assumption~\ref{ass:periodic} needs.
+$1.9/k$ of the block's mass: attention over the repeated spans is within a few
+percent of uniform, which is what Assumption~\ref{ass:periodic} needs. This
+covers the \LemBModels{} checkpoints with separable text attention; Qwen3-TTS
+sums text and acoustic embeddings per position, so no attention column belongs to
+the text and the lemma cannot be checked there.
 
 \subsection{Two things we could not establish}
 \label{sec:negative}
