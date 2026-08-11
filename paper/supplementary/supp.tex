@@ -1,0 +1,1885 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{array}
+
+\tolerance=9999
+\emergencystretch=3em
+\hbadness=10000
+\raggedbottom
+
+\lstset{
+  basicstyle=\ttfamily\footnotesize,
+  breaklines=true,
+  breakatwhitespace=false,
+  columns=fullflexible,
+  keepspaces=true,
+  mathescape=true,
+  frame=single,
+  framesep=4pt,
+  xleftmargin=2pt,
+  xrightmargin=2pt,
+  showstringspaces=false,
+  tabsize=2,
+}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{assumption}{Assumption}
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+
+\newcommand{\qhat}{\ensuremath{\hat q}}
+
+\title{Supplementary Material\\[2pt]
+\large Counting Collapse: A Formally Verified Attractor Theory of\\
+Repetition Hallucination in Autoregressive Text-to-Speech}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\vspace{-2.5em}
+\begin{center}
+\emph{This document accompanies the 4-page ICASSP 2026 submission and is
+self-contained. It reproduces the formal artifact in full, states precisely
+what it does and does not certify, documents the benchmark and measurement
+protocol down to the level a re-implementer needs, and reports the negative
+result of Section~4.4 of the main paper in the detail it deserves. Every claim
+below is traceable to a specific file in the project repository, cited inline
+by path.}
+\end{center}
+
+\tableofcontents
+
+% ============================================================
+\section{The formal development in full}
+\label{sec:s1}
+
+The formal artifact lives at \texttt{lean/SpectralTTS/} and is organised into
+two files: \texttt{SpectralTTS/CountingCollapse.lean} (Theorem~A and its
+supporting lemmas) and \texttt{SpectralTTS/AttentionDilution.lean} (Lemma~B).
+Both import all of \texttt{Mathlib} and are checked against
+\texttt{leanprover/lean4:v4.34.0-rc1} with \texttt{mathlib} pinned at the same
+tag (\texttt{lean/SpectralTTS/lean-toolchain},
+\texttt{lean/SpectralTTS/lakefile.toml}).
+
+\paragraph{Typesetting convention.} The listings below reproduce the two Lean
+source files exactly: every identifier, every tactic, every line of code and
+every word of every doc-comment is preserved verbatim and in its original
+order. The one substitution made for typesetting is that Lean's Unicode
+mathematical notation is rendered through the corresponding standard \LaTeX{}
+math macro, because the base monospace font used in this document does not
+contain those glyphs and raw Unicode would silently disappear from the printed
+page (we checked this directly before committing to this approach). Concretely,
+in the listings that follow: $\forall$ stands for Lean's universal quantifier,
+$\exists$ for the existential quantifier, $\le$ for the order relation,
+$\to$ for the function-space/implication arrow, $\in$ for set/type
+membership, $\sum$ for the finite-sum big operator, $\mathbb{R}$ and
+$\mathbb{N}$ for the real and natural number types, $\leftarrow$ for Lean's
+``rewrite backwards'' arrow, and $\langle\cdot,\cdot\rangle$ for Lean's
+anonymous-constructor brackets; $\delta$ and $\epsilon$ stand for the
+one-letter Greek identifiers used throughout both files. Separately,
+mathlib's naming convention of suffixing a lemma name with a subscript zero
+to mark a positivity/non-degeneracy side condition (rendered here, e.g., as
+\texttt{div\_le\_iff0}) is printed with a plain digit rather than a Unicode
+subscript, for the same font reason. No token is added, removed, or
+reordered.
+
+\subsection{\texttt{CountingCollapse.lean}}
+\label{sec:s1-counting}
+
+The file's own header states the scope precisely; we reproduce it first
+because it is the most honest single paragraph in the whole artifact:
+
+\begin{lstlisting}
+/-
+Counting Collapse in Autoregressive Decoders
+============================================
+
+Formal core of the paper "Counting Collapse: A Formally Verified Attractor
+Theory of Repetition Hallucination in Autoregressive TTS".
+
+Setting.  An autoregressive decoder generating speech for a text prompt that
+contains a phrase repeated `k` times passes through a sequence of *repetition
+boundary* states `s_0, F s_0, F^2 s_0, ...`, where `F : S $\to$ S` is the composite update
+the decoder applies over one full repetition of the phrase.  `S` is the decoder
+state space (in practice $\mathbb{R}$^d with the Euclidean metric, which is a nonempty
+complete metric space).
+
+The modelling assumption is that `F` is the *same* map at every boundary.  This
+is what Lemma B (`AttentionDilution.lean`) buys us: softmax attention over `k`
+near-identical repeated text spans cannot tell occurrence `j` from occurrence
+`j'`, so the conditioning the decoder receives at each boundary is the same up
+to `O($\delta$ + 1/k)`.
+
+What is proved here.  *If* `F` is a contraction (`ContractingWith q F`, i.e.
+`q < 1` and `F` is `q`-Lipschitz) then the number of repetitions that any
+Lipschitz readout can distinguish is finite and bounded explicitly by
+`log(2LC/margin) / log(1/q)`.
+
+What is NOT proved here -- and must not be claimed.  That a real transformer
+decoder satisfies the contraction hypothesis.  `q` is an empirical quantity: the
+accompanying experiments estimate it as `q$\hat{\ }$` per model from the observed decay of
+boundary-state distances.  The Lean artifact certifies the *implication*, not
+the premise.
+-/
+import Mathlib
+
+namespace SpectralTTS
+
+open Filter Function
+
+variable {S : Type*} [MetricSpace S] [CompleteSpace S] [Nonempty S]
+variable {F : S $\to$ S} {q : NNReal}
+\end{lstlisting}
+
+Every theorem below is stated for a fixed but arbitrary nonempty complete
+metric space $S$ (the decoder's hidden-state space, in practice
+$\mathbb{R}^d$ with the Euclidean metric) and a fixed map $F : S \to S$ (one
+full repetition's worth of decoder update) with contraction modulus $q$. These
+are Lean \texttt{variable} declarations, so every subsequent theorem is
+implicitly universally quantified over them.
+
+\subsubsection*{\texttt{orbitRadius} and \texttt{dist\_iterate\_fixedPoint\_le}}
+
+\begin{lstlisting}
+/-- The a-priori radius of the boundary-state orbit: every iterate of `F`
+starting at `s` stays within `orbitRadius F s q * q ^ n` of the fixed point.
+Writing it as a named quantity keeps the later bounds readable; it is the `C` of
+the paper. -/
+noncomputable def orbitRadius (F : S $\to$ S) (s : S) (q : NNReal) : $\mathbb{R}$ :=
+  dist s (F s) / (1 - q)
+
+theorem orbitRadius_nonneg (hF : ContractingWith q F) (s : S) :
+    0 $\le$ orbitRadius F s q :=
+  div_nonneg dist_nonneg hF.one_sub_K_pos.le
+
+/-- **Theorem A(i) -- geometric convergence at repetition boundaries.**
+The state after `n` repetitions is within `C q^n` of a single fixed point: the
+decoder's record of how many repetitions it has produced decays geometrically.
+This is `ContractingWith.apriori_dist_iterate_fixedPoint_le` restated in terms of
+`orbitRadius`. -/
+theorem dist_iterate_fixedPoint_le (hF : ContractingWith q F) (s : S) (n : $\mathbb{N}$) :
+    dist (F^[n] s) (ContractingWith.fixedPoint F hF) $\le$ orbitRadius F s q * (q : $\mathbb{R}$) ^ n := by
+  have h := hF.apriori_dist_iterate_fixedPoint_le s n
+  calc dist (F^[n] s) (ContractingWith.fixedPoint F hF)
+      $\le$ dist s (F s) * (q : $\mathbb{R}$) ^ n / (1 - q) := h
+    _ = orbitRadius F s q * (q : $\mathbb{R}$) ^ n := by unfold orbitRadius; ring
+\end{lstlisting}
+
+\texttt{orbitRadius} is a bookkeeping device, not new mathematics: it is
+literally $C := d(s, Fs)/(1-q)$, the quantity the paper's Theorem~1 calls the
+orbit scale. \texttt{orbitRadius\_nonneg} is immediate from $q<1$ (so
+$1-q>0$) and $d\ge 0$.
+
+\texttt{dist\_iterate\_fixedPoint\_le} is Theorem~A(i). It is \emph{not}
+proved from scratch: mathlib already contains the Banach fixed-point theorem
+and, with it, an a-priori error estimate for Picard iteration,
+\texttt{ContractingWith.apriori\_dist\_iterate\_fixedPoint\_le}. The classical
+argument behind that estimate is the standard telescoping bound: since $F$ is
+a $q$-contraction, consecutive iterates satisfy $d(F^i s, F^{i+1}s) \le q^i
+d(s,Fs)$, and summing the triangle inequality over $i \ge n$ against the
+(unique, mathlib-constructed) fixed point $s^\ast$ gives
+$d(F^n s, s^\ast) \le \sum_{i \ge n} q^i\, d(s,Fs) = \frac{q^n}{1-q}\,d(s,Fs)$.
+The Lean proof here does no more than \texttt{calc}-rewrite that existing
+lemma through the definition of \texttt{orbitRadius}, by \texttt{ring}. The
+mathematical content is entirely mathlib's; the paper's contribution at this
+step is choosing the right restatement for what follows.
+
+\subsubsection*{\texttt{dist\_iterate\_iterate\_le}}
+
+\begin{lstlisting}
+/-- Two repetition counts are separated by at most `C (q^m + q^n)` in state
+space.  Both orbits are pinned to the same fixed point, so their mutual distance
+inherits the geometric decay. -/
+theorem dist_iterate_iterate_le (hF : ContractingWith q F) (s : S) (m n : $\mathbb{N}$) :
+    dist (F^[m] s) (F^[n] s) $\le$ orbitRadius F s q * ((q : $\mathbb{R}$) ^ m + (q : $\mathbb{R}$) ^ n) := by
+  have hm := dist_iterate_fixedPoint_le hF s m
+  have hn := dist_iterate_fixedPoint_le hF s n
+  calc dist (F^[m] s) (F^[n] s)
+      $\le$ dist (F^[m] s) (ContractingWith.fixedPoint F hF)
+        + dist (ContractingWith.fixedPoint F hF) (F^[n] s) := dist_triangle _ _ _
+    _ = dist (F^[m] s) (ContractingWith.fixedPoint F hF)
+        + dist (F^[n] s) (ContractingWith.fixedPoint F hF) := by rw [dist_comm _ (F^[n] s)]
+    _ $\le$ orbitRadius F s q * (q : $\mathbb{R}$) ^ m + orbitRadius F s q * (q : $\mathbb{R}$) ^ n := by gcongr
+    _ = orbitRadius F s q * ((q : $\mathbb{R}$) ^ m + (q : $\mathbb{R}$) ^ n) := by ring
+\end{lstlisting}
+
+This is the triangle inequality routed through the shared fixed point:
+$d(F^m s, F^n s) \le d(F^m s, s^\ast) + d(s^\ast, F^n s) \le Cq^m + Cq^n$, each
+half supplied by the previous theorem. \texttt{gcongr} (``generalized
+congruence'') is a mathlib tactic that discharges a monotone combination of
+already-proved inequalities automatically; here it combines the two
+$\le$-facts term by term. This is the state-space statement behind the paper's
+claim that any two repetition counts land within $C(q^m+q^n)$ of each other --
+it does not yet say anything about a readout.
+
+\subsubsection*{\texttt{exists\_indistinguishable}}
+
+\begin{lstlisting}
+/-- **Theorem A(ii) -- eventual indistinguishability.**
+For any tolerance `$\epsilon$` there is a horizon `N` beyond which *all* repetition counts
+produce states within `$\epsilon$` of one another.  No amount of additional repetition
+creates new state-space structure. -/
+theorem exists_indistinguishable (hF : ContractingWith q F) (s : S) {$\epsilon$ : $\mathbb{R}$} (h$\epsilon$ : 0 < $\epsilon$) :
+    $\exists$ N : $\mathbb{N}$, $\forall$ m n : $\mathbb{N}$, N $\le$ m $\to$ N $\le$ n $\to$ dist (F^[m] s) (F^[n] s) < $\epsilon$ := by
+  set C := orbitRadius F s q with hC
+  have hC0 : 0 $\le$ C := orbitRadius_nonneg hF s
+  have hden : 0 < 2 * C + 1 := by linarith
+  obtain $\langle$N, hN$\rangle$ : $\exists$ N : $\mathbb{N}$, (q : $\mathbb{R}$) ^ N < $\epsilon$ / (2 * C + 1) :=
+    exists_pow_lt_of_lt_one (by positivity) (by exact_mod_cast hF.1)
+  refine $\langle$N, fun m n hm hn => ?_$\rangle$
+  have hq0 : (0 : $\mathbb{R}$) $\le$ (q : $\mathbb{R}$) := q.coe_nonneg
+  have hq1 : (q : $\mathbb{R}$) $\le$ 1 := le_of_lt (by exact_mod_cast hF.1)
+  have hpm : (q : $\mathbb{R}$) ^ m $\le$ (q : $\mathbb{R}$) ^ N := pow_le_pow_of_le_one hq0 hq1 hm
+  have hpn : (q : $\mathbb{R}$) ^ n $\le$ (q : $\mathbb{R}$) ^ N := pow_le_pow_of_le_one hq0 hq1 hn
+  have hbound := dist_iterate_iterate_le hF s m n
+  -- C (q^m + q^n)  $\le$  2C q^N  $\le$  2C $\epsilon$/(2C+1)  <  $\epsilon$
+  have h1 : C * ((q : $\mathbb{R}$) ^ m + (q : $\mathbb{R}$) ^ n) $\le$ 2 * C * (q : $\mathbb{R}$) ^ N := by
+    have hsum : (q : $\mathbb{R}$) ^ m + (q : $\mathbb{R}$) ^ n $\le$ 2 * (q : $\mathbb{R}$) ^ N := by linarith
+    calc C * ((q : $\mathbb{R}$) ^ m + (q : $\mathbb{R}$) ^ n)
+        $\le$ C * (2 * (q : $\mathbb{R}$) ^ N) := mul_le_mul_of_nonneg_left hsum hC0
+      _ = 2 * C * (q : $\mathbb{R}$) ^ N := by ring
+  have h2 : 2 * C * (q : $\mathbb{R}$) ^ N $\le$ 2 * C * ($\epsilon$ / (2 * C + 1)) :=
+    mul_le_mul_of_nonneg_left hN.le (by linarith)
+  have h3 : 2 * C * ($\epsilon$ / (2 * C + 1)) < $\epsilon$ := by
+    have ht : (0 : $\mathbb{R}$) < $\epsilon$ / (2 * C + 1) := div_pos h$\epsilon$ hden
+    have heq : $\epsilon$ / (2 * C + 1) * (2 * C + 1) = $\epsilon$ := div_mul_cancel0 $\epsilon$ hden.ne'
+    nlinarith [ht, heq]
+  linarith [hbound, h1, h2, h3]
+\end{lstlisting}
+
+This is Theorem~A(ii). Read operationally, it says: fix any tolerance
+$\epsilon>0$; then there is a step count $N$ (a horizon) past which \emph{every
+pair} of repetition counts $m,n \ge N$ produces states within $\epsilon$ of
+each other. It is the formal counterpart of ``the states the decoder visits
+stop being mutually distinguishable,'' the empirical claim tested by the
+capacity-gain measurement in the main paper's Section~4.3.
+
+The proof strategy: because $q<1$, $q^N \to 0$, so mathlib's
+\texttt{exists\_pow\_lt\_of\_lt\_one} supplies an $N$ with $q^N$ below any
+target threshold; we choose the threshold $\epsilon/(2C+1)$ (the ``$+1$'' is
+there purely to keep the denominator positive even when $C=0$, i.e.\ when $s$
+already \emph{is} the fixed point). For $m,n\ge N$, monotonicity of $q^{(\cdot)}$
+on $[0,1]$ gives $q^m,q^n \le q^N$, so by
+\texttt{dist\_iterate\_iterate\_le}, $d(F^m s,F^n s) \le C(q^m+q^n) \le 2Cq^N$.
+The chain $2Cq^N \le 2C\cdot\frac{\epsilon}{2C+1} < \epsilon$ (the last step
+because $\frac{2C}{2C+1}<1$) closes the proof by \texttt{linarith}/\texttt{nlinarith}
+on the accumulated facts. Nothing here is specific to attention or to
+speech; it is a direct corollary of contraction.
+
+\subsubsection*{\texttt{readout\_gap\_le}}
+
+\begin{lstlisting}
+/-- **Theorem A(iii) -- no Lipschitz readout can count.**
+Any `L`-Lipschitz map `g : S $\to$ $\mathbb{R}$` -- the model's own stop-token logit, a duration
+predictor, or any linear probe -- sees repetition counts `m` and `n` collapsed to
+within `L C (q^m + q^n)`. -/
+theorem readout_gap_le (hF : ContractingWith q F) {L : NNReal} {g : S $\to$ $\mathbb{R}$}
+    (hg : LipschitzWith L g) (s : S) (m n : $\mathbb{N}$) :
+    |g (F^[m] s) - g (F^[n] s)| $\le$ (L : $\mathbb{R}$) * (orbitRadius F s q * ((q : $\mathbb{R}$) ^ m + (q : $\mathbb{R}$) ^ n)) := by
+  have h1 : |g (F^[m] s) - g (F^[n] s)| = dist (g (F^[m] s)) (g (F^[n] s)) :=
+    (Real.dist_eq _ _).symm
+  rw [h1]
+  calc dist (g (F^[m] s)) (g (F^[n] s))
+      $\le$ (L : $\mathbb{R}$) * dist (F^[m] s) (F^[n] s) := hg.dist_le_mul _ _
+    _ $\le$ (L : $\mathbb{R}$) * (orbitRadius F s q * ((q : $\mathbb{R}$) ^ m + (q : $\mathbb{R}$) ^ n)) := by
+        exact mul_le_mul_of_nonneg_left (dist_iterate_iterate_le hF s m n) L.coe_nonneg
+\end{lstlisting}
+
+This is the step that turns a statement about the \emph{state space} into a
+statement about \emph{anything a downstream mechanism can compute from the
+state}. $g$ is an arbitrary $L$-Lipschitz map from $S$ to $\mathbb{R}$: it
+could be the model's own stop-token logit, a linear counting probe trained
+after the fact, a duration predictor, or any other bounded-sensitivity
+read-out. The proof is two lines: rewrite $|g(a)-g(b)|$ as
+$\mathrm{dist}(g(a),g(b))$ on $\mathbb{R}$ (\texttt{Real.dist\_eq}), bound it
+by $L\cdot d(a,b)$ (the definition of Lipschitz), then substitute the state-space
+bound already proved. No property of $g$ beyond its Lipschitz constant is
+used, which is exactly why the theorem applies uniformly to greedy decoding,
+sampling, and beam search alike -- the readout argument never inspects how a
+token was chosen, only how sensitive a fixed function of the state can be.
+
+\subsubsection*{\texttt{counting\_margin\_le}}
+
+\begin{lstlisting}
+/-- **Theorem A(iv) -- the counting horizon is finite (algebraic form).**
+If a readout still resolves two repetition counts `m $\le$ n` with decision margin
+`margin`, then `q ^ m` cannot have decayed below `margin / (2 L C)`.  Since
+`q < 1`, this bounds `m`: only finitely many repetition counts admit a decision
+margin at all. -/
+theorem counting_margin_le (hF : ContractingWith q F) {L : NNReal} {g : S $\to$ $\mathbb{R}$}
+    (hg : LipschitzWith L g) (s : S) {margin : $\mathbb{R}$} {m n : $\mathbb{N}$} (hmn : m $\le$ n)
+    (hsep : margin $\le$ |g (F^[m] s) - g (F^[n] s)|) :
+    margin $\le$ 2 * (L : $\mathbb{R}$) * orbitRadius F s q * (q : $\mathbb{R}$) ^ m := by
+  have hq0 : (0 : $\mathbb{R}$) $\le$ (q : $\mathbb{R}$) := q.coe_nonneg
+  have hq1 : (q : $\mathbb{R}$) $\le$ 1 := le_of_lt (by exact_mod_cast hF.1)
+  have hpn : (q : $\mathbb{R}$) ^ n $\le$ (q : $\mathbb{R}$) ^ m := pow_le_pow_of_le_one hq0 hq1 hmn
+  have hgap := readout_gap_le hF hg s m n
+  have hC0 : 0 $\le$ orbitRadius F s q := orbitRadius_nonneg hF s
+  have hstep : (L : $\mathbb{R}$) * (orbitRadius F s q * ((q : $\mathbb{R}$) ^ m + (q : $\mathbb{R}$) ^ n))
+      $\le$ 2 * (L : $\mathbb{R}$) * orbitRadius F s q * (q : $\mathbb{R}$) ^ m := by
+    have hsum : (q : $\mathbb{R}$) ^ m + (q : $\mathbb{R}$) ^ n $\le$ 2 * (q : $\mathbb{R}$) ^ m := by linarith
+    have hinner : orbitRadius F s q * ((q : $\mathbb{R}$) ^ m + (q : $\mathbb{R}$) ^ n)
+        $\le$ orbitRadius F s q * (2 * (q : $\mathbb{R}$) ^ m) := mul_le_mul_of_nonneg_left hsum hC0
+    calc (L : $\mathbb{R}$) * (orbitRadius F s q * ((q : $\mathbb{R}$) ^ m + (q : $\mathbb{R}$) ^ n))
+        $\le$ (L : $\mathbb{R}$) * (orbitRadius F s q * (2 * (q : $\mathbb{R}$) ^ m)) :=
+          mul_le_mul_of_nonneg_left hinner L.coe_nonneg
+      _ = 2 * (L : $\mathbb{R}$) * orbitRadius F s q * (q : $\mathbb{R}$) ^ m := by ring
+  linarith
+\end{lstlisting}
+
+This is the contrapositive step written out algebraically, before taking
+logarithms. Assume the readout \emph{does} separate counts $m\le n$ by at
+least \texttt{margin}. Since $m\le n$ and $0\le q\le 1$, $q^n\le q^m$, so
+$q^m+q^n \le 2q^m$; feeding this into \texttt{readout\_gap\_le}'s bound
+$LC(q^m+q^n)$ gives the tighter bound $2LCq^m$. Chaining
+$\texttt{margin} \le LC(q^m+q^n) \le 2LCq^m$ is exactly the statement proved.
+In words: whatever separation a Lipschitz readout manages to extract between
+counts $m$ and $n$, that separation is itself capped by a quantity that decays
+geometrically in the \emph{smaller} of the two counts alone -- which is the
+algebraic seed of the horizon bound.
+
+\subsubsection*{\texttt{le\_log\_div\_log\_of\_le\_pow}}
+
+\begin{lstlisting}
+/-- Real-arithmetic bridge: a geometric quantity bounded below is bounded in its
+exponent.  Used to turn `counting_margin_le` into an explicit horizon. -/
+theorem le_log_div_log_of_le_pow {r c : $\mathbb{R}$} (hr0 : 0 < r) (hr1 : r < 1) (hc : 0 < c)
+    {m : $\mathbb{N}$} (h : c $\le$ r ^ m) : (m : $\mathbb{R}$) $\le$ Real.log c / Real.log r := by
+  have hlogr : Real.log r < 0 := Real.log_neg hr0 hr1
+  have hlog : Real.log c $\le$ Real.log (r ^ m) := Real.log_le_log hc h
+  rw [Real.log_pow] at hlog
+  rw [le_div_iff_of_neg hlogr]
+  linarith [hlog]
+\end{lstlisting}
+
+A general-purpose real-analysis lemma with no reference to decoders, states,
+or contractions: if $0<r<1$, $0<c$, and $c \le r^m$, then
+$m \le \log c/\log r$. The subtlety, and the reason this needs its own lemma
+rather than a one-line \texttt{gcongr}, is the sign flip: because $0<r<1$,
+$\log r < 0$ (\texttt{Real.log\_neg}), so dividing the monotone consequence
+$\log c \le m\log r$ (from \texttt{Real.log\_le\_log} applied to $c\le r^m$,
+then \texttt{Real.log\_pow} to expand $\log(r^m)=m\log r$) by the
+\emph{negative} quantity $\log r$ reverses the inequality's direction --
+handled here by mathlib's \texttt{le\_div\_iff\_of\_neg}, which is precisely
+the division lemma for a negative denominator. This lemma is the generic
+engine that turns \texttt{counting\_margin\_le}'s algebraic inequality into an
+explicit bound on $m$ in the next theorem; note that \texttt{scripts/check\_lean.sh}'s
+axiom audit does not list this lemma by name (Section~\ref{sec:s1-audit}
+explains why that omission is harmless).
+
+\subsubsection*{\texttt{counting\_horizon}}
+
+\begin{lstlisting}
+/-- **Theorem A -- Counting Collapse (explicit horizon).**
+The headline statement.  Under contraction, a Lipschitz readout with decision
+margin `margin > 0` can separate the repetition count `m` from any larger count
+only while
+
+    m $\le$ log(margin / (2 L C)) / log q  =  log(2 L C / margin) / log(1 / q).
+
+Beyond that horizon the decoder is provably unable to tell how many repetitions
+it has already produced, so its continue/stop decision is decoupled from the
+count -- the failure mode observed empirically as looping or truncation. -/
+theorem counting_horizon (hF : ContractingWith q F) {L : NNReal} {g : S $\to$ $\mathbb{R}$}
+    (hg : LipschitzWith L g) (s : S) {margin : $\mathbb{R}$} {m n : $\mathbb{N}$}
+    (hq0 : (0 : $\mathbb{R}$) < (q : $\mathbb{R}$)) (hmargin : 0 < margin) (hmn : m $\le$ n)
+    (hsep : margin $\le$ |g (F^[m] s) - g (F^[n] s)|) :
+    (m : $\mathbb{R}$) $\le$ Real.log (margin / (2 * (L : $\mathbb{R}$) * orbitRadius F s q)) / Real.log (q : $\mathbb{R}$) := by
+  have hq1 : (q : $\mathbb{R}$) < 1 := by exact_mod_cast hF.1
+  have hbound := counting_margin_le hF hg s hmn hsep
+  have hC0 : 0 $\le$ orbitRadius F s q := orbitRadius_nonneg hF s
+  -- a nonzero decision margin forces the prefactor to be strictly positive
+  have hprefix : (0 : $\mathbb{R}$) $\le$ 2 * (L : $\mathbb{R}$) * orbitRadius F s q :=
+    mul_nonneg (mul_nonneg (by norm_num) L.coe_nonneg) hC0
+  have hpos : 0 < 2 * (L : $\mathbb{R}$) * orbitRadius F s q := by
+    rcases lt_or_eq_of_le hprefix with h | h
+    $\cdot$ exact h
+    $\cdot$ exfalso
+      rw [$\leftarrow$ h, zero_mul] at hbound
+      linarith
+  have hratio : margin / (2 * (L : $\mathbb{R}$) * orbitRadius F s q) $\le$ (q : $\mathbb{R}$) ^ m := by
+    rw [div_le_iff0 hpos]
+    calc margin $\le$ 2 * (L : $\mathbb{R}$) * orbitRadius F s q * (q : $\mathbb{R}$) ^ m := hbound
+      _ = (q : $\mathbb{R}$) ^ m * (2 * (L : $\mathbb{R}$) * orbitRadius F s q) := by ring
+  exact le_log_div_log_of_le_pow hq0 hq1 (by positivity) hratio
+\end{lstlisting}
+
+This is Theorem~A(iv), the operative statement of the paper, combining
+\texttt{counting\_margin\_le} with the log bridge just discussed. Two details
+are worth pointing out because they are exactly the kind of thing a
+pen-and-paper proof would gloss over and Lean forces to be made explicit.
+
+First, before the log bridge can apply, the prefactor $2LC$ must be shown
+\emph{strictly} positive (the bridge lemma requires $0<c$ for
+$c=\text{margin}/(2LC)$ to be well-formed as a division and for
+\texttt{Real.log} to behave). The proof handles the boundary case directly:
+if $2LC$ were $0$, then \texttt{hbound} ($\text{margin}\le 2LC\cdot q^m$)
+would force $\text{margin}\le 0$, contradicting the hypothesis
+$\text{margin}>0$ -- so the very existence of a positive decision margin is
+what rules out the degenerate case $L=0$ or $C=0$ (a zero-Lipschitz-constant
+readout, or an already-converged orbit). This is the \texttt{rcases
+lt\_or\_eq\_of\_le} case split ending in \texttt{exfalso}.
+
+Second, the theorem as stated in Lean gives
+$m \le \log\!\big(\text{margin}/(2LC)\big)/\log q$, while the main paper's
+Equation~(1) writes the horizon as $\log(2LC/\text{margin})/\log(1/q)$. These
+are the same quantity: since $\text{margin}/(2LC) \in (0,1)$ whenever the
+readout achieves a real separation (so its log is negative) and $q\in(0,1)$
+(so $\log q$ is also negative), $\log(a)/\log(b) = \log(1/a)/\log(1/b)$ for
+$a=\text{margin}/(2LC)$, $b=q$ -- a negative-over-negative flips to a
+positive-over-positive with the reciprocal arguments. The Lean statement and
+the paper's Equation~(1) are the identical horizon, just written with the
+sign convention that falls out of \texttt{le\_log\_div\_log\_of\_le\_pow}
+versus the convention chosen for exposition.
+
+\subsection{\texttt{AttentionDilution.lean}}
+\label{sec:s1-dilution}
+
+\begin{lstlisting}
+/-
+Attention Dilution
+==================
+
+Lemma B of "Counting Collapse: A Formally Verified Attractor Theory of
+Repetition Hallucination in Autoregressive TTS".
+
+Setting.  A decoder step attends over the `k` text positions occupied by `k`
+repetitions of the same phrase.  Because those positions carry (near-)identical
+content, their attention logits are near-identical too: we assume only that the
+logits lie within a spread `$\delta$` of one another, which is a directly measurable
+quantity.
+
+What is proved.  Every occurrence receives attention weight in
+`[e^{-$\delta$}/k, e^{$\delta$}/k]`; consequently the attention profile over the repeated
+block is within `(e^{$\delta$} - e^{-$\delta$})/k` of uniform, and its entropy is at least
+`log k - $\delta$`.  As `k` grows the profile flattens: the decoder cannot use
+attention weight to identify *which* occurrence it is currently rendering.
+
+Why it matters.  This licenses the modelling assumption of
+`CountingCollapse.lean` -- that the conditioning at every repetition boundary is
+the same map `F`.  The link is quantitative but informal (an `O($\delta$ + 1/k)`
+perturbation of the conditioning yields an `O($\delta$ + 1/k)` perturbation of `F`); the
+paper states it as a remark, not as a formalized theorem.
+-/
+import Mathlib
+
+namespace SpectralTTS
+
+open Finset Real
+
+variable {k : $\mathbb{N}$}
+
+/-- Softmax over the `k` attention logits of a repeated text block. -/
+noncomputable def softmax (z : Fin k $\to$ $\mathbb{R}$) (i : Fin k) : $\mathbb{R}$ :=
+  Real.exp (z i) / $\sum$ j, Real.exp (z j)
+
+theorem sum_exp_pos [NeZero k] (z : Fin k $\to$ $\mathbb{R}$) : 0 < $\sum$ j, Real.exp (z j) :=
+  Finset.sum_pos (fun j _ => Real.exp_pos (z j))
+    $\langle\langle$0, Nat.pos_of_ne_zero (NeZero.ne k)$\rangle$, mem_univ _$\rangle$
+
+theorem softmax_nonneg [NeZero k] (z : Fin k $\to$ $\mathbb{R}$) (i : Fin k) : 0 $\le$ softmax z i :=
+  div_nonneg (Real.exp_pos _).le (sum_exp_pos z).le
+\end{lstlisting}
+
+\texttt{softmax} is defined exactly as one would expect --
+$\mathrm{softmax}(z)_i = e^{z_i}/\sum_j e^{z_j}$ over the $k$ logits of a
+repeated block -- and \texttt{sum\_exp\_pos}/\texttt{softmax\_nonneg} are
+routine positivity facts needed to make the subsequent division lemmas
+well-formed (the denominator is a finite sum of strictly positive terms over a
+nonempty index type, guaranteed by the \texttt{[NeZero k]} instance).
+
+\subsubsection*{\texttt{sum\_softmax}}
+
+\begin{lstlisting}
+/-- The softmax profile is a probability distribution. -/
+theorem sum_softmax [NeZero k] (z : Fin k $\to$ $\mathbb{R}$) : $\sum$ i, softmax z i = 1 := by
+  unfold softmax
+  rw [$\leftarrow$ Finset.sum_div, div_self (sum_exp_pos z).ne']
+\end{lstlisting}
+
+Establishes that \texttt{softmax} really is a probability distribution over
+the $k$ occurrences: $\sum_i e^{z_i}/\sum_j e^{z_j} = \big(\sum_i
+e^{z_i}\big)/\sum_j e^{z_j} = 1$, by pulling the common denominator out of the
+sum (\texttt{Finset.sum\_div}, used backwards) and cancelling it against
+itself. This is a prerequisite for the entropy statement later, since Shannon
+entropy is only meaningful over a genuine distribution.
+
+\subsubsection*{\texttt{softmax\_le} and \texttt{le\_softmax}}
+
+\begin{lstlisting}
+/-- **Lemma B (upper bound).**  If all logits in the repeated block lie within
+`$\delta$` of one another, no single occurrence can capture more than `e^{$\delta$}/k` of the
+attention mass. -/
+theorem softmax_le [NeZero k] (z : Fin k $\to$ $\mathbb{R}$) {$\delta$ : $\mathbb{R}$} (hz : $\forall$ a b, z a - z b $\le$ $\delta$) (i : Fin k) :
+    softmax z i $\le$ Real.exp $\delta$ / k := by
+  have hk : (0 : $\mathbb{R}$) < k := Nat.cast_pos.mpr (Nat.pos_of_ne_zero (NeZero.ne k))
+  -- every term of the denominator is at least `exp (z i - $\delta$)`
+  have hlow : (k : $\mathbb{R}$) * Real.exp (z i - $\delta$) $\le$ $\sum$ j, Real.exp (z j) := by
+    have hterm : $\forall$ j $\in$ (univ : Finset (Fin k)), Real.exp (z i - $\delta$) $\le$ Real.exp (z j) := by
+      intro j _
+      exact Real.exp_le_exp.mpr (by linarith [hz i j])
+    calc (k : $\mathbb{R}$) * Real.exp (z i - $\delta$)
+        = $\sum$ _j : Fin k, Real.exp (z i - $\delta$) := by
+          rw [Finset.sum_const, card_univ, Fintype.card_fin, nsmul_eq_mul]
+      _ $\le$ $\sum$ j, Real.exp (z j) := Finset.sum_le_sum hterm
+  unfold softmax
+  rw [div_le_div_iff0 (sum_exp_pos z) hk]
+  have hkey : Real.exp (z i) * (k : $\mathbb{R}$) = Real.exp $\delta$ * ((k : $\mathbb{R}$) * Real.exp (z i - $\delta$)) := by
+    rw [Real.exp_sub]
+    field_simp
+  rw [hkey]
+  exact mul_le_mul_of_nonneg_left hlow (Real.exp_pos $\delta$).le
+
+/-- **Lemma B (lower bound).**  Symmetrically, no occurrence can be starved
+below `e^{-$\delta$}/k`. -/
+theorem le_softmax [NeZero k] (z : Fin k $\to$ $\mathbb{R}$) {$\delta$ : $\mathbb{R}$} (hz : $\forall$ a b, z a - z b $\le$ $\delta$) (i : Fin k) :
+    Real.exp (-$\delta$) / k $\le$ softmax z i := by
+  have hk : (0 : $\mathbb{R}$) < k := Nat.cast_pos.mpr (Nat.pos_of_ne_zero (NeZero.ne k))
+  have hhigh : $\sum$ j, Real.exp (z j) $\le$ (k : $\mathbb{R}$) * Real.exp (z i + $\delta$) := by
+    have hterm : $\forall$ j $\in$ (univ : Finset (Fin k)), Real.exp (z j) $\le$ Real.exp (z i + $\delta$) := by
+      intro j _
+      exact Real.exp_le_exp.mpr (by linarith [hz j i])
+    calc $\sum$ j, Real.exp (z j)
+        $\le$ $\sum$ _j : Fin k, Real.exp (z i + $\delta$) := Finset.sum_le_sum hterm
+      _ = (k : $\mathbb{R}$) * Real.exp (z i + $\delta$) := by
+          rw [Finset.sum_const, card_univ, Fintype.card_fin, nsmul_eq_mul]
+  unfold softmax
+  rw [div_le_div_iff0 hk (sum_exp_pos z)]
+  have hkey : Real.exp (-$\delta$) * ((k : $\mathbb{R}$) * Real.exp (z i + $\delta$)) = Real.exp (z i) * (k : $\mathbb{R}$) := by
+    rw [Real.exp_add, Real.exp_neg]
+    field_simp
+  calc Real.exp (-$\delta$) * $\sum$ j, Real.exp (z j)
+      $\le$ Real.exp (-$\delta$) * ((k : $\mathbb{R}$) * Real.exp (z i + $\delta$)) :=
+        mul_le_mul_of_nonneg_left hhigh (Real.exp_pos _).le
+    _ = Real.exp (z i) * (k : $\mathbb{R}$) := hkey
+\end{lstlisting}
+
+These two theorems together are Lemma~B's headline bound. The hypothesis
+\texttt{hz} says the $k$ logits of the repeated block are mutually within
+$\delta$ of each other -- a directly measurable spread, not an assumption
+about the mechanism producing the logits.
+
+For the upper bound: since $z_i - z_j \le \delta$ for every $j$, each term
+of the denominator satisfies $e^{z_j} \ge e^{z_i-\delta}$, so summing $k$
+copies of that lower bound gives $\sum_j e^{z_j} \ge k\, e^{z_i-\delta}$.
+Substituting into the definition of softmax,
+$\mathrm{softmax}(z)_i = e^{z_i}/\sum_j e^{z_j} \le e^{z_i}/(k\,e^{z_i-\delta})
+= e^{\delta}/k$. The lower bound is the mirror argument with the roles of
+$i$ and $j$ swapped in the hypothesis ($z_j - z_i \le \delta$, i.e.\
+$e^{z_j}\le e^{z_i+\delta}$ for every $j$), giving $\sum_j e^{z_j} \le k\,
+e^{z_i+\delta}$ and hence $\mathrm{softmax}(z)_i \ge e^{-\delta}/k$. Both
+proofs are the same three-step pattern -- bound every summand, sum $k$
+identical bounds via \texttt{Finset.sum\_const}, divide -- executed twice with
+the inequality direction and the sign of $\delta$ flipped.
+
+\subsubsection*{\texttt{softmax\_dist\_le}}
+
+\begin{lstlisting}
+/-- **Occurrence indistinguishability.**  The attention profile over a block of
+`k` repeated spans is within `(e^{$\delta$} - e^{-$\delta$})/k` of uniform.  For fixed `$\delta$`
+this vanishes as `1/k`: attention weight carries no information about *which*
+repetition is being attended to. -/
+theorem softmax_dist_le [NeZero k] (z : Fin k $\to$ $\mathbb{R}$) {$\delta$ : $\mathbb{R}$} (hz : $\forall$ a b, z a - z b $\le$ $\delta$)
+    (i j : Fin k) :
+    |softmax z i - softmax z j| $\le$ (Real.exp $\delta$ - Real.exp (-$\delta$)) / k := by
+  have hsplit : (Real.exp $\delta$ - Real.exp (-$\delta$)) / (k : $\mathbb{R}$)
+      = Real.exp $\delta$ / (k : $\mathbb{R}$) - Real.exp (-$\delta$) / (k : $\mathbb{R}$) := by ring
+  have hi_up := softmax_le z hz i
+  have hj_up := softmax_le z hz j
+  have hi_lo := le_softmax z hz i
+  have hj_lo := le_softmax z hz j
+  rw [abs_sub_le_iff]
+  constructor <;> linarith
+\end{lstlisting}
+
+A direct corollary: both $\mathrm{softmax}(z)_i$ and $\mathrm{softmax}(z)_j$
+lie in the interval $[e^{-\delta}/k,\,e^{\delta}/k]$, an interval of width
+$(e^{\delta}-e^{-\delta})/k$, so their difference cannot exceed that width in
+either direction (\texttt{abs\_sub\_le\_iff} splits $|x-y|\le c$ into the two
+one-sided inequalities $x-y\le c$ and $y-x\le c$, both closed by
+\texttt{linarith} from the four bounds already in scope). For fixed $\delta$
+this bound is $\Theta(1/k)$: as the block grows, no two occurrences' attention
+weights can differ by more than an amount vanishing in $k$ -- the formal
+content of ``attention weight carries vanishing information about which
+occurrence is being rendered.''
+
+\subsubsection*{\texttt{entropy\_ge}}
+
+\begin{lstlisting}
+/-- **Attention entropy grows like `log k`.**  With `p i = softmax z i`, the
+Shannon entropy of the profile over the repeated block satisfies
+`H(p) $\ge$ log k - $\delta$`: near-uniform attention over `k` identical spans is maximally
+uninformative, so the decoder's effective conditioning becomes the block mean and
+loses occurrence identity. -/
+theorem entropy_ge [NeZero k] (z : Fin k $\to$ $\mathbb{R}$) {$\delta$ : $\mathbb{R}$} (hz : $\forall$ a b, z a - z b $\le$ $\delta$) :
+    Real.log k - $\delta$ $\le$ $\sum$ i, softmax z i * (-Real.log (softmax z i)) := by
+  have hk : (0 : $\mathbb{R}$) < k := Nat.cast_pos.mpr (Nat.pos_of_ne_zero (NeZero.ne k))
+  have key : $\forall$ i : Fin k, (Real.log k - $\delta$) * softmax z i
+      $\le$ softmax z i * (-Real.log (softmax z i)) := by
+    intro i
+    have hup := softmax_le z hz i
+    have hlo : 0 < softmax z i := by
+      have h1 : Real.exp (-$\delta$) / (k : $\mathbb{R}$) $\le$ softmax z i := le_softmax z hz i
+      have h2 : (0 : $\mathbb{R}$) < Real.exp (-$\delta$) / (k : $\mathbb{R}$) := by positivity
+      linarith
+    have hlog : Real.log (softmax z i) $\le$ $\delta$ - Real.log k := by
+      have h1 : Real.log (softmax z i) $\le$ Real.log (Real.exp $\delta$ / k) := Real.log_le_log hlo hup
+      rwa [Real.log_div (Real.exp_pos $\delta$).ne' hk.ne', Real.log_exp] at h1
+    have hneg : Real.log k - $\delta$ $\le$ -Real.log (softmax z i) := by linarith
+    calc (Real.log k - $\delta$) * softmax z i
+        $\le$ (-Real.log (softmax z i)) * softmax z i :=
+          mul_le_mul_of_nonneg_right hneg hlo.le
+      _ = softmax z i * (-Real.log (softmax z i)) := mul_comm _ _
+  calc Real.log k - $\delta$
+      = (Real.log k - $\delta$) * $\sum$ i, softmax z i := by rw [sum_softmax z]; ring
+    _ = $\sum$ i, (Real.log k - $\delta$) * softmax z i := by rw [Finset.mul_sum]
+    _ $\le$ $\sum$ i, softmax z i * (-Real.log (softmax z i)) := Finset.sum_le_sum (fun i _ => key i)
+\end{lstlisting}
+
+The entropy floor. Write $H(p) = \sum_i p_i(-\log p_i)$ for the Shannon
+entropy of the attention profile $p_i = \mathrm{softmax}(z)_i$. The proof
+first shows a pointwise inequality (\texttt{key}): for every occurrence $i$,
+$(\log k - \delta)\,p_i \le p_i(-\log p_i)$. This follows because
+\texttt{softmax\_le} gives $p_i \le e^{\delta}/k$, hence (taking logs, valid
+since $p_i>0$ by \texttt{le\_softmax}) $\log p_i \le \delta - \log k$, i.e.\
+$-\log p_i \ge \log k - \delta$; multiplying both sides of that by the
+nonnegative $p_i$ preserves the inequality. Summing the pointwise bound over
+all $k$ occurrences and using $\sum_i p_i = 1$ (\texttt{sum\_softmax}) turns
+$\sum_i (\log k-\delta)\,p_i$ into exactly $\log k - \delta$, giving
+$H(p) \ge \log k - \delta$. As $k\to\infty$ for fixed $\delta$, the minimum
+possible entropy of the attention profile over the repeated block grows
+without bound like $\log k$: attention over a large repeated block cannot be
+concentrated, no matter how the model's underlying logits are computed,
+subject only to their spread being bounded by $\delta$.
+
+\subsection{The axiom audit}
+\label{sec:s1-audit}
+
+\texttt{scripts/check\_lean.sh} is the verification gate. It performs three
+checks in sequence: (1) \texttt{lake build} succeeds, i.e.\ the project
+type-checks against the pinned mathlib revision; (2) \texttt{grep -rn "sorry"}
+over \texttt{SpectralTTS/} and \texttt{SpectralTTS.lean} finds no occurrence,
+i.e.\ no proof obligation anywhere in the source was left unproved with the
+\texttt{sorry} placeholder; and (3) an axiom audit, reproduced verbatim below,
+that prints the transitive axiom dependency of eleven exported theorems and
+fails the build if the string \texttt{sorryAx} appears anywhere in that
+output.
+
+\begin{lstlisting}[mathescape=false]
+== axiom audit
+cat > /tmp/spectraltts_axioms.lean <<'EOF'
+import SpectralTTS
+open SpectralTTS
+#print axioms SpectralTTS.dist_iterate_fixedPoint_le
+#print axioms SpectralTTS.dist_iterate_iterate_le
+#print axioms SpectralTTS.exists_indistinguishable
+#print axioms SpectralTTS.readout_gap_le
+#print axioms SpectralTTS.counting_margin_le
+#print axioms SpectralTTS.counting_horizon
+#print axioms SpectralTTS.softmax_le
+#print axioms SpectralTTS.le_softmax
+#print axioms SpectralTTS.softmax_dist_le
+#print axioms SpectralTTS.entropy_ge
+#print axioms SpectralTTS.sum_softmax
+EOF
+OUT=$(lake env lean /tmp/spectraltts_axioms.lean 2>&1)
+echo "$OUT"
+if echo "$OUT" | grep -q "sorryAx"; then
+  echo "FAIL: sorryAx in dependency closure"; exit 1
+fi
+\end{lstlisting}
+
+\paragraph{What the three admitted axioms mean.} Lean's kernel tracks, for
+every proof term, exactly which axioms it ultimately rests on beyond pure
+type-theoretic reduction. Three axioms are considered standard and
+non-suspicious throughout ordinary (i.e.\ classical) formalised mathematics,
+and mathlib is built expecting all three:
+\begin{itemize}
+\item \textbf{\texttt{propext}} (propositional extensionality): two
+  propositions that are provably logically equivalent are equal as terms of
+  type \texttt{Prop}. This licenses rewriting one true statement for another
+  and is used pervasively any time an equality between propositions, rather
+  than merely an if-and-only-if, is needed internally.
+\item \textbf{\texttt{Classical.choice}}: the axiom of choice, in the form
+  that every nonempty type has a term. Mathlib is a classical (not
+  constructive) library and uses this axiom routinely -- for instance, to
+  decide the truth of an arbitrary proposition about real numbers
+  (\texttt{Real.log}'s case splits, order comparisons, and the existence
+  statement in \texttt{ContractingWith.fixedPoint} all rest on classical
+  reasoning of this kind).
+\item \textbf{\texttt{Quot.sound}}: quotient soundness. Lean 4 builds
+  quotient types (used, transitively, to construct $\mathbb{R}$ as a quotient
+  of Cauchy sequences, \texttt{NNReal} as a subtype of that, and
+  \texttt{Finset} as a quotient of \texttt{Multiset} which is itself a
+  quotient of \texttt{List}) and this axiom is what makes the definitional
+  behaviour of quotients sound at the kernel level.
+\end{itemize}
+Essentially every nontrivial mathlib theorem depends on some subset of these
+three; a formal result is treated as unconditionally established in this
+ecosystem exactly when its axiom dependency is a subset of
+$\{\texttt{propext}, \texttt{Classical.choice}, \texttt{Quot.sound}\}$.
+
+\paragraph{What \texttt{sorryAx} would mean.} Whenever a proof anywhere in a
+term's transitive dependency closure contains an unproved hole -- written
+\texttt{sorry}, or produced by an incomplete tactic block -- Lean's elaborator
+inserts a synthetic axiom called \texttt{sorryAx} standing in for ``trust me.''
+A theorem whose dependency closure contains \texttt{sorryAx} is not actually
+proved: it is, formally, an assumption. Because \texttt{sorryAx} propagates
+through every downstream use of the offending lemma, a single unproved hole
+anywhere upstream -- even inside a helper three calls deep, even hypothetically
+inside a buggy mathlib lemma -- would surface in the audit of every theorem
+that transitively depends on it. This is why the \texttt{grep -rn "sorry"}
+textual scan (step 2) and the semantic \texttt{\#print axioms} scan (step 3)
+are both run: the grep catches \texttt{sorry} written directly in this
+project's own two files, while the axiom audit is the only check that would
+also catch a hole hidden inside a project-local tactic-generated term that the
+textual scan cannot see, or (in principle) an inconsistency imported from
+mathlib itself. Passing both certifies that all eleven audited theorems
+reduce, through Lean's kernel type-checker, to a proof term whose only axioms
+are the three standard ones above.
+
+\paragraph{Coverage note.} The audit list contains eleven theorems: the seven
+from \texttt{CountingCollapse.lean} covered in
+Section~\ref{sec:s1-counting} except \texttt{le\_log\_div\_log\_of\_le\_pow},
+plus the four listed and named theorems from
+\texttt{AttentionDilution.lean} (\texttt{softmax\_le}, \texttt{le\_softmax},
+\texttt{softmax\_dist\_le}, \texttt{entropy\_ge}) and \texttt{sum\_softmax}.
+\texttt{le\_log\_div\_log\_of\_le\_pow} is not itself named in the
+\texttt{\#print axioms} list, but this is not a coverage gap: it is a direct
+dependency of \texttt{counting\_horizon}, so Lean's kernel necessarily
+re-checks it (and everything \emph{it} depends on) while type-checking
+\texttt{counting\_horizon}, and any axiom it introduced would appear in
+\texttt{counting\_horizon}'s own reported axiom set. Auditing
+\texttt{counting\_horizon} therefore already certifies
+\texttt{le\_log\_div\_log\_of\_le\_pow} transitively. The same reasoning
+covers the unlisted helper lemmas \texttt{orbitRadius\_nonneg},
+\texttt{sum\_exp\_pos}, and \texttt{softmax\_nonneg}: each is a dependency of
+an audited theorem.
+
+\paragraph{What is and is not proved (restated plainly).} The Lean artifact
+certifies an implication, not a fact about trained transformers.
+Concretely: \emph{if} a decoder's per-repetition update map $F$ is a genuine
+$q$-contraction ($q<1$, Lipschitz) on its hidden-state space, \emph{then}
+Theorem~A(i)--(iv) follow with no further assumptions, machine-checked down to
+three standard axioms. Whether any given trained decoder's $F$ actually is a
+contraction is not something proved here or provable by this kind of
+argument at all -- it is an empirical property of a specific trained network,
+measured per model as $\hat q$ in the main paper's Section~4 and
+Section~\ref{sec:s4} below. Symmetrically, Lemma~B (attention dilution) is
+unconditional -- it holds for any bounded-spread logits, which is a directly
+measurable, not assumed, property of a forward pass -- but its role is only to
+license the informal step from ``attention is diluted'' to ``the
+per-repetition map is approximately the same map at every boundary''
+(Assumption~1 of the main paper), and that step is itself not formalised; see
+Section~\ref{sec:s2}.
+
+% ============================================================
+\section{What is deliberately not formalized}
+\label{sec:s2}
+
+The main paper's Assumption~1 (periodic conditioning: there is a single map
+$F$ with $s_{m+1}=F(s_m)$ for every boundary $m$) is presented as ``what
+Lemma~B buys us.'' This is true informally and is stated as such in both the
+paper and the \texttt{AttentionDilution.lean} header: \emph{``The link is
+quantitative but informal (an $O(\delta+1/k)$ perturbation of the conditioning
+yields an $O(\delta+1/k)$ perturbation of $F$); the paper states it as a
+remark, not as a formalized theorem.''} This section says precisely what that
+remark asserts, why it was not formalised, and what a full formal treatment
+would need to add. Nothing here is proved in Lean; this section is pen and
+paper by design, and we are explicit about that so the boundary between the
+machine-checked and the informal parts of the argument is never ambiguous to
+a reader.
+
+\subsection{What the remark actually claims}
+
+Lemma~B, as formalised, is a statement about a single decoder step's
+attention profile over the $k$ text spans occupied by $k$ repetitions: if
+those spans' logits lie within spread $\delta$, the resulting softmax weights
+are within $(e^\delta-e^{-\delta})/k$ of uniform (\texttt{softmax\_dist\_le})
+and the profile's entropy is at least $\log k - \delta$
+(\texttt{entropy\_ge}). Neither of these is yet a statement about $F$, the
+map \emph{between repetition boundaries} that Theorem~A's contraction
+hypothesis is about. The step from one to the other requires two things
+Lemma~B does not supply:
+
+\begin{enumerate}
+\item A model of \emph{what the decoder update depends on}. $F$, as used in
+  \texttt{CountingCollapse.lean}, is an autonomous map $S\to S$ with no
+  explicit dependence on anything besides the current state $s$. In reality
+  the per-repetition update is a function of the current state \emph{and} the
+  conditioning context the decoder attends to at that step -- write this as
+  $F_c : S \to S$ for a context $c$ drawn from some space of possible
+  conditioning contexts (e.g.\ the vector of attended text values, not merely
+  the attention weights Lemma~B bounds). Autonomy of $F$ is only recovered
+  \emph{if} the sequence of contexts $c_0, c_1, \dots$ actually visited at
+  successive repetition boundaries is (nearly) constant.
+\item A translation of Lemma~B's bound on \emph{attention weights} into a
+  bound on the resulting \emph{context vector}. Lemma~B bounds
+  $|\mathrm{softmax}(z)_i - \mathrm{softmax}(z)_j|$, a statement purely about
+  the weights. The context the decoder actually receives is a
+  weight-averaged combination of \emph{value} vectors, and Lemma~B says
+  nothing about those values -- it only constrains how uniformly the weights
+  spread across positions whose values are assumed, but not shown, to be
+  similar because the $k$ repeated spans carry near-identical text.
+\end{enumerate}
+
+Granting both informally -- flat attention over near-identical spans yields a
+near-constant context vector, to an error the paper writes as
+$O(\delta+1/k)$ -- the remark's claim is: a family of maps $\{F_c\}$ that is
+uniformly Lipschitz in $c$ (i.e.\ nearby contexts produce nearby updates,
+$d(F_c(s), F_{c'}(s)) \le \kappa\, d_C(c,c')$ for some constant $\kappa$ and
+every $s$), fed a sequence of contexts $c_0,c_1,\dots$ that are all within
+$O(\delta+1/k)$ of some reference context $c^\ast$, behaves \emph{approximately}
+like the single autonomous map $F_{c^\ast}$, with an error that itself scales
+as $O(\delta+1/k)$ per step. This is the sense in which Assumption~1 is
+``bought'' by Lemma~B: not literally, but up to a perturbation that shrinks as
+the repeated block grows.
+
+\subsection{Why this was not formalised}
+
+Formalising the remark above is a strictly larger undertaking than
+formalising Theorem~A and Lemma~B as stated, for reasons that are worth being
+concrete about rather than hand-waving as ``future work'':
+
+\begin{enumerate}
+\item \textbf{A new object.} The current development has no type for
+  ``conditioning context'' or for a context-indexed family of maps
+  $\{F_c\}_{c\in C}$; this would need to be introduced, along with a metric
+  $d_C$ on contexts and a joint-Lipschitz hypothesis relating $d_C$ to the
+  induced variation in $F_c$. None of this exists in either Lean file today.
+\item \textbf{A quantitative re-derivation in the context metric, not the
+  weight metric.} \texttt{softmax\_dist\_le} bounds a difference of scalar
+  attention weights. Bounding the resulting difference in \emph{context
+  vectors} $d_C(c_i, c_j)$ requires an additional Lipschitz-type assumption on
+  the value vectors being attended to (that repeated spans carry not just
+  diluted attention but near-identical \emph{values}), which is a second,
+  currently unstated and unmeasured premise, and then a short but genuine
+  argument (a weighted-average version of the triangle inequality) to convert
+  a bound on weight differences plus a bound on value differences into a
+  bound on the resulting weighted sum.
+\item \textbf{A perturbed-contraction (shadowing) lemma.} Even granting (1)
+  and (2), Theorem~A's proof chain (Section~\ref{sec:s1}) is stated for a
+  single autonomous $F$. Propagating a per-step drift of size $\rho =
+  O(\delta+1/k)$ through it requires a genuinely different fixed-point
+  argument: something in the spirit of ``a sequence of $q$-contractions
+  $F_{c_0}, F_{c_1}, \dots$ whose contexts all lie within $\rho$ of a common
+  reference point produces an orbit that shadows the autonomous orbit of
+  $F_{c^\ast}$ up to an additive error that itself stabilises geometrically,
+  to a limiting value on the order of $\kappa\rho/(1-q)$.'' This is a standard
+  \emph{shape} of result in the perturbation theory of dynamical systems (a
+  discrete analogue of structural stability / shadowing for contractions),
+  but it is not a lemma mathlib currently provides in a directly reusable
+  form for this setting, and instantiating or proving it was out of scope for
+  this artifact.
+\item \textbf{Propagating the correction through the horizon.} Granting (3),
+  every inequality in Theorem~A(i)--(iv) would pick up an additive term of
+  order $\kappa\rho/(1-q)$ on top of the geometric $Cq^m$ decay, and the
+  horizon of Equation~(1) would gain a $k$-dependent correction. Because
+  $\rho = O(\delta+1/k)$ shrinks precisely as $k$ (and hence $m$, the quantity
+  the horizon bounds) grows, the correction is plausibly a lower-order effect
+  in the regime the paper cares about -- but showing this rigorously is a
+  two-scale argument (the perturbation shrinking in the same variable the
+  main bound is stated over) that requires genuinely new mathematical content,
+  not routine bookkeeping, and was not attempted.
+\end{enumerate}
+
+\subsection{What a full treatment would need}
+
+Concretely, extending the formal artifact to close this gap would require, in
+order: (a) a formal definition of a conditioning-context space $C$ with a
+metric $d_C$ and a context-indexed family $F : C \to S \to S$; (b) a
+hypothesis package bundling (i) $\kappa$-Lipschitz continuity of $F$ in its
+context argument, uniformly in the state argument, and (ii) a quantitative
+bound, in $d_C$, on the distance between the contexts realised at successive
+repetition boundaries -- the latter to be derived from a strengthened version
+of Lemma~B that bounds the attended \emph{value} vectors' contribution, not
+only the attention weights; (c) a perturbed-orbit / shadowing lemma for
+metric-space contractions under a bounded per-step context drift, proved or
+sourced from mathlib; and (d) a re-derivation of Theorem~A(i)--(iv) with the
+additive $O(\kappa\rho/(1-q))$ correction carried through explicitly, together
+with an argument (formal or at least made quantitatively precise) that this
+correction is dominated by the main geometric term in the $k$-range where the
+horizon is informative. None of (a)--(d) is present in the current artifact;
+the current Lean development proves Theorem~A and Lemma~B exactly as stated
+in Section~\ref{sec:s1}, and the bridge between them remains, honestly, a
+remark.
+
+% ============================================================
+\section{The benchmark in full}
+\label{sec:s3}
+
+The benchmark is built by \texttt{data/stimuli/make\_stimuli.py} and written
+to \texttt{data/stimuli/stimuli.jsonl}, one JSON object per line. It contains
+$180$ items across five families, confirmed by direct count against the
+generated file:
+
+\begin{table}[h]
+\centering
+\caption{Stimulus families.}
+\label{tab:families}
+\begin{tabular}{lrl}
+\toprule
+Family & Count & What it tests \\
+\midrule
+\texttt{word\_rep} & 60 & a single word repeated $k$ times in a fixed carrier \\
+\texttt{control\_word} & 54 & the same carrier, $k$ \emph{distinct} filler words (no repetition) \\
+\texttt{sentence\_rep} & 32 & a whole short sentence repeated $k$ times \\
+\texttt{twisters} & 24 & a tongue-twister sentence (with internal repetition) repeated $k$ times \\
+\texttt{numbers} & 10 & English number phrases with intrinsic digit-word repetition \\
+\midrule
+Total & 180 & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Every item carries an explicit \texttt{item\_id}, \texttt{family},
+\texttt{template}, \texttt{text}, \texttt{target\_unit}, \texttt{k}, and
+\texttt{expected\_count} -- a ground-truth number of occurrences of the target
+unit, so a generation can be scored by counting rather than by string match
+against a reference transcript. \texttt{control\_word} items additionally
+carry \texttt{control\_of} (the \texttt{item\_id} of the repeated item they
+are matched to) and \texttt{control\_units} (the $k$ distinct fillers actually
+substituted).
+
+\subsection{The $k$-ladder}
+
+\texttt{word\_rep} and \texttt{control\_word} items are built at
+$$k \in \{1,2,3,4,6,8,12,16,24,32\}$$
+(\texttt{K\_LADDER} in \texttt{make\_stimuli.py}). The ladder is dense at the
+low end and log-spaced above; the source comment explains why directly: the
+collapse point $k^\ast$ is expected in the $4$--$16$ range, so that is where
+resolution is spent, without paying the instrumentation and generation cost
+of testing every integer $k$ up to $32$. \texttt{sentence\_rep} uses a
+truncated ladder $k\in\{1,2,3,4,6,8,12,16\}$ (\texttt{SENTENCE\_K}), since a
+full sentence repeated $32$ times would be prohibitively long to generate and
+transcribe. \texttt{twisters} use only $k\in\{1,2,4\}$, since a twister
+sentence already contains internal repetition (Table~\ref{tab:twisters}) and
+the family exists to probe alliterative/phonological stress rather than
+long-range counting. \texttt{numbers} items are not built on a $k$-ladder at
+all: each number phrase is a single fixed string with its own intrinsic
+repetition count (Table~\ref{tab:numbers}).
+
+\subsection{Word-repetition carrier templates}
+
+Table~\ref{tab:templates} reproduces all six carrier templates
+(\texttt{WORD\_TEMPLATES}) verbatim: the fixed prefix and suffix, the target
+word repeated $k$ times between them, and the pool of eight distinct fillers
+used to build the matched control at the same $k$. An item's text is
+\texttt{prefix + " " + (target repeated k times) + " " + suffix}; a control's
+text substitutes \texttt{prefix + " " + (k distinct fillers, cycled through
+the pool) + " " + suffix}, guaranteeing the target word itself never appears
+in its own control.
+
+\begin{table}[h]
+\centering
+\caption{Word-repetition carrier templates (\texttt{WORD\_TEMPLATES},
+\texttt{data/stimuli/make\_stimuli.py}).}
+\label{tab:templates}
+\small
+\begin{tabular}{@{}lp{2.6cm}p{1.3cm}p{3.0cm}p{5.0cm}@{}}
+\toprule
+ID & Prefix & Target & Suffix & Filler pool (for the control) \\
+\midrule
+t1 & The dog was & very & big and it ran across the field. & quite, really, truly, fairly, rather, somewhat, extremely, notably \\
+t2 & She said & no & to the offer and then left the room. & yes, maybe, sure, fine, okay, well, right, hmm \\
+t3 & He walked & far & into the forest before turning back. & deep, fast, long, wide, high, low, near, past \\
+t4 & The light was & blue & before the storm arrived. & green, bright, pale, dim, warm, cold, sharp, soft \\
+t5 & The runner moved & quick & along the narrow path. & swift, smooth, steady, light, sharp, loose, tight, clean \\
+t6 & They were & really & tired after the long journey. & truly, quite, very, rather, deeply, clearly, plainly, surely \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Why these six target words.} The source comment states the
+selection criterion directly: targets are ``chosen for ASR robustness:
+common, monosyllabic-or-disyllabic, no homophone confusions, and unlikely to
+be swallowed by Whisper's LM prior.'' Concretely, \emph{very}, \emph{no},
+\emph{far}, \emph{blue}, \emph{quick}, and \emph{really} are all common,
+short, phonetically distinct from every filler in their own pool, and none
+are function words or discourse markers that an ASR language-model prior
+might silently elide or merge with an adjacent word -- a real risk for a word
+repeated up to $32$ times in a row, which is exactly the regime this
+benchmark stresses. This choice matters because the behavioural metric
+(Section~\ref{sec:s4}) counts occurrences of the target unit in the ASR
+transcript; a target word prone to ASR mis-transcription independent of the
+TTS model's behaviour would contaminate that count with ASR noise rather than
+TTS behaviour.
+
+\subsection{Number phrases}
+
+Table~\ref{tab:numbers} reproduces all ten number-phrase stimuli
+(\texttt{NUMBER\_PHRASES}) verbatim, with the target digit-word and its true
+occurrence count. Text is capitalised and given a trailing period at
+generation time (\texttt{text.capitalize() + "."}). The family's rationale,
+from the source comment: ``English number words are the natural repetition
+stress test: the same digit-word recurs at several magnitudes and the model
+must keep an internal place-value counter that repetition-attractor dynamics
+would destroy.'' Unlike \texttt{word\_rep}, the repeated unit here is not
+adjacent tokens but a digit-word recurring at different magnitude positions
+(hundreds, thousands, millions), so a correct rendering additionally requires
+tracking place value, not merely repeating a token a fixed number of times.
+
+\begin{table}[h]
+\centering
+\caption{Number-phrase stimuli (\texttt{NUMBER\_PHRASES},
+\texttt{data/stimuli/make\_stimuli.py}).}
+\label{tab:numbers}
+\small
+\begin{tabular}{@{}lp{7.8cm}ll@{}}
+\toprule
+ID & Phrase & Target & Count \\
+\midrule
+n01 & six hundred sixty six thousand six hundred sixty six & six & 6 \\
+n02 & seven hundred seventy seven thousand seven hundred seventy seven & seven & 6 \\
+n03 & nine hundred ninety nine thousand nine hundred ninety nine & nine & 6 \\
+n04 & three hundred thirty three thousand three hundred thirty three & three & 6 \\
+n05 & six hundred sixty six million six hundred sixty six thousand six hundred sixty six & six & 9 \\
+n06 & eight hundred eighty eight thousand eight hundred eighty eight & eight & 6 \\
+n07 & five hundred fifty five & five & 3 \\
+n08 & four hundred forty four & four & 3 \\
+n09 & two hundred twenty two million two hundred twenty two thousand two hundred twenty two & two & 9 \\
+n10 & one hundred eleven thousand one hundred eleven & one & 5 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+At scoring time (Section~\ref{sec:s4}), a numeral rendered by Whisper as
+digits (e.g.\ \texttt{"666,666"}) is algorithmically expanded back into
+English number words by \texttt{expand\_number\_token} in
+\texttt{src/common/score\_counts.py}, so a model's output can be counted in
+the same normalised token space as every other family; a numeral longer than
+$12$ digits (i.e.\ a looping model's runaway output, which Whisper can render
+as an absurdly long integer) is deliberately \emph{not} run through
+place-value expansion and is instead read off digit-by-digit, on the grounds
+that place-value names are undefined past \emph{billion} and a digit-wise
+reading is the semantically correct interpretation of what a looping decoder
+actually spoke.
+
+\subsection{Sentence repetition and tongue twisters}
+
+\texttt{sentence\_rep} repeats one of four short sentences $k\in\{1,2,3,4,6,8,12,16\}$
+times (Table~\ref{tab:sentences}); the scored target is a single content word
+within the sentence. \texttt{twisters} instead repeat a whole tongue-twister
+sentence $k\in\{1,2,4\}$ times (Table~\ref{tab:twisters}); because several
+classic twisters already repeat a word or a phoneme cluster \emph{within one
+copy} of the sentence, the ground-truth count is
+$\text{expected\_count} = \text{per-copy occurrences} \times k$, not $k$
+itself. Two twisters (\texttt{w6}, \texttt{w7}) are alliterative rather than
+word-repetitive -- their nominal ``target'' is a short substring
+(\texttt{"s"}, \texttt{"fr"}) that occurs in many unrelated words, so the
+source sets their per-copy occurrence count to $0$ rather than attempting a
+substring count that would be semantically meaningless; these two items
+therefore always carry \texttt{expected\_count}$=0$ and exercise
+phonological/alliterative rendering stress rather than the counting metric.
+
+\begin{table}[h]
+\centering
+\caption{Sentence-repetition stimuli (\texttt{SENTENCES},
+\texttt{data/stimuli/make\_stimuli.py}). $k \in \{1,2,3,4,6,8,12,16\}$ for
+every row.}
+\label{tab:sentences}
+\begin{tabular}{@{}lll@{}}
+\toprule
+ID & Sentence & Target \\
+\midrule
+s1 & The bell rang twice. & bell \\
+s2 & He counted the stones. & stones \\
+s3 & Rain fell on the roof. & rain \\
+s4 & The door stayed open. & door \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Tongue-twister stimuli (\texttt{TWISTERS},
+\texttt{data/stimuli/make\_stimuli.py}). ``Per-copy'' is the number of times
+the target occurs within a single copy of the sentence; \texttt{expected\_count}
+$=$ per-copy $\times\, k$ for $k\in\{1,2,4\}$.}
+\label{tab:twisters}
+\small
+\begin{tabular}{@{}lp{6.7cm}ll@{}}
+\toprule
+ID & Sentence & Target & Per-copy \\
+\midrule
+w1 & She sells sea shells by the sea shore. & sea & 2 \\
+w2 & Peter Piper picked a peck of pickled peppers. & peck & 1 \\
+w3 & How much wood would a woodchuck chuck. & chuck & 1 \\
+w4 & Red lorry yellow lorry red lorry yellow lorry. & lorry & 4 \\
+w5 & The sixth sick sheikh's sixth sheep is sick. & sixth & 2 \\
+w6 & Six slick slim sycamore saplings. & s (alliteration only) & 0 \\
+w7 & Fresh French fried fly fritters. & fr (alliteration only) & 0 \\
+w8 & Truly rural truly rural truly rural. & rural & 3 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{The matched-control construction}
+
+Every \texttt{word\_rep} item at $k\ge 2$ has a corresponding
+\texttt{control\_word} item ($k=1$ is defined to be its own control, since
+there is no repetition to remove): the same carrier prefix and suffix, the
+same word count, with the $k$ copies of the target replaced by $k$
+\emph{distinct} words drawn from that template's filler pool (cycled and
+skipped past any accidental collision with the target itself, so the target
+word is guaranteed never to appear in its own control). This is the
+construction underlying the paper's central dissociation test
+(Section~4.2 of the main paper, Figure~1(b)): the control holds carrier
+syntax and word count fixed while removing exactly one variable, periodicity,
+so that a difference in outcome between the repeated item and its control
+cannot be explained by sequence length, generation duration, or the amount of
+text the model has to render.
+
+\subsection{The \texttt{boundary\_units} field}
+
+\texttt{word\_rep} and \texttt{sentence\_rep} items carry
+\texttt{boundary\_units}: the ordered list of the $k$ words (all copies of
+the target, for a repeated item) whose text positions delimit the $k$
+repetition boundaries. \texttt{control\_word} items carry the analogous list
+of the $k$ distinct fillers actually substituted (duplicated under the key
+\texttt{control\_units} for the separate purpose of scoring: was each of the
+$k$ fillers rendered at all). This field exists so that the boundary-location
+procedure of \texttt{src/common/boundaries.py}
+(\texttt{unit\_columns}, Section~\ref{sec:s5}) is handed an explicit,
+model-agnostic list of search targets rather than having to special-case
+repeated versus control text -- both item types get their boundaries located
+by the identical left-to-right, non-rewinding string-search procedure, over
+the identical field, which is what makes the fitted decay rates of repeated
+and control items directly comparable and not confounded by using two
+different localisation methods for the two arms of the comparison.
+\texttt{numbers} and \texttt{twisters} items carry no \texttt{boundary\_units}
+field at all: numbers have no single repeating word-level unit (the
+repetition is a digit-word recurring at different magnitude positions), and
+twisters repeat a whole sentence rather than a word, so neither family has a
+boundary structure at the granularity this field is designed for.
+
+\subsection{The instrumented subset}
+
+An item is marked \texttt{instrumented=true} (and therefore receives the
+teacher-forced hidden-state/attention capture pass described in
+Section~\ref{sec:s6}) exactly when its family is one of
+\{\texttt{word\_rep}, \texttt{sentence\_rep}, \texttt{control\_word}\} and
+$k\ge 2$. The source comment gives the rationale directly: ``Twisters have no
+single repeating unit at $k=1$, numbers are short; both are behavioural-only.''
+$k\ge2$ is required because at $k=1$ there is by definition no repetition
+boundary to instrument. This yields $54\ (\texttt{word\_rep}, k\ge2) + 54\
+(\texttt{control\_word}, \text{all } k\ge2\text{ by construction}) + 28\
+(\texttt{sentence\_rep}, k\ge2) = 136$ instrumented items, matching the count
+written by \texttt{make\_stimuli.py} at generation time and the
+\texttt{NInstrumented} macro emitted by \texttt{analysis/make\_numbers.py}.
+
+% ============================================================
+\section{Measurement protocol in full}
+\label{sec:s4}
+
+\subsection{The conjunctive correctness criterion}
+
+The central behavioural question -- given text asking for $k$ repetitions, how
+many did the model actually produce -- is answered by reconciling two
+independent, differently-biased estimators, implemented in
+\texttt{src/common/score\_counts.py}.
+
+\textbf{Count A (transcript-based).} The generated audio is transcribed with
+Whisper large-v3 (\texttt{src/common/asr\_transcribe.py}), the transcript is
+normalised (lower-cased, punctuation stripped except commas needed for
+numeral parsing, numerals expanded back to number words via
+\texttt{expand\_number\_token}), and \texttt{count\_occurrences} counts exact
+whole-token matches of the target unit (or, for multi-word targets, greedy
+non-overlapping subsequence matches). Count A is accurate when Whisper
+faithfully renders every repetition, which holds reliably at low $k$ and
+\emph{unreliably at high $k$} -- Whisper is itself an autoregressive model and
+is prone to de-duplicating or collapsing long runs of near-identical speech,
+exactly the failure mode under study, so it cannot be assumed neutral at the
+$k$ values that matter most.
+
+\textbf{Count B (duration-based).} Per $(\text{model}, \text{family},
+\text{template})$ cell, a linear fit $\text{duration} = a + b\cdot k$ is
+estimated on the \emph{trusted low-$k$ regime}, defined \emph{before} looking
+at any high-$k$ behaviour so the calibration cannot be contaminated by the
+effect being measured: items with $k\le 3$, Count A exactly equal to the
+requested $k$, and audio duration $>0.2\,$s
+(\texttt{fit\_duration\_models}). The fit falls back from
+$(\text{model},\text{family},\text{template})$ to $(\text{model},\text{family})$
+to $(\text{model})$ when a cell has too few trusted points, and is discarded
+if the fitted slope $b$ is not meaningfully positive. Inverting the fit at a
+given observed duration gives Count B, a count that is \emph{immune} to ASR
+de-duplication (it never looks at the transcript) but is correspondingly
+\emph{blind} to a model that babbles for approximately the right length
+without actually saying the right thing.
+
+Because the two estimators fail in different, largely uncorrelated
+directions, \textbf{correctness is decided conjunctively}, not by
+picking one estimator or averaging them: an item is labelled \texttt{correct}
+only if Count A exactly equals the expected count \emph{and} the observed
+duration falls within a tolerance band of the duration the calibrated fit
+predicts for that expected count
+($\text{duration\_ratio} \in [0.70, 1.45]$, constants \texttt{DUR\_LO},
+\texttt{DUR\_HI}). The band is wide enough to absorb ordinary prosodic
+speech-rate variation (a model reading the same words slightly faster or
+slower is not a counting failure) while still catching the two directions of
+genuine failure: a transcript that Whisper collapsed but whose audio ran
+much longer than it should have (loop), and a transcript that is short and
+whose audio is also short (truncation). Neither estimator is ever used alone
+to \emph{assert} a count in a disagreement case -- the reconciliation only
+ever \emph{certifies} correctness when both streams of evidence agree; a
+disagreement produces an \texttt{agree=False} audit flag
+($|\text{Count A} - \text{Count B}| > \max(1, 0.15\cdot\text{expected\_count})$)
+rather than a synthesised number, so that a wrong count can never silently
+enter the behavioural CSV disguised as ground truth.
+
+\subsection{The outcome taxonomy}
+
+\texttt{classify} in \texttt{score\_counts.py} assigns exactly one of eight
+outcome labels, checked in the following fixed order (audio-level degeneracy
+first, since noise or silence of coincidentally the right duration would
+otherwise slip through the duration test):
+
+\begin{enumerate}
+\item \texttt{empty} -- duration $<0.25\,$s or RMS $<10^{-3}$: essentially no
+  audio was produced.
+\item \texttt{degenerate} -- spectral flatness $>0.35$ (noise/babble rather
+  than speech) or an empty ASR transcript.
+\item \texttt{correct} -- Count A equals the expected count \emph{and} the
+  duration ratio is in-band (the conjunctive criterion above).
+\item \texttt{loop} -- generation hit the model's token cap, \emph{or} the
+  duration ratio exceeds $1.6$: the model kept going well past where it
+  should have stopped.
+\item \texttt{overcount} -- Count A exceeds the expected count (and the item
+  was not already classified as a loop).
+\item \texttt{truncation} -- the duration ratio is below \texttt{DUR\_LO}:
+  the model stopped early.
+\item \texttt{undercount} -- Count A is below the expected count (and the
+  item was not already classified as a truncation).
+\item \texttt{miscount} -- the residual fallback: none of the above applied,
+  e.g.\ the transcript count matches but the duration ratio is out of band
+  without meeting either the loop or the truncation threshold (``right count,
+  implausible pacing'').
+\end{enumerate}
+
+The main paper's Section~4.3 describes this taxonomy at the six-way level a
+figure caption can carry --
+$\{\texttt{correct}, \texttt{undercount}, \texttt{truncation},
+\texttt{overcount}, \texttt{loop}, \texttt{degenerate}\}$ -- which folds
+\texttt{empty} into \texttt{degenerate} conceptually (both are audio-level
+failures rather than counting failures) and omits the low-frequency
+\texttt{miscount} residual bucket; the eight-way taxonomy above is the one
+actually implemented and emitted into \texttt{data/results/behavioural.csv}'s
+\texttt{outcome} column.
+
+\subsection{Audio degeneracy detectors}
+
+Computed by \texttt{audio\_flags} in \texttt{src/common/asr\_transcribe.py},
+independent of the ASR transcript, because a TTS failure does not always
+manifest as wrong \emph{words} -- it can produce noise, a stuck vowel, or
+silence, none of which a transcript-only metric would catch:
+
+\begin{itemize}
+\item \textbf{RMS} -- root-mean-square amplitude of the waveform; near-zero
+  flags near-silence.
+\item \textbf{Voiced fraction / trailing silence} -- a smoothed energy
+  envelope (frame length $\mathrm{sr}/50$) is thresholded at $2\%$ of its
+  peak to flag voiced frames; \texttt{trailing\_silence\_s} is the time from
+  the last voiced frame to the end of the clip, distinguishing an abrupt
+  truncation (long trailing silence relative to content) from a clean
+  stop.
+\item \textbf{Spectral flatness} -- \texttt{librosa}'s spectral flatness
+  measure, near $1$ for noise-like spectra and near $0$ for tonal/harmonic
+  (speech-like) spectra; used as the \texttt{degenerate} threshold above.
+\item \textbf{Loop autocorrelation} -- the log-mel envelope (32 mel bands,
+  hop length 256, mean over frequency) is autocorrelated with itself; a
+  strong peak (\texttt{loop\_ac\_peak}) at a lag beyond $0.4\,$s
+  (\texttt{min\_lag}) indicates the model is re-rendering materially the same
+  acoustic content periodically -- an exact-loop signature distinct from,
+  and complementary to, the duration-ratio-based loop detection in
+  \texttt{classify}.
+\end{itemize}
+
+Whisper transcription itself is run with
+\texttt{condition\_on\_prev\_tokens=False}. This is deliberate, not a default
+left in place: Whisper's own decoder is autoregressive and prone to the same
+class of repetition lock-in under study, and allowing it to condition on its
+own previously decoded text would risk the ASR judge's loops contaminating
+the measurement of the TTS model's loops. Word-level timestamps
+(\texttt{return\_timestamps="word"}) are requested for a specific downstream
+purpose beyond transcription: mapping an audio-domain repetition boundary
+back to a decoder step index via $\text{step} = t_{\text{word}} \times
+\text{token\_rate\_hz}$, where \texttt{token\_rate\_hz} is each model's
+nominal acoustic-token rate from the panel registry
+(\texttt{src/common/registry.py}: $50.0\,$Hz for the Llasa family,
+$21.53\,$Hz for XTTS-v2, $12.5\,$Hz for Qwen3-TTS). The registry's own
+docstring notes that nominal rates are cross-checked against the measured
+$n_{\text{tokens}}/\text{duration}$ at smoke-test time, and it is the
+measured value that downstream analysis actually uses.
+
+\subsection{Effective rank, spectral slope, and Kirchhoff index}
+
+Computed by \texttt{spectral\_proxies} in \texttt{analysis/state\_dynamics.py}
+on a trajectory $h \in \mathbb{R}^{T\times d}$ of hidden states at one probe
+layer (mean-centred over time before the decomposition; trajectories longer
+than \texttt{MAX\_SVD\_STEPS}$=512$ steps are uniformly subsampled first,
+since these are properties of the \emph{shape} of the spectrum, which
+uniform subsampling preserves, and the alternative is an $O(Td^2)$ SVD per
+layer per item; trajectories shorter than $24$ steps are skipped). Let
+$\sigma_1\ge\sigma_2\ge\cdots$ be the singular values of the centred
+trajectory matrix and $p_i = \sigma_i/\sum_j\sigma_j$.
+
+\begin{itemize}
+\item \textbf{Effective rank} $\mathcal{N}_{\mathrm{eff}} =
+  \exp\!\big(-\sum_i p_i\log p_i\big)$: the exponentiated Shannon entropy of
+  the normalised singular-value spectrum, i.e.\ a participation-ratio-style
+  count of how many singular directions are actually being used, smoothly
+  interpolating between $1$ (all variance in one direction) and the nominal
+  matrix rank (perfectly flat spectrum). This is the statistic behind the
+  capacity-gain measurement of Section~4.3 of the main paper.
+\item \textbf{Spectral slope} $\alpha$: the negative slope of $\log\sigma_i$
+  regressed against $\log(i+1)$ over the mid-tail index window
+  $i \in [2, \max(6, 0.8\cdot\text{rank})]$ -- excluding the first couple of
+  dominant components and the extreme tail -- i.e.\ the exponent of the
+  spectrum's power-law decay.
+\item \textbf{Kirchhoff index} $\log_{10} Kf = \log_{10}\!\big(\sum_i
+  1/\lambda_i\big)$ with $\lambda_i=\sigma_i^2$, floored at
+  $\lambda_i > 10^{-10}\lambda_{\max}$ for numerical stability: the standard
+  graph-theoretic Kirchhoff index (sum of inverse Laplacian eigenvalues, a
+  resistance-distance-based measure of global connectivity) applied to the
+  covariance spectrum of the trajectory, carried over unchanged from the
+  companion Whisper study~\cite{viakhirev2026dispersion} so its Table~2 and
+  the present study's Table~2 are directly comparable.
+\end{itemize}
+
+\subsection{The template bootstrap}
+
+Confidence intervals throughout \texttt{analysis/capacity.py} are resampled
+over \emph{stimulus templates}, not over items, and the rationale is stated
+directly in the source: items sharing a template (e.g.\ every $k$-value built
+from carrier \texttt{t1}, ``The dog was \dots\ big and it ran across the
+field.'') are not independent draws, since they share carrier syntax and
+length structure; bootstrapping over raw items would understate the true
+variance. Two statistics are computed this way.
+
+\textbf{Capacity gain} (\texttt{gain}): for a given family (repeated or
+control) and model, $\mathrm{d}\mathcal{N}_{\mathrm{eff}}/\mathrm{d}\log k$ is
+the ordinary-least-squares slope of $\mathcal{N}_{\mathrm{eff}}$ against
+$\log k$ at deep probe layers (\texttt{layer\_frac}$>0.6$), fit on items with
+$k\ge2$, requiring at least four distinct $k$ values and eight points to
+attempt a fit at all. The $95\%$ interval is built by resampling the set of
+templates with replacement $2000$ times, refitting the slope on the union of
+each resample's items every time. A ``saturation'' value is also reported: the
+median $\mathcal{N}_{\mathrm{eff}}$ over items in the top half of the
+observed $k$ range, as a plateau estimate.
+
+\textbf{Paired gap} (\texttt{paired\_gap}): for every (template, $k$) cell
+with both a repeated-item median and a control-item median available, the
+paired difference (control minus repeated) is computed; because the stimuli
+were built as matched pairs, this differencing cancels template identity and
+$k$ exactly, making it the estimator with the least nuisance variance among
+those available. The $95\%$ interval bootstraps the \emph{mean} of the vector
+of paired differences ($2000$ resamples with replacement), and
+$\texttt{frac\_pos}$ reports the fraction of paired differences that are
+positive, i.e.\ the fraction of (template, $k$) cells where the control
+gained strictly more distinguishable states than its matched repeated twin.
+
+% ============================================================
+\section{The negative result, in detail}
+\label{sec:s5}
+
+This section expands the main paper's Section~4.4 (``A note on what we could
+not measure''). We consider it a real contribution of the project, not a
+discarded attempt, and document it at the level of detail a reviewer wanting
+to check the diagnosis would need. The relevant code is
+\texttt{src/common/boundaries.py} (explicitly marked, in its own module
+docstring, as \emph{``SUPERSEDED as the paper's primary measurement''}) and
+\texttt{src/common/dispersion.py} (the estimator that replaced it, marked
+\emph{``the primary state measurement''}).
+
+\subsection{What the boundary-difference estimator was}
+
+Theorem~A is stated about the sequence of \emph{repetition-boundary states}
+$s_0, s_1, s_2, \dots$ -- the decoder's hidden state exactly at the moment
+each successive copy of the repeated phrase has been rendered. The most
+direct way to test the contraction premise is therefore to locate those
+states in a recorded generation trajectory and difference them. The
+estimator built to do this, in order:
+
+\begin{enumerate}
+\item \textbf{Locate the $k$ ground-truth text columns.} For a repeated item
+  with target unit $u$ (or a control with $k$ distinct fillers),
+  \texttt{unit\_columns} walks the model's own tokenized, transformed prompt
+  text left to right with a non-rewinding regular-expression search
+  (\texttt{\textbackslash b}\texttt{word}\texttt{\textbackslash b}, case-insensitive), using the
+  model-specific \texttt{OffsetTokenizer} (\texttt{src/common/offset\_tok.py})
+  so that each family's own string transform is respected -- notably XTTS-v2,
+  which lower-cases and replaces every space with a literal
+  \texttt{[SPACE]} token before tokenizing, so column indices must be (and
+  are) computed on the transformed string, not the raw one. This gives $k$
+  exact text-span column indices, one per occurrence, by construction in the
+  same left-to-right order for a repeated item and its matched control.
+\item \textbf{Track an attention centroid.} At the deepest instrumented probe
+  layer, \texttt{read\_head} computes, for every generation step $t$, the
+  row-normalised text-attention centroid $c_t = \sum_j j\, p(t,j)$ (a
+  $5$-tap moving average is applied for smoothing). A centroid rather than an
+  arg\-max is used deliberately: the source comment notes that when the $k$
+  spans are near-identical, their attention columns are near-identical too,
+  so a per-column argmax collapses to the same step for every occurrence,
+  whereas a centroid degrades gracefully and still moves even when no single
+  column dominates.
+\item \textbf{Match columns to steps monotonically.}
+  \texttt{boundary\_steps\_from\_attention} rescales the $k$ target columns
+  onto the empirical $2$nd--$98$th percentile range the centroid trace
+  actually traverses (a centroid, being a weighted mean, is pulled toward the
+  middle of the attended mass and so compresses relative to the raw column
+  range), then walks forward through the centroid trace once, for each
+  rescaled target in turn finding the first step at which the trace first
+  reaches or exceeds it. This is monotone by construction -- it can only ever
+  move forward through the generation.
+\item \textbf{Difference and fit.} The resulting $k$ boundary steps index
+  into the recorded hidden-state trajectory, giving
+  $d_m = \lVert h(t_{m+1}) - h(t_m)\rVert$
+  (\texttt{boundary\_distances}), and \texttt{fit\_geometric} regresses
+  $\log d_m = a + m\log q$ by least squares to recover $\hat q_{\text{bnd}}$
+  and an $R^2$.
+\end{enumerate}
+
+\subsection{Why it was the natural first choice}
+
+This construction is fully self-contained: it uses only the model's own
+recorded attention and the tokenizer's exact character offsets, with no
+external ASR pass, no separate alignment model, and no assumption that speech
+is rendered at a constant tempo. Unlike the estimator that replaced it
+(Section~\ref{sec:s5-replacement}), it operationalises Theorem~A's boundary
+states $s_m$ \emph{literally}, at the specific generation step where
+occurrence $m$ is actually believed to be rendered, rather than approximating
+the theorem's claim through a proxy quantity. If the model's attention
+tracked position the way a monotone alignment mechanism would, this would be
+the right tool, and it is kept in the codebase (rather than deleted) precisely
+because it remains the natural estimator for any future model that does have
+a genuinely monotone text read-head.
+
+\subsection{The measurement that killed it}
+
+The estimator's soundness rests on one load-bearing assumption: that the
+attention centroid $c_t$ moves \emph{monotonically forward} through the text
+as generation proceeds, i.e.\ that it is tracking position, not merely
+fluctuating around some fixed point of mass. This is directly checkable by
+computing, over consecutive generation steps, the fraction of steps at which
+the centroid actually advances ($c_{t+1} > c_t$). A genuine left-to-right
+sweep would produce a fraction close to $1$; a process with no net
+directional drift -- a random walk -- would produce a fraction close to
+$1/2$.
+
+The measured value, reported in the project's running notes
+(\texttt{findings.md}) and in the docstrings of both
+\texttt{dispersion.py} and \texttt{boundaries.py}, is that \textbf{the
+deep-layer attention centroid advances on approximately $51\%$ of generation
+steps} -- statistically indistinguishable from an unbiased random walk, and
+nowhere near the sweeping behaviour the estimator needs. (We note for
+precision that this figure is recorded as an empirical summary in the
+project's notes and source comments rather than reproduced by a single
+standalone script in the current snapshot of \texttt{analysis/}; it is the
+stated empirical justification, cited three times independently across the
+codebase, for abandoning the estimator, and it is corroborated by the
+concrete symptom described next, which \emph{is} directly reproducible from
+committed data.)
+
+That concrete symptom is visible in \texttt{data/results/pooled\_q.csv}
+(produced by \texttt{analysis/pooled\_q.py}, which pools boundary-distance
+curves across items within a (model, family) cell and regresses
+$\log(d_m/d_0)$ on $m$ through the origin, bootstrapping the item set for a
+confidence interval). Under the boundary/attention method, the pooled fit for
+Llasa-1B recovers $\hat q$ statistically indistinguishable from $1$ in every
+instrumented family -- \texttt{control\_word}: $\hat q \approx 1.00$ ($95\%$
+CI $[0.99, 1.02]$); \texttt{sentence\_rep}: $\hat q \approx 1.03$ ($95\%$ CI
+$[1.00, 1.12]$); \texttt{word\_rep}: $\hat q \approx 0.98$ ($95\%$ CI
+$[0.94, 1.02]$) -- i.e.\ \emph{no measurable contraction at all}, for a
+model whose boundary-free dispersion estimate (Section~\ref{sec:s5-replacement})
+recovers $\hat q$ clearly below $1$ for the same generations. This is a
+snapshot from the instrumented panel available at the time of writing and
+individual decimal values will move as more of the panel finishes running;
+the qualitative pattern -- boundary-method $\hat q \approx 1$ versus
+dispersion-method $\hat q < 1$, on the identical underlying trajectories -- is
+the diagnosis, not the specific digits.
+
+\subsection{Why the failure is self-defeating by construction}
+
+The failure is not a matter of insufficient smoothing or a fixable
+implementation bug; it is a direct structural corollary of Lemma~B
+(Section~\ref{sec:s1-dilution}). \texttt{softmax\_dist\_le} proves that the
+per-occurrence attention-weight differences shrink as $O(1/k)$, and
+\texttt{entropy\_ge} proves the profile's entropy floor grows as $\log k -
+\delta$: as the repeated block grows, the attention distribution the
+estimator's centroid is computed from becomes provably closer to uniform. A
+weighted-mean centroid computed over an increasingly uniform distribution
+carries, by the same argument, increasingly little information about which
+position is truly being rendered -- in the limit its expected value converges
+to the midpoint of the attended span regardless of which occurrence is
+actually current. The estimator therefore degrades precisely as $k$ grows,
+which is exactly the regime in which a clean boundary estimate would matter
+most for testing the theorem. This is why the failure could not have been
+patched by using more attention heads, denoising the centroid trace, or any
+comparable engineering fix: the very effect the estimator was built to
+exploit (identifiable, position-informative attention) is the effect Lemma~B
+proves vanishes as the block it is trying to measure grows.
+
+\subsection{The replacement: boundary-free dispersion}
+\label{sec:s5-replacement}
+
+Theorem~A(ii) (\texttt{exists\_indistinguishable}, Section~\ref{sec:s1})
+licenses a different, boundary-free operationalisation: it says the states
+visited late in a repeated generation become mutually indistinguishable as a
+\emph{set}, which is a statement about the \emph{spread} of the visited
+states and needs no per-occurrence boundary labels at all.
+\texttt{src/common/dispersion.py} implements this directly: the trajectory is
+tiled into \texttt{N\_WINDOWS}$=8$ equal-length windows (each requiring at
+least \texttt{MIN\_WINDOW}$=8$ steps to support an estimate); within each
+window, states are $\ell_2$-normalised (direction, not residual-stream
+magnitude, is what is compared -- magnitude is close to constant along these
+trajectories in any case, roughly $130$ for Llasa-1B, so normalising changes
+little but makes the resulting quantity comparable across models with
+different activation scales) and the mean pairwise chordal distance
+$\sqrt{2-2\cos\theta}$ among normalised states in the window is computed;
+$\log\sigma(\text{window})$ is then fit linearly against window index, and
+the fitted per-window rate is converted to a per-repetition $\hat q$ by the
+ratio of window length to average repetition length ($n_{\text{windows}}/k$).
+This sidesteps the localisation problem entirely, at the cost of measuring a
+slightly different (but, per Theorem~A(ii), equally licensed) quantity: the
+spread of the states visited within a window of the trajectory, rather than
+the literal distance between two specific, individually-identified boundary
+states. \texttt{analysis/state\_dynamics.py} computes both estimators side by
+side for every instrumented item (columns \texttt{q\_hat} for dispersion and
+\texttt{q\_bnd} for the boundary method in
+\texttt{data/results/state.csv}) and records which localisation method,
+\texttt{attention} or the uniform-tempo fallback \texttt{uniform}, produced
+each row's boundaries, precisely so this substitution is auditable rather
+than silent.
+
+% ============================================================
+\section{Per-model implementation notes}
+\label{sec:s6}
+
+Table~\ref{tab:panel} reproduces the model panel
+(\texttt{src/common/registry.py}) in full; the notes below detail how
+instrumentation was obtained for each family and, for Qwen3-TTS, precisely
+what could not be.
+
+\begin{table}[h]
+\centering
+\caption{Model panel (\texttt{PANEL}, \texttt{src/common/registry.py}).}
+\label{tab:panel}
+\footnotesize
+\begin{tabular}{@{}p{1.5cm}p{3.4cm}l p{0.8cm} p{1.3cm} p{1.5cm} p{4.4cm}@{}}
+\toprule
+Key & HF id & Fam. & Par. & Token rate & Probes & Notes \\
+\midrule
+llasa1b & HKUSTAudio/\allowbreak Llasa-1B & llasa & 1B & 50.0 Hz & all & Llama-3.2-1B / X-codec2 \\
+llasa3b & HKUSTAudio/\allowbreak Llasa-3B & llasa & 3B & 50.0 Hz & every 2 & Llama-3.2-3B, same tokenizer/codec \\
+llasa8b & HKUSTAudio/\allowbreak Llasa-8B & llasa & 8B & 50.0 Hz & every 4 & Llama-3.1-8B, top of scale ladder \\
+xtts2 & coqui/\allowbreak XTTS-v2 & xtts & 0.4B & 21.53 Hz & every 3 & GPT2-style AR + HiFiGAN \\
+qwen06b & Qwen/\allowbreak Qwen3-TTS-\allowbreak 12Hz-\allowbreak 0.6B-Base & qwen & 0.6B & 12.5 Hz & every 3 & dual-track multi-codebook LM \\
+qwen17b & Qwen/\allowbreak Qwen3-TTS-\allowbreak 12Hz-\allowbreak 1.7B-Base & qwen & 1.7B & 12.5 Hz & every 3 & same family as 0.6B \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\texttt{probe\_layer\_indices} always force-includes the final layer of
+whichever density setting is used, since that is the layer that actually
+feeds the model's own readout (stop-token logit or codec head); the ``every
+$n$'' densities on the larger checkpoints exist to bound per-item activation
+storage as depth grows.
+
+\subsection{Llasa (1B / 3B / 8B)}
+
+\texttt{src/models/llasa\_gen.py} runs every Llasa checkpoint through the
+same two-pass design. \textbf{Pass 1 (generate)} samples speech tokens
+autoregressively via \texttt{model.generate} with the attention backend set
+to SDPA (\texttt{do\_sample=True}, temperature $0.8$, top-$p$ $1.0$,
+\texttt{max\_new\_tokens}$=2048$ by default); the prompt is built from the
+model's own chat template with sentinel tokens
+(\texttt{<|TEXT\_UNDERSTANDING\_START/END|>},
+\texttt{<|SPEECH\_GENERATION\_START/END|>}) and
+\texttt{continue\_final\_message=True} to prime the assistant turn on the
+speech-start token; generated speech-token ids are extracted from the
+\texttt{<|s\_NNN|>} vocabulary pattern and saved as integer arrays, with
+waveform synthesis deferred to a separate offline pass
+(\texttt{src/models/xcodec2\_decode.py}) run in the isolated
+\texttt{xcodec2} environment (Section~\ref{sec:s7}). A \texttt{hit\_cap} flag
+records whether generation ran to the token ceiling; per the project's
+running notes, $21.5\%$ of Llasa-1B generations do so, treated in this study
+as a signal (runaway generation is common enough to be informative) rather
+than noise to be tuned away by simply raising the cap.
+
+\textbf{Pass 2 (instrument)} runs only when the seed equals
+\texttt{instrument\_seed} (default $0$), the stimulus item is marked
+\texttt{instrumented}, and at least one speech token was produced. The
+\emph{entire realised sequence} (prompt followed by the tokens actually
+sampled in Pass 1, EOS stripped) is fed through a single teacher-forced
+forward call with the attention backend switched to \texttt{eager} -- the
+only backend that materialises per-layer attention-weight tensors -- and
+\texttt{output\_hidden\_states=True}. Because the model is causal, position
+$t$ of this forward pass carries exactly the hidden state that \emph{produced}
+generated token $t$ during the actual sampling pass, so this single clean
+forward recovers the whole instrumented trajectory without altering the
+realised token sequence in any way; it is a pure read-out of Pass 1's output,
+not a re-sampling. \texttt{TextAttentionRecorder} attaches forward hooks to a
+chosen subset of \texttt{self\_attn} layers (up to four of
+$\{0, \lfloor L/3\rfloor, \lfloor 2L/3\rfloor, L-1\}$ for $L$ total layers);
+each hook slices the returned \texttt{(attn\_output, attn\_weights)} tuple's
+weights down to \texttt{[B, H, Q, text\_lo:text\_hi]}, head-averages, and
+moves to CPU \texttt{float16} \emph{inside the hook}, specifically to avoid
+ever materialising the full $O(T^2\cdot\text{heads}\cdot\text{layers})$
+attention tensor in memory. Entropy and top-1 probability of the next-token
+distribution are recorded from the same forward pass's logits at no extra
+cost. \texttt{llasa\_gen.py}'s own comment states the reason SDPA is used for
+sampling and eager only for the instrumented pass directly: Llasa under
+eager attention is roughly $5\times$ slower to sample.
+
+\subsection{XTTS-v2}
+
+\texttt{src/models/xtts\_gen.py} generates via \texttt{model.gpt.generate}
+(the GPT2-style autoregressive mel/codec-index decoder), using the sampling
+defaults shipped in the checkpoint's \texttt{config.json} unless overridden
+on the command line. Those shipped defaults include
+\textbf{\texttt{repetition\_penalty}$=5.0$} -- confirmed directly in the
+downloaded checkpoint's \texttt{config.json} -- an aggressive built-in
+anti-repetition mechanism active during the very sampling pass this study
+measures. Any residual counting failure XTTS-v2 exhibits is therefore
+occurring \emph{despite} a penalty actively working against it, which is why
+the main paper's Discussion (Limitations) frames XTTS-v2 as a
+\emph{conservative}, not a neutral, member of the panel: if anything, the
+theory's prediction is being tested on this model under a handicap. The AR
+decoder's built-in generation ceiling
+(\texttt{model.gpt.max\_gen\_mel\_tokens}) is derived from the shipped
+config's \texttt{model\_args.gpt\_max\_audio\_tokens}$=605$ minus a small
+fixed number of reserved special-token positions, giving an effective cap of
+approximately $602$ mel frames per item; the script's own
+\texttt{--max-new-tokens} override can only shrink this further via
+\texttt{min()}, never raise it.
+
+Instrumentation avoids a second forward pass through the high-level API by
+hand-reconstructing XTTS's own internal embedding recipe: conditioning
+latents, text embeddings (token $+$ positional), and mel-token embeddings
+(token $+$ positional) are concatenated into a single \texttt{inputs\_embeds}
+tensor and fed through the \emph{raw} underlying \texttt{transformers.GPT2Model}
+(\texttt{model.gpt.gpt}, whose own \texttt{wte}/\texttt{wpe} embedding tables
+are deleted by XTTS since embeddings are computed externally). This bypasses
+\texttt{Xtts.inference()}/\texttt{synthesize()} specifically because those
+high-level entry points do not expose \texttt{output\_hidden\_states=True}
+and additionally run a sentence-splitting/chunking stage that could silently
+fragment a long repeated-word stimulus into several independent
+\texttt{generate()} calls, defeating the ``one contiguous generation''
+premise the state-dynamics measurement depends on. Attention is forced to
+\texttt{eager} once at load time
+(\texttt{model.gpt.gpt.config.\_attn\_implementation = "eager"}), because
+SDPA (the library default) silently returns \texttt{None} attention weights
+even when \texttt{output\_attentions=True} is requested -- a failure mode the
+script's header comment documents explicitly, verified against the installed
+\texttt{coqui-tts}~0.27.5 and \texttt{transformers}~4.57.1 sources by file
+and function name. The same memory-avoidance trick as Llasa is used
+(\texttt{output\_attentions=False} at the top-level call, so
+\texttt{GPT2Model} never collects the full attention stack across all
+layers, while per-layer forward hooks on the probed blocks' \texttt{.attn}
+submodules see the real per-layer weights regardless, since
+\texttt{transformers}' eager attention path computes them unconditionally
+internally). Vocoding runs in the same process and script as generation
+(unlike Llasa, which vocodes offline in a separate environment), since
+XTTS ships its own HiFiGAN decoder with no conflicting pinned dependency.
+
+\subsection{Qwen3-TTS (0.6B / 1.7B)}
+
+\texttt{src/models/qwen\_gen.py} instruments a model that is architecturally
+very different from the other two families. Qwen3-TTS is a dual-track model:
+an autoregressive ``talker'' transformer
+(\texttt{Qwen3TTSTalkerForConditionalGeneration}) emits one $12.5$\,Hz
+acoustic frame per decode step, where each frame packs $16$ RVQ codebook ids
+-- the first sampled directly by the talker's own \texttt{codec\_head} inside
+the standard HF generation loop, the remaining $15$ filled in afterward by a
+separate, smaller ``code predictor'' sub-model conditioned on that step's
+talker hidden state. Only the first-codebook / talker level is instrumented,
+which is also the level at which Theorem~A's boundary-state argument is
+naturally stated.
+
+\textbf{No second forward pass is needed.} The mid-level library API,
+\texttt{Qwen3TTSForConditionalGeneration.generate()}, already unconditionally
+calls the talker's own \texttt{.generate(...,}
+\texttt{output\_hidden\_states=True,} \texttt{return\_dict\_in\_generate=True)}
+internally on every call and then discards every hidden-state layer but the
+last. \texttt{TalkerGenerateCapture} monkeypatches the bound
+\texttt{talker.generate} method to stash the full raw
+\texttt{GenerateDecoderOnlyOutput} (and the \texttt{trailing\_text\_hidden}
+keyword argument) before forwarding the call through completely unchanged --
+a read-only interception, so sampling and behaviour are byte-for-byte
+identical to what the public \texttt{generate\_voice\_clone()} API would have
+produced with or without instrumentation. Per-frame, per-probe-layer hidden
+states are then pulled out of the captured object after the fact
+(\texttt{extract\_trajectory}), with frame $j$ aligned to the decode call
+whose forward pass predicted it, matching the library's own internal
+step/frame convention.
+
+\textbf{Text attention is not obtainable, and this is stated in the code as
+an architectural fact, not a shortfall of instrumentation effort.} In the
+model's default streaming mode, the embedding fed into the talker at each
+decode step is the \emph{elementwise sum} of a codec-token embedding and, for
+a short prefix of steps, a text-token embedding
+(\texttt{trailing\_text\_hidden}, added inside the talker's own
+\texttt{forward}). There is consequently no column of the self-attention
+matrix that corresponds to ``the text'' the way there is for Llasa's or
+XTTS's concatenated token streams: attention weight over a fused position
+cannot be attributed to its text component versus its codec component after
+the sum, because the sum is not invertible. A \texttt{non\_streaming\_mode=True}
+flag exists in the library that would give text its own contiguous block of
+positions and could in principle be probed, but it is not the model's
+default or tested code path, and using it risks degrading the audio quality
+the project treats as the non-negotiable baseline requirement, so it is
+deliberately not used. \texttt{text\_lo}/\texttt{text\_hi} are therefore
+written as literal \texttt{null} in this model's metadata records -- an
+explicit ``not applicable,'' never a fabricated or uniform placeholder span
+standing in for real boundaries -- alongside a \texttt{trailing\_text\_len}
+field recording how many initial decode steps did carry a distinguishable
+text contribution, offered as a temporal (not spatial) proxy for anyone who
+wants one. A direct consequence, made explicit here because it is easy to
+miss: because Qwen3-TTS has no obtainable text attention, it is absent from
+the boundary-based estimator of Section~\ref{sec:s5} \emph{by construction}
+(there is no attention tensor to feed \texttt{unit\_columns}/\texttt{read\_head}),
+and its state-space measurements in this study are dispersion-only.
+
+% ============================================================
+\section{Reproducibility}
+\label{sec:s7}
+
+\subsection{The four conda environments}
+
+\texttt{env/setup\_envs.sh} builds four environments because, per its own
+header comment, ``the dependency constraints are mutually unsatisfiable.''
+Table~\ref{tab:envs} lists every version pin found in the script and the
+concrete failure it exists to prevent, drawn from the script's own comments
+and the README's ``Things that will bite you'' section.
+
+\begin{table}[h]
+\centering
+\caption{Conda environments (\texttt{env/setup\_envs.sh}) and their pins.}
+\label{tab:envs}
+\small
+\begin{tabular}{@{}lp{2.6cm}p{8.6cm}@{}}
+\toprule
+Env & Python / core & Pin and the failure it prevents \\
+\midrule
+\texttt{base} & py3.13, torch 2.11+cu130 & \texttt{transformers==4.57.3} (additive install onto
+  the existing base torch); runs the Llasa LMs, Whisper ASR, and all analysis
+  scripts. \\
+\texttt{qwen} & py3.12 & \texttt{qwen-tts} package; torch/torchaudio installed from the
+  \texttt{cu130} index \emph{before} \texttt{qwen-tts} -- installing in the
+  other order lets pip silently pull a default CUDA-12 wheel, breaking the
+  driver/toolkit match. \\
+\texttt{coqui} & py3.12 & \texttt{coqui-tts}; same cu130-before-package ordering.
+  \texttt{coqui-tts} breaks on \texttt{transformers} 5.x
+  (\texttt{isin\_mps\_friendly} was removed from that version), so this
+  environment is kept on \texttt{transformers} 4.57.x. \\
+\texttt{xcodec2} & py3.11, torch 2.5 (hard-pinned) & \texttt{xcodec2==0.1.5} pins torch 2.5 but
+  leaves \texttt{transformers}/\texttt{torchao} unpinned, and both have since
+  moved past compatible versions: \texttt{transformers} 5.x $\to$
+  \texttt{Could not import module 'PreTrainedModel'}; \texttt{torchao}
+  $\ge$0.7 $\to$ \texttt{module 'torch' has no attribute 'int1'}. The working
+  combination, pinned explicitly after the \texttt{xcodec2} install, is
+  \texttt{transformers==4.46.3}, \texttt{tokenizers<0.21},
+  \texttt{torchao==0.6.1}, plus \texttt{soundfile}. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The \texttt{qwen} and \texttt{coqui} environments both install torch and
+torchaudio from the PyTorch \texttt{cu130} wheel index
+(\texttt{--index-url} \texttt{https://download.pytorch.org/\allowbreak whl/cu130})
+\emph{before} the TTS package itself, per the script's own top-level
+comment: ``install cu130 torch BEFORE the TTS package in each env, else pip
+silently pulls a default CUDA-12 wheel and the driver/toolkit combo breaks.''
+
+\subsection{Other pitfalls documented in the README}
+
+\begin{itemize}
+\item \textbf{\texttt{src/common/tokenizers.py} must never exist.} Running a
+  script from inside \texttt{src/common/} puts that directory first on
+  \texttt{sys.path}, so a file with that name would shadow the real
+  \texttt{tokenizers} package and break \texttt{transformers} with a
+  confusing \texttt{ImportError}; this is why the project's own tokenizer
+  interface is named \texttt{offset\_tok.py} instead.
+\item \textbf{The HF \texttt{automatic-speech-recognition} pipeline routes
+  audio through \texttt{torchcodec}}, which does not load against the
+  installed FFmpeg in this environment; \texttt{asr\_transcribe.py} drives
+  \texttt{WhisperProcessor} and \texttt{WhisperForConditionalGeneration}
+  directly instead, avoiding that code path entirely.
+\item \textbf{XTTS replaces spaces with literal \texttt{[SPACE]} tokens and
+  lower-cases before tokenizing}, so any text-column index computed for XTTS
+  must be computed on the transformed string
+  (\texttt{offset\_tok.\_xtts\_prepare}), never on the raw stimulus text.
+\item \textbf{Llasa under eager attention is roughly $5\times$ slower to
+  sample}, which is why \texttt{llasa\_gen.py} samples under SDPA and
+  switches to eager only for the single instrumented teacher-forced pass.
+\item \textbf{Whisper de-duplicates repeated speech}, so a transcript-only
+  repetition count systematically understates loops; this is the direct
+  motivation for the conjunctive correctness criterion of
+  Section~\ref{sec:s4}.
+\end{itemize}
+
+\subsection{Exact commands}
+
+\begin{lstlisting}[language=bash,mathescape=false]
+# 0. Environments (once)
+bash env/setup_envs.sh all       # base, qwen, coqui, xcodec2
+bash scripts/setup_lean.sh       # elan + mathlib cache (CPU, ~15 min)
+bash scripts/download_models.sh  # 8 checkpoints, ~74 GB
+
+# 1. Verify the formal artifact
+bash scripts/check_lean.sh
+
+# 2. Generate (one model per GPU; resumable by (item_id, seed))
+python src/models/llasa_gen.py --model llasa1b --gpu 0 --seeds 0 1 2
+# xtts2 needs the `coqui` env and COQUI_TOS_AGREED=1
+# qwen06b / qwen17b need the `qwen` env
+
+# 3. Vocode, transcribe, score
+bash scripts/run_pipeline.sh <asr_gpu> llasa1b xtts2 ...
+
+# 4. Analyse and build the paper
+python analysis/state_dynamics.py --models <models> --out data/results/state.csv
+python analysis/capacity.py                       # the central measurement
+python analysis/horizon_fit.py                     # behavioural collapse points
+python analysis/figures.py
+bash paper/build.sh                                # regenerates numbers, compiles
+\end{lstlisting}
+
+\texttt{paper/build.sh} regenerates \texttt{numbers.tex} from the result CSVs
+before every compile (\texttt{analysis/make\_numbers.py}), so a number in the
+compiled PDF cannot drift from the data it was computed from; every
+generation script is resumable, skipping any \texttt{(item\_id, seed)} pair
+already present in its metadata file, so re-running after an interruption is
+always safe. Because generation and analysis for this panel were still
+in progress at the time this document was written, several of the
+per-model quantities in the main paper's Table~1 and Table~2 are
+recomputed automatically the next time \texttt{paper/build.sh} runs against a
+more complete \texttt{data/results/} directory; this document has
+deliberately favoured describing method over quoting point-in-time numbers
+for exactly that reason.
+
+\subsection{The verification gate}
+
+\texttt{scripts/check\_lean.sh} is reproduced in full in
+Section~\ref{sec:s1-audit}. Its three checks -- successful \texttt{lake
+build}, a textual \texttt{sorry} scan, and the \texttt{\#print axioms} audit
+for \texttt{sorryAx} -- are run as a single command,
+\texttt{bash scripts/check\_lean.sh}, and constitute the project's gate on
+the formal artifact: no result in the main paper or in this document should
+be read as resting on a machine-checked guarantee unless this script has
+been run against the exact commit being cited and has printed
+\texttt{PASS: formal artifact verified}.
+
+\bibliographystyle{IEEEtran}
+\bibliography{../refs}
+
+\end{document}

@@ -15,8 +15,12 @@
 \title{Counting Collapse: A Formally Verified Attractor Theory of\\
        Repetition Hallucination in Autoregressive Text-to-Speech}
 
-\name{Anonymous submission}
-\address{Affiliation withheld for review}
+\twoauthors
+  {Ivan Viakhirev$^{1}$, Kirill Borodin$^{2,3}$, Grach Mkrtchian$^{2}$}
+  {$^{1}$ITMO University, Russia \\
+   $^{2}$lab260, Moscow Technical University of Communications and Informatics, Russia \\
+   $^{3}$BitmanagerAI, UAE}
+  {}{}
 
 \begin{document}
 \maketitle
@@ -28,15 +32,17 @@ structural limit. Modelling one repetition as a state map $F$ on the decoder's
 hidden state, we prove that if $F$ contracts with factor $q<1$, then boundary
 states converge geometrically and \emph{no} Lipschitz readout---including the
 model's own stop head---can separate repetition counts beyond a horizon
-$N^\ast \le \log(\mathrm{margin}/2LC)/\log q$. The theorem and a companion
-attention-dilution lemma are machine-checked in Lean~4 with \texttt{mathlib},
-free of \texttt{sorry} and of nonstandard axioms. Empirically, on \NModels{}
-checkpoints spanning \NFamilies{} families and a $1$B--$8$B scale ladder, we find
-the predicted signature: counting accuracy collapses past a model-specific $k^\ast$
-while length-matched non-repetitive controls remain intact, boundary-state
-distances decay geometrically with measured $\hat q<1$, and the horizon implied
-by $\hat q$ tracks the observed $k^\ast$. Repetition hallucination is a fixed
-point, not noise.
+$N^\ast \le \log(\mu/2LC)/\log q$. The theorem and a companion attention-dilution
+lemma are machine-checked in Lean~4 with \texttt{mathlib}, free of \texttt{sorry}
+and of nonstandard axioms. Empirically, across \NModels{} checkpoints from
+\NFamilies{} families, counting accuracy collapses past a model-specific
+$k^\ast$ while length-matched non-repetitive controls survive far beyond it
+(\AccRepHigh{}\% vs.\ \AccCtlHigh{}\% at $k\ge6$), so the limit tracks
+periodicity rather than length. The theorem's own consequence is directly
+observable: the number of distinguishable states a generation visits grows with
+$k$ at a factor \CapRatio{} of the control rate, with disjoint bootstrap
+intervals. The decoder does not merely err on repeated text --- it runs out of
+states in which the count could be represented.
 \end{abstract}
 
 \begin{keywords}
@@ -51,7 +57,7 @@ Ask an autoregressive text-to-speech (TTS) model to say \emph{six hundred
 sixty-six thousand six hundred sixty-six}, or to repeat a word a dozen times,
 and it will frequently get the count wrong: it stops early, runs on, or locks
 into a loop. The behaviour is well documented as a stability
-problem~\cite{wang2025eliminating,song2025ella}, and is usually attributed to
+problem~\cite{wang2025eliminating,song2024ellav}, and is usually attributed to
 exposure bias or to the absence of a monotonic alignment constraint, with fixes
 proposed at the level of attention supervision or decoding
 rules~\cite{xin2024ralle,du2024cosyvoice2}.
@@ -200,21 +206,39 @@ XTTS-v2~\cite{casanova2024xtts} and Qwen3-TTS at 0.6B/1.7B for cross-family
 coverage. Each item is generated with \NSeeds{} seeds.
 
 \noindent\textbf{Behavioural measurement.}
-Generated audio is transcribed with Whisper large-v3~\cite{radford2023robust}.
-Because the judge is itself an autoregressive model that collapses repeated
-material, we never trust a single count: a transcript count is reconciled
-against a duration-derived count calibrated per model and template on the
-low-$k$ regime, and disagreements are quarantined into an audit bucket
-(\AuditPct{}\% of items). Outcomes are labelled
-\{correct, undercount, truncation, overcount, loop, degenerate\}.
+Generated audio is transcribed with Whisper large-v3~\cite{radford2023whisper}.
+The judge is itself an autoregressive model that de-duplicates repeated
+material, so a transcript count alone understates loops. We therefore score
+correctness \emph{conjunctively}: an item is correct only if the normalised
+transcript contains exactly the requested number of units \emph{and} the audio
+duration is consistent with that number, against a per-model, per-template
+duration model fitted on the low-$k$ regime. Nothing is excluded --- the two
+signals fail in opposite directions (ASR de-duplication shortens the transcript
+while lengthening the audio; babbling does the reverse), so requiring both is
+what makes the label robust, and every item receives one. Repeated and control
+items are scored by the same question, how many of the $k$ requested units were
+rendered, which is what makes their accuracies comparable. Outcomes are labelled
+\{correct, undercount, truncation, overcount, loop, miscount, degenerate,
+empty\}. The two
+estimators agree on \AgreeLowK{}\% of items in the low-$k$ regime where a correct
+rendering exists to be measured; at high $k$ they diverge precisely because the
+output no longer corresponds to any clean count.
 
 \noindent\textbf{State measurement.}
-For each instrumented generation we record per-step hidden states at probe
-layers and head-averaged attention onto the text span. Repetition boundaries are
-located from the model's own attention: the step at which the $j$-th occurrence
-column attains peak attention. We then fit $\log d_m = a + m\log q$ to the
-boundary distances $d_m = \lVert h_{m+1} - h_m\rVert$, giving $\hat q$ and, with
-the noise floor measured on control items, the horizon of~\eqref{eq:horizon}.
+For each instrumented generation we record per-step hidden states at probe layers
+and head-averaged attention onto the text span. The statistic is the effective
+rank of the generation trajectory, $\mathcal{N}_{\mathrm{eff}} =
+\exp(-\sum_i p_i \log p_i)$ over normalised singular values, as a function of
+$k$; Section~\ref{sec:negative} explains why we do not measure $q$ by
+differencing boundary states.
+
+\noindent\textbf{Code and data.}
+The Lean development, the stimulus set, all generation and analysis code, and the
+per-item result tables are released at
+\url{https://github.com/lab260ru/icassp_antispoofing}. A single command
+(\texttt{scripts/check\_lean.sh}) rebuilds the formal artifact and reprints the
+axiom audit; \texttt{paper/build.sh} regenerates every number in this paper from
+the released tables.
 
 \section{Results}
 \label{sec:results}

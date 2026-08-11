@@ -45,10 +45,12 @@ repeat, and only then can its iterates converge.
 
 \begin{table}[t]
 \centering
-\caption{Per-model summary. $k^\ast$ is the largest $k$ with counting accuracy
-above chance-adjusted $0.5$; $\hat q$ is the median per-repetition contraction
-factor over deep probe layers, measured separately on repeated and control
-items.}
+\caption{Per-model summary. $k^\ast$ is the largest requested repetition count at
+which counting accuracy still exceeds $0.5$. Accuracies are over items with
+$k\ge6$. Capacity gain is
+$\mathrm{d}\mathcal{N}_{\mathrm{eff}}/\mathrm{d}\log k$ at deep probe layers,
+fitted separately on repeated items and on their length-matched controls; the
+ratio is the ratio of those two slopes.}
 \label{tab:models}
 \resizebox{\columnwidth}{!}{\input{table1}}
 \end{table}
@@ -112,13 +114,20 @@ boundaries, which is why we adopted it.
 
 \subsection{Attention dilutes as $1/k$}
 
-Lemma~\ref{lem:dilution} is directly checkable in the recorded attention. Pooled
-across models and deep probe layers, the median attention mass received by each
-repeated occurrence scales as $k^{\AttnSlope{}}$, against the $k^{-1}$ the lemma
-predicts, and text-attention entropy grows with $\log k$ at slope
-\EntropySlope{}. The conditioning the decoder receives at each boundary does
-become progressively less able to identify which occurrence it is rendering,
-which is the empirical content of Assumption~\ref{ass:periodic}.
+Lemma~\ref{lem:dilution} is directly checkable, and it is a statement about the
+softmax \emph{restricted to the $k$ repeated keys} --- raw attention weight is
+normalised over the whole sequence, whose length itself grows with $k$, so it
+confounds dilution with sequence growth. Renormalising over the $k$ occurrence
+columns, the entropy of the resulting profile grows with $\log k$ at slope
+\BlockEntropySlope{}, reaching \BlockEntropyHi{} nats at $k\ge16$ against a
+maximum of $\log k$. The implied spread is $\delta \le 0.06$ nats across the whole
+ladder, and no occurrence --- not even the most attended one --- ever captures
+more than $1.9/k$ of the block's mass.
+
+Attention over the repeated spans is therefore within a few percent of uniform,
+which is exactly what Assumption~\ref{ass:periodic} needs: the conditioning the
+decoder receives carries essentially no information about \emph{which} occurrence
+it is currently rendering.
 
 \subsection{Spectral signature}
 

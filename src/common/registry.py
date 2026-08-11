@@ -45,6 +45,13 @@ PANEL = [
     ModelSpec("qwen17b", "Qwen/Qwen3-TTS-12Hz-1.7B-Base", "qwen", "1.7B", "qwen",
               12.5, 24000, "every3", True,
               "same family as 0.6B; mini scale ladder"),
+    # Ablation. XTTS-v2 ships repetition_penalty=5.0 on acoustic tokens, which
+    # acts directly against the behaviour under study; run with it disabled to
+    # show the dissociation is not an artefact of that decoding-time
+    # intervention. Separate key so it never mixes with the main run's outputs.
+    ModelSpec("xtts2norp", "coqui/XTTS-v2", "xtts", "0.4B", "coqui",
+              21.53, 24000, "every3", True,
+              "XTTS-v2 with repetition_penalty=1.0 (ablation)"),
 ]
 
 BY_KEY = {m.key: m for m in PANEL}

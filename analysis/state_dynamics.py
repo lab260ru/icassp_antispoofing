@@ -150,17 +150,34 @@ def main() -> None:
                         control_of=it.get("control_of"))
 
             # --- P3: attention dilution ---------------------------------
+            # Lemma B is a statement about the softmax *restricted to the k
+            # repeated keys*, not about raw attention weight. Raw weight is
+            # normalised over the whole sequence, whose length itself grows with
+            # k, so it confounds dilution with sequence growth. We therefore
+            # renormalise over the k occurrence columns and test the share each
+            # occurrence receives, which is what the lemma bounds by e^{±δ}/k.
             if attn is not None and attn.size:
                 a = attn.astype(np.float32)
                 tot = a.sum(axis=1, keepdims=True)
-                p = a / np.maximum(tot, 1e-8)
-                ent = -(p * np.log(np.maximum(p, 1e-12))).sum(axis=1)
-                base["attn_entropy"] = float(np.median(ent))
+                p_all = a / np.maximum(tot, 1e-8)
+                base["attn_text_entropy"] = float(np.median(
+                    -(p_all * np.log(np.maximum(p_all, 1e-12))).sum(axis=1)))
                 base["attn_text_mass"] = float(np.median(tot))
-                if cols:
-                    per = [float(np.median(a[:, c])) for c in cols if c < a.shape[1]]
-                    base["attn_per_occurrence"] = float(np.mean(per)) if per else np.nan
-                    base["n_occ_cols"] = len(per)
+                valid = [c for c in cols if c < a.shape[1]]
+                if len(valid) >= 2:
+                    blk = a[:, valid]                                  # [T, k]
+                    bsum = blk.sum(axis=1, keepdims=True)
+                    q_blk = blk / np.maximum(bsum, 1e-8)               # within-block softmax
+                    base["attn_share"] = float(np.median(q_blk.mean(axis=1)))
+                    base["attn_share_max"] = float(np.median(q_blk.max(axis=1)))
+                    base["attn_block_entropy"] = float(np.median(
+                        -(q_blk * np.log(np.maximum(q_blk, 1e-12))).sum(axis=1)))
+                    # distance from the uniform profile: Lemma B bounds this by
+                    # (e^delta - e^-delta)/k, so it should fall like 1/k
+                    base["attn_unif_dev"] = float(np.median(
+                        np.abs(q_blk - 1.0 / len(valid)).max(axis=1)))
+                    base["attn_per_occurrence"] = float(np.median(blk.mean(axis=1)))
+                    base["n_occ_cols"] = len(valid)
 
             # --- P1 + P4, per probe layer -------------------------------
             # The geometric fit is cheap and wanted at every probe layer; the

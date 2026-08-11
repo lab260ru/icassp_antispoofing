@@ -134,7 +134,7 @@ def fig_mechanism(state: pd.DataFrame, cap: dict, out: Path) -> None:
     ax.set_xticks(xs)
     ax.set_xticklabels([LABEL.get(m, m) for m in models], rotation=20, ha="right")
     ax.set_ylabel(r"$\mathrm{d}\mathcal{N}_{\mathrm{eff}}/\mathrm{d}\log k$")
-    ax.set_title("(b) capacity gain, 95\\% CI")
+    ax.set_title("(b) capacity gain, 95% CI")
     ax.legend(loc="upper right")
 
     fig.tight_layout(pad=0.3)
