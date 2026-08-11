@@ -1,24 +1,31 @@
 % Discussion body. Hand-written; numbers come from numbers.tex.
 
-\noindent\textbf{What is proved, and what is not.}
+\noindent\textbf{What is proved, and what would refute it.}
 The Lean artifact certifies an implication: periodic conditioning plus
 contraction implies a finite counting horizon. It does not prove that any
 transformer contracts, and our attempt to measure that premise directly failed
 (Section~\ref{sec:negative}). What we establish empirically is the theorem's
-\emph{consequence} --- capacity saturation under periodicity --- not its
-antecedent. Formalisation is what forced us to keep the two apart.
+\emph{consequence}, not its antecedent.
+
+A conditional account risks being unfalsifiable, so we state what would refute
+it: a control showing the same deficit as its repeated twin (blaming length, not
+periodicity); a model with the deficit whose capacity gain matches its control
+(severing mechanism from behaviour); or a probe recovering the count from late
+states as well as early ones (placing the failure in the readout). Our data could
+have shown any of the three. \ErrBestModel{} is instructive: no count deficit yet
+still a capacity gap, so capacity loss is necessary but not sufficient ---
+consistent with \eqref{eq:horizon}, where a large readout margin buys horizon
+even under contraction.
 
 The closest prior result is representational
 collapse~\cite{barbero2024glasses}: as a sequence grows, distinct prefixes map to
-arbitrarily close final representations, which already implies counting errors.
-The mechanisms are different and our control separates them empirically.
-Collapse-by-length predicts that a $32$-word control and a $32$-word repetition
-fail alike, since both are equally long; it is the length that does the work.
-Collapse-by-periodicity predicts the gap we measure. Figure~\ref{fig:main}(b) is
-therefore not only evidence for our account but evidence against length alone
-being sufficient, and~\eqref{eq:horizon} supplies a rate in repetitions that a
-length-indexed bound does not. Related dynamical treatments of self-attention
-index convergence by depth or an abstract
+arbitrarily close representations, which already implies counting errors. Our
+control separates the two mechanisms empirically --- collapse-by-length predicts
+that a $32$-word control and a $32$-word repetition fail alike, since both are
+equally long, so Figure~\ref{fig:main}(b) is evidence against length alone being
+sufficient, and~\eqref{eq:horizon} supplies a rate in repetitions that a
+length-indexed bound does not. Related dynamical treatments index convergence by
+depth or an abstract
 temperature~\cite{dong2021attention,geshkovski2023emergence,gao2026clustered};
 ours indexes it by generation step. A competing account holds that in text LMs
 the count survives in the residual stream and only the output policy
@@ -30,18 +37,14 @@ Existing mitigations act late~\cite{wang2025eliminating,xin2024ralle}. Under thi
 account they help only insofar as they raise $q$ or enlarge the readout margin,
 and \eqref{eq:horizon} says the levers are unequal: the horizon is logarithmic in
 the margin but inversely logarithmic in $q$. XTTS-v2 is a case in point: its shipped
-repetition penalty of $5.0$ on acoustic tokens acts directly against the
-behaviour we measure, and disabling it degrades the model so far that its
-repeated-text output is almost entirely degenerate --- which makes that ablation
-uninformative about the dissociation, and leaves the penalised model the
-conservative member of the panel. Limits: the panel is English-only and all six
-checkpoints are
-codec-language models with softmax attention over text, so the claim is about
-that architecture class rather than AR TTS in general; the capacity ratio does
-not order $k^\ast$ across models, and we do not claim it does; text attention is
-unreachable where text and acoustic embeddings are additively fused (Qwen3-TTS);
-and we do not propagate the residual $O(\delta + 1/k)$ term of
-Lemma~\ref{lem:dilution} through the theorem, so the machine-checked bound applies
-to the idealised periodic map rather than the measured one.
-
-The quantity to control is $q$.
+repetition penalty of $5.0$ acts directly against the behaviour we measure, and
+disabling it degrades both conditions so far that the ablation is uninformative,
+leaving the penalised model the conservative panel member. Limits: the panel is
+English-only and all six checkpoints are
+codec-language models with softmax attention over text, so the claim concerns
+that architecture class, not AR TTS in general; capacity ratio and count error
+correlate in the predicted direction across the panel (Spearman $+0.49$) but
+$n{=}6$ cannot establish it; text attention is unreachable where text and
+acoustic embeddings are additively fused (Qwen3-TTS); and the residual
+$O(\delta + 1/k)$ term of Lemma~\ref{lem:dilution} is not propagated through the
+theorem, so the machine-checked bound applies to the idealised periodic map.

@@ -211,6 +211,15 @@ def main() -> None:
             macros["ErrBestModel"] = LABEL.get(best, best)
             macros["ErrBestVal"] = fmt(100 * panel[best]["rep"]["median"], 1)
 
+    # ---- CTC judge validation --------------------------------------------
+    cv_path = Path("data/results/ctc_validation.json")
+    if cv_path.exists():
+        cv = json.loads(cv_path.read_text()).get("summary", {})
+        macros["CtcValPer"] = fmt(cv.get("periodic_ctc_kge4"), 2)
+        macros["CtcValDis"] = fmt(cv.get("distinct_ctc_kge4"), 2)
+        macros["WhisperValPer"] = fmt(cv.get("periodic_whisper_kge4"), 2)
+        macros["WhisperValDis"] = fmt(cv.get("distinct_whisper_kge4"), 2)
+
     # ---- ASR instrument audit ---------------------------------------------
     ar_path = Path("data/results/asr_reliability.json")
     if ar_path.exists():

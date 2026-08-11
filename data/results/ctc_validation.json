@@ -1,0 +1,1109 @@
+{
+  "source_model": "xtts2",
+  "ctc": "facebook/wav2vec2-large-960h-lv60-self",
+  "whisper": "openai/whisper-large-v3",
+  "trials": [
+    {
+      "kind": "periodic",
+      "unit": "very",
+      "true": 2,
+      "judge": "ctc",
+      "counted": 2,
+      "dur_s": 6.085375,
+      "text": "THE DOG WAS VERY BIG AND IT RAN ACROSS THE FIELD THE DOG WAS VERY BIG AND IT RAN ACROSS THE FIELD"
+    },
+    {
+      "kind": "periodic",
+      "unit": "very",
+      "true": 2,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 6.085375,
+      "text": " The dog was very big and it ran across the field."
+    },
+    {
+      "kind": "periodic",
+      "unit": "very",
+      "true": 4,
+      "judge": "ctc",
+      "counted": 4,
+      "dur_s": 12.17075,
+      "text": "THE DOG WAS VERY BIG AND IT RAN ACROSS THE FIELD THE DOG WAS VERY BIG AND IT RAN ACROSS THE FIELD THE DOG WAS VERY BIG AND IT RAN ACROSS THE FIELD THE DOG WAS VERY BIG AND IT RAN ACROSS THE FIELD"
+    },
+    {
+      "kind": "periodic",
+      "unit": "very",
+      "true": 4,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 12.17075,
+      "text": " The dog was very big and it ran across the field."
+    },
+    {
+      "kind": "periodic",
+      "unit": "very",
+      "true": 8,
+      "judge": "ctc",
+      "counted": 8,
+      "dur_s": 24.3415,
+      "text": "THE DOG WAS VERY BIG AND IT RAN ACROSS THE FIELD THE DOG WAS VERY BIG AND IT RAN ACROSS THE FIELD THE DOG WAS VERY BIG AND IT RAN ACROSS THE FIELD THE DOG WAS VERY BIG AND IT RAN ACROSS THE FIELD THE "
+    },
+    {
+      "kind": "periodic",
+      "unit": "very",
+      "true": 8,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 24.3415,
+      "text": " The dog was very big and it ran across the field."
+    },
+    {
+      "kind": "periodic",
+      "unit": "very",
+      "true": 16,
+      "judge": "ctc",
+      "counted": 16,
+      "dur_s": 48.683,
+      "text": "THE DOG WAS VERY BIG AND IT RAN ACROSS THE FIELD THE DOG WAS VERY BIG AND IT RAN ACROSS THE FIELD THE DOG WAS VERY BIG AND IT RAN ACROSS THE FIELD THE DOG WAS VERY BIG AND IT RAN ACROSS THE FIELD THE "
+    },
+    {
+      "kind": "periodic",
+      "unit": "very",
+      "true": 16,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 48.683,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "periodic",
+      "unit": "very",
+      "true": 32,
+      "judge": "ctc",
+      "counted": 32,
+      "dur_s": 97.366,
+      "text": "THE DOG WAS VERY BIG AND IT RAN ACROSS THE FIELD THE DOG WAS VERY BIG AND IT RAN ACROSS THE FIELD THE DOG WAS VERY BIG AND IT RAN ACROSS THE FIELD THE DOG WAS VERY BIG AND IT RAN ACROSS THE FIELD THE "
+    },
+    {
+      "kind": "periodic",
+      "unit": "very",
+      "true": 32,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 97.366,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "periodic",
+      "unit": "no",
+      "true": 2,
+      "judge": "ctc",
+      "counted": 2,
+      "dur_s": 5.253375,
+      "text": "SHE SAID NO TO THE OFFER AND THEN LEFT THE ROOM SHE SAID NO TO THE OFFER AND THEN LEFT THE ROOM"
+    },
+    {
+      "kind": "periodic",
+      "unit": "no",
+      "true": 2,
+      "judge": "whisper",
+      "counted": 2,
+      "dur_s": 5.253375,
+      "text": " She said no to the offer and then left the room. She said no to the offer and then left the room."
+    },
+    {
+      "kind": "periodic",
+      "unit": "no",
+      "true": 4,
+      "judge": "ctc",
+      "counted": 4,
+      "dur_s": 10.50675,
+      "text": "SHE SAID NO TO THE OFFER AND THEN LEFT THE ROOM SHE SAID NO TO THE OFFER AND THEN LEFT THE ROOM SHE SAID NO TO THE OFFER AND THEN LEFT THE ROOM SHE SAID NO TO THE OFFER AND THEN LEFT THE ROOM"
+    },
+    {
+      "kind": "periodic",
+      "unit": "no",
+      "true": 4,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 10.50675,
+      "text": " She said no to the offer and then left the room."
+    },
+    {
+      "kind": "periodic",
+      "unit": "no",
+      "true": 8,
+      "judge": "ctc",
+      "counted": 8,
+      "dur_s": 21.0135,
+      "text": "SHE SAID NO TO THE OFFER AND THEN LEFT THE ROOM SHE SAID NO TO THE OFFER AND THEN LEFT THE ROOM SHE SAID NO TO THE OFFER AND THEN LEFT THE ROOM SHE SAID NO TO THE OFFER AND THEN LEFT THE ROOM SHE SAID"
+    },
+    {
+      "kind": "periodic",
+      "unit": "no",
+      "true": 8,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 21.0135,
+      "text": " She said no to the offer and then left the room."
+    },
+    {
+      "kind": "periodic",
+      "unit": "no",
+      "true": 16,
+      "judge": "ctc",
+      "counted": 16,
+      "dur_s": 42.027,
+      "text": "SHE SAID NO TO THE OFFER AND THEN LEFT THE ROOM SHE SAID NO TO THE OFFER AND THEN LEFT THE ROOM SHE SAID NO TO THE OFFER AND THEN LEFT THE ROOM SHE SAID NO TO THE OFFER AND THEN LEFT THE ROOM SHE SAID"
+    },
+    {
+      "kind": "periodic",
+      "unit": "no",
+      "true": 16,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 42.027,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "periodic",
+      "unit": "no",
+      "true": 32,
+      "judge": "ctc",
+      "counted": 32,
+      "dur_s": 84.054,
+      "text": "SHE SAID NO TO THE OFFER AND THEN LEFT THE ROOM SHE SAID NO TO THE OFFER AND THEN LEFT THE ROOM SHE SAID NO TO THE OFFER AND THEN LEFT THE ROOM SHE SAID NO TO THE OFFER AND THEN LEFT THE ROOM SHE SAID"
+    },
+    {
+      "kind": "periodic",
+      "unit": "no",
+      "true": 32,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 84.054,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "periodic",
+      "unit": "far",
+      "true": 2,
+      "judge": "ctc",
+      "counted": 2,
+      "dur_s": 5.53075,
+      "text": "HE WALKED FAR INTO THE FOREST BEFORE TURNING BACK HE WALKED FAR INTO THE FOREST BEFORE TURNING BACK"
+    },
+    {
+      "kind": "periodic",
+      "unit": "far",
+      "true": 2,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 5.53075,
+      "text": " He walked far into the forest before turning back."
+    },
+    {
+      "kind": "periodic",
+      "unit": "far",
+      "true": 4,
+      "judge": "ctc",
+      "counted": 4,
+      "dur_s": 11.0615,
+      "text": "HE WALKED FAR INTO THE FOREST BEFORE TURNING BACK HE WALKED FAR INTO THE FOREST BEFORE TURNING BACK HE WALKED FAR INTO THE FOREST BEFORE TURNING BACK HE WALKED FAR INTO THE FOREST BEFORE TURNING BACK"
+    },
+    {
+      "kind": "periodic",
+      "unit": "far",
+      "true": 4,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 11.0615,
+      "text": " He walked far into the forest before turning back."
+    },
+    {
+      "kind": "periodic",
+      "unit": "far",
+      "true": 8,
+      "judge": "ctc",
+      "counted": 8,
+      "dur_s": 22.123,
+      "text": "HE WALKED FAR INTO THE FOREST BEFORE TURNING BACK HE WALKED FAR INTO THE FOREST BEFORE TURNING BACK HE WALKED FAR INTO THE FOREST BEFORE TURNING BACK HE WALKED FAR INTO THE FOREST BEFORE TURNING BACK "
+    },
+    {
+      "kind": "periodic",
+      "unit": "far",
+      "true": 8,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 22.123,
+      "text": " He walked far into the forest before turning back."
+    },
+    {
+      "kind": "periodic",
+      "unit": "far",
+      "true": 16,
+      "judge": "ctc",
+      "counted": 16,
+      "dur_s": 44.246,
+      "text": "HE WALKED FAR INTO THE FOREST BEFORE TURNING BACK HE WALKED FAR INTO THE FOREST BEFORE TURNING BACK HE WALKED FAR INTO THE FOREST BEFORE TURNING BACK HE WALKED FAR INTO THE FOREST BEFORE TURNING BACK "
+    },
+    {
+      "kind": "periodic",
+      "unit": "far",
+      "true": 16,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 44.246,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "periodic",
+      "unit": "far",
+      "true": 32,
+      "judge": "ctc",
+      "counted": 32,
+      "dur_s": 88.492,
+      "text": "HE WALKED FAR INTO THE FOREST BEFORE TURNING BACK HE WALKED FAR INTO THE FOREST BEFORE TURNING BACK HE WALKED FAR INTO THE FOREST BEFORE TURNING BACK HE WALKED FAR INTO THE FOREST BEFORE TURNING BACK "
+    },
+    {
+      "kind": "periodic",
+      "unit": "far",
+      "true": 32,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 88.492,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "periodic",
+      "unit": "blue",
+      "true": 2,
+      "judge": "ctc",
+      "counted": 2,
+      "dur_s": 4.50675,
+      "text": "THE LIGHT WAS BLUE BEFORE THE STORM ARRIVED THE LIGHT WAS BLUE BEFORE THE STORM ARRIVED"
+    },
+    {
+      "kind": "periodic",
+      "unit": "blue",
+      "true": 2,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 4.50675,
+      "text": " The light was blue before the storm arrived."
+    },
+    {
+      "kind": "periodic",
+      "unit": "blue",
+      "true": 4,
+      "judge": "ctc",
+      "counted": 4,
+      "dur_s": 9.0135,
+      "text": "THE LIGHT WAS BLUE BEFORE THE STORM ARRIVED THE LIGHT WAS BLUE BEFORE THE STORM ARRIVED THE LIGHT WAS BLUE BEFORE THE STORM ARRIVED THE LIGHT WAS BLUE BEFORE THE STORM ARRIVED"
+    },
+    {
+      "kind": "periodic",
+      "unit": "blue",
+      "true": 4,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 9.0135,
+      "text": " The light was blue before the storm arrived."
+    },
+    {
+      "kind": "periodic",
+      "unit": "blue",
+      "true": 8,
+      "judge": "ctc",
+      "counted": 8,
+      "dur_s": 18.027,
+      "text": "HE LIGHT WAS BLUE BEFORE THE STORM ARRIVED THE LIGHT WAS BLUE BEFORE THE STORM ARRIVED THE LIGHT WAS BLUE BEFORE THE STORM ARRIVED THE LIGHT WAS BLUE BEFORE THE STORM ARRIVED THE LIGHT WAS BLUE BEFORE"
+    },
+    {
+      "kind": "periodic",
+      "unit": "blue",
+      "true": 8,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 18.027,
+      "text": " The light was blue before the storm arrived."
+    },
+    {
+      "kind": "periodic",
+      "unit": "blue",
+      "true": 16,
+      "judge": "ctc",
+      "counted": 16,
+      "dur_s": 36.054,
+      "text": "HE LIGHT WAS BLUE BEFORE THE STORM ARRIVED THE LIGHT WAS BLUE BEFORE THE STORM ARRIVED THE LIGHT WAS BLUE BEFORE THE STORM ARRIVED THE LIGHT WAS BLUE BEFORE THE STORM ARRIVED THE LIGHT WAS BLUE BEFORE"
+    },
+    {
+      "kind": "periodic",
+      "unit": "blue",
+      "true": 16,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 36.054,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "periodic",
+      "unit": "blue",
+      "true": 32,
+      "judge": "ctc",
+      "counted": 32,
+      "dur_s": 72.108,
+      "text": "HE LIGHT WAS BLUE BEFORE THE STORM ARRIVED THE LIGHT WAS BLUE BEFORE THE STORM ARRIVED THE LIGHT WAS BLUE BEFORE THE STORM ARRIVED THE LIGHT WAS BLUE BEFORE THE STORM ARRIVED THE LIGHT WAS BLUE BEFORE"
+    },
+    {
+      "kind": "periodic",
+      "unit": "blue",
+      "true": 32,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 72.108,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "periodic",
+      "unit": "quick",
+      "true": 2,
+      "judge": "ctc",
+      "counted": 2,
+      "dur_s": 4.4,
+      "text": "THE RUNNER MOVED QUICK ALONG THE NARROW PATH THE RUNNER MOVED QUICK ALONG THE NARROW PATH"
+    },
+    {
+      "kind": "periodic",
+      "unit": "quick",
+      "true": 2,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 4.4,
+      "text": " The runner moved quick along the narrow path."
+    },
+    {
+      "kind": "periodic",
+      "unit": "quick",
+      "true": 4,
+      "judge": "ctc",
+      "counted": 4,
+      "dur_s": 8.8,
+      "text": "THE RUNNER MOVED QUICK ALONG THE NARROW PAT THE RUNNER MOVED QUICK ALONG THE NARROW PAT THE RUNNER MOVED QUICK ALONG THE NARROW PAT THE RUNNER MOVED QUICK ALONG THE NARROW PAT"
+    },
+    {
+      "kind": "periodic",
+      "unit": "quick",
+      "true": 4,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 8.8,
+      "text": " The runner moved quick along the narrow pass."
+    },
+    {
+      "kind": "periodic",
+      "unit": "quick",
+      "true": 8,
+      "judge": "ctc",
+      "counted": 8,
+      "dur_s": 17.6,
+      "text": "THE RUNNER MOVED QUICK ALONG THE NARROW PAS THE RUNNER MOVED QUICK ALONG THE NARROW PAS THE RUNNER MOVED QUICK ALONG THE NARROW PAS THE RUNNER MOVED QUICK ALONG THE NARROW PAS THE RUNNER MOVED QUICK A"
+    },
+    {
+      "kind": "periodic",
+      "unit": "quick",
+      "true": 8,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 17.6,
+      "text": " The runner moved quick along the narrow pass."
+    },
+    {
+      "kind": "periodic",
+      "unit": "quick",
+      "true": 16,
+      "judge": "ctc",
+      "counted": 15,
+      "dur_s": 35.2,
+      "text": "THE RUNNER MOVED QUICK ALONG THE NARROW PAS THE RUNNER MOVED QUICK ALONG THE NARROW PAS THE RUNNER MOVED QUICK ALONG THE NARROW PAS THE RUNNER MOVED QUICK ALONG THE NARROW PAS THE RUNNER MOVED QUICK A"
+    },
+    {
+      "kind": "periodic",
+      "unit": "quick",
+      "true": 16,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 35.2,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "periodic",
+      "unit": "quick",
+      "true": 32,
+      "judge": "ctc",
+      "counted": 31,
+      "dur_s": 70.4,
+      "text": "THE RUNNER MOVED QUICK ALONG THE NARROW PAS THE RUNNER MOVED QUICK ALONG THE NARROW PAS THE RUNNER MOVED QUICK ALONG THE NARROW PAS THE RUNNER MOVED QUICK ALONG THE NARROW PAS THE RUNNER MOVED QUICK A"
+    },
+    {
+      "kind": "periodic",
+      "unit": "quick",
+      "true": 32,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 70.4,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "periodic",
+      "unit": "really",
+      "true": 2,
+      "judge": "ctc",
+      "counted": 2,
+      "dur_s": 4.784,
+      "text": "THEY WERE REALLY TIRED AFTER THE LONG JOURNEY THEY WERE REALLY TIRED AFTER THE LONG JOURNEY"
+    },
+    {
+      "kind": "periodic",
+      "unit": "really",
+      "true": 2,
+      "judge": "whisper",
+      "counted": 2,
+      "dur_s": 4.784,
+      "text": " They were really tired after the long journey. They were really tired after the long journey."
+    },
+    {
+      "kind": "periodic",
+      "unit": "really",
+      "true": 4,
+      "judge": "ctc",
+      "counted": 4,
+      "dur_s": 9.568,
+      "text": "THEY WERE REALLY TIRED AFTER THE LONG JOURNEY THEY WERE REALLY TIRED AFTER THE LONG JOURNEY THEY WERE REALLY TIRED AFTER THE LONG JOURNEY THEY WERE REALLY TIRED AFTER THE LONG JOURNEY"
+    },
+    {
+      "kind": "periodic",
+      "unit": "really",
+      "true": 4,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 9.568,
+      "text": " They were really tired after the long journey."
+    },
+    {
+      "kind": "periodic",
+      "unit": "really",
+      "true": 8,
+      "judge": "ctc",
+      "counted": 8,
+      "dur_s": 19.136,
+      "text": "THEY WERE REALLY TIRED AFTER THE LONG JOURNEY THEY WERE REALLY TIRED AFTER THE LONG JOURNEY THEY WERE REALLY TIRED AFTER THE LONG JOURNEY THEY WERE REALLY TIRED AFTER THE LONG JOURNEY THEY WERE REALLY"
+    },
+    {
+      "kind": "periodic",
+      "unit": "really",
+      "true": 8,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 19.136,
+      "text": " They were really tired after the long journey."
+    },
+    {
+      "kind": "periodic",
+      "unit": "really",
+      "true": 16,
+      "judge": "ctc",
+      "counted": 16,
+      "dur_s": 38.272,
+      "text": "THEY WERE REALLY TIRED AFTER THE LONG JOURNEY THEY WERE REALLY TIRED AFTER THE LONG JOURNEY THEY WERE REALLY TIRED AFTER THE LONG JOURNEY THEY WERE REALLY TIRED AFTER THE LONG JOURNEY THEY WERE REALLY"
+    },
+    {
+      "kind": "periodic",
+      "unit": "really",
+      "true": 16,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 38.272,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "periodic",
+      "unit": "really",
+      "true": 32,
+      "judge": "ctc",
+      "counted": 32,
+      "dur_s": 76.544,
+      "text": "THEY WERE REALLY TIRED AFTER THE LONG JOURNEY THEY WERE REALLY TIRED AFTER THE LONG JOURNEY THEY WERE REALLY TIRED AFTER THE LONG JOURNEY THEY WERE REALLY TIRED AFTER THE LONG JOURNEY THEY WERE REALLY"
+    },
+    {
+      "kind": "periodic",
+      "unit": "really",
+      "true": 32,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 76.544,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "distinct",
+      "unit": "quite",
+      "true": 2,
+      "judge": "ctc",
+      "counted": 2,
+      "dur_s": 6.36275,
+      "text": "THE DOG WAS QUITE REALLY BIG AND IT RAN ACROSS THE FIELD THE DOG WAS QUITE REALLY BIG AND IT RAN ACROSS THE FIELD"
+    },
+    {
+      "kind": "distinct",
+      "unit": "quite",
+      "true": 2,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 6.36275,
+      "text": " The dog was quite really big and it ran across the field."
+    },
+    {
+      "kind": "distinct",
+      "unit": "quite",
+      "true": 4,
+      "judge": "ctc",
+      "counted": 4,
+      "dur_s": 12.7255,
+      "text": "THE DOG WAS QUITE REALLY BIG AND IT RAN ACROSS THE FIELD THE DOG WAS QUITE REALLY BIG AND IT RAN ACROSS THE FIELD THE DOG WAS QUITE REALLY BIG AND IT RAN ACROSS THE FIELD THE DOG WAS QUITE REALLY BIG "
+    },
+    {
+      "kind": "distinct",
+      "unit": "quite",
+      "true": 4,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 12.7255,
+      "text": " The dog was quite really big and it ran across the field."
+    },
+    {
+      "kind": "distinct",
+      "unit": "quite",
+      "true": 8,
+      "judge": "ctc",
+      "counted": 8,
+      "dur_s": 25.451,
+      "text": "THE DOG WAS QUITE REALLY BIG AND IT RAN ACROSS THE FIELD THE DOG WAS QUITE REALLY BIG AND IT RAN ACROSS THE FIELD THE DOG WAS QUITE REALLY BIG AND IT RAN ACROSS THE FIELD THE DOG WAS QUITE REALLY BIG "
+    },
+    {
+      "kind": "distinct",
+      "unit": "quite",
+      "true": 8,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 25.451,
+      "text": " The dog was quite really big and it ran across the field."
+    },
+    {
+      "kind": "distinct",
+      "unit": "quite",
+      "true": 16,
+      "judge": "ctc",
+      "counted": 16,
+      "dur_s": 50.902,
+      "text": "THE DOG WAS QUITE REALLY BIG AND IT RAN ACROSS THE FIELD THE DOG WAS QUITE REALLY BIG AND IT RAN ACROSS THE FIELD THE DOG WAS QUITE REALLY BIG AND IT RAN ACROSS THE FIELD THE DOG WAS QUITE REALLY BIG "
+    },
+    {
+      "kind": "distinct",
+      "unit": "quite",
+      "true": 16,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 50.902,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "distinct",
+      "unit": "quite",
+      "true": 32,
+      "judge": "ctc",
+      "counted": 32,
+      "dur_s": 101.804,
+      "text": "THE DOG WAS QUITE REALLY BIG AND IT RAN ACROSS THE FIELD THE DOG WAS QUITE REALLY BIG AND IT RAN ACROSS THE FIELD THE DOG WAS QUITE REALLY BIG AND IT RAN ACROSS THE FIELD THE DOG WAS QUITE REALLY BIG "
+    },
+    {
+      "kind": "distinct",
+      "unit": "quite",
+      "true": 32,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 101.804,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "distinct",
+      "unit": "yes",
+      "true": 2,
+      "judge": "ctc",
+      "counted": 2,
+      "dur_s": 6.36275,
+      "text": "SHE SAID YES MAYBE TO THE OFFER AND THEN LEFT THE ROOM SHE SAID YES MAYBE TO THE OFFER AND THEN LEFT THE ROOM"
+    },
+    {
+      "kind": "distinct",
+      "unit": "yes",
+      "true": 2,
+      "judge": "whisper",
+      "counted": 2,
+      "dur_s": 6.36275,
+      "text": " She said, yes maybe to the offer and then left the room. She said, yes maybe to the offer and then left the room."
+    },
+    {
+      "kind": "distinct",
+      "unit": "yes",
+      "true": 4,
+      "judge": "ctc",
+      "counted": 4,
+      "dur_s": 12.7255,
+      "text": "SHE SAID YES MAYBE TO THE OFFER AND THEN LEFT THE ROOM SHE SAID YES MAYBE TO THE OFFER AND THEN LEFT THE ROOM SHE SAID YES MAYBE TO THE OFFER AND THEN LEFT THE ROOM SHE SAID YES MAYBE TO THE OFFER AND"
+    },
+    {
+      "kind": "distinct",
+      "unit": "yes",
+      "true": 4,
+      "judge": "whisper",
+      "counted": 4,
+      "dur_s": 12.7255,
+      "text": " She said, yes maybe to the offer and then left the room. She said, yes maybe to the offer and then left the room. She said, yes maybe to the offer and then left the room. She said, yes maybe to the o"
+    },
+    {
+      "kind": "distinct",
+      "unit": "yes",
+      "true": 8,
+      "judge": "ctc",
+      "counted": 8,
+      "dur_s": 25.451,
+      "text": "SHE SAID YES MAYBE TO THE OFFER AND THEN LEFT THE ROOM SHE SAID YES MAYBE TO THE OFFER AND THEN LEFT THE ROOM SHE SAID YES MAYBE TO THE OFFER AND THEN LEFT THE ROOM SHE SAID YES MAYBE TO THE OFFER AND"
+    },
+    {
+      "kind": "distinct",
+      "unit": "yes",
+      "true": 8,
+      "judge": "whisper",
+      "counted": 8,
+      "dur_s": 25.451,
+      "text": " She said, yes, maybe to the offer and then left the room. She said, yes, maybe to the offer and then left the room. She said, yes, maybe to the offer and then left the room. She said, yes, maybe to t"
+    },
+    {
+      "kind": "distinct",
+      "unit": "yes",
+      "true": 16,
+      "judge": "ctc",
+      "counted": 16,
+      "dur_s": 50.902,
+      "text": "SHE SAID YES MAYBE TO THE OFFER AND THEN LEFT THE ROOM SHE SAID YES MAYBE TO THE OFFER AND THEN LEFT THE ROOM SHE SAID YES MAYBE TO THE OFFER AND THEN LEFT THE ROOM SHE SAID YES MAYBE TO THE OFFER AND"
+    },
+    {
+      "kind": "distinct",
+      "unit": "yes",
+      "true": 16,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 50.902,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "distinct",
+      "unit": "yes",
+      "true": 32,
+      "judge": "ctc",
+      "counted": 32,
+      "dur_s": 101.804,
+      "text": "SHE SAID YES MAYBE TO THE OFFER AND THEN LEFT THE ROOM SHE SAID YES MAYBE TO THE OFFER AND THEN LEFT THE ROOM SHE SAID YES MAYBE TO THE OFFER AND THEN LEFT THE ROOM SHE SAID YES MAYBE TO THE OFFER AND"
+    },
+    {
+      "kind": "distinct",
+      "unit": "yes",
+      "true": 32,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 101.804,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "distinct",
+      "unit": "deep",
+      "true": 2,
+      "judge": "ctc",
+      "counted": 2,
+      "dur_s": 6.448,
+      "text": "HE WALKED DEEP FAST INTO THE FOREST BEFORE TURNING BACK HE WALKED DEEP FAST INTO THE FOREST BEFORE TURNING BACK"
+    },
+    {
+      "kind": "distinct",
+      "unit": "deep",
+      "true": 2,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 6.448,
+      "text": " He walked deep fast into the forest before turning back."
+    },
+    {
+      "kind": "distinct",
+      "unit": "deep",
+      "true": 4,
+      "judge": "ctc",
+      "counted": 4,
+      "dur_s": 12.896,
+      "text": "HE WALKED DEEP FAST INTO THE FOREST BEFORE TURNING BACK HE WALKED DEEP FAST INTO THE FOREST BEFORE TURNING BACK HE WALKED DEEP FAST INTO THE FOREST BEFORE TURNING BACK HE WALKED DEEP FAST INTO THE FOR"
+    },
+    {
+      "kind": "distinct",
+      "unit": "deep",
+      "true": 4,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 12.896,
+      "text": " He walked deep fast into the forest before turning back."
+    },
+    {
+      "kind": "distinct",
+      "unit": "deep",
+      "true": 8,
+      "judge": "ctc",
+      "counted": 8,
+      "dur_s": 25.792,
+      "text": "HE WALKED DEEP FAST INTO THE FOREST BEFORE TURNING BACK HE WALKED DEEP FAST INTO THE FOREST BEFORE TURNING BACK HE WALKED DEEP FAST INTO THE FOREST BEFORE TURNING BACK HE WALKED DEEP FAST INTO THE FOR"
+    },
+    {
+      "kind": "distinct",
+      "unit": "deep",
+      "true": 8,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 25.792,
+      "text": " He walked deep fast into the forest before turning back."
+    },
+    {
+      "kind": "distinct",
+      "unit": "deep",
+      "true": 16,
+      "judge": "ctc",
+      "counted": 16,
+      "dur_s": 51.584,
+      "text": "HE WALKED DEEP FAST INTO THE FOREST BEFORE TURNING BACK HE WALKED DEEP FAST INTO THE FOREST BEFORE TURNING BACK HE WALKED DEEP FAST INTO THE FOREST BEFORE TURNING BACK HE WALKED DEEP FAST INTO THE FOR"
+    },
+    {
+      "kind": "distinct",
+      "unit": "deep",
+      "true": 16,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 51.584,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "distinct",
+      "unit": "deep",
+      "true": 32,
+      "judge": "ctc",
+      "counted": 32,
+      "dur_s": 103.168,
+      "text": "HE WALKED DEEP FAST INTO THE FOREST BEFORE TURNING BACK HE WALKED DEEP FAST INTO THE FOREST BEFORE TURNING BACK HE WALKED DEEP FAST INTO THE FOREST BEFORE TURNING BACK HE WALKED DEEP FAST INTO THE FOR"
+    },
+    {
+      "kind": "distinct",
+      "unit": "deep",
+      "true": 32,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 103.168,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "distinct",
+      "unit": "green",
+      "true": 2,
+      "judge": "ctc",
+      "counted": 2,
+      "dur_s": 5.808,
+      "text": "THE LIGHT WAS GREEN BRIGHT BEFORE THE STORM ARRIVED THE LIGHT WAS GREEN BRIGHT BEFORE THE STORM ARRIVED"
+    },
+    {
+      "kind": "distinct",
+      "unit": "green",
+      "true": 2,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 5.808,
+      "text": " The light was green, bright before the storm arrived."
+    },
+    {
+      "kind": "distinct",
+      "unit": "green",
+      "true": 4,
+      "judge": "ctc",
+      "counted": 4,
+      "dur_s": 11.616,
+      "text": "THE LIGHT WAS GREEN BRIGHT BEFORE THE STORM ARRIVED THE LIGHT WAS GREEN BRIGHT BEFORE THE STORM ARRIVED THE LIGHT WAS GREEN BRIGHT BEFORE THE STORM ARRIVED THE LIGHT WAS GREEN BRIGHT BEFORE THE STORM "
+    },
+    {
+      "kind": "distinct",
+      "unit": "green",
+      "true": 4,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 11.616,
+      "text": " The light was green, bright before the storm arrived."
+    },
+    {
+      "kind": "distinct",
+      "unit": "green",
+      "true": 8,
+      "judge": "ctc",
+      "counted": 8,
+      "dur_s": 23.232,
+      "text": "THE LIGHT WAS GREEN BRIGHT BEFORE THE STORM ARRIVE THE LIGHT WAS GREEN BRIGHT BEFORE THE STORM ARRIVED THE LIGHT WAS GREEN BRIGHT BEFORE THE STORM ARRIVED THE LIGHT WAS GREEN BRIGHT BEFORE THE STORM A"
+    },
+    {
+      "kind": "distinct",
+      "unit": "green",
+      "true": 8,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 23.232,
+      "text": " The light was green, bright before the storm arrived."
+    },
+    {
+      "kind": "distinct",
+      "unit": "green",
+      "true": 16,
+      "judge": "ctc",
+      "counted": 16,
+      "dur_s": 46.464,
+      "text": "THE LIGHT WAS GREEN BRIGHT BEFORE THE STORM ARRIVE THE LIGHT WAS GREEN BRIGHT BEFORE THE STORM ARRIVED THE LIGHT WAS GREEN BRIGHT BEFORE THE STORM ARRIVED THE LIGHT WAS GREEN BRIGHT BEFORE THE STORM A"
+    },
+    {
+      "kind": "distinct",
+      "unit": "green",
+      "true": 16,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 46.464,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "distinct",
+      "unit": "green",
+      "true": 32,
+      "judge": "ctc",
+      "counted": 31,
+      "dur_s": 92.928,
+      "text": "THE LIGHT WAS GREEN BRIGHT BEFORE THE STORM ARRIVE THE LIGHT WAS GREEN BRIGHT BEFORE THE STORM ARRIVED THE LIGHT WAS GREEN BRIGHT BEFORE THE STORM ARRIVED THE LIGHT WAS GREEN BRIGHT BEFORE THE STORM A"
+    },
+    {
+      "kind": "distinct",
+      "unit": "green",
+      "true": 32,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 92.928,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "distinct",
+      "unit": "swift",
+      "true": 2,
+      "judge": "ctc",
+      "counted": 2,
+      "dur_s": 6.085375,
+      "text": "THE RUNNER MOVED SWIFT SMOOTH ALONG THE NARROW PATH THE RUNNER MOVED SWIFT SMOOTH ALONG THE NARROW PATH"
+    },
+    {
+      "kind": "distinct",
+      "unit": "swift",
+      "true": 2,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 6.085375,
+      "text": " The runner moved swift smooth along the narrow path."
+    },
+    {
+      "kind": "distinct",
+      "unit": "swift",
+      "true": 4,
+      "judge": "ctc",
+      "counted": 4,
+      "dur_s": 12.17075,
+      "text": "THE RUNNER MOVED SWIFT SMOOTH ALONG THE NARROW PATH THE RUNNER MOVED SWIFT SMOOTH ALONG THE NARROW PATH THE RUNNER MOVED SWIFT SMOOTH ALONG THE NARROW PATH THE RUNNER MOVED SWIFT SMOOTH ALONG THE NARR"
+    },
+    {
+      "kind": "distinct",
+      "unit": "swift",
+      "true": 4,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 12.17075,
+      "text": " The runner moved swift smooth along the narrow path."
+    },
+    {
+      "kind": "distinct",
+      "unit": "swift",
+      "true": 8,
+      "judge": "ctc",
+      "counted": 8,
+      "dur_s": 24.3415,
+      "text": "THE RUNNER MOVED SWIFT SMOOTH ALONG THE NARROW PATH THE RUNNER MOVED SWIFT SMOOTH ALONG THE NARROW PATH THE RUNNER MOVED SWIFT SMOOTH ALONG THE NARROW PATH THE RUNNER MOVED SWIFT SMOOTH ALONG THE NARR"
+    },
+    {
+      "kind": "distinct",
+      "unit": "swift",
+      "true": 8,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 24.3415,
+      "text": " The runner moved swift smooth along the narrow path."
+    },
+    {
+      "kind": "distinct",
+      "unit": "swift",
+      "true": 16,
+      "judge": "ctc",
+      "counted": 16,
+      "dur_s": 48.683,
+      "text": "THE RUNNER MOVED SWIFT SMOOTH ALONG THE NARROW PATH THE RUNNER MOVED SWIFT SMOOTH ALONG THE NARROW PATH THE RUNNER MOVED SWIFT SMOOTH ALONG THE NARROW PATH THE RUNNER MOVED SWIFT SMOOTH ALONG THE NARR"
+    },
+    {
+      "kind": "distinct",
+      "unit": "swift",
+      "true": 16,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 48.683,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "distinct",
+      "unit": "swift",
+      "true": 32,
+      "judge": "ctc",
+      "counted": 32,
+      "dur_s": 97.366,
+      "text": "THE RUNNER MOVED SWIFT SMOOTH ALONG THE NARROW PATH THE RUNNER MOVED SWIFT SMOOTH ALONG THE NARROW PATH THE RUNNER MOVED SWIFT SMOOTH ALONG THE NARROW PATH THE RUNNER MOVED SWIFT SMOOTH ALONG THE NARR"
+    },
+    {
+      "kind": "distinct",
+      "unit": "swift",
+      "true": 32,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 97.366,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "distinct",
+      "unit": "truly",
+      "true": 2,
+      "judge": "ctc",
+      "counted": 2,
+      "dur_s": 5.893375,
+      "text": "THEY WERE TRULY QUITE TIRED AFTER THE LONG JOURNEY THEY WERE TRULY QUITE TIRED AFTER THE LONG JOURNEY"
+    },
+    {
+      "kind": "distinct",
+      "unit": "truly",
+      "true": 2,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 5.893375,
+      "text": " They were truly quite tired after the long journey."
+    },
+    {
+      "kind": "distinct",
+      "unit": "truly",
+      "true": 4,
+      "judge": "ctc",
+      "counted": 4,
+      "dur_s": 11.78675,
+      "text": "THEY WERE TRULY QUITE TIRED AFTER THE LONG JOURNEY THEY WERE TRULY QUITE TIRED AFTER THE LONG JOURNEY THEY WERE TRULY QUITE TIRED AFTER THE LONG JOURNEY THEY WERE TRULY QUITE TIRED AFTER THE LONG JOUR"
+    },
+    {
+      "kind": "distinct",
+      "unit": "truly",
+      "true": 4,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 11.78675,
+      "text": " They were truly quite tired after the long journey."
+    },
+    {
+      "kind": "distinct",
+      "unit": "truly",
+      "true": 8,
+      "judge": "ctc",
+      "counted": 8,
+      "dur_s": 23.5735,
+      "text": "THEY WERE TRULY QUITE TIRED AFTER THE LONG JOURNEY THEY WERE TRULY QUITE TIRED AFTER THE LONG JOURNEY THEY WERE TRULY QUITE TIRED AFTER THE LONG JOURNEY THEY WERE TRULY QUITE TIRED AFTER THE LONG JOUR"
+    },
+    {
+      "kind": "distinct",
+      "unit": "truly",
+      "true": 8,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 23.5735,
+      "text": " They were truly quite tired after the long journey."
+    },
+    {
+      "kind": "distinct",
+      "unit": "truly",
+      "true": 16,
+      "judge": "ctc",
+      "counted": 16,
+      "dur_s": 47.147,
+      "text": "THEY WERE TRULY QUITE TIRED AFTER THE LONG JOURNEY THEY WERE TRULY QUITE TIRED AFTER THE LONG JOURNEY THEY WERE TRULY QUITE TIRED AFTER THE LONG JOURNEY THEY WERE TRULY QUITE TIRED AFTER THE LONG JOUR"
+    },
+    {
+      "kind": "distinct",
+      "unit": "truly",
+      "true": 16,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 47.147,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "distinct",
+      "unit": "truly",
+      "true": 32,
+      "judge": "ctc",
+      "counted": 32,
+      "dur_s": 94.294,
+      "text": "THEY WERE TRULY QUITE TIRED AFTER THE LONG JOURNEY THEY WERE TRULY QUITE TIRED AFTER THE LONG JOURNEY THEY WERE TRULY QUITE TIRED AFTER THE LONG JOURNEY THEY WERE TRULY QUITE TIRED AFTER THE LONG JOUR"
+    },
+    {
+      "kind": "distinct",
+      "unit": "truly",
+      "true": 32,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 94.294,
+      "text": "ERROR ValueError"
+    }
+  ],
+  "summary": {
+    "periodic_ctc_k2": 1.0,
+    "periodic_ctc_k4": 1.0,
+    "periodic_ctc_k8": 1.0,
+    "periodic_ctc_k16": 1.0,
+    "periodic_ctc_k32": 1.0,
+    "periodic_ctc_kge4": 1.0,
+    "periodic_whisper_k2": 0.5,
+    "periodic_whisper_k4": 0.25,
+    "periodic_whisper_k8": 0.125,
+    "periodic_whisper_kge4": 0.1875,
+    "distinct_ctc_k2": 1.0,
+    "distinct_ctc_k4": 1.0,
+    "distinct_ctc_k8": 1.0,
+    "distinct_ctc_k16": 1.0,
+    "distinct_ctc_k32": 1.0,
+    "distinct_ctc_kge4": 1.0,
+    "distinct_whisper_k2": 0.5,
+    "distinct_whisper_k4": 0.25,
+    "distinct_whisper_k8": 0.125,
+    "distinct_whisper_kge4": 0.25
+  }
+}

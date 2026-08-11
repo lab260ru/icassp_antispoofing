@@ -188,7 +188,10 @@ structure score $1.00$ at every $k$ up to $32$ --- a bias specific to
 periodicity, pointing the same way as the effect we want to measure. We therefore
 score with a CTC recogniser (\texttt{wav2vec2-large-960h-lv60-self}): no decoder,
 no language model, output length governed by the acoustics. Worse in absolute
-WER, right for this purpose. Both transcript sets are released.
+WER, right for this purpose --- and put through the same audit that disqualified
+its predecessor: on periodic ground truth it counts at ratio \CtcValPer{} for
+$k\ge4$ (and \CtcValDis{} on distinct-word material) against \WhisperValPer{} for
+Whisper. Both transcript sets are released.
 
 The reported quantity is the \emph{relative count error} $(\hat c - k)/k$, where
 $\hat c$ is how many of the $k$ requested units the transcript delivers.
@@ -207,11 +210,10 @@ $k$; Section~\ref{sec:negative} explains why we do not measure $q$ by
 differencing boundary states.
 
 \noindent\textbf{Code and data.}
-The Lean development, stimuli, generation and analysis code, and per-item result
-tables are released at \url{https://github.com/lab260ru/icassp_antispoofing}.
-\texttt{scripts/check\_lean.sh} rebuilds the formal artifact and reprints the
-axiom audit; \texttt{paper/build.sh} regenerates every number here from the
-released tables.
+Everything --- Lean development, stimuli, code, per-item tables, both transcript
+sets --- is at \url{https://github.com/lab260ru/icassp_antispoofing}.
+\texttt{check\_lean.sh} reruns the axiom audit; \texttt{build.sh} regenerates
+every number here.
 
 \section{Results}
 \label{sec:results}

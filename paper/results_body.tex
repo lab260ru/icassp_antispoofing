@@ -4,13 +4,13 @@
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{figs/fig_main.pdf}
-\caption{(a) Counting accuracy against requested repetitions $k$: every model has
-a finite ceiling. (b) The same repeated items (solid) against their
-length-matched controls (dashed), in which the repeated word is replaced by $k$
-distinct fillers --- controls survive well past the point where repetitions fail.
-(c) Effective rank of the generation trajectory: under repetition it saturates.
-(d) The fitted capacity gain with 95\% bootstrap intervals over stimulus
-templates.}
+\caption{(a) Relative count error $(\hat c-k)/k$ against requested repetitions
+$k$, CTC judge: exact below $k\!=\!6$, then a one-directional deficit. (b) The
+same repeated items (solid) against their length-matched controls (dashed), in
+which the repeated word is replaced by $k$ distinct fillers --- controls sit at
+zero error throughout. (c) Effective rank of the generation trajectory: under
+repetition it saturates. (d) Fitted capacity gain, 95\% bootstrap intervals over
+stimulus templates.}
 \label{fig:main}
 \end{figure*}
 
@@ -34,9 +34,8 @@ than as a failed prediction. The effect is present in the other
 \ErrNSep{} of \ErrNModels{} panel checkpoints with intervals disjoint from their
 own controls.
 
-The unit of repetition can be a word, a whole sentence, or a place-value pattern
-(\emph{six hundred sixty-six thousand six hundred sixty-six}); all three behave
-alike. What matters is that it recurs.
+The repeated unit can be a word, a sentence, or a place-value pattern; all three
+behave alike.
 
 \subsection{The limit is periodicity, not length}
 
@@ -51,27 +50,24 @@ the requested number of distinct words, at every $k$ up to $32$, for every model
 in the panel. The same decoders that drop one word in six from a repeated
 sequence render thirty-two \emph{different} words without a single miscount.
 
-Two further alternatives fail on their own predictions. If repeated text simply
-being improbable were the cause, the controls would have to be the more natural
-member of each pair; scored under a causal LM outside the panel, the control is
-the \emph{less} probable member in \NllIndCtlHigherPct{}\% of the
-\NllIndPairs{} matched pairs, so naturalness runs opposite to the effect. If the
-attractor were acoustic --- reached once enough near-identical frames accumulate,
-with the text playing no part --- the horizon would be counted in tokens, and
-sentence repetition, whose unit costs several times more tokens than a word,
-would fail after far fewer repetitions. It does not: across \UnitNModels{} models
-the collapse point differs between the two families by \UnitKDiff{} repetitions
-while the token count there differs by \UnitTokRatio{}$\times$. The horizon is
-counted in applications of the periodic map, the unit
-Theorem~\ref{thm:collapse} says it should be.
+Two further alternatives fail on their own predictions, and the supplement gives
+both in full. If repeated text simply being improbable were the cause, the
+controls would have to be the more natural member of each pair; scored under a
+causal LM outside the panel, the control is the \emph{less} probable member in
+\NllIndCtlHigherPct{}\% of the \NllIndPairs{} matched pairs, so naturalness runs
+opposite to the effect. If the attractor were acoustic, the horizon would be
+counted in tokens, and sentence repetition --- whose unit costs several times more
+tokens --- would fail after far fewer repetitions; it does not, differing by
+\UnitKDiff{} repetitions while the token count at collapse differs by
+\UnitTokRatio{}$\times$.
 
 \begin{table}[t]
 \centering
-\caption{Panel summary. $k^\ast$ is the largest $k$ with counting accuracy above
-$0.5$; accuracies are over $k\ge6$; capacity gain is
+\caption{Panel summary. Count error is the median $(\hat c-k)/k$ over $k\ge6$
+under the CTC judge; capacity gain is
 $\mathrm{d}\mathcal{N}_{\mathrm{eff}}/\mathrm{d}\log k$ at deep probe layers.}
 \label{tab:models}
-\resizebox{\columnwidth}{!}{\input{table1}}
+{\footnotesize\setlength{\tabcolsep}{3.2pt}\input{table1}}
 \end{table}
 
 \subsection{The states the decoder visits stop multiplying}
@@ -113,18 +109,15 @@ percent of uniform, which is what Assumption~\ref{ass:periodic} needs.
 \label{sec:negative}
 
 We could not measure $q$ itself. Estimating it from boundary distances
-($\log\lVert h_{m+1}-h_m\rVert = a + m\log q$) needs a monotone text read-head to
-place the boundaries, and these decoders' deep-layer attention centroid advances
-on barely half of generation steps, so the distances measure localisation error
-instead. The failure is self-defeating by construction: the flatter the attention
-over repeated spans --- exactly what Lemma~\ref{lem:dilution} predicts --- the
-worse any attention-based localiser gets. The capacity measure needs no
-boundaries, which is why we adopted it.
+($\log\lVert h_{m+1}-h_m\rVert = a + m\log q$) needs a monotone text read-head,
+and these decoders' deep-layer attention centroid advances on barely half of
+generation steps, so the distances measure localisation error instead. The
+failure is self-defeating: the flatter the attention over repeated spans ---
+exactly what Lemma~\ref{lem:dilution} predicts --- the worse any attention-based
+localiser gets. The capacity measure needs no boundaries.
 
-Nor can we claim the count is \emph{absent}: a ridge probe recovers $\log_2 k$
-from trajectory summaries only coarsely (median $R^2 = \ProbeLateRTwo{}$ late in
-generation), and contrasting the first and last third of the \emph{same}
-trajectory, so probe capacity cancels, it is retained at \ProbeRetRep{} of its
-early level on repeated text against \ProbeRetCtl{} on controls --- repeated
-lower in \ProbePhrase{} checkpoints, consistent in direction, but degradation
-rather than erasure.
+Nor can we claim the count is \emph{absent}: contrasting a ridge probe on the
+first and last third of the \emph{same} trajectory, so probe capacity cancels, it
+is retained at \ProbeRetRep{} of its early level on repeated text against
+\ProbeRetCtl{} on controls --- lower for repeated text in \ProbePhrase{}
+checkpoints, but degradation rather than erasure.
