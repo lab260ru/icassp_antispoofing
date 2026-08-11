@@ -251,3 +251,14 @@ bulk-send historical notifications.
 This is the twenty-third explicitly selected message in this log. The sender
 used the environment only for delivery and did not expose a credential or
 bulk-send historical notifications.
+
+## H11 licence-confirmation request
+
+- Heading: 2026-08-11 — H11 licence confirmation needed before any new target data
+- Delivery status: success
+- Telegram message ID: 158
+- Text length: 616
+
+This is the twenty-fourth explicitly selected message in this log. It requests
+the user’s explicit authority before acquiring a non-commercially licensed
+future target; no credential, chat ID, or token is recorded.

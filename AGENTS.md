@@ -2,13 +2,34 @@
 
 ## Mission and deadline
 
-Conduct a reproducible audit of signal features in cross-dataset speech
-anti-spoofing and prepare an ICASSP 2027 initial draft. The original draft
-target was **2026-08-10 18:03 UTC**; the user explicitly authorized bounded,
-evidence-preserving continuation through **2026-08-10 20:00 UTC**. The
-provisional story is now a negative portability/quality-gate audit, not a
-causal effect or feature-conditioned fix, unless a new independently frozen
-protocol supplies the missing evidence.
+Conduct reproducible cross-corpus speech anti-spoofing research and prepare an
+ICASSP 2027 initial draft. The user subsequently rejected the original
+negative portability/quality-gate paper and authorized a clean positive-result
+search through **2026-08-11 13:00 UTC**. The current paper is the separately
+sealed H9 same-item ranking result; no stopped loop may be repaired after its
+outcome.
+
+## Prospective direction — 2026-08-11 — H11 Counterpart Specificity Ladder
+
+H11 is a **plan only**, not an authorized experiment or paper result.
+
+- **Question:** Does a documented same-item natural--synthetic edge improve
+  transfer beyond the same source pool, equal hinge budget, a stratified
+  random-pair control, and a same-voice/different-item control?
+- **Proposed design:** Train fresh AASIST and RawNet2 implementations in BF16
+  on a new ODSS relation-complete C/V/R/BCE source freeze; evaluate all
+  architecture/method/seed cells only after the source ledger is sealed.
+  `experiments/future_directions/H11_IDEA_AUDIT_20260811.md` is authoritative
+  for the deliberately narrow claim and hard no-go rules.
+- **Target status:** HABLA is conditionally suitable. J-SPAW_LA has a clearer
+  recorded-speech provenance but a non-commercial research licence; do not
+  acquire it or create an H11 protocol without the project owner's explicit
+  licence confirmation. EmoFake remains unselected because its card does not
+  establish recording-source lineage. See
+  `experiments/future_directions/H11_TARGET_PANEL_AUDIT_20260811.md`.
+- **Hard boundary:** H11 cannot use H8/H9/H10 targets, pretrained/Arena
+  checkpoints, target labels for selection, or a target replacement after
+  acquisition. It must not be mentioned as a result in `paper/main.tex`.
 
 ## Current checkpoint — 2026-08-11 — H10 CD-ADD terminal stop
 
@@ -162,8 +183,9 @@ threshold, sample, transform, scorer, feature, or model after seeing results.
   **Every `paper/main.tex` edit must immediately run** `cd paper && tectonic
   --outdir build main.tex` **and commit the refreshed `paper/build/main.pdf`
   in the same paper change.**
-- **Delivery and resume:** The last delivered Telegram milestone is message ID
-  157, with a redacted receipt in `to_human/TELEGRAM_DELIVERY_LOG_20260810.md`.
+- **Delivery and resume:** The last delivered Telegram message is ID 158, a
+  licence-confirmation request for prospective H11 only, with a redacted
+  receipt in `to_human/TELEGRAM_DELIVERY_LOG_20260810.md`.
   The H9 paper handoff is tagged `h9pcr-d1` and pushed to
   `origin/research/icassp-signal-audit`; use `git log`, `git tag --contains
   HEAD`, and `git status --branch` to confirm the exact remote/local head

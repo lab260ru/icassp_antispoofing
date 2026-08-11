@@ -85,6 +85,11 @@ hypotheses:
     status: complete_terminal_gate_failed_no_retune
     motivation: "A source-frozen third target can test transfer direction without reopening H9; it must retain its effect-size boundary rather than equate statistical significance with a passing replication."
     priority: highest
+  - id: H11
+    statement: "A documented same-item natural--synthetic edge improves external transfer beyond identical-pool BCE, equal-edge random-pair ranking, and same-voice/different-item ranking across fresh architectures."
+    status: prospective_requires_licence_confirmation_and_new_predata_protocol
+    motivation: "H9 establishes a controlled pair-ranking gain but cannot separate its same-item relation from voice/recording correspondence; H11 proposes a matched relation decomposition without retuning H9 or H10."
+    priority: future_high
 
 experiments:
   proxy_metric: "H9 fixed two-target macro EER (lower is better); earlier feature and fusion metrics remain archived."

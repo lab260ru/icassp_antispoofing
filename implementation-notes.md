@@ -616,3 +616,18 @@
 - Audit: A separate read-only red-team review rehashed all copied waveforms and
   replayed the exact metrics/bootstrap/gate. It finds no invalidating defect;
   the fixed 10% P-versus-B1 requirement remains the sole failed rule.
+
+## 2026-08-11 - H11 relation-specificity prospective audit
+
+- Decision: Preserve a next-study proposal rather than target-shop after the
+  H10 stop. The Counterpart Specificity Ladder would compare four methods on
+  one new relation-complete ODSS pool: BCE, stratified random pairs,
+  same-voice/different-item pairs, and documented same-item counterparts.
+- Attribution boundary: A same-item result could show usefulness beyond the
+  stated voice-matched control; it would not prove a semantic, linguistic, or
+  causal internal representation.
+- Eligibility: HABLA is metadata-screened only. J-SPAW_LA is the better
+  documented second target but has a non-commercial licence, so no protocol,
+  download, model, or target access is authorized without the project owner's
+  confirmation. EmoFake is not selected because its card lacks source-lineage
+  detail. These are prospective metadata decisions only.

@@ -514,3 +514,13 @@ bootstrap intervals are below zero. But the P-versus-BCE relative reduction is
 a terminal no-retune follow-up—not weakening the threshold or adding it to the
 paper claim. The H9 draft remains the readable, pushed positive two-target
 result.
+
+## 2026-08-11 — H11 licence confirmation needed before any new target data
+
+I found a materially stronger follow-up: test whether same-item pair ranking
+beats both same-voice/different-item and random-pair controls across fresh
+AASIST and RawNet2 models. The clean second external target is J-SPAW_LA, but
+its pinned licence permits non-commercial research only. Please confirm that
+this project and any planned release are non-commercial under that licence (or
+that you have rightsholder permission). Without that confirmation, I will keep
+H11 as a documented future direction and will not download or access its data.
