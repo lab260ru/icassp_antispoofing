@@ -22,8 +22,9 @@ This section supersedes any prospective H10 direction below.
 - **Authority:** Read
   `experiments/future_directions/H10_CDADD_EXTERNAL_REPLICATION_PROTOCOL.md`,
   `H10_DECISION_RECORD_20260811.md`, and
-  `results/H10_CDADD_TERMINAL_EVALUATION_001.md`. Large artifacts are below
-  `runs/h10_cdadd/` on the HDD.
+  `results/H10_CDADD_TERMINAL_EVALUATION_001.md`, then the independent
+  `reviews/H10_CDADD_TERMINAL_RED_TEAM_AUDIT_20260811.md`. Large artifacts are
+  below `runs/h10_cdadd/` on the HDD.
 - **Hard boundary:** H10 does not change the paper or H9. Do not relax the
   10% rule, select another target or subset, or change the H9 checkpoints,
   seeds, source pool, loss, bootstrap, or architecture after seeing it.

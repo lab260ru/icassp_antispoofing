@@ -62,3 +62,10 @@ All large inputs and outputs reside below
 Read the H10 protocol and decision record before any future extension:
 `H10_CDADD_EXTERNAL_REPLICATION_PROTOCOL.md` and
 `H10_DECISION_RECORD_20260811.md`.
+
+## Independent audit
+
+`../reviews/H10_CDADD_TERMINAL_RED_TEAM_AUDIT_20260811.md` independently
+rehashed all 20,786 copied waveforms and replayed the complete raw-to-metric,
+bootstrap, and gate chain. It finds no invalidating issue: the 8.2983% versus
+B1 reduction is the sole failed rule.

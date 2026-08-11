@@ -613,3 +613,6 @@
 - Validation: The H10/H9 focused synthetic adapter/evaluator suite passed 13
   tests before target access. The result note pins the materialization,
   prediction, metrics, bootstrap, and decision hashes.
+- Audit: A separate read-only red-team review rehashed all copied waveforms and
+  replayed the exact metrics/bootstrap/gate. It finds no invalidating defect;
+  the fixed 10% P-versus-B1 requirement remains the sole failed rule.
