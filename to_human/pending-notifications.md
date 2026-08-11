@@ -476,3 +476,16 @@ before labels were read, and the source/target waveform-fingerprint audit found
 zero exact collisions. I am now rebuilding the paper around this controlled,
 narrow result; I will report its weak absolute EER and seed variability rather
 than present it as SOTA.
+
+## 2026-08-11 — H9 paper draft reviewed, compiled, and pushed
+
+The ICASSP working draft is now rebuilt as **Same-Item Pair Ranking for
+Cross-Corpus Speech Deepfake Detection** and pushed at `70dc8e9` with immutable
+tag `h9pcr-d1`. Three independent Codex-only reviews required (and verified)
+precise same-item wording, full EER/AUROC/class-count reporting, explicit
+ensemble-conditional trial-bootstrap uncertainty, B2/B1 control qualifications,
+and a release/provenance locator. The final five-page PDF contains four
+technical pages plus references and passes the local US-letter, landmark, and
+embedded-font preflight. The paper makes a narrow controlled-transfer claim,
+not a SOTA, causal-mechanism, or deployment claim. All code, figure inputs,
+reviews, ledgers, and the compiled draft are in the pushed repository.
