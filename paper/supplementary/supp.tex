@@ -4321,6 +4321,30 @@ audible speech was still generated. Section~3's total is generations attempted;
 every $n$ here is rows that survived to be scored.
 
 
+\section{What we did not listen to}
+
+The released sample is 165 clips, stratified over every checkpoint, $k$ band and
+outcome label, each paired with its transcript and the scoring decision that
+transcript produced. A reviewer asked the obvious next question: what fraction
+did \emph{we} listen to, and how often did we agree with the judge?
+
+The honest answer is that we did not run a systematic listening study. Clips were
+audited by ear during development --- when the control-scoring bug was found,
+when the template exclusion was decided, when the first duration-intervention
+run came back silent --- and each of those audits changed something and is
+recorded where it applies. None of them was a blind, pre-specified agreement
+measurement, and reporting a percentage from them after the fact would dress up
+debugging as validation.
+
+So the sample is released for a reader to check us, not as evidence that we
+checked ourselves. What stands in for a listening study is S9's synthetic ground
+truth, where the true count is exact by construction, and S14's noise floor,
+where two independent recognisers disagree on real generated audio without
+needing any ground truth at all. Neither is a human ear. A blind listening study
+on the released sample is the obvious thing a follow-up should do, and the sample
+exists so that it can be done without regenerating anything.
+
+
 \bibliographystyle{IEEEtran}
 \bibliography{../refs}
 
