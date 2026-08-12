@@ -4015,6 +4015,48 @@ repository & role & revision \\
 than maintained by hand so that they cannot drift from what was run.
 
 
+\section{Rivals we cannot exclude}
+
+The main text names the rivals we tested: length, aperiodicity, the decoding
+rule's repetition penalty, and architecture. Three more we did not, and a reader
+weighing the contraction account should weigh these against it.
+
+\noindent\textbf{A learned dispreference for verbatim repetition.} If a model's
+training data rarely contains a phrase repeated six or thirty times verbatim ---
+or if its objective actively discourages producing one, which is the
+degeneration literature's account of the text case --- then it would undercount
+repetitions for reasons having nothing to do with contracting state. This
+predicts our central dissociation exactly: repeated text is the out-of-
+distribution case, its length-matched control is not. Nothing in this paper
+separates it from the dynamical story, and the introduction's analogy to neural
+text degeneration gestures at it without ever operationalising it as a rival to
+be ruled out.
+
+What would separate them is a checkpoint-level correlate --- the frequency of
+$k\ge6$ verbatim repeats in each model's training data, if obtainable, against
+its measured deficit --- or a controlled fine-tune on repetition-rich data. The
+first needs corpus access we do not have for any of the six checkpoints; the
+second is a study, not an ablation.
+
+\noindent\textbf{A generation-length prior.} All six checkpoints saturate on
+\emph{both} arms, which is why we report a ratio rather than the repeated-side
+scale. A learned prior over utterance length would produce that saturation, and
+would lower the repeated-side scale further if repeated text is also rendered
+faster or with less silence. The ratio divides out a shared ceiling; it does not
+divide out a ceiling that differs by arm.
+
+\noindent\textbf{Acoustic-token periodicity.} Every panel checkpoint decodes into
+a discrete acoustic codebook, and the attractor, if there is one, could live in
+the codec's token dynamics rather than the language model's hidden state. Our
+probes read decoder hidden states, so they cannot tell those apart. The
+non-autoregressive baselines bear on this only indirectly: VITS has no acoustic
+token sequence at all, and F5-TTS's is not autoregressive.
+
+None of these is refuted here, and the paper's framing is a conditional for that
+reason: what is proved is an implication, what is measured is a dissociation, and
+the link between them is the part still missing.
+
+
 \bibliographystyle{IEEEtran}
 \bibliography{../refs}
 
