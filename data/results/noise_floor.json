@@ -1,0 +1,27 @@
+{
+  "floor": {
+    "two_recognisers_mean_abs_diff": 0.4666666666666667,
+    "two_recognisers_n": 60,
+    "two_recognisers_mean_abs_diff_high_k": 0.7916666666666666,
+    "n_disagreements": 13,
+    "ours_higher": 11,
+    "n_disagreements_high_k": 9,
+    "ours_higher_high_k": 8,
+    "noise_mean_abs_delta": 0.11666666666666667,
+    "resample_mean_abs_delta": 0.03333333333333333
+  },
+  "effect": {
+    "median_missing": 1.0,
+    "median_missing_by_k": {
+      "6": 1.0,
+      "8": 1.0,
+      "12": 1.0,
+      "16": 1.0,
+      "24": 0.0,
+      "32": 2.0
+    },
+    "mean_missing": 0.8665207877461707,
+    "control_exact_rate": 0.9428571428571428
+  },
+  "effect_over_floor": 1.85683025945608
+}

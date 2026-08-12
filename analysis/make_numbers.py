@@ -598,6 +598,20 @@ def main() -> None:
                                  else f"{n_below} of {len(pr)}")
 
 
+    # ---- the judge's noise floor, in the units it errs in ------------------
+    nf_path = Path("data/results/noise_floor.json")
+    if nf_path.exists():
+        nf = json.loads(nf_path.read_text())
+        f, e = nf["floor"], nf["effect"]
+        macros["FloorTwoRec"] = fmt(f["two_recognisers_mean_abs_diff"], 2)
+        macros["FloorTwoRecHi"] = fmt(f["two_recognisers_mean_abs_diff_high_k"], 2)
+        macros["FloorNoise"] = fmt(f["noise_mean_abs_delta"], 2)
+        macros["FloorOursHigher"] = str(f["ours_higher"])
+        macros["FloorNDisagree"] = str(f["n_disagreements"])
+        macros["MissMedian"] = fmt(e["median_missing"], 1)
+        macros["MissMean"] = fmt(e["mean_missing"], 2)
+        macros["EffectOverFloor"] = fmt(nf["effect_over_floor"], 1)
+
     # ---- the released audio sample ---------------------------------------
     smp = Path("data/audio_sample/manifest.csv")
     if smp.exists():

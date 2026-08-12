@@ -3461,6 +3461,81 @@ not the audio in question. The non-AR baseline can: it renders the same repeated
 words, from the same stimulus file, transcribed by the same recogniser, and shows
 no gap. Whatever blank-collapse costs us, it does not create the dissociation.
 
+
+\subsection{Why the probe does not contradict Theorem~1(iv)}
+
+A reviewer observed that a linear probe is exactly the $L$-Lipschitz readout
+Theorem~1(iv) forbids past the horizon, so our recovering the count at
+$R^2\approx0.48$ looks like a refutation of our own theorem. It is not, and the
+reason is a scope limit worth stating rather than a defence.
+
+The theorem forbids a Lipschitz readout from separating counts \emph{past}
+$N^\ast$; below it, nothing is claimed. Our probe is fitted on states from the
+main ladder, $k\le32$, and the fitted saturation scale for repeated items is
+about $30$. The probe therefore operates entirely at or below the point where
+tracking stops, in the regime where the theorem permits a readout to succeed.
+
+This cuts both ways, which is why it belongs in the same paragraph as the
+retraction above. The probe cannot refute the theorem, and it equally cannot
+support it: the prohibition applies to a range we never probed. Probing states
+from the extension ladder ($k=48\ldots128$), where the count has demonstrably
+stopped tracking, is the experiment that would test it, and we did not run it ---
+the extension was generated without the hidden-state instrumentation, which is a
+straightforward thing for a follow-up to fix.
+
+
+\section{The judge's noise floor}
+\label{sec:s14}
+
+Round-9 reviewers asked for the number that makes every other number in the paper
+readable, and that we had not computed: the recogniser's error on genuine model
+output, and hence the resolution beneath the reported effect sizes. Without it a
+median count error of -8.3\% floats free --- a reader cannot tell whether it
+sits comfortably above the instrument's own uncertainty or inside it.
+
+Two estimates of the floor, both on real generated audio and both in
+repetitions, which is the unit the recogniser errs in:
+
+\begin{center}
+\begin{tabular}{lr}
+\toprule
+source of variation & mean $|\Delta|$ (repetitions) \\
+\midrule
+two recognisers on the same audio & 0.47 \\
+\quad restricted to $k\ge12$ & 0.79 \\
+30\,dB additive noise & 0.12 \\
+resampling round trip & 0.03 \\
+\midrule
+\emph{effect}: mean repetitions missing, $k\ge6$ & 0.87 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The honest reading is that the per-item effect is thin: 1.9 times the
+disagreement between two independent CTC recognisers. We state it rather than
+leave it to be discovered, because it bounds what any single item can show.
+
+Two things keep the claim standing, and both are properties of the design rather
+than assurances.
+
+\noindent\textbf{The control passes through the same judge.} Whatever noise the
+recogniser contributes, it contributes to both arms, and controls come back
+exact in 94.3\% of generations. A recogniser with indiscriminate
+half-count noise could not produce that. The claim is a difference between two
+arms measured by one instrument, not an absolute count.
+
+\noindent\textbf{The disagreements run in our disfavour.} Where the two
+recognisers differ on the same audio, ours reports the \emph{higher} count in
+11 of 13 cases. Our judge is the more generous of the two, so
+it under-states the deficit rather than manufacturing it --- and a more accurate
+recogniser would, on this evidence, report a larger effect, not a smaller one.
+
+What this does not do is rescue any individual item. An item missing one
+repetition is not, on its own, distinguishable from recogniser noise; the
+evidence is in the rate across hundreds of generations and in the contrast with
+the control, not in any single transcript. The released audio sample (\S3) is
+there so that a reader can form their own view of a few of them.
+
 \bibliographystyle{IEEEtran}
 \bibliography{../refs}
 

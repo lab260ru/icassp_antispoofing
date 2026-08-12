@@ -31,23 +31,23 @@ so no horizon lies inside this ladder.
 \subsection{Past the ladder, the count does level off}
 
 So we extended it, post hoc, to $k\in\{48,64,96,128\}$ on the \HzNModels{}
-checkpoints that admit utterances that long (\HzModelNames{}; XTTS-v2's
+checkpoints admitting utterances that long (\HzModelNames{}; XTTS-v2's
 $602$-mel-token ceiling censors every $k\ge48$ item, S10). Tracking stops: the
 repeated median sits at \HzMedRepKLo{} and \HzMedRepKHi{} at $k\!=\!48$ and
-$128$ while the control climbs \HzMedCtlKLo{} to \HzMedCtlKHi{}. Of \HzNGen{}
-generations \HzExclCap{} hit our budget and \HzExclDegen{} were degenerate,
-leaving \HzNCellLo{}--\HzNCellHi{} per cell; dropping truncated items is
-conservative, their counts being censored downward.
+$128$ as the control climbs \HzMedCtlKLo{} to \HzMedCtlKHi{}. Of \HzNGen{} generations \HzExclCap{} hit our
+budget and \HzExclDegen{} were degenerate, leaving \HzNCellLo{}--\HzNCellHi{}
+per cell; dropping truncated items is conservative, their counts being censored
+downward.
 
 The controls stop us reading this as counting collapse alone: they saturate too,
 so these decoders have a general utterance-length ceiling and the reportable
 quantity is the \emph{ratio}, which divides it out. Fitting $\hat c(k)=\hat
 K(1-e^{-k/\hat K})$ over the combined ladder --- $\hat K$ a saturation scale read
 off counts, \emph{not} the theorem's $N^\ast$, a function of the unmeasured $q$
---- gives $\hat K_{\mathrm{rep}}=\HzNRep{}$ $[\HzNRepLo{},\HzNRepHi{}]$ against
-$\hat K_{\mathrm{ctl}}=\HzNCtl{}$ $[\HzNCtlLo{},\HzNCtlHi{}]$: repetition
-lowers the counting horizon \HzRatio{}-fold, saturating just past where our
-ladder stopped, which is why $k\le32$ looked proportional.
+--- gives $\hat K_{\mathrm{rep}}=\HzNRep{}$ against
+$\hat K_{\mathrm{ctl}}=\HzNCtl{}$ $[\HzNCtlLo{},\HzNCtlHi{}]$: repetition lowers
+the counting horizon \HzRatio{}-fold, just past where our ladder stopped, which
+is why $k\le32$ looked proportional.
 
 The panel is not unanimous, and the exception is informative: intervals are
 disjoint for \HzSepNames{}, while \HzRevNames{} shows \emph{no} repeated-side
@@ -58,20 +58,20 @@ Because the claim concerns models rather than our corpus, the checkpoint is the
 unit of replication. The exactly-correct rate favours the control in all \CkExactN{} (mean
 \CkExact{} points $[\CkExactLo{},\CkExactHi{}]$); the median-error gap is
 positive in \CkErrNPos{} of \CkErrN{}, zero in \ErrBestModel{}. Those six
-cluster into \FamExactN{} families, so per family the gap is \FamExact{} points,
-range $[\FamExactLo{},\FamExactHi{}]$, positive in all \FamExactN{}. At either
-level the panel is too small for significance testing --- the exact signed-rank
-floor at $n\!=\!6$ is $0.031$ and no multiplicity correction clears $0.05$ (S11)
---- so we rest on effect sizes and their consistency.
+cluster into \FamExactN{} families, where the gap is \FamExact{} points, range
+$[\FamExactLo{},\FamExactHi{}]$, positive in all three. The panel is too small
+for significance testing at either level --- the exact signed-rank floor at
+$n\!=\!6$ is $0.031$, and no multiplicity correction clears $0.05$ (S11) --- so
+we rest on effect sizes and their consistency.
 
 \subsection{The limit is periodicity, not length}
 
 Figure~\ref{fig:main}(a) is also the paper's sharpest test. Each control has its
-twin's carrier and word count, differing only in that the $k$ copies of one word
-become non-adjacent ones. Were the failure about length, attention span or
-exposure bias the curves would coincide. They do not: at $k\ge6$ the median
-control error is \ErrCtl{}\% $[\ErrCtlLo{},\ErrCtlHi{}]$ ($n=\ErrCtlN{}$), at
-every $k$ to $32$ and for every model. The contrast is sharpest
+twin's carrier and word count, the $k$ copies of one word becoming non-adjacent
+ones. Were the failure about length, attention span or exposure bias the curves
+would coincide. They do not: at $k\ge6$ the median control error is \ErrCtl{}\%
+$[\ErrCtlLo{},\ErrCtlHi{}]$ ($n=\ErrCtlN{}$), at every $k$ to $32$ and for every
+model. The contrast is sharpest
 in exactly-correct renderings, \ExactCtl{}\% for controls against
 \ExactRep{}\% for their twins: decoders that miscount a repeated sequence five
 times in six render its non-adjacent twin right nineteen times in twenty. Controls are not perfect --- \CtlMissPct{}\% carry genuine
@@ -88,11 +88,11 @@ effect.
 A third rival is a decoding rule rather than a mechanism: the families ship
 repetition penalties differing by an order of magnitude, and a penalty suppresses
 repeated tokens by construction. It is not the cause. Sweeping XTTS-v2 over a
-\PenFold{}-fold penalty range leaves the repeated exact-rate between
+\PenFold{}-fold penalty range holds the repeated exact-rate between
 \PenRepLo{}\% and \PenRepHi{}\% (over the \PenArms{} arms whose control
-survives; at $1.0$ the control itself collapses to \PenOffCtl{}\%), and the
-\PenNoneN{} Llasa checkpoints pass \emph{no} penalty at all yet show the effect
-at full size, \PenNoneRep{}\% against \PenNoneCtl{}\%.
+survives; at $1.0$ the control collapses to \PenOffCtl{}\%), and the
+\PenNoneN{} Llasa checkpoints pass \emph{no} penalty yet show the effect at full
+size, \PenNoneRep{}\% against \PenNoneCtl{}\%.
 
 The last rival is architectural, the one the title stakes: perhaps any
 synthesiser mishandles long repeated text. The same ladder through
@@ -102,13 +102,13 @@ Assumption~\ref{ass:periodic} no recurrence to act on --- shows \emph{no}
 dissociation: \NonARRep{}\% of repeated items exact against \NonARCtl{}\% of
 controls, a gap of \NonARGap{} points against the panel's $+\ARPoolGap{}$, all
 \NonARAbove{} AR checkpoints separating from it. It degrades with length on
-both families alike, and its null is not a floor effect: at $k\!=\!6\text{--}8$,
-where the panel's gap already reaches \ARMidGap{} points, VITS renders
-\NonARMidRep{}\% of repeated and \NonARMidCtl{}\% of control items exactly, far
-off the floor and ordered the other way. It also settles what auditing the
-recogniser could not: were blank-collapse manufacturing the gap it would have
-depressed VITS's repeated items too, same judge and strings. Being smaller, only
-the within-model dissociation is compared.
+both families alike, and its null is not a floor effect: at $k\!=\!6\text{--}8$, where
+the panel's gap already reaches \ARMidGap{} points, VITS renders
+\NonARMidRep{}\% of repeated and \NonARMidCtl{}\% of controls exactly --- off
+the floor, and ordered the other way. It also settles what auditing the recogniser
+could not: were blank-collapse manufacturing the gap it would have depressed
+VITS's repeated items too, same judge and strings. Being smaller, only its
+within-model dissociation is compared.
 
 \begin{table}[t]
 \centering
@@ -127,14 +127,13 @@ states by the trajectory's effective rank, the capacity gain
 $\mathrm{d}\mathcal{N}_{\mathrm{eff}}/\mathrm{d}\log k$ on repeated text is a
 factor \CapRatio{} of the control's (Figure~\ref{fig:main}(c)), positive in all
 \CkCapN{} checkpoints (mean \CkCap{} $[\CkCapLo{},\CkCapHi{}]$) but varying
-fourfold: general in direction, not magnitude. The low rank is not merely the
-monotonous audio a correct rendering produces: covarying out realised output
-diversity leaves the ratio at \CapAdjRatio{} (S8). Staying positive, the gain
-says repetition slows state acquisition without halting it.
+fourfold: general in direction, not magnitude. It is not merely the monotonous
+audio a correct rendering produces --- covarying out output diversity leaves the
+ratio at \CapAdjRatio{} (S8) --- and staying positive, it says repetition slows
+state acquisition without halting it.
 
 Lemma~\ref{lem:dilution}'s premise holds only approximately
-($\delta\le\DeltaMax{}$ nats, S4) and its dose-response prediction fails
-outright: within a $(\text{model},k)$ cell, flatter attention goes with
-\emph{better} counting ($r=\DilR{}$ $[\DilRLo{},\DilRHi{}]$; S12). We record
-that as disconfirming: whatever selects which generations fail is not the degree
-of dilution.
+($\delta\le\DeltaMax{}$ nats) and its dose-response prediction fails outright:
+within a $(\text{model},k)$ cell, flatter attention goes with \emph{better}
+counting ($r=\DilR{}$ $[\DilRLo{},\DilRHi{}]$; S12). Whatever selects which
+generations fail is not the degree of dilution.

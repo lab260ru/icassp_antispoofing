@@ -17,25 +17,24 @@ probe retains less on repeated text than on its control in \ProbeNBelowCtl{} of
 \ProbeNCk{} checkpoints --- but the count stays decodable late (median $R^2$
 \ProbeLateMed{}), and retention exceeds one in \ProbeAboveOne{} of them. A state
 that had lost the count could not support that, and the rival predicts exactly
-such persistence. The relative effect is real; it discriminates nothing. Nor does
-it contradict Theorem~\ref{thm:collapse}(iv), whose prohibition concerns counts
-\emph{past} the horizon: the probe runs over $k\le32$, at or below the fitted
-$\hat K_{\mathrm{rep}}$, where a Lipschitz readout may succeed.
+such persistence. The relative effect is real; it discriminates nothing. It does not contradict Theorem~\ref{thm:collapse}(iv) either (S12).
 
 A conditional account risks being unfalsifiable, so we say what would refute it:
-a control with its twin's deficit; a model whose capacity gain matches its
-control; or an AR decoder behaving like the non-AR baseline.
+a control with its twin's deficit, a model whose capacity gain matches its
+control, or an AR decoder behaving like the non-AR baseline.
 
 The closest prior result is representational
-collapse~\cite{barbero2024glasses}: as sequences grow, distinct prefixes map to
-arbitrarily close representations, already implying counting errors. But
-collapse-by-length predicts that equally long control and repeated items fail
-alike, and they do not wherever the control carries no repetition of its own;
+collapse~\cite{barbero2024glasses}: distinct prefixes map to arbitrarily close
+representations as sequences grow, already implying counting errors. But
+collapse-by-length predicts equally long control and repeated items fail alike,
+and they do not wherever the control is itself repetition-free;
 \eqref{eq:horizon} also gives a rate in repetitions that a length-indexed bound
-does not. Related dynamical and expressivity bounds index
-convergence within one forward pass~\cite{dong2021attention,%
-geshkovski2023emergence,gao2026clustered,strobl2024formal,merrill2024illusion};
-ours indexes generation steps.
+does not, and related dynamical and expressivity bounds constrain one forward
+pass~\cite{dong2021attention,geshkovski2023emergence,gao2026clustered,%
+strobl2024formal,merrill2024illusion} where ours indexes generation steps. The per-item effect is thin against the
+instrument --- two recognisers disagree by \FloorTwoRec{} repetitions where the
+mean item is missing \MissMean{} --- but ours gives the higher count in
+\FloorOursHigher{} of \FloorNDisagree{} disagreements (S14).
 
 % Any further body text pushes the references onto a sixth page: main.tex ends
 % with \vfill\pagebreak, so the bibliography always starts on a fresh page and
