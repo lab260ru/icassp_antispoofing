@@ -1814,6 +1814,111 @@ the boundary-based estimator of Section~\ref{sec:s5} \emph{by construction}
 (there is no attention tensor to feed \texttt{unit\_columns}/\texttt{read\_head}),
 and its state-space measurements in this study are dispersion-only.
 
+\subsection{The count probe: layers, ridge penalty, and layer selection}
+\label{sec:s6-probe}
+
+The main paper's Method section states that ``probe layers, ridge penalties
+and the layer-selection rule are listed per checkpoint in S6''; this
+subsection is that listing. The probe itself --- ridge regression predicting
+$\log_2 k$ from mean-pooled hidden states, scored by leave-one-template-out
+cross-validation --- is specified in \texttt{analysis/probe\_count.py} and
+tested against a competing account of the deficit in
+Section~\ref{sec:s8-probe}; what follows is the configuration, not a repeat of
+that test.
+
+\noindent\textbf{Probe layers.} The layers a checkpoint's states are captured
+at are fixed \emph{before} probing, by \texttt{probe\_layer\_indices} in
+\texttt{src/common/registry.py}, from the density code in each checkpoint's
+\texttt{probe\_layers} field (Table~\ref{tab:panel}'s ``Probes'' column):
+\texttt{all} keeps every decoder layer, \texttt{every}$n$ keeps every $n$-th,
+and the final layer is always force-included regardless of $n$ since that is
+the layer whose state actually feeds the model's own readout. Table~\ref{tab:probe-layers}
+gives the resulting layer count $P$ per checkpoint, read directly from the
+number of per-layer entries in \texttt{data/results/probe.json} (the count the
+probe sweeps over is exactly the count that was captured; there is no separate
+subsampling at probing time).
+
+\begin{table}[h]
+\centering
+\caption{Probe-layer count per checkpoint. Density code from
+\texttt{src/common/registry.py} (\texttt{PANEL}); $P$ (layers actually swept
+by the probe) from \texttt{data/results/probe.json}'s per-layer arrays.}
+\label{tab:probe-layers}
+\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+Checkpoint & Density code & $P$, layers probed \\
+\midrule
+\texttt{llasa1b} & \texttt{all} & 16 \\
+\texttt{llasa3b} & \texttt{every2} & 15 \\
+\texttt{llasa8b} & \texttt{every4} & 9 \\
+\texttt{xtts2} & \texttt{every3} & 11 \\
+\texttt{qwen06b} & \texttt{every3} & 10 \\
+\texttt{qwen17b} & \texttt{every3} & 10 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent\textbf{Ridge penalty.} The ridge regression's $\ell_2$ penalty is
+$\alpha=1.0$ (\texttt{ridge\_loto}'s \texttt{alpha} parameter,
+\texttt{analysis/probe\_count.py}), applied identically to the centred
+features at every layer, for every stimulus family, for every checkpoint.
+Read literally, the main paper's phrasing --- ``ridge penalties \dots{} listed
+per checkpoint'' --- could suggest the penalty itself varies by checkpoint. It
+does not: $\alpha=1.0$ is a single fixed constant, never swept or tuned, and
+there is no per-checkpoint value to list beyond that constant repeated six
+times. What genuinely varies per checkpoint is which layers the penalty is
+applied at (Table~\ref{tab:probe-layers}) and which of those layers the
+layer-selection rule below picks out.
+
+\noindent\textbf{Layer-selection rule.} No layer is fixed in advance across
+checkpoints or chosen by architectural analogy. For each checkpoint, each
+stimulus family (\texttt{word\_rep}, \texttt{control\_word}) and each window
+(\emph{early}: mean state over the trajectory's first third; \emph{late}: mean
+state over its final third), \texttt{probe\_count.py} fits the ridge probe
+independently at every one of that checkpoint's $P$ probed layers and reports
+the layer that maximises leave-one-template-out cross-validated $R^2$:
+\texttt{best\_layer\_idx = argmax}$_p$ \texttt{r2}$(p)$. The rule is applied
+separately to the four (family $\times$ window) combinations per checkpoint,
+so the selected layer can and does differ between them --- there is no single
+``the probe layer'' per checkpoint, only a best layer per checkpoint per
+condition. Table~\ref{tab:probe-selection} lists every selected layer index
+and its cross-validated $R^2$, from \texttt{data/results/probe.json}; these
+are the same fits that produce the retention ratios of
+Table~\ref{tab:probe}, here reported before they are divided into one
+another.
+
+\begin{table}[h]
+\centering
+\caption{Selected probe layer (\texttt{best\_layer\_idx}, 0-indexed into the
+$P$ probed layers of Table~\ref{tab:probe-layers}) and its leave-one-template-out
+$R^2$, by checkpoint, stimulus family and window.
+\texttt{data/results/probe.json}. $n{=}54$ items per cell throughout.}
+\label{tab:probe-selection}
+\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+& \multicolumn{2}{c}{\texttt{word\_rep}} & \multicolumn{2}{c}{\texttt{control\_word}} \\
+Checkpoint & early & late & early & late \\
+\midrule
+\texttt{llasa1b} & L9 ($R^2{=}0.64$) & L13 ($R^2{=}0.62$) & L7 ($R^2{=}0.65$) & L15 ($R^2{=}0.71$) \\
+\texttt{llasa3b} & L4 ($R^2{=}0.48$) & L12 ($R^2{=}0.41$) & L5 ($R^2{=}0.68$) & L11 ($R^2{=}0.67$) \\
+\texttt{llasa8b} & L3 ($R^2{=}0.55$) & L4 ($R^2{=}0.52$) & L4 ($R^2{=}0.51$) & L7 ($R^2{=}0.56$) \\
+\texttt{xtts2} & L6 ($R^2{=}0.25$) & L6 ($R^2{=}0.49$) & L5 ($R^2{=}0.22$) & L0 ($R^2{=}0.62$) \\
+\texttt{qwen06b} & L2 ($R^2{=}0.32$) & L3 ($R^2{=}0.47$) & L4 ($R^2{=}0.18$) & L4 ($R^2{=}0.31$) \\
+\texttt{qwen17b} & L1 ($R^2{=}0.62$) & L9 ($R^2{=}0.47$) & L1 ($R^2{=}0.37$) & L9 ($R^2{=}0.41$) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The selected layer moves around within a checkpoint (e.g.\ \texttt{xtts2}'s
+control-word late-window best layer is L0, its earliest probed layer, against
+L6 for the same checkpoint's repeated-word late window) as well as across
+checkpoints, which is what a per-condition argmax over a noisy $R^2$ surface
+with $n=54$ items should be expected to do; Section~\ref{sec:s8-probe} reports
+the retention statistic this table feeds and states plainly where the
+resulting numbers are, and are not, strong evidence.
+
 % ============================================================
 \section{Reproducibility}
 \label{sec:s7}
@@ -3379,6 +3484,355 @@ between-checkpoint SD of the capacity gap is 16.0 against a mean of
 24.7 --- a fourfold spread. ``Holds in all six'' and ``holds in all six by
 comparable amounts'' are different claims that a vote count cannot distinguish.
 The first is supported; the second is not.
+
+\subsection{The clustering, modelled instead of counted}
+\label{sec:s11-hier}
+
+Everything above treats the six checkpoints as the sampling unit and either
+counts votes or runs an exact sign test on the six differences. That answers
+``does the effect hold in every checkpoint we ran'', which is a weaker claim
+than the one the main paper's Section~3.1 now makes: what is the arm effect
+for architectures \emph{of this kind}, given that the six checkpoints are
+really three architecture families (three Llasa scales, two Qwen3-TTS scales,
+one XTTS-v2), so treating them as six independent replicates overstates the
+independent evidence twofold. \texttt{analysis/hierarchical.py} is the script
+that answers this properly: a mixed-effects model with architecture as a
+random effect and checkpoint nested inside it, a hierarchical Bayesian model
+that partially pools the six checkpoints into the three families, and a
+specification curve over every forking choice made along the way. Before any
+of that runs, the script recomputes the per-checkpoint and per-family exact-rate
+gaps from \texttt{src.common.population.panel} and asserts they equal
+\texttt{checkpoint\_level.json} and \texttt{family\_level.json} to machine
+precision (max\,$|$diff$|=0$ on all three checks; see
+\texttt{data/results/hierarchical.json}, key \texttt{reproduction}) --- the
+population is not new, only the model of it.
+
+\subsubsection{Mixed-effects and cluster-robust models}
+
+The outcome is exact/not-exact (0/1), fitted as a linear probability model
+(\texttt{exact\_i} $\sim$ \texttt{rep\_i} + $\log_2 k_i$) so the coefficient on
+\texttt{rep} is directly in percentage points; effects are reported flipped in
+sign so positive means control minus repeated, i.e.\ the effect the paper
+predicts. The primary specification is a crossed-random-effects model with
+architecture family, checkpoint nested in family, and stimulus template all as
+random intercepts, plus --- the piece that actually matters for a three-family
+panel --- a \emph{family-varying arm slope}: the \texttt{rep} coefficient itself
+is allowed to differ by architecture family, which is what forces its standard
+error to be paid for out of three families rather than 982 generations.
+Statsmodels' \texttt{MixedLM} takes one \texttt{groups} factor, so the crossed
+structure is supplied as four variance components (\texttt{arch},
+\texttt{ckpt}, \texttt{stim}, \texttt{arch:rep}) under a single all-ones group,
+fit by REML.
+
+That primary model puts the gap at \textbf{76.4 points} (mixedlm
+\texttt{arm\_effect\_pts}$=76.423$). Table~\ref{tab:hier-intervals} reports
+every interval construction the script computes, each with the clustering unit
+that generates its degrees of freedom.
+
+\begin{table}[h]
+\centering
+\caption{Interval constructions for the arm effect (control $-$ repeated,
+percentage points), \texttt{data/results/hierarchical.json}, key
+\texttt{mixed}. The Wald row is reported for reference and is \emph{not} one
+of the six intervals the main paper's ``all six'' refers to, for the reason
+given in the note below the table.}
+\label{tab:hier-intervals}
+\small
+\begin{tabular}{@{}lrrrl@{}}
+\toprule
+Construction & $n$ clusters & Estimate & 95\% interval & Criterion \\
+\midrule
+MixedLM, crossed RE, Wald (reference only) & 3 fam. & 76.4 & [71.9, 80.9] & $z$ \\
+\addlinespace
+\multicolumn{5}{@{}l}{\emph{the six constructions the main text's ``all six'' counts:}} \\
+MixedLM, crossed RE, $t(2)$              & 3 fam.  & 76.4 & [66.6, 86.3] & $t(2)$ \\
+OLS, clustered by family                 & 3       & 76.2 & [68.7, 83.7] & $t(2)$ \\
+OLS, clustered by checkpoint             & 6       & 76.2 & [63.2, 89.2] & $t(5)$ \\
+Family-level means, $t$-interval         & 3       & 75.4 & [65.6, 85.2] & $t(2)$ \\
+Cluster bootstrap over families (20k)    & 3       & 76.0 & [71.1, 79.0] & percentile \\
+Cluster bootstrap over checkpoints (20k) & 6       & 76.2 & [67.2, 84.8] & percentile \\
+\midrule
+\multicolumn{5}{@{}l}{\emph{check, not one of the six (different link function):}} \\
+GEE, binomial, clustered by family & 3 & \multicolumn{2}{c}{OR $\approx$ 96, log-odds $[3.31,5.83]$} & $t(2)$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The widest of the six is the checkpoint-clustered OLS interval,
+$[63.2, 89.2]$, which is the number the main paper quotes; the narrowest is
+the family-clustered bootstrap, $[71.1, 79.0]$. Every one of the six excludes
+zero, and the least favourable lower bound across all six is $63.2$ points
+(\texttt{worst\_case\_lower\_bound\_pts}). The binomial GEE, included as a
+check that the linear-probability link is not doing the work, agrees in
+direction and significance (odds ratio $\approx96$, $t(2)$ interval on the
+log-odds scale excluding zero) but is not counted among the six because it
+answers on a different scale, not because it disagrees.
+
+\noindent\textbf{Why the Wald interval is excluded, and why this is not a
+convenient omission.} The MixedLM Wald interval, $[71.9, 80.9]$, is visibly the
+narrowest interval in the table --- narrower than four of the six percentage-point
+intervals below it, on the same point estimate. That narrowness is an artefact,
+not a sign of a well-estimated effect. With three families, the family-varying
+arm-slope variance component is barely identified: REML shrinks its estimated
+between-family SD to \textbf{1.4 points}
+(\texttt{vcomp\_sd\_pts.arch\_x\_rep}$=1.37$), against an between-family SD of
+the exact-rate gap of \textbf{3.9 points} measured directly from the three family
+means (\texttt{family\_t\_interval.sd\_pts}$=3.95$) --- roughly a factor of three
+too small. The Wald interval is built from that shrunk variance component, so it
+is narrower than the between-family spread actually licenses. This is exactly
+the situation the script's own inline note describes: ``with three families the
+family-varying arm slope is barely identified and REML shrinks it hard, so this
+Wald interval is narrower than the between-family spread alone would license;
+the clustered, family-t and bootstrap intervals below are the widths to quote.''
+The main paper's Section~3.1 already quotes the widest of the six,
+$[63.2,89.2]$, as its headline interval; this is why that choice, rather than
+the tighter-looking Wald interval, is the defensible one. None of the four
+variance components (\texttt{arch}, \texttt{ckpt}, \texttt{stim},
+\texttt{arch:rep}) sit exactly on the zero boundary in this fit
+(\texttt{vcomp\_on\_boundary} is \texttt{false} throughout), so the shrinkage
+here is a matter of degree --- how much the REML estimate trusts three data
+points to locate a variance --- not a degenerate fit.
+
+\subsubsection{A hierarchical Bayesian model}
+
+Partial pooling is the direct answer to ``six non-independent checkpoints'':
+rather than either treating them as six independent replicates or collapsing
+each family to one number and discarding the within-family precision, a
+hierarchical model is told about the nesting and returns a posterior whose
+width reflects it. The model is binomial on the logit scale: each checkpoint's
+control-arm and repeated-arm success counts
+($y_{\mathrm{ctl}}\sim\mathrm{Binom}(n_{\mathrm{ctl}},\sigma(\eta_{\mathrm{ctl}}))$,
+similarly for \texttt{rep}) are generated from a control-level logit
+$\eta_{\mathrm{ctl}} = \alpha + \sigma_{\mathrm{fam}}\,z^{\mathrm{fam}}_{\mathrm{ctl}} +
+\sigma_{\mathrm{ckpt}}\,z^{\mathrm{ckpt}}_{\mathrm{ctl}}$ and a gap logit
+$\mathrm{gap} = \Delta + \sigma_{\mathrm{fam}}^{\Delta}\,z^{\mathrm{fam}}_{\Delta} +
+\sigma_{\mathrm{ckpt}}^{\Delta}\,z^{\mathrm{ckpt}}_{\Delta}$, with
+$\eta_{\mathrm{rep}} = \eta_{\mathrm{ctl}} - \mathrm{gap}$: every checkpoint's
+control level and its arm gap each carry a family offset and a checkpoint
+offset nested inside that family, non-centred for sampling. Priors: $\alpha,
+\Delta \sim \mathcal{N}(0,5)$ on the logit scale (near-flat over the range the
+data can move them), and all four group-level scales
+$\sigma\sim\mathrm{HalfNormal}(1.0)$ (\texttt{data/results/hierarchical.json},
+key \texttt{bayes.priors}).
+
+\noindent\textbf{Sampled twice, independently.} The primary fit is NUTS via
+\texttt{numpyro} (4 chains, 1500 warmup / 3000 draw); the cross-check is a
+hand-rolled blocked adaptive random-walk Metropolis sampler that imports
+nothing but \texttt{numpy}, run for 4 chains of 20000 warmup / 60000 draws
+thinned by 10. Diagnostics for both (split-$\hat R$ and bulk ESS, computed by
+this project's own implementation for the hand-rolled chains and by
+\texttt{numpyro.diagnostics.summary} for NUTS):
+
+\begin{center}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Engine & $\hat R_{\max}$ & ESS$_{\min}$ & Converged ($\hat R<1.01$, ESS$>400$) \\
+\midrule
+NUTS (numpyro), primary & 1.0005 & 3825 & yes \\
+Hand-rolled Metropolis, cross-check & 1.0255 & 296 & yes \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The two engines' posterior means agree to within $0.02$ log-odds, $0.12$ points
+on the panel gap, and $0.33$ points on the new-family predictive gap
+(\texttt{bayes.crosscheck.max\_abs\_diff}), well inside the tolerances the
+script requires (\texttt{agrees}$=$\texttt{true}) --- two independent
+implementations of the sampler, not one trusted alone.
+
+\begin{table}[h]
+\centering
+\caption{Posterior arm-effect gap (percentage points, control $-$ repeated),
+partially pooled, \texttt{data/results/hierarchical.json}, keys
+\texttt{bayes.per\_family\_gap\_pts} and \texttt{bayes.per\_checkpoint\_gap\_pts}.
+All $P(\mathrm{gap}>0)=1.000$ to the precision shown.}
+\label{tab:hier-bayes}
+\small
+\begin{tabular}{@{}llrr@{}}
+\toprule
+Level & Unit & Mean & 95\% credible interval \\
+\midrule
+Family & Llasa      & 79.3 & [73.4, 84.4] \\
+Family & Qwen3-TTS  & 74.1 & [67.7, 79.9] \\
+Family & XTTS       & 73.7 & [63.5, 82.2] \\
+\addlinespace
+Checkpoint & \texttt{llasa1b} & 79.5 & [70.5, 86.9] \\
+Checkpoint & \texttt{llasa3b} & 77.2 & [67.0, 85.5] \\
+Checkpoint & \texttt{llasa8b} & 81.0 & [72.7, 88.0] \\
+Checkpoint & \texttt{qwen06b} & 87.6 & [80.1, 93.8] \\
+Checkpoint & \texttt{qwen17b} & 60.5 & [50.4, 70.0] \\
+Checkpoint & \texttt{xtts2}   & 73.7 & [63.5, 82.2] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Two further pooled summaries, both derived from the same posterior draws but
+answering different questions. The ``typical checkpoint of a typical family''
+--- random effects held at zero --- gives a \emph{panel} gap of $74.9$ points,
+$[41.5, 89.4]$ (\texttt{bayes.panel\_gap\_pts}); its lower bound is
+substantially below the family- and checkpoint-level intervals above because
+it marginalises over the between-family variance the panel-level posteriors
+condition away. The quantity the main paper actually leads with is different
+again and answers the question three families cannot answer directly: drawing
+a \emph{new} family's offsets from the fitted population distribution (rather
+than conditioning on one of the three observed families) gives the posterior
+\emph{predictive} gap for an architecture outside the panel, \textbf{65.3
+points}, $[5.9, 93.3]$, $P(\mathrm{gap}>0)=0.996$
+(\texttt{bayes.new\_family\_gap\_pts}) --- wide enough to place the effect with
+high probability, not narrow enough to exclude a fourth architecture with no
+deficit at all. The four group-level scales at their posterior means, on the
+logit scale, are $\sigma_{\mathrm{family}}=0.97$,
+$\sigma_{\mathrm{checkpoint}}=0.45$, $\sigma_{\mathrm{family},\Delta}=0.72$,
+$\sigma_{\mathrm{checkpoint},\Delta}=0.81$ (\texttt{bayes.sigma}): the
+between-\emph{family} scale on the gap ($0.72$) is comparable to the
+between-\emph{checkpoint} scale on the gap ($0.81$), i.e.\ with only three
+families and six checkpoints the data do not sharply separate ``families
+differ'' from ``checkpoints within a family differ,'' which is exactly the
+uncertainty the new-family predictive propagates forward.
+
+\subsubsection{Prior sensitivity, both directions}
+
+With three families, the prior on the group-level scales is doing real work,
+so it is reported as part of the result rather than relegated to a robustness
+appendix. Table~\ref{tab:hier-prior} refits the identical model at
+$\mathrm{HalfNormal}(0.5)$ (tighter than the reported prior, favourable to a
+narrow interval) and $\mathrm{HalfNormal}(3.0)$ (much wider, unfavourable),
+against the reported $\mathrm{HalfNormal}(1.0)$.
+
+\begin{table}[h]
+\centering
+\caption{Prior sensitivity on the four group-level scales $\sigma$,
+new-family predictive gap (points), \texttt{data/results/hierarchical.json},
+key \texttt{bayes.prior\_sensitivity} (the reported prior's row is
+\texttt{new\_family\_gap\_pts} from Table~\ref{tab:hier-bayes}'s text).}
+\label{tab:hier-prior}
+\small
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Prior on $\sigma$ & Mean & 95\% CrI & $P(\mathrm{gap}>0)$ \\
+\midrule
+HalfNormal(0.5) --- tighter, favourable & 71.7 & [26.6, 90.9] & 1.000 \\
+HalfNormal(1.0) --- reported & 65.3 & [5.9, 93.3] & 0.996 \\
+HalfNormal(3.0) --- much wider, unfavourable & 52.3 & [$-$1.6, 96.1] & 0.956 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Stated as unfavourably as the data allow: under the widest prior on the
+group-level scales, the 95\% credible interval for the predictive gap on an
+architecture family outside the panel touches zero, $[-1.6, 96.1]$, with
+$P(\mathrm{gap}>0)=0.956$ --- a $95\%$ interval that no longer excludes no
+effect, and a one-in-twenty-five posterior chance (by this prior's lights) that
+a fourth architecture family shows no deficit or reverses it. This is not a
+failure of the model; it is the honest consequence of having three families to
+locate a between-family variance with. What the data establish, on every prior
+tried, is a large effect in every family actually observed and a posterior
+probability of a positive gap that is high under every prior and drops only
+under the least defensible one; what they do not establish, and cannot with
+$n=3$ families, is certainty that a fourth, unobserved architecture would show
+it too.
+
+\subsubsection{The specification curve}
+
+The final piece asks the question a single preferred number cannot: how much
+does the headline gap move under the forking choices made along the way. Six
+axes are crossed exhaustively: which exclusion rule is active (5 levels, from
+the panel default to every rule relaxed at once), the $k$ threshold (5
+levels), cycled versus never-cycled (aperiodic) controls, one seed versus all
+three, pooled/per-checkpoint/per-family aggregation, and the outcome
+definition (exact-rate gap versus median-relative-error gap). The full cross
+is $5\times5\times2\times2\times3\times2=600$ cells; $180$ are dropped as
+duplicate populations (the never-cycled control arm only exists for
+$k=12$--$32$, so every $k_{\min}<12$ cell under \texttt{control=aperiodic}
+selects an identical row set and would otherwise pad the curve with copies of
+the same specification), leaving \textbf{420 specifications}, none infeasible
+(\texttt{spec\_curve.n\_specifications}, \texttt{n\_infeasible},
+\texttt{n\_duplicate\_populations\_collapsed}). The population underlying every
+cell that overlaps \texttt{exclusion\_sensitivity.py}'s five exclusion arms and
+\texttt{aperiodic\_controls.py}'s never-cycled re-generation is checked to
+reproduce those scripts exactly (\texttt{spec\_curve.reproduces}, max
+$|$diff$|=0$ on all six shared cells) before any of the 420 is trusted.
+
+The two outcome definitions are on different scales and are reported
+separately in Table~\ref{tab:hier-spec} rather than pooled into one range: the
+exact-rate gap (percentage points of exact-match rate, $210$ specifications)
+and the median-relative-error gap (percentage points of median count error,
+$210$ specifications, a much smaller quantity by construction --- see
+Section~3.1 of the main paper's own median-error numbers, which sit around
+$10$--$12$ points against exact-rate's $\sim$77).
+
+\begin{table}[h]
+\centering
+\caption{Specification curve, \texttt{data/results/hierarchical.json}, key
+\texttt{spec\_curve}. $n$ is the number of specifications under that outcome
+definition.}
+\label{tab:hier-spec}
+\small
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Outcome & $n$ & Range (pts) & Median & Positive & Zero / negative \\
+\midrule
+Exact-rate gap & 210 & [34.4, 86.4] & 70.5 & 210/210 & 0 / 0 \\
+Median-error gap & 210 & [0.0, 19.5] & 8.3 & 197/210 & 13 / 0 \\
+\midrule
+Both outcomes combined & 420 & --- & --- & 407/420 & 13 / 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Read plainly: the exact-rate gap --- the outcome the main paper leads with ---
+runs \textbf{34.4 to 86.4 points} across its 210 specifications and never
+changes sign. The median-error gap, a smaller and noisier quantity by
+construction, is positive in 197 of 210 and exactly zero (never negative) in
+the remaining 13 --- the same zero-but-never-reversed pattern already reported
+above for \texttt{qwen17b}'s single median-error checkpoint. Pooling both
+outcome definitions into the one
+number the main paper states --- \textbf{0 of 420 reverse the gap's sign} ---
+is accurate for sign-preservation, and is how that count should be read; the
+\textbf{34.4--86.4} range that accompanies it in the main text describes the
+exact-rate outcome specifically, not the smaller-scale median-error one, and a
+reader reconstructing the claim from \texttt{hierarchical.json} alone should
+not average the two outcomes' ranges together.
+
+\noindent\textbf{Which fork owns the spread.} Table~\ref{tab:hier-axis} reports
+the median exact-rate gap at every level of every axis
+(\texttt{spec\_curve.axis\_influence\_exact\_rate}), and the spread within each
+axis --- the single most informative summary of a specification curve, because
+the raw min--max range conflates every axis at once.
+
+\begin{table}[h]
+\centering
+\caption{Which forking choice moves the exact-rate gap, and by how much
+(median gap at each level, percentage points). Sorted by spread, descending.}
+\label{tab:hier-axis}
+\small
+\begin{tabular}{@{}l r p{6.6cm}@{}}
+\toprule
+Axis & Spread (pts) & Median gap by level \\
+\midrule
+$k$ threshold & 22.8 & $k{\ge}1$: 58.0, $k{\ge}6$: 74.7, $k{\ge}8$: 78.3, $k{\ge}12$: 80.7, $k{\ge}16$: 69.4 \\
+Exclusion rule & 9.7 & panel: 75.8, +templates: 68.8, +cap-hits: 76.7, +degenerate: 75.7, everything: 67.1 \\
+Aggregation level & 2.3 & pooled: 70.6, checkpoint: 71.3, family: 69.1 \\
+Control construction & 2.3 & cycled: 72.0, aperiodic: 69.7 \\
+Seed subset & 1.1 & all seeds: 69.7, seed 0 only: 70.8 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The $k$ threshold owns most of the spread by a wide margin --- unsurprising,
+since $k_{\min}=1$ pulls in the sub-horizon range where the two arms have not
+yet dissociated (Figure~1(a) of the main paper: below $k=6$ every
+model is essentially exact in both arms), which mechanically compresses the
+gap toward zero rather than reflecting a fragility in the effect above the
+horizon. The exclusion rule is a distant second; which controls are used,
+which aggregation level, and which seed subset move the estimate by at most a
+few points each. The single weakest specification in the whole curve is
+\textbf{34.4 points} --- every exclusion rule relaxed at once
+(\texttt{exclusions=everything}), $k_{\min}=1$, cycled controls, seed 0 only,
+family-level aggregation ($n=684$; \texttt{spec\_curve.worst\_specification\_}
+\texttt{exact\_rate}) --- the combination that simultaneously includes the
+sub-horizon range, keeps every degenerate and cap-hit generation, and
+aggregates at the coarsest level. Even there the gap is 34 points and positive.
 
 \section{Does dilution select which generations fail?}
 \label{sec:s12}
