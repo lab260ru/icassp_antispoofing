@@ -712,6 +712,12 @@ def main() -> None:
         macros["PhPastConst"] = fmt(ph["past"]["const_mae"], 2)
         macros["PhPastRTwo"] = fmt(ph["past"]["r2"], 2)
         macros["PhPastN"] = str(ph["past"]["n"])
+        # Control items over the identical k range. If the probe reads the count
+        # off these while failing on the repeated ones, "the range is too narrow"
+        # is dead as an explanation -- the range is the same.
+        if "past_control" in ph:
+            macros["PhCtlMae"] = fmt(ph["past_control"]["mae"], 2)
+            macros["PhCtlRTwo"] = fmt(ph["past_control"]["r2"], 2)
 
     # ---- what the probe does and does not discriminate --------------------
     pd_path = Path("data/results/probe_discrimination.json")

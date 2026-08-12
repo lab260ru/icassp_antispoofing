@@ -16,21 +16,22 @@ fails~\cite{venkatesh2026repeated}: it retains less on repeated text in
 \ProbeNBelowCtl{} of \ProbeNCk{} checkpoints, but the count stays decodable late
 ($R^2$ \ProbeLateMed{}), as that rival predicts.
 
-Run past the horizon, the same probe does test the theorem, which forbids a
-Lipschitz readout only \emph{beyond} $N^\ast$. On states from $k=48\ldots128$ it
-reaches mean absolute error \PhPastMae{} in $\log_2 k$ against \PhPastConst{}
-for a predictor that ignores the states and answers the mean --- learning nothing
---- where below the horizon it reaches \PhBelowMae{} against \PhBelowConst{}. We use that baseline because $R^2$ falls when the target varies
-less, and the extension spans a third of the range. The theorem's
-prediction, tested where it applies, on \PhPastN{} items and one checkpoint: one
-clean observation, not a panel result (S12).
+Run past the horizon, the probe does test the theorem, which forbids a Lipschitz
+readout only \emph{beyond} $N^\ast$. On $k=48\ldots128$ states it reaches MAE
+\PhPastMae{} in $\log_2 k$ against \PhPastConst{} for a predictor that ignores
+them and answers the mean; below the horizon, \PhBelowMae{} against
+\PhBelowConst{}. Range cannot explain this: over the \emph{same} $k$ it still
+reads the count off control states (\PhCtlMae{}, $R^2$ \PhCtlRTwo{}), so what it
+loses is periodicity, not dynamic range. The theorem's prediction tested where it
+applies --- \PhPastN{} items, one checkpoint: one clean observation, not a
+panel (S12).
 A conditional account risks being unfalsifiable, so we say what would refute it:
-a control with its twin's deficit, a model whose capacity gain matches its
-control, or a probe that recovers the count past the horizon.
+a control with its twin's deficit, or a model whose capacity gain matches its
+control.
 
 The closest prior result is representational
 collapse~\cite{barbero2024glasses}, where distinct prefixes converge as sequences
-grow; our control separates that from periodicity. Related
+grow --- our control separates that from periodicity --- and related
 bounds~\cite{dong2021attention,geshkovski2023emergence,gao2026clustered,%
 strobl2024formal,merrill2024illusion} constrain one forward pass.
 

@@ -3432,7 +3432,8 @@ changing only the range.
 states from & probe MAE & constant-predictor MAE & $R^2$ \\
 \midrule
 $k=2\ldots32$ (below $N^\ast$)   & 0.63 & 1.12 & +0.62 \\
-$k=48\ldots128$ (past $N^\ast$)  & 0.50 & 0.50 & -0.02 \\
+repeated, $k=48\ldots128$ (past $N^\ast$)  & 0.50 & 0.50 & -0.02 \\
+control, $k=48\ldots128$ (past $N^\ast$)   & 0.43 & 0.50 & +0.26 \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -3445,13 +3446,33 @@ always answers the mean achieves 0.50; the trained probe achieves 0.50. It
 has learned nothing about the count. Below the horizon the same probe beats its
 own trivial baseline by a wide margin.
 
+\noindent\textbf{The range control.} The argument above is still an argument,
+and a reviewer is entitled to answer that $\log_2$ range is not the only thing
+that changed. So we ran the control that settles it empirically. Twelve
+\emph{control} items --- aperiodic carriers, never-cycled vocabulary, matched on
+$k$ and on template --- were generated with the same instrumentation over exactly
+$k\in\{48,64,96,128\}$ and probed identically. The theorem says nothing about
+them: no periodic conditioning, so no contraction argument, so no horizon.
+
+The probe recovers the count from those states (MAE 0.43 against 0.50 for the
+constant predictor, $R^2$ +0.26) while failing on the repeated states over the
+identical range. Whatever the probe loses past $k=48$, it is not dynamic range,
+because the range is the same on both arms. This is the cleanest single result in
+the paper: the failure tracks periodic conditioning, not sequence length and not
+target variance.
+
+Had the control arm also failed, we would have reported the repeated-side null as
+uninterpretable; \texttt{analysis/probe\_past\_horizon.py} decides which of the
+two sentences to print from the measured MAEs rather than leaving the choice to
+us after the fact.
+
 This is the first positive evidence in the paper for the theorem's own
 conclusion, and it is the only place any of our measurements test that
 conclusion rather than its consequences. It does not establish the premise ---
 nothing here measures $q$ --- and it does not make the account causal.
 
-\noindent\textbf{Limits.} One checkpoint (Llasa-1B), 12 items, one seed,
-three cross-validation folds. It is a single clean observation. Two engineering
+\noindent\textbf{Limits.} One checkpoint (Llasa-1B), 12 repeated and 12 control
+items, one seed, three cross-validation folds. It is a single clean observation. Two engineering
 notes for anyone repeating it: the instrumented pass uses eager attention to
 capture attention weights, which materialises a $T\times T$ matrix per layer and
 runs out of memory at these sequence lengths --- the count probe needs hidden

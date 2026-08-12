@@ -35,7 +35,23 @@
       "const_mae": 0.5,
       "beats_constant": false,
       "mae_ratio": 1.009337263452587
+    },
+    "past_control": {
+      "ks": [
+        48,
+        64,
+        96,
+        128
+      ],
+      "reps": 3,
+      "r2": 0.2617774966826517,
+      "mae": 0.43130260213344035,
+      "n": 12,
+      "const_mae": 0.5,
+      "beats_constant": true,
+      "mae_ratio": 0.8626052042668807
     }
   },
-  "verdict": "the probe recovers the count below the horizon and not past it"
+  "verdict": "the probe recovers the count below the horizon and not past it",
+  "range_confound_ruled_out": true
 }
