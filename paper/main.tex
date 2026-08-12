@@ -43,11 +43,13 @@ Autoregressive text-to-speech models loop, truncate, and lose count on text that
 repeats a phrase many times. Modelling one repetition as a state map $F$ on the
 decoder's hidden state, we prove that if $F$ contracts with factor $q<1$ then
 \emph{no} Lipschitz readout---the model's own stop head included---can separate
-repetition counts beyond a horizon $N^\ast \le \log(\mu/2LC)/\log q$. The theorem
-and a companion attention-dilution lemma are machine-checked in Lean~4 with
-\texttt{mathlib}, free of \texttt{sorry} and of nonstandard axioms. Across
-\NModels{} checkpoints from \NFamilies{} architectures, judged by a CTC recogniser
-because the obvious autoregressive judge is itself biased against repetition,
+repetition counts beyond a horizon $N^\ast \le \log(\mu/2LC)/\log q$. Both it and a
+companion dilution lemma are machine-checked in Lean~4 with \texttt{mathlib},
+free of \texttt{sorry} and nonstandard axioms. We do \emph{not} establish the theorem's premise: two
+attempts to measure the contraction factor failed and the dilution lemma's dose-response test came
+out sign-reversed. Across
+\NModels{} checkpoints from \NFamilies{} architectures, judged by a CTC recogniser, the
+obvious autoregressive judge being biased against repetition,
 models render repeated text with a median count error of \ErrRep{}\% at $k\ge6$
 and are exact in \ExactRep{}\% of generations, against \ExactCtl{}\% for
 length-matched \emph{distinct}-word controls: the limit tracks periodicity, not
@@ -58,9 +60,7 @@ one is not. Up to $k=32$ the count stays proportional rather than saturating, so
 no horizon is visible there; a post-hoc and exploratory extension to $k=128$ finds
 one, repetition lowering the fitted saturation scale \HzFormLo{}--\HzFormHi{}-fold
 by fitted family, though not in
-one of the \HzNModels{} checkpoints that can utter that much. We do \emph{not} establish the theorem's premise: two
-attempts to measure the contraction factor failed and a dose-response test of the
-dilution lemma came out sign-reversed. Its \emph{conclusion} survives one
+one of the \HzNModels{} checkpoints that can utter that much. Its \emph{conclusion} survives one
 direct test --- a linear readout recovers the count from decoder states below the
 horizon and no better than chance past it --- in \PhNLost{} of the \PhNCk{}
 checkpoints we could run it on.
