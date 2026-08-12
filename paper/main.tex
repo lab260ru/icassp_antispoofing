@@ -43,7 +43,7 @@ Autoregressive text-to-speech models loop, truncate, and lose count on text that
 repeats a phrase many times. Modelling one repetition as a state map $F$ on the
 decoder's hidden state, we prove that if $F$ contracts with factor $q<1$ then
 \emph{no} Lipschitz readout---the model's own stop head included---can separate
-repetition counts beyond a horizon $N^\ast \le \log(\mu/2LC)/\log q$. Both it and a
+repetition counts beyond a horizon $N^\ast \le \log(\mu/(2LC))/\log q$. Both it and a
 companion dilution lemma are machine-checked in Lean~4 with \texttt{mathlib},
 free of \texttt{sorry} and nonstandard axioms. We do \emph{not} establish the theorem's premise: two
 attempts to measure the contraction factor failed and the dilution lemma's dose-response test came
