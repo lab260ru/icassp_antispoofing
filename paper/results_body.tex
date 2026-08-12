@@ -125,12 +125,12 @@ slows state acquisition without halting it.
 Lemma~\ref{lem:dilution}'s premise holds only approximately: renormalised over
 the $k$ repeated key columns, the most-attended occurrence takes
 $\ShareMaxK{}/k$ of the block's mass at worst, so $\delta\le\DeltaMax{}$ nats
-(S4). It holds in
-aggregate only, and we should not claim more: \emph{within} a $(\text{model},k)$
-cell, where $k$ is fixed, items with flatter attention are counted
-\emph{better}, not worse ($r=\DilR{}$ $[\DilRLo{},\DilRHi{}]$ over \DilCells{}
-cells, all \DilNAgainst{} measures agreeing, controls at zero (S12);  $\DilCtlR{}$
-$[\DilCtlLo{},\DilCtlHi{}]$). That reverses the lemma's direction, so dilution
-does not select which generations fail --- peaked attention plausibly marks a
-decoder already stalled, which this design cannot separate from a cause. Qwen3-TTS fuses text and
-acoustic embeddings per position and cannot be checked at all.
+(S4). It holds in aggregate only, and we claim no more: \emph{within} a
+$(\text{model},k)$ cell, items with flatter attention are counted \emph{better},
+not worse ($r=\DilR{}$ $[\DilRLo{},\DilRHi{}]$ over \DilCells{} cells, all
+\DilNAgainst{} flatness measures agreeing, matched controls at
+$\DilCtlR{}$ $[\DilCtlLo{},\DilCtlHi{}]$; S12). That reverses the lemma's
+direction, so dilution does not select which generations fail --- peaked
+attention plausibly marks a decoder already stalled, which this design cannot
+separate from a cause. Qwen3-TTS fuses text and acoustic embeddings per position
+and cannot be checked at all.
