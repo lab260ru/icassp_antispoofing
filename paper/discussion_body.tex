@@ -10,16 +10,18 @@ With contraction refuted, the live question is where the count fails: on the
 state-contraction account it is erased from the state, on the output-policy
 account~\cite{venkatesh2026repeated} it survives and only the policy reading it
 fails. Our evidence points the second way: repetition costs probe retention relative to
-the control in all \ProbeNBelowCtl{} of \ProbeNCk{} checkpoints, as contraction
-predicts, but the count is not erased --- it stays decodable late ($R^2$
-\ProbeLateMed{}) and retention exceeds $1$ in \ProbeAboveOne{}, the probe
-reading it \emph{better} deeper in. Past the extension horizon the
+the control in all \ProbeNBelowCtl{} of \ProbeNCk{}, as contraction predicts,
+but the count is not erased --- it stays decodable late ($R^2$ \ProbeLateMed{})
+and retention exceeds $1$ in \ProbeAboveOne{}. Past the extension horizon the
 \PhNCk{} checkpoints we could run reach \PhAllRatios{} of a mean-answering
 predictor: inconclusive at $n=\PhNCk{}$, and on the two Qwen checkpoints no
 evidence about the representation at all, a predictor given only the generated
 trajectory's length beating the state probe there outright --- the count/length
-confound above is not hypothetical. Deciding between the accounts needs a
-manipulation of the readout at fixed state, which we did not run.
+confound above is not hypothetical. Deciding between them needs a manipulation of
+the readout at fixed state. We attempted one and report it uninterpretable
+rather than null: states from an \emph{unrelated} item move the rendered count
+$1.3\times$ as much as a donor differing in $k$, so the protocol perturbs
+generation rather than transplanting a count~(S26).
 
 \noindent\textbf{Related work, and what the control decides.}
 Closest is representational collapse~\cite{barbero2024glasses}: distinct
@@ -46,7 +48,7 @@ behaviourally. The VITS/F5-TTS duration story rests on one model per strategy.
 Exclusions are rule-based, applied without reference to arm or score.
 
 \noindent\textbf{Limitations.}
-The panel is \NFamilies{} families, a fourth tested out of
-sample; English is the only language. The judge is validated against concatenative ground truth,
-not human listeners, and we ran no listening study. A control arm carrying its twin's deficit at
-matched length would refute the claim; none appeared.
+The panel is \NFamilies{} families and English the only language tested. The
+judge is validated against concatenative ground truth, not human listeners, and
+we ran no listening study. A control arm with its twin's deficit at matched
+length would refute the claim; none did.

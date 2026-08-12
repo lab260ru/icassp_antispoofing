@@ -7,6 +7,7 @@
 #   qwen     (py3.12)                   : Qwen3-TTS via the `qwen-tts` package
 #   coqui    (py3.12)                   : XTTS-v2 via `coqui-tts` (idiap fork)
 #   xcodec2  (py3.11, torch 2.5 pinned) : offline vocoding of Llasa speech tokens
+#   cosyvoice(py3.10)                   : CosyVoice 2 from a source checkout
 #
 # CRITICAL: install cu130 torch BEFORE the TTS package in each env, else pip
 # silently pulls a default CUDA-12 wheel and the driver/toolkit combo breaks.
@@ -53,13 +54,44 @@ setup_xcodec2() {
   pip install -q "transformers==4.46.3" "tokenizers<0.21" "torchao==0.6.1" soundfile
 }
 
+setup_cosyvoice() {
+  # CosyVoice 2 is not a pip package: it is a source tree plus a submodule
+  # (Matcha-TTS) that has to be on sys.path. `src/models/cosyvoice_gen.py` adds
+  # both from $COSYVOICE_ROOT.
+  local ROOT="/home/kirill/mnt/hdd_6tb_1/icassp_tts/third_party"
+  mkdir -p "$ROOT"
+  [ -d "$ROOT/CosyVoice" ] || git clone --recursive --depth 1 \
+      https://github.com/FunAudioLLM/CosyVoice.git "$ROOT/CosyVoice"
+  conda env list | grep -q "^cosyvoice " || conda create -y -n cosyvoice python=3.10
+  conda activate cosyvoice
+  pip install -q torch torchaudio $CU130
+  # The upstream requirements.txt pins torch 2.3.1 + cu121 wheels; installing it
+  # as-is replaces the cu130 build. These are the same packages with the torch
+  # pins dropped, and only the ones an inference run actually imports (no
+  # deepspeed/tensorrt/gradio/fastapi/grpcio, all training- or serving-only).
+  #   diffusers 0.29.0 is a hard pin: Matcha-TTS imports
+  #     `diffusers.models.lora.LoRACompatibleLinear`, removed in 0.30.
+  #   setuptools <81 is a hard pin: cosyvoice/dataset/processor.py imports
+  #     `pkg_resources`, dropped from setuptools 81.
+  #   openai-whisper is installed --no-deps because its dependency block pins
+  #     triton, which would downgrade the one torch needs. Only
+  #     `whisper.log_mel_spectrogram` and `whisper.tokenizer` are used.
+  pip install -q "conformer==0.3.2" "diffusers==0.29.0" "hydra-core==1.3.2" \
+      "HyperPyYAML==1.2.3" lightning "inflect==7.3.1" "librosa==0.10.2" modelscope \
+      "omegaconf==2.3.0" onnxruntime-gpu rich soundfile tiktoken "transformers==4.51.3" \
+      einops scipy tqdm more-itertools numba "numpy<2" wetext gdown matplotlib wget \
+      pyarrow pyworld "setuptools<81"
+  pip install -q --no-deps openai-whisper
+}
+
 WHICH="${1:-all}"
 case "$WHICH" in
+  cosyvoice) setup_cosyvoice 2>&1 | tee "$REPO_ROOT/logs/env_cosyvoice.log" ;;
   base)    setup_base    2>&1 | tee "$REPO_ROOT/logs/env_base.log" ;;
   qwen)    setup_qwen    2>&1 | tee "$REPO_ROOT/logs/env_qwen.log" ;;
   coqui)   setup_coqui   2>&1 | tee "$REPO_ROOT/logs/env_coqui.log" ;;
   xcodec2) setup_xcodec2 2>&1 | tee "$REPO_ROOT/logs/env_xcodec2.log" ;;
-  all)     for e in base qwen coqui xcodec2; do bash "$0" "$e"; done ;;
-  *) echo "usage: $0 [base|qwen|coqui|xcodec2|all]"; exit 1 ;;
+  all)     for e in base qwen coqui xcodec2 cosyvoice; do bash "$0" "$e"; done ;;
+  *) echo "usage: $0 [base|qwen|coqui|xcodec2|cosyvoice|all]"; exit 1 ;;
 esac
 echo "[setup_envs] done: $WHICH"

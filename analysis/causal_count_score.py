@@ -346,7 +346,7 @@ def analyse_b(rows: list[dict]) -> dict:
             rhos, effects, dur_eff = [], [], []
             za, zy = [], []
             for iid, pts in by_item.items():
-                pts.sort()
+                pts.sort(key=lambda t: t[0])   # never fall through to the dict
                 al = np.array([a for a, _ in pts])
                 yy = np.array([r["y"] for _, r in pts])
                 dd = np.array([r["duration_s"] for _, r in pts])
@@ -360,8 +360,23 @@ def analyse_b(rows: list[dict]) -> dict:
                 dur_eff.append(float(dd[al == amax].mean() - dd[al == amin].mean()))
             rhos_a = np.array([r for r in rhos if r == r])
             pooled = (stats.spearmanr(za, zy) if len(za) > 5 else None)
+            # Paired +1 vs -1 within item. This is the only contrast every
+            # direction has in common, and it is the one that survives when a
+            # direction's dose scale turns out to be too large for the finer
+            # alphas to be interpretable: at |alpha| >= 0.5 the difference-in-
+            # means direction destroys the audio, so its sweep says nothing,
+            # while the ridge direction -- a third the magnitude -- stays in the
+            # range where a count can still be counted.
+            pm = [(math.log1p(d[+1.0]) - math.log1p(d[-1.0]))
+                  for d in ({a: r["count"] for a, r in pts} for pts in by_item.values())
+                  if +1.0 in d and -1.0 in d]
+            pm_a = np.array(pm, dtype=float)
+            pm_pos, pm_neg, pm_p = sign_test(pm_a) if pm_a.size else (0, 0, float("nan"))
             entry[fam] = dict(
                 n_items=len(by_item), alphas=sorted({r["alpha"] for r in sel}),
+                pm_n=int(pm_a.size),
+                pm_median=float(np.median(pm_a)) if pm_a.size else float("nan"),
+                pm_ci=boot_median_ci(pm_a), pm_pos=pm_pos, pm_neg=pm_neg, pm_p=pm_p,
                 per_item_rho_median=float(np.median(rhos_a)) if rhos_a.size else float("nan"),
                 sign_consistency=(float(np.mean(np.sign(rhos_a) == np.sign(np.median(rhos_a))))
                                   if rhos_a.size else float("nan")),
@@ -502,6 +517,9 @@ def main() -> None:
                       f"pooled rho={e['pooled_rho']:+.3f} (p={e['pooled_p']:.3f})  "
                       f"per-item rho med={e['per_item_rho_median']:+.3f}  "
                       f"effect={e['effect_median']:+.3f} log-count")
+                print(f"      paired a=+1 vs a=-1: median {e['pm_median']:+.3f} "
+                      f"[{e['pm_ci'][0]:+.2f},{e['pm_ci'][1]:+.2f}] log-count, "
+                      f"{e['pm_pos']}+/{e['pm_neg']}- of {e['pm_n']}, p={e['pm_p']:.3f}")
                 for al, v in sorted(e["by_alpha"].items(), key=lambda t: float(t[0])):
                     print(f"      a={al:>5s}  count={v['median_count']:7.1f}  "
                           f"dur={v['median_duration_s']:6.2f}s  "
