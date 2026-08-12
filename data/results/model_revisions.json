@@ -12,5 +12,6 @@
   "facebook/mms-tts-eng": "c71de0fe7204c83f1c10820a7d696d0b450048ba",
   "facebook/wav2vec2-large-960h-lv60-self": "bdb144224e9bb4a242a52f223186f120f6589a6b",
   "facebook/wav2vec2-large-robust-ft-libri-960h": "5d28473cc25ef7b338c9f731fe55626c4b082f58",
+  "jonatasgrosman/wav2vec2-large-xlsr-53-spanish": "96d7e9b4e4a78af515a3c6d3cee7c0826045d276",
   "openai/whisper-large-v3": "06f233fe06e710322aca913c1bc4249a0d71fce1"
 }

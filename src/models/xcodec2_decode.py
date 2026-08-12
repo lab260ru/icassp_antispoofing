@@ -36,6 +36,14 @@ def main() -> None:
     ap.add_argument("--gpu", type=int, default=DEFAULT_GPU)
     ap.add_argument("--codec", default="HKUSTAudio/xcodec2")
     ap.add_argument("--batch-log", type=int, default=50)
+    # Which token files to consider. The default decodes everything outstanding,
+    # which is right for a model whose whole sweep is meant to be audible. It is
+    # a parameter because some token sets deliberately have no waveform: the
+    # `*i` extension-ladder items exist for their activations only, and vocoding
+    # them would add k=48..128 audio -- and, after the ASR step, transcripts --
+    # to a population that was never scored behaviourally.
+    ap.add_argument("--glob", default="*.npy",
+                    help="filename pattern within the model's token directory")
     args = ap.parse_args()
     check_gpu(args.gpu)
 
@@ -43,7 +51,7 @@ def main() -> None:
     out_dir = Path(DATA_ROOT) / "audio" / args.model
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    files = sorted(tok_dir.glob("*.npy"))
+    files = sorted(tok_dir.glob(args.glob))
     todo = [f for f in files if not (out_dir / f"{f.stem}.wav").exists()]
     print(f"[{args.model}] {len(files)} token files, {len(todo)} to decode", flush=True)
     if not todo:

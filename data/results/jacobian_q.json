@@ -996,6 +996,28 @@
       "verdict": "PREMISE DEAD",
       "why": "the bootstrap CI for q on the repeated arm includes or exceeds 1.0: the per-repetition map is not a contraction in this decoder"
     },
+    "premise_by_arm": {
+      "arms": {
+        "repeated": {
+          "n_cells": 16,
+          "min_ci_lo": 3.895263433456421,
+          "max_ci_hi": 78.1048812866211,
+          "max_frac_items_below_1": 0.0,
+          "expansive_in_every_cell": true,
+          "contracting_in_some_cell": false
+        },
+        "control": {
+          "n_cells": 16,
+          "min_ci_lo": 3.503887176513672,
+          "max_ci_hi": 46.60674285888672,
+          "max_frac_items_below_1": 0.0,
+          "expansive_in_every_cell": true,
+          "contracting_in_some_cell": false
+        }
+      },
+      "both_arms_expansive": true,
+      "statement": "the premise fails on BOTH arms: the length-matched control, which this decoder counts correctly, is also expansive in every cell. Contraction was never a live description of this decoder for any input -- periodicity does not break it, it was never there to break"
+    },
     "least_favourable": {
       "cell": "two_tau|substack0",
       "q_repeated_ci_hi": 78.1048812866211

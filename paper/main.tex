@@ -145,8 +145,9 @@ returns no transcript at all --- at the top of the ladder there is no
 measurement rather than a poor one. We score instead with a CTC recogniser
 (\texttt{wav2vec2-large-960h-lv60-self}, greedy best-path, no language model),
 put through the same audit on the identical audio: ratio \CtcValPer{}
-($n{=}\AuditCtcN{}$, mean \AuditCtcMean{}). Worse in absolute WER, right here; a
-separate audit at wider splice gaps agrees (S9).
+($n{=}\AuditCtcN{}$, mean \AuditCtcMean{}). Worse in absolute WER, right here. Nor is
+the contrast an English artefact: the same audit in Spanish gives \EsCtcPer{}
+against \EsWhisperPer{} (S9, S27).
 
 $\hat c$ is obtained by matching the target unit against the transcript's word
 sequence, counting non-overlapping occurrences in order and skipping

@@ -299,6 +299,88 @@ def main() -> None:
                          "narrowed to English")
 
     print(f"\nVERDICT: {res['verdict']} -- {res['reason']}")
+
+    # ------------------------------------------------------------------
+    # POST-HOC DIAGNOSTIC. Everything above this point was fixed before any
+    # Spanish transcript existed. Everything below was written after seeing the
+    # verdict, and is labelled as such. It does not change the verdict; it
+    # explains it, and it exists because "the gap is small in Spanish" and "the
+    # Spanish instrument cannot resolve a gap" are very different claims and the
+    # arm is worthless if the report does not say which one happened.
+    # ------------------------------------------------------------------
+    print("\n=== Post-hoc diagnostic (written after the verdict) ===")
+    diag: dict = {}
+
+    # Per-OCCURRENCE delivery, not the per-item rate the vocabulary audit uses.
+    # An item scores `correct` only if every one of its k units matches exactly,
+    # so what governs the control side is the per-occurrence hit rate raised to
+    # the k-th power, and a per-item audit ("did this word appear anywhere?")
+    # hides that completely.
+    en_path2 = REPO / "data/results/behavioural_ctc.csv"
+    rows = [("Spanish (all templates)", d)]
+    if en_path2.exists():
+        en2 = pd.read_csv(en_path2)
+        en2 = en2[(en2.model == "xtts2") & (en2.k >= args.kmin)]
+        en2, _ = panel(en2, ablations=True)
+        rows.append(("English XTTS-v2", en2))
+    print(f"  {'arm':<24s} {'rep counted/k':>14s} {'ctl counted/k':>14s}")
+    for nm, frame in rows:
+        r_ = frame[frame.family == "word_rep"]
+        c_ = frame[frame.family == "control_word"]
+        rr = float((r_.count_a / r_.k).mean()) if len(r_) else float("nan")
+        cc = float((c_.count_a / c_.k).mean()) if len(c_) else float("nan")
+        diag[nm] = dict(rep_counted_over_k=rr, ctl_counted_over_k=cc)
+        print(f"  {nm:<24s} {rr:14.2f} {cc:14.2f}")
+    print("  The control side is the diagnostic one. A control is exact only if all k\n"
+          "  distinct fillers match as exact tokens, so control exact-match is roughly\n"
+          "  (per-occurrence hit rate)^k. The English judge sits at ~0.97 per occurrence\n"
+          "  and its controls survive to k=32; the Spanish judge sits lower, and the same\n"
+          "  statistic collapses on the control side for a reason that is the judge's\n"
+          "  word error rate (8.8% greedy vs ~2% for the English judge), not the model's\n"
+          "  counting. Duration ratio on those controls is ~1.0 and the transcripts carry\n"
+          "  the right number of words: the model said them, the judge spelled them\n"
+          "  differently ('tenue' -> 'tenues'), and one slip in k words voids the item.")
+
+    # Delivery-floor sensitivity. The English exclusion rule uses a floor of 0.05
+    # because the English failure was total (0 of 106). The Spanish failures are
+    # PARTIAL (harto 0.15, solo 0.22), so the English floor never fires on them.
+    # Raising it is post-hoc, and it is reported as a range rather than a chosen
+    # value precisely so that no single threshold can be said to have been picked.
+    from collections import defaultdict
+    va_full = json.loads(Path(args.vocab_audit).read_text())["delivery"]
+    stim_es = [json.loads(l) for l in (REPO / "data/stimuli/stimuli_es.jsonl").open()]
+    tw: dict = defaultdict(set)
+    for it in stim_es:
+        for u in (it.get("boundary_units") or []):
+            tw[it["template"]].add(u)
+    sens = []
+    for floor in (0.05, 0.25, 0.50, 0.75, 0.80):
+        keep = [t for t in sorted(tw)
+                if min(va_full[w]["rate"] for w in tw[t] if w in va_full) >= floor]
+        sub = d[d.template.isin(keep)]
+        if not len(sub):
+            continue
+        r_, _ = exact_rate(sub, "word_rep")
+        c_, _ = exact_rate(sub, "control_word")
+        sens.append(dict(floor=floor, templates=keep, rep=r_, ctl=c_,
+                         gap_points=100 * (c_ - r_), n=int(len(sub))))
+    diag["delivery_floor_sensitivity"] = sens
+    print("\n  delivery-floor sensitivity (post-hoc; the English rule is the 0.05 row):")
+    for s_ in sens:
+        print(f"    floor {s_['floor']:.2f}  templates {','.join(s_['templates']):<24s} "
+              f"rep {100*s_['rep']:5.1f}%  ctl {100*s_['ctl']:5.1f}%  "
+              f"gap {s_['gap_points']:+6.1f}  n={s_['n']}")
+    print("  Every floor from 0.25 to 0.80 selects the same three templates, so the\n"
+          "  threshold is not doing fine-grained work -- there is a natural break between\n"
+          "  0.22 and 0.80. Even on those three the control side reaches only ~39%, still\n"
+          "  under Gate 3's 50% bar, so the verdict does not change.")
+    print("\n  Direction of the residual bias: every artefact identified here depresses the\n"
+          "  CONTROL side and leaves the repeated side alone, so the measured Spanish gap\n"
+          "  is a LOWER bound. That is the least favourable reading for a replication and\n"
+          "  the most favourable one for 'the effect is English-specific' -- which is\n"
+          "  exactly why this arm must not be reported as evidence of either.")
+    res["post_hoc_diagnostic"] = diag
+
     Path(args.out).parent.mkdir(parents=True, exist_ok=True)
     Path(args.out).write_text(json.dumps(res, indent=2, default=float))
     print(f"wrote {args.out}")

@@ -1,0 +1,171 @@
+{
+  "kmin": 6,
+  "gates": {
+    "judge_audit": {
+      "ctc": "jonatasgrosman/wav2vec2-large-xlsr-53-spanish",
+      "periodic_ctc": 1.0,
+      "distinct_ctc": 1.0,
+      "periodic_whisper": 0.1875,
+      "distinct_whisper": 0.25,
+      "pass": true
+    },
+    "vocab_audit": {
+      "below_floor": [],
+      "excluded_templates": [],
+      "floor": 0.05,
+      "pass_": true
+    },
+    "informative": {
+      "control_exact": 0.2037037037037037,
+      "threshold": 0.5,
+      "pass_": false
+    }
+  },
+  "n_generations": 342,
+  "cap_hits": {
+    "word_rep": {
+      "n": 180,
+      "rate": 0.0
+    },
+    "control_word": {
+      "n": 162,
+      "rate": 0.0
+    },
+    "effective_k_ceiling_word_rep": 32,
+    "by_k": {
+      "1": {
+        "word_rep": 0.0,
+        "control_word": null
+      },
+      "2": {
+        "word_rep": 0.0,
+        "control_word": 0.0
+      },
+      "3": {
+        "word_rep": 0.0,
+        "control_word": 0.0
+      },
+      "4": {
+        "word_rep": 0.0,
+        "control_word": 0.0
+      },
+      "6": {
+        "word_rep": 0.0,
+        "control_word": 0.0
+      },
+      "8": {
+        "word_rep": 0.0,
+        "control_word": 0.0
+      },
+      "12": {
+        "word_rep": 0.0,
+        "control_word": 0.0
+      },
+      "16": {
+        "word_rep": 0.0,
+        "control_word": 0.0
+      },
+      "24": {
+        "word_rep": 0.0,
+        "control_word": 0.0
+      },
+      "32": {
+        "word_rep": 0.0,
+        "control_word": 0.0
+      }
+    }
+  },
+  "exact": {
+    "rep": 0.1111111111111111,
+    "n_rep": 108,
+    "ctl": 0.2037037037037037,
+    "n_ctl": 108,
+    "gap_points": 9.25925925925926,
+    "n": 216
+  },
+  "english_xtts2": {
+    "rep": 0.16666666666666666,
+    "n_rep": 90,
+    "ctl": 0.8777777777777778,
+    "n_ctl": 90,
+    "gap_points": 71.11111111111111,
+    "n": 234
+  },
+  "verdict": "UNINFORMATIVE",
+  "reason": "Spanish rendering fails on the control family too, so the gap is small for a reason unrelated to periodicity; this is a finding about XTTS-v2's Spanish, not about the periodicity claim",
+  "post_hoc_diagnostic": {
+    "Spanish (all templates)": {
+      "rep_counted_over_k": 0.6736111111111113,
+      "ctl_counted_over_k": 0.7217399691358025
+    },
+    "English XTTS-v2": {
+      "rep_counted_over_k": 0.8728009259259261,
+      "ctl_counted_over_k": 0.9726851851851851
+    },
+    "delivery_floor_sensitivity": [
+      {
+        "floor": 0.05,
+        "templates": [
+          "et1",
+          "et2",
+          "et3",
+          "et4",
+          "et5",
+          "et6"
+        ],
+        "rep": 0.1111111111111111,
+        "ctl": 0.2037037037037037,
+        "gap_points": 9.25925925925926,
+        "n": 216
+      },
+      {
+        "floor": 0.25,
+        "templates": [
+          "et2",
+          "et4",
+          "et5"
+        ],
+        "rep": 0.07407407407407407,
+        "ctl": 0.3888888888888889,
+        "gap_points": 31.48148148148148,
+        "n": 108
+      },
+      {
+        "floor": 0.5,
+        "templates": [
+          "et2",
+          "et4",
+          "et5"
+        ],
+        "rep": 0.07407407407407407,
+        "ctl": 0.3888888888888889,
+        "gap_points": 31.48148148148148,
+        "n": 108
+      },
+      {
+        "floor": 0.75,
+        "templates": [
+          "et2",
+          "et4",
+          "et5"
+        ],
+        "rep": 0.07407407407407407,
+        "ctl": 0.3888888888888889,
+        "gap_points": 31.48148148148148,
+        "n": 108
+      },
+      {
+        "floor": 0.8,
+        "templates": [
+          "et2",
+          "et4",
+          "et5"
+        ],
+        "rep": 0.07407407407407407,
+        "ctl": 0.3888888888888889,
+        "gap_points": 31.48148148148148,
+        "n": 108
+      }
+    ]
+  }
+}

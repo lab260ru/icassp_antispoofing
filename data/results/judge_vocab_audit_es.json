@@ -1,0 +1,314 @@
+{
+  "kmax": null,
+  "floor": 0.05,
+  "delivery": {
+    "abajo": {
+      "rate": 1.0,
+      "n": 18,
+      "templates": [
+        "et3"
+      ]
+    },
+    "algo": {
+      "rate": 0.9583333333333334,
+      "n": 48,
+      "templates": [
+        "et1",
+        "et6"
+      ]
+    },
+    "alto": {
+      "rate": 1.0,
+      "n": 24,
+      "templates": [
+        "et3"
+      ]
+    },
+    "azul": {
+      "rate": 1.0,
+      "n": 30,
+      "templates": [
+        "et4"
+      ]
+    },
+    "bien": {
+      "rate": 0.9666666666666667,
+      "n": 30,
+      "templates": [
+        "et1",
+        "et6"
+      ]
+    },
+    "blanca": {
+      "rate": 1.0,
+      "n": 27,
+      "templates": [
+        "et4"
+      ]
+    },
+    "bueno": {
+      "rate": 1.0,
+      "n": 27,
+      "templates": [
+        "et2"
+      ]
+    },
+    "casi": {
+      "rate": 1.0,
+      "n": 36,
+      "templates": [
+        "et1",
+        "et6"
+      ]
+    },
+    "cerca": {
+      "rate": 0.9259259259259259,
+      "n": 27,
+      "templates": [
+        "et3"
+      ]
+    },
+    "cierto": {
+      "rate": 1.0,
+      "n": 15,
+      "templates": [
+        "et2"
+      ]
+    },
+    "clara": {
+      "rate": 0.9583333333333334,
+      "n": 24,
+      "templates": [
+        "et4"
+      ]
+    },
+    "claro": {
+      "rate": 1.0,
+      "n": 27,
+      "templates": [
+        "et2"
+      ]
+    },
+    "exacto": {
+      "rate": 1.0,
+      "n": 15,
+      "templates": [
+        "et2"
+      ]
+    },
+    "fijo": {
+      "rate": 0.8888888888888888,
+      "n": 18,
+      "templates": [
+        "et2"
+      ]
+    },
+    "fino": {
+      "rate": 1.0,
+      "n": 15,
+      "templates": [
+        "et5"
+      ]
+    },
+    "firme": {
+      "rate": 1.0,
+      "n": 27,
+      "templates": [
+        "et5"
+      ]
+    },
+    "gris": {
+      "rate": 1.0,
+      "n": 18,
+      "templates": [
+        "et4"
+      ]
+    },
+    "harto": {
+      "rate": 0.15384615384615385,
+      "n": 39,
+      "templates": [
+        "et1",
+        "et6"
+      ]
+    },
+    "hondo": {
+      "rate": 0.9629629629629629,
+      "n": 27,
+      "templates": [
+        "et3"
+      ]
+    },
+    "justo": {
+      "rate": 0.8888888888888888,
+      "n": 18,
+      "templates": [
+        "et2"
+      ]
+    },
+    "lejos": {
+      "rate": 1.0,
+      "n": 30,
+      "templates": [
+        "et3"
+      ]
+    },
+    "lento": {
+      "rate": 1.0,
+      "n": 36,
+      "templates": [
+        "et3",
+        "et5"
+      ]
+    },
+    "listo": {
+      "rate": 0.9523809523809523,
+      "n": 21,
+      "templates": [
+        "et2"
+      ]
+    },
+    "llano": {
+      "rate": 0.8,
+      "n": 15,
+      "templates": [
+        "et5"
+      ]
+    },
+    "medio": {
+      "rate": 1.0,
+      "n": 39,
+      "templates": [
+        "et1",
+        "et6"
+      ]
+    },
+    "muy": {
+      "rate": 1.0,
+      "n": 57,
+      "templates": [
+        "et1",
+        "et6"
+      ]
+    },
+    "nada": {
+      "rate": 1.0,
+      "n": 30,
+      "templates": [
+        "et1",
+        "et6"
+      ]
+    },
+    "no": {
+      "rate": 1.0,
+      "n": 30,
+      "templates": [
+        "et2"
+      ]
+    },
+    "opaca": {
+      "rate": 0.8,
+      "n": 15,
+      "templates": [
+        "et4"
+      ]
+    },
+    "poco": {
+      "rate": 0.6851851851851852,
+      "n": 54,
+      "templates": [
+        "et1",
+        "et6"
+      ]
+    },
+    "raso": {
+      "rate": 0.6666666666666666,
+      "n": 15,
+      "templates": [
+        "et3"
+      ]
+    },
+    "raudo": {
+      "rate": 0.9444444444444444,
+      "n": 18,
+      "templates": [
+        "et5"
+      ]
+    },
+    "recto": {
+      "rate": 1.0,
+      "n": 45,
+      "templates": [
+        "et3",
+        "et5"
+      ]
+    },
+    "rosa": {
+      "rate": 1.0,
+      "n": 15,
+      "templates": [
+        "et4"
+      ]
+    },
+    "solo": {
+      "rate": 0.2222222222222222,
+      "n": 18,
+      "templates": [
+        "et3"
+      ]
+    },
+    "suave": {
+      "rate": 1.0,
+      "n": 45,
+      "templates": [
+        "et4",
+        "et5"
+      ]
+    },
+    "tan": {
+      "rate": 0.6842105263157895,
+      "n": 57,
+      "templates": [
+        "et1",
+        "et6"
+      ]
+    },
+    "tenue": {
+      "rate": 0.8571428571428571,
+      "n": 21,
+      "templates": [
+        "et4"
+      ]
+    },
+    "tieso": {
+      "rate": 0.8888888888888888,
+      "n": 18,
+      "templates": [
+        "et5"
+      ]
+    },
+    "vale": {
+      "rate": 0.9583333333333334,
+      "n": 24,
+      "templates": [
+        "et2"
+      ]
+    },
+    "veloz": {
+      "rate": 0.9,
+      "n": 30,
+      "templates": [
+        "et5"
+      ]
+    },
+    "verde": {
+      "rate": 1.0,
+      "n": 27,
+      "templates": [
+        "et4"
+      ]
+    }
+  },
+  "below_floor": [],
+  "excluded_templates": []
+}

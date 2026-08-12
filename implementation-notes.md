@@ -520,3 +520,51 @@ Three more, all load-bearing:
 budget. A full layer x position x donor-type x receiver grid is ~17 GPU-hours on
 1B and an estimated 75-85 on 8B. Do not buy precision on an artifact: fix the
 protocol's disruption index first.
+
+## Cross-lingual arm (Spanish, XTTS-v2 + wav2vec2-large-xlsr-53-spanish)
+
+Answering "validated on English only". Result: **the judge is sound, the
+statistic is not transportable, and the arm is not reportable.** Details in
+`analysis/crosslingual_es.py` (pre-committed docstring) and
+`data/results/crosslingual_es.json`. Five traps, all costly:
+
+* **`AutoProcessor` will silently reintroduce a language model.** Community CTC
+  checkpoints often ship a KenLM beside the acoustic model, and `AutoProcessor`
+  resolves such a repo to `Wav2Vec2ProcessorWithLM`, whose `batch_decode` is
+  *beam search under an n-gram LM*. That is precisely the prior this paper's
+  judge exists to avoid, and it fails open: transcripts get better, not worse.
+  Only a missing `pyctcdecode` turned it into an ImportError instead of a silent
+  contamination. `asr_ctc.py` now takes `--processor wav2vec2` and asserts the
+  resolved class.
+* **The CTC chunk length is part of the instrument and is judge-specific.** The
+  English judge (LibriSpeech-trained) scores 1.00 on periodic ground truth at 25 s
+  chunks. The Spanish XLSR-53 judge, fine-tuned on Common Voice clips under 10 s,
+  drops to **0.75** at 25 s -- not by collapsing repetitions the way an AR judge
+  does, but by shedding letters from short words ("muy"->"my"). At 5 s it recovers
+  to **1.00 at every k**. Validate chunking per judge, on ground truth, or the
+  audit certifies an instrument nobody used.
+* **A model's pinned revision may not be where its weights came from.** `main` for
+  the Spanish judge carries no safetensors, so `from_pretrained` fetched
+  `model.safetensors` from a separate auto-conversion commit
+  (`80106547...`) and cached it under a *second* snapshot directory. Verified
+  bit-identical to `main`'s `pytorch_model.bin` (424/424 tensors) before pinning
+  `96d7e9b4...`. Check the snapshot count before reading a hash out of the cache.
+* **Template ids collide across stimulus files.** `population.panel()` reads the
+  English `judge_vocab_audit.json`, which excludes template `t2`. Spanish
+  templates are named `et1..et6` so a routine `panel()` call cannot delete
+  Spanish rows for a fact about English orthography; `panel()` now takes
+  `audit=`.
+* **The 0.05 delivery floor only catches *total* judge failures.** English's was
+  total (`okay` in 0/106). Spanish's are partial (`harto` 0.15, `solo` 0.22), so
+  the floor never fires -- yet exact-match needs all k units, so a partial failure
+  is just as fatal. This is why the arm died: control exact-match is roughly
+  (per-occurrence hit rate)^k, the English judge sits at 0.97 and the Spanish one
+  at 0.80, and **the exact-rate statistic cannot survive a judge with 8.8% WER**.
+  The English +76.1 depends on a ~2% WER judge holding the control side near 1.0.
+  Any future cross-lingual arm needs either a judge in that class or a statistic
+  that is robust to per-occurrence orthographic noise -- decide which *before*
+  spending generation budget.
+
+The `coqui` env has been upgraded to transformers 5.15 and can no longer import
+coqui-tts 0.27.5 (`isin_mps_friendly` was removed). Work was done in `coqui_es`,
+a clone pinned to transformers 4.57.1. The live `coqui` env is still broken.

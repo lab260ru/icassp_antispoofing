@@ -1,0 +1,1111 @@
+{
+  "source_model": "xtts2es",
+  "ctc": "jonatasgrosman/wav2vec2-large-xlsr-53-spanish",
+  "whisper": "openai/whisper-large-v3",
+  "language": "es",
+  "stimuli": "data/stimuli/stimuli_es.jsonl",
+  "trials": [
+    {
+      "kind": "periodic",
+      "unit": "muy",
+      "true": 2,
+      "judge": "ctc",
+      "counted": 2,
+      "dur_s": 6.36275,
+      "text": "el perro era muy grande y corr\u00eda por el campoel perro era muy grande y corr\u00eda por el campo"
+    },
+    {
+      "kind": "periodic",
+      "unit": "muy",
+      "true": 2,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 6.36275,
+      "text": " El perro era muy grande y corr\u00eda por el campo."
+    },
+    {
+      "kind": "periodic",
+      "unit": "muy",
+      "true": 4,
+      "judge": "ctc",
+      "counted": 4,
+      "dur_s": 12.7255,
+      "text": "el perro era muy grande y corr\u00eda por el campoel perro era muy grande y corr\u00eda por el campo el perro era muy grande y corr\u00eda por el campoel perro perro era muy grande y corr\u00eda por el campo"
+    },
+    {
+      "kind": "periodic",
+      "unit": "muy",
+      "true": 4,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 12.7255,
+      "text": " El perro era muy grande y corr\u00eda por el campo."
+    },
+    {
+      "kind": "periodic",
+      "unit": "muy",
+      "true": 8,
+      "judge": "ctc",
+      "counted": 9,
+      "dur_s": 25.451,
+      "text": "el perro era muy grande y corr\u00eda por el campoel perro era muy grande y corr\u00eda por el campo el perro era muy grande y corr\u00eda por el campoel perro perro era muy grande y corr\u00eda por el campoel perro era "
+    },
+    {
+      "kind": "periodic",
+      "unit": "muy",
+      "true": 8,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 25.451,
+      "text": " El perro era muy grande y corr\u00eda por el campo."
+    },
+    {
+      "kind": "periodic",
+      "unit": "muy",
+      "true": 16,
+      "judge": "ctc",
+      "counted": 17,
+      "dur_s": 50.902,
+      "text": "el perro era muy grande y corr\u00eda por el campoel perro era muy grande y corr\u00eda por el campo el perro era muy grande y corr\u00eda por el campoel perro perro era muy grande y corr\u00eda por el campoel perro era "
+    },
+    {
+      "kind": "periodic",
+      "unit": "muy",
+      "true": 16,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 50.902,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "periodic",
+      "unit": "muy",
+      "true": 32,
+      "judge": "ctc",
+      "counted": 35,
+      "dur_s": 101.804,
+      "text": "el perro era muy grande y corr\u00eda por el campoel perro era muy grande y corr\u00eda por el campo el perro era muy grande y corr\u00eda por el campoel perro perro era muy grande y corr\u00eda por el campoel perro era "
+    },
+    {
+      "kind": "periodic",
+      "unit": "muy",
+      "true": 32,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 101.804,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "periodic",
+      "unit": "no",
+      "true": 2,
+      "judge": "ctc",
+      "counted": 2,
+      "dur_s": 5.253375,
+      "text": "ella dijo no a la oferta y luego sali\u00f3 ella dijo no a la erta y luego sali\u00f3 yo"
+    },
+    {
+      "kind": "periodic",
+      "unit": "no",
+      "true": 2,
+      "judge": "whisper",
+      "counted": 2,
+      "dur_s": 5.253375,
+      "text": " Ella dijo no a la oferta y luego sali\u00f3. Ella dijo no a la oferta y luego sali\u00f3."
+    },
+    {
+      "kind": "periodic",
+      "unit": "no",
+      "true": 4,
+      "judge": "ctc",
+      "counted": 4,
+      "dur_s": 10.50675,
+      "text": "ella dijo no a la oferta y luego sali\u00f3 ella dijo no a la erta y luego sali\u00f3 o ella dijo no a la oferta y luego sali\u00f3 ella dijo no a la erta y luego sali sali\u00f3"
+    },
+    {
+      "kind": "periodic",
+      "unit": "no",
+      "true": 4,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 10.50675,
+      "text": " Ella dijo no a la oferta y luego sali\u00f3."
+    },
+    {
+      "kind": "periodic",
+      "unit": "no",
+      "true": 8,
+      "judge": "ctc",
+      "counted": 7,
+      "dur_s": 21.0135,
+      "text": "ella dijo no a la oferta y luego sali\u00f3 ella dijo no a la erta y luego sali\u00f3 o ella dijo no a la oferta y luego sali\u00f3 ella dijo no a la erta y luego sali sali\u00f3 ella dijo n a la oferta y luego sali\u00f3 ell"
+    },
+    {
+      "kind": "periodic",
+      "unit": "no",
+      "true": 8,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 21.0135,
+      "text": " Ella dijo no a la oferta y luego sali\u00f3."
+    },
+    {
+      "kind": "periodic",
+      "unit": "no",
+      "true": 16,
+      "judge": "ctc",
+      "counted": 14,
+      "dur_s": 42.027,
+      "text": "ella dijo no a la oferta y luego sali\u00f3 ella dijo no a la erta y luego sali\u00f3 o ella dijo no a la oferta y luego sali\u00f3 ella dijo no a la erta y luego sali sali\u00f3 ella dijo n a la oferta y luego sali\u00f3 ell"
+    },
+    {
+      "kind": "periodic",
+      "unit": "no",
+      "true": 16,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 42.027,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "periodic",
+      "unit": "no",
+      "true": 32,
+      "judge": "ctc",
+      "counted": 30,
+      "dur_s": 84.054,
+      "text": "ella dijo no a la oferta y luego sali\u00f3 ella dijo no a la erta y luego sali\u00f3 o ella dijo no a la oferta y luego sali\u00f3 ella dijo no a la erta y luego sali sali\u00f3 ella dijo n a la oferta y luego sali\u00f3 ell"
+    },
+    {
+      "kind": "periodic",
+      "unit": "no",
+      "true": 32,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 84.054,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "periodic",
+      "unit": "lejos",
+      "true": 2,
+      "judge": "ctc",
+      "counted": 2,
+      "dur_s": 5.253375,
+      "text": "el camino lejos en el bosque antes de volver el camino lejos en el bosque antes de volver ver"
+    },
+    {
+      "kind": "periodic",
+      "unit": "lejos",
+      "true": 2,
+      "judge": "whisper",
+      "counted": 2,
+      "dur_s": 5.253375,
+      "text": " El camino lejos en el bosque antes de volver. El camino lejos en el bosque antes de volver."
+    },
+    {
+      "kind": "periodic",
+      "unit": "lejos",
+      "true": 4,
+      "judge": "ctc",
+      "counted": 4,
+      "dur_s": 10.50675,
+      "text": "el camino lejos en el bosque antes de volver el camino lejos en el bosque antes de volver el camino lejos en el bosque antes de volver el camino lejos en el bosque antes de vole de volver"
+    },
+    {
+      "kind": "periodic",
+      "unit": "lejos",
+      "true": 4,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 10.50675,
+      "text": " El camino lejos en el bosque antes de volver."
+    },
+    {
+      "kind": "periodic",
+      "unit": "lejos",
+      "true": 8,
+      "judge": "ctc",
+      "counted": 8,
+      "dur_s": 21.0135,
+      "text": "el camino lejos en el bosque antes de volver el camino lejos en el bosque antes de volver el camino lejos en el bosque antes de volver el camino lejos en el bosque antes de vole e volver el camino lej"
+    },
+    {
+      "kind": "periodic",
+      "unit": "lejos",
+      "true": 8,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 21.0135,
+      "text": " El camino lejos en el bosque antes de volver."
+    },
+    {
+      "kind": "periodic",
+      "unit": "lejos",
+      "true": 16,
+      "judge": "ctc",
+      "counted": 16,
+      "dur_s": 42.027,
+      "text": "el camino lejos en el bosque antes de volver el camino lejos en el bosque antes de volver el camino lejos en el bosque antes de volver el camino lejos en el bosque antes de vole e volver el camino lej"
+    },
+    {
+      "kind": "periodic",
+      "unit": "lejos",
+      "true": 16,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 42.027,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "periodic",
+      "unit": "lejos",
+      "true": 32,
+      "judge": "ctc",
+      "counted": 32,
+      "dur_s": 84.054,
+      "text": "el camino lejos en el bosque antes de volver el camino lejos en el bosque antes de volver el camino lejos en el bosque antes de volver el camino lejos en el bosque antes de vole e volver el camino lej"
+    },
+    {
+      "kind": "periodic",
+      "unit": "lejos",
+      "true": 32,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 84.054,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "periodic",
+      "unit": "azul",
+      "true": 2,
+      "judge": "ctc",
+      "counted": 2,
+      "dur_s": 5.616,
+      "text": "la luz era azul antes de la tormenta la luz era azul antes de la tom tormenta"
+    },
+    {
+      "kind": "periodic",
+      "unit": "azul",
+      "true": 2,
+      "judge": "whisper",
+      "counted": 2,
+      "dur_s": 5.616,
+      "text": " La luz era azul antes de la tormenta. La luz era azul antes de la tormenta."
+    },
+    {
+      "kind": "periodic",
+      "unit": "azul",
+      "true": 4,
+      "judge": "ctc",
+      "counted": 4,
+      "dur_s": 11.232,
+      "text": "la luz era azul antes de la tormenta la luz era azul antes de la tom tormenta la luz era azul antes de la tormenta la luz era azul nte antes de la tormenta"
+    },
+    {
+      "kind": "periodic",
+      "unit": "azul",
+      "true": 4,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 11.232,
+      "text": " La luz era azul antes de la tormenta."
+    },
+    {
+      "kind": "periodic",
+      "unit": "azul",
+      "true": 8,
+      "judge": "ctc",
+      "counted": 8,
+      "dur_s": 22.464,
+      "text": "la luz era azul antes de la tormenta la luz era azul antes de la tom tormenta la luz era azul antes de la tormenta la luz era azul nte antes de la tormenta la luz era azul antes de la tormenta la luz "
+    },
+    {
+      "kind": "periodic",
+      "unit": "azul",
+      "true": 8,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 22.464,
+      "text": " La luz era azul antes de la tormenta."
+    },
+    {
+      "kind": "periodic",
+      "unit": "azul",
+      "true": 16,
+      "judge": "ctc",
+      "counted": 16,
+      "dur_s": 44.928,
+      "text": "la luz era azul antes de la tormenta la luz era azul antes de la tom tormenta la luz era azul antes de la tormenta la luz era azul nte antes de la tormenta la luz era azul antes de la tormenta la luz "
+    },
+    {
+      "kind": "periodic",
+      "unit": "azul",
+      "true": 16,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 44.928,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "periodic",
+      "unit": "azul",
+      "true": 32,
+      "judge": "ctc",
+      "counted": 32,
+      "dur_s": 89.856,
+      "text": "la luz era azul antes de la tormenta la luz era azul antes de la tom tormenta la luz era azul antes de la tormenta la luz era azul nte antes de la tormenta la luz era azul antes de la tormenta la luz "
+    },
+    {
+      "kind": "periodic",
+      "unit": "azul",
+      "true": 32,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 89.856,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "periodic",
+      "unit": "veloz",
+      "true": 2,
+      "judge": "ctc",
+      "counted": 2,
+      "dur_s": 5.701375,
+      "text": "el corredor iba veloz por el camino estrecho el corredor iba veloz por el camino ino estrecho"
+    },
+    {
+      "kind": "periodic",
+      "unit": "veloz",
+      "true": 2,
+      "judge": "whisper",
+      "counted": 2,
+      "dur_s": 5.701375,
+      "text": " El corredor iba veloz por el camino estrecho. El corredor iba veloz por el camino estrecho."
+    },
+    {
+      "kind": "periodic",
+      "unit": "veloz",
+      "true": 4,
+      "judge": "ctc",
+      "counted": 3,
+      "dur_s": 11.40275,
+      "text": "el corredor iba veloz por el camino estrecho el corredor iba veloz por el camino ino estrecho el corredor iba veloz por el camino estrecho el corredor iba veloso os por el camino estrecho"
+    },
+    {
+      "kind": "periodic",
+      "unit": "veloz",
+      "true": 4,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 11.40275,
+      "text": " El corredor iba veloz por el camino estrecho."
+    },
+    {
+      "kind": "periodic",
+      "unit": "veloz",
+      "true": 8,
+      "judge": "ctc",
+      "counted": 4,
+      "dur_s": 22.8055,
+      "text": "el corredor iba veloz por el camino estrecho el corredor iba veloz por el camino ino estrecho el corredor iba veloz por el camino estrecho el corredor iba veloso os por el camino estrecho el corredor "
+    },
+    {
+      "kind": "periodic",
+      "unit": "veloz",
+      "true": 8,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 22.8055,
+      "text": " El corredor iba veloz por el camino estrecho."
+    },
+    {
+      "kind": "periodic",
+      "unit": "veloz",
+      "true": 16,
+      "judge": "ctc",
+      "counted": 9,
+      "dur_s": 45.611,
+      "text": "el corredor iba veloz por el camino estrecho el corredor iba veloz por el camino ino estrecho el corredor iba veloz por el camino estrecho el corredor iba veloso os por el camino estrecho el corredor "
+    },
+    {
+      "kind": "periodic",
+      "unit": "veloz",
+      "true": 16,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 45.611,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "periodic",
+      "unit": "veloz",
+      "true": 32,
+      "judge": "ctc",
+      "counted": 18,
+      "dur_s": 91.222,
+      "text": "el corredor iba veloz por el camino estrecho el corredor iba veloz por el camino ino estrecho el corredor iba veloz por el camino estrecho el corredor iba veloso os por el camino estrecho el corredor "
+    },
+    {
+      "kind": "periodic",
+      "unit": "veloz",
+      "true": 32,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 91.222,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "periodic",
+      "unit": "tan",
+      "true": 2,
+      "judge": "ctc",
+      "counted": 2,
+      "dur_s": 7.00275,
+      "text": "ellos estaban tan cansados tras el largo viaje ellos estaban tan can cansados tras el largo viaje"
+    },
+    {
+      "kind": "periodic",
+      "unit": "tan",
+      "true": 2,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 7.00275,
+      "text": " Ellos estaban tan cansados tras el largo viaje."
+    },
+    {
+      "kind": "periodic",
+      "unit": "tan",
+      "true": 4,
+      "judge": "ctc",
+      "counted": 4,
+      "dur_s": 14.0055,
+      "text": "ellos estaban tan cansados tras el largo viaje ellos estaban tan can cansados tras el largo viajeellos estaban tan cansados tras el largo via o viaje ellos estaban tan cansados tras el largo viaje"
+    },
+    {
+      "kind": "periodic",
+      "unit": "tan",
+      "true": 4,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 14.0055,
+      "text": " Ellos estaban tan cansados tras el largo viaje."
+    },
+    {
+      "kind": "periodic",
+      "unit": "tan",
+      "true": 8,
+      "judge": "ctc",
+      "counted": 8,
+      "dur_s": 28.011,
+      "text": "ellos estaban tan cansados tras el largo viaje ellos estaban tan can cansados tras el largo viajeellos estaban tan cansados tras el largo via o viajeellos estaban tan cansados tras el largo viajeellos"
+    },
+    {
+      "kind": "periodic",
+      "unit": "tan",
+      "true": 8,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 28.011,
+      "text": " Ellos estaban tan cansados tras el largo viaje."
+    },
+    {
+      "kind": "periodic",
+      "unit": "tan",
+      "true": 16,
+      "judge": "ctc",
+      "counted": 16,
+      "dur_s": 56.022,
+      "text": "ellos estaban tan cansados tras el largo viaje ellos estaban tan can cansados tras el largo viajeellos estaban tan cansados tras el largo via o viajeellos estaban tan cansados tras el largo viajeellos"
+    },
+    {
+      "kind": "periodic",
+      "unit": "tan",
+      "true": 16,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 56.022,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "periodic",
+      "unit": "tan",
+      "true": 32,
+      "judge": "ctc",
+      "counted": 32,
+      "dur_s": 112.044,
+      "text": "ellos estaban tan cansados tras el largo viaje ellos estaban tan can cansados tras el largo viajeellos estaban tan cansados tras el largo via o viajeellos estaban tan cansados tras el largo viajeellos"
+    },
+    {
+      "kind": "periodic",
+      "unit": "tan",
+      "true": 32,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 112.044,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "distinct",
+      "unit": "tan",
+      "true": 2,
+      "judge": "ctc",
+      "counted": 0,
+      "dur_s": 7.749375,
+      "text": "el perro era tampoco grande y corr\u00eda por el campo el perro era tampoco grande y corr\u00eda por el campo"
+    },
+    {
+      "kind": "distinct",
+      "unit": "tan",
+      "true": 2,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 7.749375,
+      "text": " El perro era tan poco grande y corr\u00eda por el campo."
+    },
+    {
+      "kind": "distinct",
+      "unit": "tan",
+      "true": 4,
+      "judge": "ctc",
+      "counted": 0,
+      "dur_s": 15.49875,
+      "text": "el perro era tampoco grande y corr\u00eda por el campo el perro era tampoco grande y corr\u00eda por el campo el perro era tampoco grande de y corr\u00eda por el campo el perro era tampoco grande y corr\u00eda por el cam"
+    },
+    {
+      "kind": "distinct",
+      "unit": "tan",
+      "true": 4,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 15.49875,
+      "text": " El perro era tan poco grande y corr\u00eda por el campo."
+    },
+    {
+      "kind": "distinct",
+      "unit": "tan",
+      "true": 8,
+      "judge": "ctc",
+      "counted": 0,
+      "dur_s": 30.9975,
+      "text": "el perro era tampoco grande y corr\u00eda por el campo el perro era tampoco grande y corr\u00eda por el campo el perro era tampoco grande de y corr\u00eda por el campo el perro era tampoco grande y corr\u00eda por el cam"
+    },
+    {
+      "kind": "distinct",
+      "unit": "tan",
+      "true": 8,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 30.9975,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "distinct",
+      "unit": "tan",
+      "true": 16,
+      "judge": "ctc",
+      "counted": 0,
+      "dur_s": 61.995,
+      "text": "el perro era tampoco grande y corr\u00eda por el campo el perro era tampoco grande y corr\u00eda por el campo el perro era tampoco grande de y corr\u00eda por el campo el perro era tampoco grande y corr\u00eda por el cam"
+    },
+    {
+      "kind": "distinct",
+      "unit": "tan",
+      "true": 16,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 61.995,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "distinct",
+      "unit": "tan",
+      "true": 32,
+      "judge": "ctc",
+      "counted": 0,
+      "dur_s": 123.99,
+      "text": "el perro era tampoco grande y corr\u00eda por el campo el perro era tampoco grande y corr\u00eda por el campo el perro era tampoco grande de y corr\u00eda por el campo el perro era tampoco grande y corr\u00eda por el cam"
+    },
+    {
+      "kind": "distinct",
+      "unit": "tan",
+      "true": 32,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 123.99,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "distinct",
+      "unit": "claro",
+      "true": 2,
+      "judge": "ctc",
+      "counted": 2,
+      "dur_s": 5.616,
+      "text": "ella dijo claro bueno a la oferta y luego sali\u00f3 ella dijo claro buno a la oferta y luego uego sali\u00f3"
+    },
+    {
+      "kind": "distinct",
+      "unit": "claro",
+      "true": 2,
+      "judge": "whisper",
+      "counted": 2,
+      "dur_s": 5.616,
+      "text": " Ella dijo claro bueno a la oferta y luego sali\u00f3. Ella dijo claro bueno a la oferta y luego sali\u00f3."
+    },
+    {
+      "kind": "distinct",
+      "unit": "claro",
+      "true": 4,
+      "judge": "ctc",
+      "counted": 4,
+      "dur_s": 11.232,
+      "text": "ella dijo claro bueno a la oferta y luego sali\u00f3 ella dijo claro buno a la oferta y luego uego sali\u00f3 ella dijo claro bueno a la oferta y luego sali\u00f3 ella di claro bueno a la oferta erta y luego sali\u00f3"
+    },
+    {
+      "kind": "distinct",
+      "unit": "claro",
+      "true": 4,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 11.232,
+      "text": " Ella dijo claro bueno a la oferta y luego sali\u00f3."
+    },
+    {
+      "kind": "distinct",
+      "unit": "claro",
+      "true": 8,
+      "judge": "ctc",
+      "counted": 8,
+      "dur_s": 22.464,
+      "text": "ella dijo claro bueno a la oferta y luego sali\u00f3 ella dijo claro buno a la oferta y luego uego sali\u00f3 ella dijo claro bueno a la oferta y luego sali\u00f3 ella di claro bueno a la oferta erta y luego sali el"
+    },
+    {
+      "kind": "distinct",
+      "unit": "claro",
+      "true": 8,
+      "judge": "whisper",
+      "counted": 0,
+      "dur_s": 22.464,
+      "text": " Ella dijo car bueno a la oferta y luego sali\u00f3."
+    },
+    {
+      "kind": "distinct",
+      "unit": "claro",
+      "true": 16,
+      "judge": "ctc",
+      "counted": 16,
+      "dur_s": 44.928,
+      "text": "ella dijo claro bueno a la oferta y luego sali\u00f3 ella dijo claro buno a la oferta y luego uego sali\u00f3 ella dijo claro bueno a la oferta y luego sali\u00f3 ella di claro bueno a la oferta erta y luego sali el"
+    },
+    {
+      "kind": "distinct",
+      "unit": "claro",
+      "true": 16,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 44.928,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "distinct",
+      "unit": "claro",
+      "true": 32,
+      "judge": "ctc",
+      "counted": 32,
+      "dur_s": 89.856,
+      "text": "ella dijo claro bueno a la oferta y luego sali\u00f3 ella dijo claro buno a la oferta y luego uego sali\u00f3 ella dijo claro bueno a la oferta y luego sali\u00f3 ella di claro bueno a la oferta erta y luego sali el"
+    },
+    {
+      "kind": "distinct",
+      "unit": "claro",
+      "true": 32,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 89.856,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "distinct",
+      "unit": "hondo",
+      "true": 2,
+      "judge": "ctc",
+      "counted": 2,
+      "dur_s": 6.448,
+      "text": "el camino hondo cerca en el bosque antes de volver el camino hondo cerca enlo n el bosque antes de volver"
+    },
+    {
+      "kind": "distinct",
+      "unit": "hondo",
+      "true": 2,
+      "judge": "whisper",
+      "counted": 2,
+      "dur_s": 6.448,
+      "text": " El camino hondo cerca en el bosque antes de volver. El camino hondo cerca en el bosque antes de volver."
+    },
+    {
+      "kind": "distinct",
+      "unit": "hondo",
+      "true": 4,
+      "judge": "ctc",
+      "counted": 4,
+      "dur_s": 12.896,
+      "text": "el camino hondo cerca en el bosque antes de volver el camino hondo cerca enlo n el bosque antes de volver el camino hondo cerca en el bosque antes de volver el camino hondo cerca en el bosque antes de"
+    },
+    {
+      "kind": "distinct",
+      "unit": "hondo",
+      "true": 4,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 12.896,
+      "text": " El camino hondo cerca en el bosque antes de volver."
+    },
+    {
+      "kind": "distinct",
+      "unit": "hondo",
+      "true": 8,
+      "judge": "ctc",
+      "counted": 8,
+      "dur_s": 25.792,
+      "text": "el camino hondo cerca en el bosque antes de volver el camino hondo cerca enlo n el bosque antes de volver el camino hondo cerca en el bosque antes de volver el camino hondo cerca en el bosque antes de"
+    },
+    {
+      "kind": "distinct",
+      "unit": "hondo",
+      "true": 8,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 25.792,
+      "text": " El camino hondo cerca en el bosque antes de volver."
+    },
+    {
+      "kind": "distinct",
+      "unit": "hondo",
+      "true": 16,
+      "judge": "ctc",
+      "counted": 14,
+      "dur_s": 51.584,
+      "text": "el camino hondo cerca en el bosque antes de volver el camino hondo cerca enlo n el bosque antes de volver el camino hondo cerca en el bosque antes de volver el camino hondo cerca en el bosque antes de"
+    },
+    {
+      "kind": "distinct",
+      "unit": "hondo",
+      "true": 16,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 51.584,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "distinct",
+      "unit": "hondo",
+      "true": 32,
+      "judge": "ctc",
+      "counted": 28,
+      "dur_s": 103.168,
+      "text": "el camino hondo cerca en el bosque antes de volver el camino hondo cerca enlo n el bosque antes de volver el camino hondo cerca en el bosque antes de volver el camino hondo cerca en el bosque antes de"
+    },
+    {
+      "kind": "distinct",
+      "unit": "hondo",
+      "true": 32,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 103.168,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "distinct",
+      "unit": "verde",
+      "true": 2,
+      "judge": "ctc",
+      "counted": 1,
+      "dur_s": 5.33875,
+      "text": "la luz era verde blanca antes de la tormenta la luz era verdeblanca antes de la tormenta venta"
+    },
+    {
+      "kind": "distinct",
+      "unit": "verde",
+      "true": 2,
+      "judge": "whisper",
+      "counted": 2,
+      "dur_s": 5.33875,
+      "text": " La luz era verde blanca antes de la tormenta. La luz era verde blanca antes de la tormenta."
+    },
+    {
+      "kind": "distinct",
+      "unit": "verde",
+      "true": 4,
+      "judge": "ctc",
+      "counted": 3,
+      "dur_s": 10.6775,
+      "text": "la luz era verde blanca antes de la tormenta la luz era verdeblanca antes de la tormenta menta la luz era verde blanca antes de la tormenta la lz era verde blanca antes de la tor la tormenta"
+    },
+    {
+      "kind": "distinct",
+      "unit": "verde",
+      "true": 4,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 10.6775,
+      "text": " La luz era verde blanca antes de la tormenta."
+    },
+    {
+      "kind": "distinct",
+      "unit": "verde",
+      "true": 8,
+      "judge": "ctc",
+      "counted": 7,
+      "dur_s": 21.355,
+      "text": "la luz era verde blanca antes de la tormenta la luz era verdeblanca antes de la tormenta menta la luz era verde blanca antes de la tormenta la lz era verde blanca antes de la tor la tormenta la luz er"
+    },
+    {
+      "kind": "distinct",
+      "unit": "verde",
+      "true": 8,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 21.355,
+      "text": " La luz era verde blanca antes de la tormenta."
+    },
+    {
+      "kind": "distinct",
+      "unit": "verde",
+      "true": 16,
+      "judge": "ctc",
+      "counted": 15,
+      "dur_s": 42.71,
+      "text": "la luz era verde blanca antes de la tormenta la luz era verdeblanca antes de la tormenta menta la luz era verde blanca antes de la tormenta la lz era verde blanca antes de la tor la tormenta la luz er"
+    },
+    {
+      "kind": "distinct",
+      "unit": "verde",
+      "true": 16,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 42.71,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "distinct",
+      "unit": "verde",
+      "true": 32,
+      "judge": "ctc",
+      "counted": 31,
+      "dur_s": 85.42,
+      "text": "la luz era verde blanca antes de la tormenta la luz era verdeblanca antes de la tormenta menta la luz era verde blanca antes de la tormenta la lz era verde blanca antes de la tor la tormenta la luz er"
+    },
+    {
+      "kind": "distinct",
+      "unit": "verde",
+      "true": 32,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 85.42,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "distinct",
+      "unit": "firme",
+      "true": 2,
+      "judge": "ctc",
+      "counted": 2,
+      "dur_s": 7.00275,
+      "text": "el corredor iba firme suave por el camino estrechoel corredor iba firme su e suave por el camino estrecho"
+    },
+    {
+      "kind": "distinct",
+      "unit": "firme",
+      "true": 2,
+      "judge": "whisper",
+      "counted": 2,
+      "dur_s": 7.00275,
+      "text": " El corredor iba firme suave por el camino estrecho. El corredor iba firme suave por el camino estrecho."
+    },
+    {
+      "kind": "distinct",
+      "unit": "firme",
+      "true": 4,
+      "judge": "ctc",
+      "counted": 4,
+      "dur_s": 14.0055,
+      "text": "el corredor iba firme suave por el camino estrechoel corredor iba firme su e suave por el camino estrecho el corredor iba firme suave por el camino estreto strecho el corredor iba firme suave por el c"
+    },
+    {
+      "kind": "distinct",
+      "unit": "firme",
+      "true": 4,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 14.0055,
+      "text": " El corredor iba firme suave por el camino estrecho."
+    },
+    {
+      "kind": "distinct",
+      "unit": "firme",
+      "true": 8,
+      "judge": "ctc",
+      "counted": 8,
+      "dur_s": 28.011,
+      "text": "el corredor iba firme suave por el camino estrechoel corredor iba firme su e suave por el camino estrecho el corredor iba firme suave por el camino estreto trecho el corredor iba firme suave por el ca"
+    },
+    {
+      "kind": "distinct",
+      "unit": "firme",
+      "true": 8,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 28.011,
+      "text": " El corredor iba firme suave por el camino estrecho."
+    },
+    {
+      "kind": "distinct",
+      "unit": "firme",
+      "true": 16,
+      "judge": "ctc",
+      "counted": 16,
+      "dur_s": 56.022,
+      "text": "el corredor iba firme suave por el camino estrechoel corredor iba firme su e suave por el camino estrecho el corredor iba firme suave por el camino estreto trecho el corredor iba firme suave por el ca"
+    },
+    {
+      "kind": "distinct",
+      "unit": "firme",
+      "true": 16,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 56.022,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "distinct",
+      "unit": "firme",
+      "true": 32,
+      "judge": "ctc",
+      "counted": 32,
+      "dur_s": 112.044,
+      "text": "el corredor iba firme suave por el camino estrechoel corredor iba firme su e suave por el camino estrecho el corredor iba firme suave por el camino estreto trecho el corredor iba firme suave por el ca"
+    },
+    {
+      "kind": "distinct",
+      "unit": "firme",
+      "true": 32,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 112.044,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "distinct",
+      "unit": "muy",
+      "true": 2,
+      "judge": "ctc",
+      "counted": 2,
+      "dur_s": 6.725375,
+      "text": "ellos estaban muy poco cansados tras el largo viajeellos estaban muy poco cansad nzados tras el largo viaje"
+    },
+    {
+      "kind": "distinct",
+      "unit": "muy",
+      "true": 2,
+      "judge": "whisper",
+      "counted": 2,
+      "dur_s": 6.725375,
+      "text": " Ellos estaban muy poco cansados tras el largo viaje. Ellos estaban muy poco cansados tras el largo viaje."
+    },
+    {
+      "kind": "distinct",
+      "unit": "muy",
+      "true": 4,
+      "judge": "ctc",
+      "counted": 4,
+      "dur_s": 13.45075,
+      "text": "ellos estaban muy poco cansados tras el largo viajeellos estaban muy poco cansad nzados tras el largo viaje ellos estaban muy poco cansados tras el largo viaje ellos estaban muy poco cansados tras el "
+    },
+    {
+      "kind": "distinct",
+      "unit": "muy",
+      "true": 4,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 13.45075,
+      "text": " Ellos estaban muy poco cansados tras el largo viaje."
+    },
+    {
+      "kind": "distinct",
+      "unit": "muy",
+      "true": 8,
+      "judge": "ctc",
+      "counted": 8,
+      "dur_s": 26.9015,
+      "text": "ellos estaban muy poco cansados tras el largo viajeellos estaban muy poco cansad nzados tras el largo viaje ellos estaban muy poco cansados tras el largo viaje ellos estaban muy poco cansados tras el "
+    },
+    {
+      "kind": "distinct",
+      "unit": "muy",
+      "true": 8,
+      "judge": "whisper",
+      "counted": 1,
+      "dur_s": 26.9015,
+      "text": " Ellos estaban muy poco cansados tras el largo viaje."
+    },
+    {
+      "kind": "distinct",
+      "unit": "muy",
+      "true": 16,
+      "judge": "ctc",
+      "counted": 16,
+      "dur_s": 53.803,
+      "text": "ellos estaban muy poco cansados tras el largo viajeellos estaban muy poco cansad nzados tras el largo viaje ellos estaban muy poco cansados tras el largo viaje ellos estaban muy poco cansados tras el "
+    },
+    {
+      "kind": "distinct",
+      "unit": "muy",
+      "true": 16,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 53.803,
+      "text": "ERROR ValueError"
+    },
+    {
+      "kind": "distinct",
+      "unit": "muy",
+      "true": 32,
+      "judge": "ctc",
+      "counted": 34,
+      "dur_s": 107.606,
+      "text": "ellos estaban muy poco cansados tras el largo viajeellos estaban muy poco cansad nzados tras el largo viaje ellos estaban muy poco cansados tras el largo viaje ellos estaban muy poco cansados tras el "
+    },
+    {
+      "kind": "distinct",
+      "unit": "muy",
+      "true": 32,
+      "judge": "whisper",
+      "counted": -1,
+      "dur_s": 107.606,
+      "text": "ERROR ValueError"
+    }
+  ],
+  "summary": {
+    "periodic_ctc_k2": 1.0,
+    "periodic_ctc_k4": 1.0,
+    "periodic_ctc_k8": 1.0,
+    "periodic_ctc_k16": 1.0,
+    "periodic_ctc_k32": 1.0,
+    "periodic_ctc_kge4": 1.0,
+    "periodic_whisper_k2": 1.0,
+    "periodic_whisper_k4": 0.25,
+    "periodic_whisper_k8": 0.125,
+    "periodic_whisper_kge4": 0.1875,
+    "distinct_ctc_k2": 1.0,
+    "distinct_ctc_k4": 1.0,
+    "distinct_ctc_k8": 1.0,
+    "distinct_ctc_k16": 0.96875,
+    "distinct_ctc_k32": 0.984375,
+    "distinct_ctc_kge4": 1.0,
+    "distinct_whisper_k2": 1.0,
+    "distinct_whisper_k4": 0.25,
+    "distinct_whisper_k8": 0.125,
+    "distinct_whisper_kge4": 0.25
+  }
+}

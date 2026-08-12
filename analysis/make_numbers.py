@@ -1140,6 +1140,18 @@ def main() -> None:
             macros["AuditCtcN"] = str(cp["n_trials"])
             macros["AuditCtcMean"] = fmt(cp["mean_ratio"], 3)
 
+    # ---- the judge audit, repeated in a second language --------------------
+    # The counting arm in Spanish is not reportable (S27): the exact-rate
+    # statistic needs a judge accurate enough to pin the control side near 1,
+    # and an 8.8% WER recogniser collapses it. The *judge* result transports
+    # cleanly, though, and it is the one this paper leans on.
+    es_path = Path("data/results/ctc_validation_es.json")
+    if es_path.exists():
+        es = json.loads(es_path.read_text()).get("summary", {})
+        if es:
+            macros["EsCtcPer"] = fmt(es["periodic_ctc_kge4"], 2)
+            macros["EsWhisperPer"] = fmt(es["periodic_whisper_kge4"], 2)
+
     # ---- equivalence bounds for the nulls ---------------------------------
     # A CI containing zero is not evidence of absence. These are the smallest
     # effects each null can actually exclude.
@@ -1210,14 +1222,16 @@ def main() -> None:
             fmt(100 * ce_m.get("rep", {}).get("median", np.nan), 1),
             fmt(100 * ce_m.get("ctl", {}).get("median", np.nan), 1),
             fmt(er, 1), fmt(ec, 1),
-            fmt(c.get("ratio"), 2),
         ))
+    # The capacity ratio column went when the body stopped discussing capacity:
+    # a column no sentence refers to is decoration in a four-page paper, and
+    # Figure 1(c) still carries the measurement for anyone who wants it.
     tbl = [
-        r"\begin{tabular}{lrrrrrr}", r"\toprule",
+        r"\begin{tabular}{lrrrrr}", r"\toprule",
         r"Model & Par. & \multicolumn{2}{c}{count err.\ (\%)} "
-        r"& \multicolumn{2}{c}{exactly right (\%)} & cap. \\",
+        r"& \multicolumn{2}{c}{exactly right (\%)} \\",
         r"\cmidrule(lr){3-4}\cmidrule(lr){5-6}",
-        r" & & rep. & ctl. & rep. & ctl. & ratio \\", r"\midrule",
+        r" & & rep. & ctl. & rep. & ctl. \\", r"\midrule",
     ]
     for r in rows:
         tbl.append(" & ".join(r) + r" \\")

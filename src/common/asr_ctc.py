@@ -63,6 +63,23 @@ def main() -> None:
     # silently replacing the other.
     ap.add_argument("--out-sub", default="asr_ctc",
                     help="subdirectory of DATA_ROOT to write transcripts into")
+    # A trap, and not a hypothetical one. Many community CTC checkpoints ship a
+    # KenLM n-gram beside the acoustic model, and `AutoProcessor` will happily
+    # resolve such a repo to `Wav2Vec2ProcessorWithLM`, whose `batch_decode`
+    # runs *beam search under a language model*. That would put an LM prior back
+    # into the one instrument this paper chose specifically for not having one,
+    # and it would do it silently: the transcripts would look better, not worse.
+    # The Spanish judge (jonatasgrosman/wav2vec2-large-xlsr-53-spanish) is such
+    # a repo. `--processor wav2vec2` forces the plain processor and therefore
+    # greedy, LM-free argmax decoding, matching the English judge exactly.
+    # Default is `auto` so every existing English run reproduces byte-for-byte.
+    ap.add_argument("--processor", choices=["auto", "wav2vec2"], default="auto")
+    # Restrict the pass to a subset of a model's audio. Default transcribes
+    # everything outstanding; a driver that only wants its own arm's items
+    # (e.g. the aperiodic controls, `ap_*`) passes a pattern rather than
+    # silently enlarging some other analysis's population.
+    ap.add_argument("--glob", default="*.wav",
+                    help="filename pattern within the model's audio directory")
     args = ap.parse_args()
     check_gpu(args.gpu)
 
@@ -78,7 +95,7 @@ def main() -> None:
             except Exception:  # noqa: BLE001
                 pass
 
-    files = sorted(aud_dir.glob("*.wav"))
+    files = sorted(aud_dir.glob(args.glob))
     todo = [f for f in files if f.stem not in done]
     print(f"[{args.model}] {len(files)} wavs, {len(todo)} to transcribe (CTC)", flush=True)
     if not todo:
@@ -89,9 +106,15 @@ def main() -> None:
     # CTC head, which the wav2vec2-specific classes will not load. The decode
     # path below is unchanged, so the two recognisers are driven identically and
     # any difference between them cannot be a chunking or decoding artefact.
-    from transformers import AutoModelForCTC, AutoProcessor
+    from transformers import AutoModelForCTC, AutoProcessor, Wav2Vec2Processor
     device = f"cuda:{args.gpu}"
-    proc = AutoProcessor.from_pretrained(args.ctc)
+    if args.processor == "wav2vec2":
+        proc = Wav2Vec2Processor.from_pretrained(args.ctc)
+    else:
+        proc = AutoProcessor.from_pretrained(args.ctc)
+    assert type(proc).__name__ == "Wav2Vec2Processor", (
+        f"{type(proc).__name__} decodes with a language model; this judge must be "
+        "greedy and LM-free. Pass --processor wav2vec2.")
     model = AutoModelForCTC.from_pretrained(args.ctc).to(device).eval()
 
     @torch.no_grad()
