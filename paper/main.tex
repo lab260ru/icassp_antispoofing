@@ -12,8 +12,8 @@
 
 \input{numbers}
 
-\title{Counting Collapse: A Formally Verified Attractor Theory of\\
-       Repetition Hallucination in Autoregressive Text-to-Speech}
+\title{Counting Collapse in Autoregressive Text-to-Speech:\\
+       A Lean-Verified Bound and a Measured Counting Horizon}
 
 \twoauthors
   {Ivan Viakhirev$^{1}$, Kirill Borodin$^{2,3}$, Grach Mkrtchian$^{2}$}
@@ -38,12 +38,15 @@ because the obvious autoregressive judge is itself biased against repetition,
 models render repeated text with a median count error of \ErrRep{}\% at $k\ge6$
 and are exact in \ExactRep{}\% of generations, against \ExactCtl{}\% for
 length-matched \emph{distinct}-word controls: the limit tracks periodicity, not
-length. States visited grow with $k$ at \CapRatio{} of the control rate, disjoint
-in \CapSepPhrase{} checkpoints. Up to $k=32$ the count stays proportional rather
-than saturating, so no horizon is visible there; a post-hoc extension to $k=128$
-on \HzNModels{} checkpoints finds one, repetition lowering the fitted saturation
-scale \HzRatio{}-fold against length-matched controls ($\HzNRep{}$ against
-$\HzNCtl{}$ units).
+length, in every checkpoint and every family. Up to $k=32$ the count stays
+proportional rather than saturating, so no horizon is visible there; a post-hoc
+extension to $k=128$ on \HzNModels{} of them finds one, repetition lowering the
+fitted saturation scale \HzRatio{}-fold --- though not in the one checkpoint that
+shows no deficit either. We do \emph{not} establish the theorem's premise: two
+attempts to measure the contraction factor failed, and a dose-response test of
+the dilution lemma came out sign-reversed. What is proved is an implication; what
+is measured is a periodicity-specific deficit and a horizon of the predicted
+shape.
 \end{abstract}
 
 \begin{keywords}
@@ -69,17 +72,15 @@ We argue that much of this behaviour has a simpler cause, statable as a theorem.
 When the conditioning text contains $k$ copies of one phrase, softmax attention
 cannot tell one copy from another: each gets weight $\Theta(1/k)$ and the profile
 flattens (Lemma~\ref{lem:dilution}). The decoder therefore meets approximately
-the \emph{same} conditioning at every repetition boundary, so the map carrying it
-between boundaries is approximately autonomous. If that map contracts, its record
-of how many repetitions it has produced is erased geometrically, and past a
-computable horizon no Lipschitz function of the state---the stop-token logit
-included---can recover the count (Theorem~\ref{thm:collapse}).
+the \emph{same} conditioning at every repetition boundary, so the map between
+boundaries is approximately autonomous. If that map contracts, its record of how
+many repetitions it has produced is erased geometrically, and past a computable
+horizon no Lipschitz function of the state---the stop-token logit included---can
+recover the count (Theorem~\ref{thm:collapse}).
 
 The failure is thus predicted to depend on \emph{periodicity}, not on length: a
 sequence of $k$ distinct words should survive where $k$ identical ones do not.
-That contrast is the sharpest test we run, and \ErrNSep{} of \ErrNModels{}
-checkpoints show it --- the outcome a conditional theorem should produce, since
-the bound applies where its premise holds.
+That contrast is the sharpest test we run.
 
 We contribute a quantitative impossibility result for repetition counting in AR
 decoders, with an explicit horizon in terms of the contraction factor, the orbit
@@ -159,8 +160,7 @@ target word repeated $k \in \{1,2,3,4,6,8,12,16,24,32\}$ times, plus repeated
 sentences, tongue twisters, and English number phrases with intrinsic digit-word
 repetition. Every word- and sentence-repetition item at $k\ge2$ has a
 \emph{length-matched control}: same carrier and word count, the repeated token
-replaced by fillers from a per-template pool of eight, cycled above $k\!=\!8$.
-The contrast tested is thus period-$8$ repetition at most against period-$1$
+replaced by fillers from a per-template pool of eight, cycled above $k\!=\!8$
 (S10).
 
 \noindent\textbf{Models.}

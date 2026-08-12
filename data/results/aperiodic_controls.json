@@ -1,0 +1,39 @@
+{
+  "pool_size": 8,
+  "main ladder, k<=8 (aperiodic)": {
+    "n_rep": 402,
+    "n_ctl": 420,
+    "exact_rep": 0.5422885572139303,
+    "exact_ctl": 0.7785714285714286,
+    "median_rep": 0.0,
+    "median_ctl": 0.0,
+    "exact_gap": 0.23628287135749826
+  },
+  "main ladder, k>8 (period-8 ctl)": {
+    "n_rep": 300,
+    "n_ctl": 349,
+    "exact_rep": 0.1,
+    "exact_ctl": 0.9455587392550143,
+    "median_rep": -0.0625,
+    "median_ctl": 0.0,
+    "exact_gap": 0.8455587392550143
+  },
+  "extension k>=48 (146-word pool)": {
+    "n_rep": 98,
+    "n_ctl": 119,
+    "exact_rep": 0.02040816326530612,
+    "exact_ctl": 0.08403361344537816,
+    "median_rep": -0.6171875,
+    "median_ctl": -0.125,
+    "exact_gap": 0.06362545018007204
+  },
+  "aperiodic_regions": [
+    "main ladder, k<=8 (aperiodic)",
+    "extension k>=48 (146-word pool)"
+  ],
+  "aperiodic_gaps": [
+    0.23628287135749826,
+    0.06362545018007204
+  ],
+  "holds_in_all_aperiodic": true
+}

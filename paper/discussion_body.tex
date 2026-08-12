@@ -9,44 +9,40 @@ a perturbation probe found no difference in local contraction between repeated
 items and their controls ($7$ of $18$ pairs, $p=0.12$), its own linearity control
 failing (S5). The premise remains unestablished.
 
-The theorem's distinctive prediction is a constant $N^\ast$, and where our
-original ladder stopped we could not see one --- the count still tracked $k$.
-Extending to $k=128$ found a saturation of the predicted kind, but not one
-derived from a measured $q$: the premise is unestablished and the extension
-covers \HzNModels{} checkpoints, so this locates these decoders just below the
-collapse regime rather than confirming the bound. Consistent with that, the state
-budget grows at \CapRatio{} of the control rate while staying positive, and a
-probe finds the count degraded rather than erased (\ProbeRetRep{} against
+The theorem's distinctive prediction is a constant $N^\ast$, invisible where our
+ladder stopped. Extending to $k=128$ found saturation of the predicted kind but
+not one derived from a measured $q$, so this locates these decoders just below
+the collapse regime rather than confirming the bound. Consistent with that, the
+state budget grows at \CapRatio{} of the control rate while staying positive, and
+a probe finds the count degraded rather than erased (\ProbeRetRep{} against
 \ProbeRetCtl{}).
 
 A conditional account risks being unfalsifiable, so we state what would refute
 it: a control with its twin's deficit; a model with the deficit whose capacity
-gain matches its control; a probe reading the count as well late as early; or
-counts still tracking $k$ past the ladder. The last was live until we ran it.
-\ErrBestModel{} is instructive: no deficit yet a capacity gap, so capacity loss
-is necessary, not sufficient.
+gain matches its control; or a probe reading the count as well late as early.
+\ErrBestModel{} has a capacity gap but no deficit and no horizon, so capacity
+loss is necessary and not sufficient.
 
 The closest prior result is representational
 collapse~\cite{barbero2024glasses}: as a sequence grows, distinct prefixes map to
 arbitrarily close representations, already implying counting errors. But
-collapse-by-length predicts that a $32$-word control and a $32$-word repetition
-fail alike, so Figure~\ref{fig:main}(b) is evidence against length alone, and
-\eqref{eq:horizon} supplies a rate in repetitions that a length-indexed bound
-does not. Related dynamical treatments index convergence by depth or an abstract
-temperature~\cite{dong2021attention,geshkovski2023emergence,gao2026clustered};
-ours indexes it by generation step, and expressivity bounds by circuit class and
-state tracking~\cite{strobl2024formal,merrill2024illusion} constrain one forward
-pass where ours constrains a decoder over generation. A competing account holds
-that in text LMs the count survives in the residual stream and only the output
-policy fails~\cite{venkatesh2026repeated}; our probes favour representational
-degradation, though the two are compatible.
+collapse-by-length predicts that equally long control and repeated items fail
+alike, and they do not, at any $k$ where the control carries no repetition of its
+own (Section~4); \eqref{eq:horizon} also supplies a rate in repetitions that a
+length-indexed bound does not. Related dynamical treatments index convergence by depth or an abstract
+temperature~\cite{dong2021attention,geshkovski2023emergence,gao2026clustered}
+and expressivity bounds by circuit class or state
+tracking~\cite{strobl2024formal,merrill2024illusion} constrain one forward pass;
+ours indexes generation steps instead. A competing account holds that in text LMs the count survives in the residual
+stream and only the output policy fails~\cite{venkatesh2026repeated}; our probes
+favour representational degradation, though both may hold.
 
 \noindent\textbf{Implications and limits.}
 Mitigations act late~\cite{wang2025eliminating,xin2024ralle} and help only if
-they raise $q$ or enlarge the margin; sweeping XTTS-v2's repetition penalty
-fourfold moves the deficit the \emph{wrong} way (S7). Limits: an English-only
-panel of codec-language models with softmax text attention, and a judge whose
-blank-collapse merges adjacent word copies, so high-$k$ magnitudes err our way.
+they raise $q$ or enlarge the margin; a fourfold sweep of XTTS-v2's repetition
+penalty moves the deficit the \emph{wrong} way (S7). Limits: an English-only
+panel of codec-language models, and a judge whose blank-collapse depresses
+repeated counts, so high-$k$ magnitudes err our way.
 % Any further body text pushes the references onto a sixth page: main.tex ends
 % with \vfill\pagebreak, so the bibliography always starts on a fresh page and
 % a single spilled line costs a whole one. Check with build.sh before adding.

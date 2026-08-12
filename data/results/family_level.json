@@ -1,0 +1,42 @@
+{
+  "note": "checkpoints clustered within architecture families; n=3 families gives an exact signed-rank floor of 0.25, so no rank test is reported",
+  "exact_rate_gap": {
+    "per_family": {
+      "Llasa": 0.7890522937224297,
+      "Qwen3-TTS": 0.7611111111111112,
+      "XTTS": 0.7111111111111111
+    },
+    "n_families": 3,
+    "n_checkpoints": 6,
+    "mean": 0.7537581719815507,
+    "lo": 0.7111111111111111,
+    "hi": 0.7890522937224297,
+    "all_positive": true
+  },
+  "count_error_gap": {
+    "per_family": {
+      "Llasa": 0.125,
+      "Qwen3-TTS": 0.0625,
+      "XTTS": 0.125
+    },
+    "n_families": 3,
+    "n_checkpoints": 6,
+    "mean": 0.10416666666666667,
+    "lo": 0.0625,
+    "hi": 0.125,
+    "all_positive": true
+  },
+  "capacity_gap": {
+    "per_family": {
+      "Llasa": 38.480695140136326,
+      "Qwen3-TTS": 11.067059647403381,
+      "XTTS": 10.738621792019355
+    },
+    "n_families": 3,
+    "n_checkpoints": 6,
+    "mean": 20.09545885985302,
+    "lo": 10.738621792019355,
+    "hi": 38.480695140136326,
+    "all_positive": true
+  }
+}

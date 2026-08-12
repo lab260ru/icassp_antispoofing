@@ -378,6 +378,36 @@ def main() -> None:
         macros["DilCtlLo"] = fmt(c.get("lo"), 2)
         macros["DilCtlHi"] = fmt(c.get("hi"), 2)
 
+    # ---- family-level clustering, and genuinely aperiodic controls -------
+    fl_path = Path("data/results/family_level.json")
+    if fl_path.exists():
+        fl = json.loads(fl_path.read_text())
+        for key, tag in (("exact_rate_gap", "FamExact"), ("capacity_gap", "FamCap")):
+            v = fl.get(key)
+            if not v:
+                continue
+            scale = 100 if key != "capacity_gap" else 1
+            macros[tag] = fmt(scale * v["mean"], 1)
+            macros[tag + "Lo"] = fmt(scale * v["lo"], 1)
+            macros[tag + "Hi"] = fmt(scale * v["hi"], 1)
+            macros[tag + "N"] = str(v["n_families"])
+
+    apc_path = Path("data/results/aperiodic_controls.json")
+    if apc_path.exists():
+        ac = json.loads(apc_path.read_text())
+        lo = next((v for k, v in ac.items()
+                   if isinstance(v, dict) and "aperiodic" in k), None)
+        hi = next((v for k, v in ac.items()
+                   if isinstance(v, dict) and "146-word" in k), None)
+        if lo:
+            macros["ApLoGap"] = fmt(100 * lo["exact_gap"], 1)
+            macros["ApLoRep"] = fmt(100 * lo["exact_rep"], 1)
+            macros["ApLoCtl"] = fmt(100 * lo["exact_ctl"], 1)
+        if hi:
+            macros["ApHiGap"] = fmt(100 * hi["exact_gap"], 1)
+            macros["ApHiMedRep"] = fmt(hi["median_rep"], 2)
+            macros["ApHiMedCtl"] = fmt(hi["median_ctl"], 2)
+
     # ---- CTC judge on real generated audio (field validation) ------------
     fv_path = Path("data/results/ctc_field_validation.json")
     if fv_path.exists():
