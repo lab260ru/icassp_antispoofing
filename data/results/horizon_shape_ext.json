@@ -1,0 +1,93 @@
+{
+  "kmin": 48,
+  "models": {
+    "llasa1b": {
+      "saturating": {
+        "param": 10.75,
+        "sse": 54.75
+      },
+      "proportional": {
+        "param": 0.104,
+        "sse": 170.888
+      },
+      "soft_horizon": {
+        "n_star": 38.4,
+        "sse": 2107.6713315881207,
+        "saturated_within_range": true
+      },
+      "winner": "saturating"
+    },
+    "llasa8b": {
+      "saturating": {
+        "param": 25.625,
+        "sse": 63.6875
+      },
+      "proportional": {
+        "param": 0.2765,
+        "sse": 243.77799999999996
+      },
+      "soft_horizon": {
+        "n_star": 38.4,
+        "sse": 240.3949689875494,
+        "saturated_within_range": true
+      },
+      "winner": "saturating"
+    },
+    "qwen06b": {
+      "saturating": {
+        "param": 39.0,
+        "sse": 174.0
+      },
+      "proportional": {
+        "param": 0.3865,
+        "sse": 1477.768
+      },
+      "soft_horizon": {
+        "n_star": 44.719799498746866,
+        "sse": 548.1805670823709,
+        "saturated_within_range": true
+      },
+      "winner": "saturating"
+    },
+    "qwen17b": {
+      "saturating": {
+        "param": 107.0,
+        "sse": 6626.0
+      },
+      "proportional": {
+        "param": 1.2625,
+        "sse": 1417.0000000000005
+      },
+      "soft_horizon": {
+        "n_star": 2560.0,
+        "sse": 3952.3551151587017,
+        "saturated_within_range": false
+      },
+      "winner": "proportional"
+    }
+  },
+  "pooled": {
+    "saturating": {
+      "param": 29.0,
+      "sse": 57.5
+    },
+    "proportional": {
+      "param": 0.31825,
+      "sse": 180.44199999999998
+    },
+    "soft_horizon": {
+      "n_star": 38.4,
+      "sse": 55.288930391032025,
+      "saturated_within_range": true
+    },
+    "winner": "soft_horizon"
+  },
+  "n_proportional": 1,
+  "n_models": 4,
+  "ratio_by_k": {
+    "48": 0.4895833333333333,
+    "64": 0.4296875,
+    "96": 0.3333333333333333,
+    "128": 0.2578125
+  }
+}

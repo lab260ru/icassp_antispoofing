@@ -33,31 +33,32 @@ here it tracks the request, so the horizon is not inside this ladder.
 
 \subsection{Past the ladder, the count does level off}
 
-So we extended it, post hoc, to $k\in\{48,64,96,128\}$ on \HzModelNames{} --- the
+So we extended it, post hoc, to $k\in\{48,64,96,128\}$ on the \HzNModels{}
 checkpoints whose decoders admit utterances that long (S10). Tracking stops: the
-repeated median \emph{falls} from \HzMedRepKLo{} at $k\!=\!48$ to \HzMedRepKHi{}
-at $k\!=\!128$ as the request grows threefold. Of \HzNGen{} generations
-\HzExclCap{} hit our budget and \HzExclDegen{} were degenerate, leaving
-\HzNCellLo{}--\HzNCellHi{} per cell; dropping truncated items is conservative,
-since their counts are censored downward and keeping them would deepen the
-apparent saturation.
+repeated median sits at \HzMedRepKLo{} at $k\!=\!48$ and \HzMedRepKHi{} at
+$k\!=\!128$ while the request grows threefold, where the control climbs from
+\HzMedCtlKLo{} to \HzMedCtlKHi{}. Of \HzNGen{} generations \HzExclCap{} hit our
+budget and \HzExclDegen{} were degenerate, leaving \HzNCellLo{}--\HzNCellHi{}
+per cell; dropping truncated items is conservative, since their counts are
+censored downward and keeping them would deepen the apparent saturation.
 
 The controls stop us reading this as counting collapse alone: they saturate too,
-near \HzMedCtlKHi{} units, so these decoders have a general utterance-length
-ceiling and the reportable quantity is the \emph{ratio}, which divides it out.
-Fitting the descriptive form $\hat c(k)=\hat K(1-e^{-k/\hat K})$ over the combined
-ladder --- $\hat K$ is a saturation scale read off counts, \emph{not} the
-theorem's $N^\ast$, which is a function of the unmeasured $q$ --- gives
-$\hat K_{\mathrm{rep}}=\HzNRep{}$ $[\HzNRepLo{},\HzNRepHi{}]$ against
-$\hat K_{\mathrm{ctl}}=\HzNCtl{}$ $[\HzNCtlLo{},\HzNCtlHi{}]$, bootstrapped over
-items and disjoint in \HzNSep{} of \HzNModels{}: repetition lowers the counting
-horizon \HzRatio{}-fold. The theorem predicts saturation of this kind just past
-where our original ladder stopped, which is why $k\le32$ looked proportional.
+so these decoders have a general utterance-length ceiling and the reportable
+quantity is the \emph{ratio}, which divides it out. Fitting the descriptive form
+$\hat c(k)=\hat K(1-e^{-k/\hat K})$ over the combined ladder --- $\hat K$ is a
+saturation scale read off counts, \emph{not} the theorem's $N^\ast$, a function
+of the unmeasured $q$ --- gives $\hat K_{\mathrm{rep}}=\HzNRep{}$
+$[\HzNRepLo{},\HzNRepHi{}]$ against $\hat K_{\mathrm{ctl}}=\HzNCtl{}$
+$[\HzNCtlLo{},\HzNCtlHi{}]$ pooled: repetition lowers the counting horizon
+\HzRatio{}-fold, saturating just past where our original ladder stopped, which is
+why $k\le32$ looked proportional.
 
-Two things keep this short of clean confirmation: the panel is \HzNModels{}
-checkpoints, and a pure horizon predicts a plateau whereas the repeated median
-\emph{declines} (\HzDeclinePeak{}$\rightarrow$\HzDeclineLast{}). The judge's bias
-points the same way (S9), making \HzRatio{} an upper bound.
+The panel is not unanimous, and the exception is informative. The intervals are
+disjoint for \HzSepNames{}, while \HzRevNames{} shows \emph{no} repeated-side
+saturation within $k\le128$ and inverts the ratio --- and it is also the one
+checkpoint with no deficit at $k\le32$ (Table~\ref{tab:models}), a conditional
+theorem behaving conditionally. The judge's bias points the same way as the
+effect (S9), making \HzRatio{} an upper bound.
 
 What degrades with $k$ is reliability rather than proportion: the share rendered
 \emph{exactly} right falls from \ExactRepKLo{}\% at $k\!=\!\ExactRepKLoVal{}$ to

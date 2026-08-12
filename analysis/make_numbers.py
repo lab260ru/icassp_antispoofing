@@ -280,7 +280,9 @@ def main() -> None:
             macros[f"HzN{tag}Hi"] = fmt(v.get("hi"), 0)
         macros["HzRatio"] = fmt(p_.get("ratio"), 1)
         names = he.get("model_names", [])
-        macros["HzModelNames"] = " and ".join(LABEL.get(m, m) for m in names)
+        labs = [LABEL.get(m, m) for m in names]
+        macros["HzModelNames"] = (", ".join(labs[:-1]) + " and " + labs[-1]
+                                  if len(labs) > 1 else (labs[0] if labs else "--"))
         npc = he.get("n_per_cell", {}).get("rep", {})
         if npc:
             vals = [int(v) for v in npc.values()]
@@ -296,6 +298,17 @@ def main() -> None:
                   and np.isfinite(v["ctl"].get("lo", np.nan))
                   and v["rep"]["hi"] < v["ctl"]["lo"])
         macros["HzNSep"] = str(sep)
+        # Which checkpoints separate, and which reverse. With four models the
+        # panel is no longer unanimous, and naming the exception is more use to
+        # a reader than a bare count.
+        mods = he.get("models", {})
+        sep_names = [LABEL.get(m, m) for m, v in mods.items()
+                     if v["rep"]["hi"] < v["ctl"]["lo"]]
+        rev_names = [LABEL.get(m, m) for m, v in mods.items()
+                     if v.get("ratio", 1) < 1]
+        macros["HzSepNames"] = " and ".join(sep_names) if sep_names else "none"
+        macros["HzRevNames"] = " and ".join(rev_names) if rev_names else "none"
+        macros["HzNRev"] = str(len(rev_names))
         dc = he.get("decline", {})
         if dc:
             macros["HzDeclinePeak"] = fmt(dc.get("c_peak"), 0)

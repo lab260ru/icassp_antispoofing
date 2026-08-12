@@ -105,10 +105,14 @@ def main() -> None:
           f"soft horizon N*={pooled['soft_horizon']['n_star']:.1f}")
     print(f"winner: {pooled['winner']}; proportional in "
           f"{res['n_proportional']}/{res['n_models']} models")
+    kmax = int(g.index.max())
     if pooled["winner"] != "saturating":
-        print("\n=> The rendered count tracks k rather than saturating. Theorem A's\n"
-              "   horizon is NOT reached for k<=32: the theorem is untested in this\n"
-              "   range, not confirmed by it. The deficit is a distinct phenomenon.")
+        print(f"\n=> Over k in [{args.kmin},{kmax}] the rendered count tracks k rather\n"
+              f"   than saturating, so no counting horizon lies inside this range.\n"
+              f"   That leaves the theorem untested here, not refuted: see\n"
+              f"   analysis/horizon_ext.py, which reaches k=128 and does find one.")
+    else:
+        print(f"\n=> Over k in [{args.kmin},{kmax}] the count saturates.")
 
     Path(args.out).parent.mkdir(parents=True, exist_ok=True)
     Path(args.out).write_text(json.dumps(res, indent=2))

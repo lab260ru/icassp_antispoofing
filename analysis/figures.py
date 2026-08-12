@@ -74,7 +74,7 @@ def fig_main(beh: pd.DataFrame, state: pd.DataFrame, cap: dict, out: Path,
     ax.axhline(0, color="k", lw=0.7, ls=":")
     ax.set_xscale("log", base=2)
     ax.set_xlabel(r"repetitions $k$")
-    ax.set_ylabel("count error (\%)")
+    ax.set_ylabel(r"count error (\%)")
     ax.set_title("(a) undercount")
     ax.legend(fontsize=4.6, loc="lower left", handlelength=1.2)
 
@@ -92,7 +92,7 @@ def fig_main(beh: pd.DataFrame, state: pd.DataFrame, cap: dict, out: Path,
     ax.plot([], [], "ks--", alpha=0.55, label="control")
     ax.set_xscale("log", base=2)
     ax.set_xlabel(r"$k$")
-    ax.set_ylabel("count error (\%)")
+    ax.set_ylabel(r"count error (\%)")
     ax.set_title("(b) periodicity, not length")
     ax.legend(fontsize=5, loc="lower left", handlelength=1.4)
 
