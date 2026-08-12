@@ -625,3 +625,33 @@ the comparison never uses. Restart with `data/stimuli/stimuli_greedy.jsonl`
 is lost.
 
 Limits: one checkpoint, one alternative decoding mode. Beam search untested.
+
+## 2026-08-12 (final) — the horizon exception, accounted for
+
+Two review rounds objected that Qwen3-TTS-1.7B is set aside as an "unexplained
+exception", and that a theory which excludes the checkpoint contradicting it is
+doing something a reader should worry about. The panel numbers answer it.
+
+    checkpoint       exact gap   median-err gap   capacity gap
+    Llasa-1B            78.1          12.5           38.5
+    Llasa-3B            77.2           8.3           46.5
+    Llasa-8B            81.4          16.7           30.5
+    Qwen3-TTS-0.6B      92.2          12.5           14.0
+    XTTS-v2             71.1          12.5           10.7
+    Qwen3-TTS-1.7B      60.0           0.0            8.1
+
+It ranks last on all three and is the only checkpoint that ranks last on any.
+The exception is where the effect is smallest on every measure, and the horizon
+ratio is the measure on which smallest tips into absent.
+
+**What this does not license.** A weakest checkpoint exists in any panel and sits
+nearest any threshold by construction, so this is *not* evidence for the theorem.
+What it rules out is narrower: the checkpoint that fails to saturate is the one
+with almost nothing to saturate, so the horizon result does not rest on
+discarding a counterexample. S23 says exactly this — if you find yourself quoting
+the ranking as support, re-read that paragraph.
+
+Still open: *why* this checkpoint is weakest. Either its per-repetition map does
+not contract, or its horizon lies past k=128 — which for the smallest deficit is
+what you would expect. A longer ladder than its generation budget allows is what
+separates them.
