@@ -3,31 +3,30 @@
 \noindent\textbf{What is proved, and what the measurements do not show.}
 The Lean artifact certifies an implication: periodic conditioning plus
 contraction implies a finite counting horizon. It does not prove that any
-transformer contracts, and our attempt to measure $q$ directly failed ---
-estimating it from boundary distances needs a monotone text read-head, and these
-decoders' attention centroid advances on barely half of generation steps, which
-is self-defeating (S5).
+transformer contracts, and two attempts to measure $q$ failed. A
+boundary-distance estimator needs a monotone text read-head, which these
+decoders do not provide --- their attention centroid advances on barely half of
+generation steps. A finite-difference perturbation probe then found no
+difference in local contraction between repeated items and their controls
+($7$ of $18$ pairs in the predicted direction, $p=0.12$), with its own linearity
+control failing (S5). The premise remains unestablished.
 
-The theorem's distinctive prediction is a \emph{constant} $N^\ast$, and we do not
-observe it: to $k=32$ the count stays proportional (Section~4), as a decoder
-still tracking $k$ would. Three readings survive and we cannot separate them. The
-horizon may lie past our ladder, since $q$ near $1$ makes $N^\ast$ large and the
-fit places it at \ShapeNStarMin{}--\ShapeNStarMax{}; the contraction premise may
-fail here, making the theorem inert; or the horizon may govern stopping rather
-than counting, which this measurement cannot see. What the data support is weaker
-and independent of the theorem: a periodicity-specific proportional deficit and a
-state budget growing at \CapRatio{} of the control rate while staying positive
---- approach toward the collapse regime, not arrival. A probe finds the count
-degraded, not erased (\ProbeRetRep{} against \ProbeRetCtl{} on controls).
+The theorem's distinctive prediction is a constant $N^\ast$, and where our
+original ladder stopped we could not see one --- the count still tracked $k$.
+Extending to $k=128$ found it, at $N^\ast_{\mathrm{rep}}=\HzNRep{}$ against
+$\HzNCtl{}$ for length-matched controls. We read this as locating these decoders
+just below the collapse regime at $k\le32$ rather than as confirming the bound:
+the extension covers \HzNModels{} checkpoints, and the theorem's premise is still
+unestablished, so what is shown is a horizon of the predicted kind, not one
+derived from a measured $q$. Consistent with that, the state budget grows at
+\CapRatio{} of the control rate while staying positive, and a probe finds the
+count degraded rather than erased (\ProbeRetRep{} against \ProbeRetCtl{}).
 
-A conditional account risks being unfalsifiable, so we state what would settle
-it. Saturation past our ladder is the direct test: if median counts at $k=64$ and
-$128$ level off together, the horizon is real and merely distant; if they keep
-tracking $k$, contraction is not the operative limit and the theorem, though
-proved, does not describe these models. Three observations would refute the
-account outright: a control with its twin's deficit; a model with the deficit
-whose capacity gain matches its control; or a probe reading the count as well
-late as early. Our data could have shown any of the three.
+A conditional account risks being unfalsifiable, so we state what would refute
+it: a control with its twin's deficit; a model with the deficit whose capacity
+gain matches its control; a probe reading the count as well late as early; or
+counts that kept tracking $k$ past the ladder. The last was a live possibility
+until we ran it; the others remain available to anyone with the released code.
 \ErrBestModel{} is instructive: no deficit yet still a capacity gap, so capacity
 loss is necessary but not sufficient.
 
@@ -50,17 +49,15 @@ representational degradation, though the two are not exclusive.
 \noindent\textbf{Implications and limits.}
 Existing mitigations act late~\cite{wang2025eliminating,xin2024ralle}, helping
 under this account only insofar as they raise $q$ or enlarge the readout margin.
-We tested that rather than asserting it, sweeping XTTS-v2's repetition penalty
---- the most widely deployed such fix --- over $\{\MitPenLo{},3,5,\MitPenHi{}\}$,
-the arms whose controls stay exact. The deficit moves only from \MitErrBest{}\%
+We tested that, sweeping XTTS-v2's repetition penalty --- the most widely
+deployed such fix --- over $\{\MitPenLo{},3,5,\MitPenHi{}\}$, the arms whose
+controls stay exact. The deficit moves only from \MitErrBest{}\%
 to \MitErrWorst{}\%, a \MitSpan{}-point span across a fourfold change, sloping
 \MitSlope{} points per unit --- slightly the \emph{wrong} way. Disabling it
 entirely ($\!=\!\MitBrokenPen{}$) breaks the control, so no setting both
 preserves quality and removes the deficit.
-Limits: the panel is English-only and entirely codec-language models with softmax
-attention over text, so the claim concerns that class. The
+Limits: the panel is English-only codec-language models with softmax attention
+over text, so the claim concerns that class. The
 judge has a limit that runs in our favour and so must be stated: CTC
 blank-collapse can merge adjacent copies of a word, depressing counts on repeated
-items but not on controls (S9). The gap survives --- controls are
-perturbation-stable and a second non-AR recogniser agrees within \HubertDiff{}
-counts --- but high-$k$ magnitudes are approximate.
+items but not on controls, so high-$k$ magnitudes are approximate (S9).

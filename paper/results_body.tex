@@ -24,26 +24,43 @@ Pooled at $k\ge6$, repeated items are rendered with a median error of
 models produce \emph{fewer} repetitions than requested, never systematically
 more.
 
-Its \emph{shape}, however, is not the one Theorem~\ref{thm:collapse}(iv)
-predicts, and that is this paper's main negative result. A finite $N^\ast$ implies
-saturation: past it no Lipschitz readout separates counts, so a decoder asked for
-ever more should keep emitting about $N^\ast$. Fitting the panel's median count
-above $k\!=\!6$ against a constant gives residual sum of squares \ShapeSatSSE{},
-against $\hat c=bk$ only \ShapePropSSE{} with $b=\ShapePropSlope{}$ --- the count
-tracks the request at \ShapePropPct{}\% of it, in \ShapePropModels{} of
-\ErrNModels{} checkpoints individually. The interpolating form $\hat
-c(k)=N^\ast(1-e^{-k/N^\ast})$, free to find a horizon if one is there, puts
-$N^\ast$ at \ShapeNStarMin{}--\ShapeNStarMax{}, at or beyond our ladder's top.
-Within $k\le32$ there is no counting horizon, and we report the theorem's
-consequence as \emph{not observed} rather than confirmed.
+Within $k\le32$, though, the deficit is \emph{proportional}, not saturating ---
+not what Theorem~\ref{thm:collapse}(iv) predicts. A constant fits the panel's
+median count above $k\!=\!6$ with residual sum of squares \ShapeSatSSE{} against
+\ShapePropSSE{} for $\hat c=\ShapePropSlope{}k$, in \ShapePropModels{} of
+\ErrNModels{} checkpoints (S10). A finite $N^\ast$ implies the count levels off;
+here it tracks the request, so the horizon is not inside this ladder.
 
-What degrades with $k$ is reliability, not proportion: the share rendered
+\subsection{Past the ladder, the count does level off}
+
+So we extended it to $k\in\{48,64,96,128\}$ on the carriers common to both
+(S10). Tracking stops: the repeated median \emph{falls} from \HzMedRepKLo{} at
+$k\!=\!48$ to \HzMedRepKHi{} at $k\!=\!128$ as the request grows threefold.
+
+The controls are what make this interpretable, and they stop us reading it as
+counting collapse alone: they saturate too, near \HzMedCtlKHi{} units. These
+decoders have a general utterance-length ceiling, so the reportable quantity is
+not either horizon but their ratio, which divides that ceiling out. Fitting
+$\hat c(k)=N^\ast(1-e^{-k/N^\ast})$ over the combined ladder gives
+$N^\ast_{\mathrm{rep}}=\HzNRep{}$ $[\HzNRepLo{},\HzNRepHi{}]$ against
+$N^\ast_{\mathrm{ctl}}=\HzNCtl{}$ $[\HzNCtlLo{},\HzNCtlHi{}]$, disjoint in
+\HzNSep{} of \HzNModels{} checkpoints: repetition lowers the counting horizon by
+a factor \HzRatio{}. That is the theorem's consequence, located just past where
+our original ladder stopped --- which is why $k\le32$ looked proportional.
+
+Two things keep this short of clean confirmation: the extension covers
+\HzNModels{} checkpoints with few items per cell, and a pure horizon predicts a
+plateau whereas the repeated median \emph{declines}
+(\HzDeclinePeak{}$\rightarrow$\HzDeclineLast{}), so something beyond the theorem
+acts here. The judge's bias points the same way (S9), making \HzRatio{} an upper
+bound.
+
+What degrades with $k$ is reliability rather than proportion: the share rendered
 \emph{exactly} right falls from \ExactRepKLo{}\% at $k\!=\!\ExactRepKLoVal{}$ to
-\ExactRepKHi{}\% at $k\!=\!\ExactRepKHiVal{}$ while the median error holds near a
-tenth. \ErrBestModel{} shows no deficit at all; the theorem is silent about such
-a model, since without contraction no horizon follows. The effect separates from
-its own control in \ErrNSep{} of \ErrNModels{} checkpoints, and holds whether the
-repeated unit is a word, a sentence or a place-value pattern.
+\ExactRepKHi{}\% at $k\!=\!\ExactRepKHiVal{}$. The effect separates from its own
+control in \ErrNSep{} of \ErrNModels{} checkpoints --- \ErrBestModel{} shows no
+deficit at all --- and holds whether the repeated unit is a word, a sentence or a
+place-value pattern.
 
 \subsection{The limit is periodicity, not length}
 
@@ -87,16 +104,15 @@ is a factor \CapRatio{} of the control gain, with disjoint 95\% intervals for
 \CapSepPhrase{} panel checkpoints; the matched-pair form of
 the comparison gives a positive gap in \CapFracPos{}\% of pairs.
 
-An obvious objection is circularity: correctly rendering \emph{very} sixteen
-times really does produce monotonous audio, so a low-rank trajectory might follow
-from the stimulus rather than from lost capacity. It does not. Adding realised
-output diversity (type/token ratio over emitted tokens, adjacent-repeat rate,
-length) as covariates leaves the ratio at \CapAdjRatio{}; restricting to items
-rendered \emph{correctly} leaves it at \CapCorrRatio{}. The gain stays
-\emph{positive} in \CapPosModels{} of \ErrNModels{} checkpoints: repetition
-slows state acquisition rather than halting it, where a decoder at the fixed
-point would gain none --- the count curve's message again, approach rather than
-arrival. A probe accordingly finds the count degraded, not erased (Section~5).
+An obvious objection is circularity: rendering \emph{very} sixteen times really
+does produce monotonous audio, so a low-rank trajectory might follow from the
+stimulus rather than from lost capacity. It does not. Adding realised output
+diversity (type/token ratio, adjacent-repeat rate, length) as covariates leaves
+the ratio at \CapAdjRatio{}; restricting to correctly rendered items leaves it at
+\CapCorrRatio{}. The gain stays \emph{positive} in \CapPosModels{} of
+\ErrNModels{} checkpoints, so at $k\le32$ repetition slows state acquisition
+without halting it --- consistent with decoders below their horizon rather than
+at it.
 
 Lemma~\ref{lem:dilution} concerns the softmax \emph{restricted to the $k$
 repeated keys}. Renormalised over those columns, profile entropy grows with

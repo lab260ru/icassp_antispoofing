@@ -265,6 +265,39 @@ def main() -> None:
         if ns:
             macros["ShapeNStarMin"] = fmt(min(ns), 0)
             macros["ShapeNStarMax"] = fmt(max(ns), 0)
+    # ---- the extension ladder: where tracking stops, and what repetition
+    # does to that point. The ratio is the reportable quantity: both families
+    # saturate, because these decoders have a general utterance-length ceiling,
+    # and only the ratio divides that ceiling out.
+    he_path = Path("data/results/horizon_ext.json")
+    if he_path.exists():
+        he = json.loads(he_path.read_text())
+        p_ = he.get("pooled", {})
+        for tag, key in (("Rep", "rep"), ("Ctl", "ctl")):
+            v = p_.get(key, {})
+            macros[f"HzN{tag}"] = fmt(v.get("n_star"), 0)
+            macros[f"HzN{tag}Lo"] = fmt(v.get("lo"), 0)
+            macros[f"HzN{tag}Hi"] = fmt(v.get("hi"), 0)
+        macros["HzRatio"] = fmt(p_.get("ratio"), 1)
+        macros["HzNModels"] = str(he.get("n_models", 0))
+        sep = sum(1 for v in he.get("models", {}).values()
+                  if np.isfinite(v["rep"].get("hi", np.nan))
+                  and np.isfinite(v["ctl"].get("lo", np.nan))
+                  and v["rep"]["hi"] < v["ctl"]["lo"])
+        macros["HzNSep"] = str(sep)
+        dc = he.get("decline", {})
+        if dc:
+            macros["HzDeclinePeak"] = fmt(dc.get("c_peak"), 0)
+            macros["HzDeclineLast"] = fmt(dc.get("c_last"), 0)
+            macros["HzDeclineKPeak"] = str(dc.get("k_peak", ""))
+            macros["HzDeclineKLast"] = str(dc.get("k_last", ""))
+        mk = he.get("median_by_k", {})
+        for tag, key in (("Rep", "rep"), ("Ctl", "ctl")):
+            for kk in (48, 128):
+                v = mk.get(key, {}).get(str(kk), mk.get(key, {}).get(kk))
+                if v is not None:
+                    macros[f"HzMed{tag}K{'Lo' if kk == 48 else 'Hi'}"] = fmt(v, 0)
+
     hse_path = Path("data/results/horizon_shape_ext.json")
     if hse_path.exists():
         hse = json.loads(hse_path.read_text())

@@ -39,10 +39,11 @@ models render repeated text with a median count error of \ErrRep{}\% at $k\ge6$
 and are exact in \ExactRep{}\% of generations, against \ExactCtl{}\% for
 length-matched \emph{distinct}-word controls: the limit tracks periodicity, not
 length. States visited grow with $k$ at \CapRatio{} of the control rate, disjoint
-in \CapSepPhrase{} checkpoints. We also report what we do \emph{not} find: to
-$k=32$ the count stays proportional rather than saturating, so the theorem's
-constant $N^\ast$ is not reached and what we establish is a periodicity-specific
-deficit, not the horizon itself.
+in \CapSepPhrase{} checkpoints. Up to $k=32$ the count stays proportional rather
+than saturating, so the horizon is not inside that range; extending to $k=128$
+locates it, at $N^\ast_{\mathrm{rep}}=\HzNRep{}$ repetitions against \HzNCtl{}
+for length-matched controls --- repetition lowers the counting horizon
+\HzRatio{}-fold.
 \end{abstract}
 
 \begin{keywords}
@@ -64,16 +65,15 @@ rules~\cite{xin2024ralle,du2024cosyvoice2} --- the speech analogue of neural tex
 degeneration, whose remedies are likewise sampling- or
 objective-level~\cite{holtzman2020curious,welleck2020neural}.
 
-We argue that a large part of this behaviour has a simpler cause, statable as a
-theorem. When the conditioning text contains $k$ copies of one phrase, softmax
-attention cannot tell one copy from another: each receives weight $\Theta(1/k)$
-and the profile flattens (Lemma~\ref{lem:dilution}). The decoder therefore meets
-approximately the \emph{same} conditioning at every repetition boundary, so the
-map carrying it from one boundary to the next is approximately autonomous. If
-that map contracts, its record of how many repetitions it has produced is erased
-geometrically, and past a computable horizon no Lipschitz function of the
-state---the stop-token logit included---can recover the count
-(Theorem~\ref{thm:collapse}).
+We argue that much of this behaviour has a simpler cause, statable as a theorem.
+When the conditioning text contains $k$ copies of one phrase, softmax attention
+cannot tell one copy from another: each gets weight $\Theta(1/k)$ and the profile
+flattens (Lemma~\ref{lem:dilution}). The decoder therefore meets approximately
+the \emph{same} conditioning at every repetition boundary, so the map carrying it
+between boundaries is approximately autonomous. If that map contracts, its record
+of how many repetitions it has produced is erased geometrically, and past a
+computable horizon no Lipschitz function of the state---the stop-token logit
+included---can recover the count (Theorem~\ref{thm:collapse}).
 
 The failure is thus predicted to depend on \emph{periodicity}, not on length: a
 sequence of $k$ distinct words should survive where $k$ identical ones do not.
@@ -191,18 +191,16 @@ transcript sets are released.
 
 The reported quantity is the \emph{relative count error} $(\hat c - k)/k$, where
 $\hat c$ is how many of the $k$ requested units the transcript delivers;
-exact-match accuracy scores $30$-of-$32$ and $3$-of-$32$ alike and flips on
-$\pm1$ of slop. Audio-level degeneracy (silence, spectral flatness, clipping) is
-detected separately and reported as its own rate. Items whose generation stopped
-on our token budget rather than the model's own stop decision, and one template
-whose filler vocabulary the judge never transcribes, are excluded from all
-reported statistics.
+exact-match scores $30$-of-$32$ and $3$-of-$32$ alike and flips on $\pm1$ of slop.
+Audio-level degeneracy is detected separately and reported as its own rate.
+Generations stopped by our token budget rather than the model, and one template
+whose fillers the judge never transcribes, are excluded throughout (S10).
 
 \noindent\textbf{State measurement.}
 For each instrumented generation we record per-step hidden states at probe layers
-and head-averaged attention onto the text span, and report the effective rank of
-the trajectory as a function of $k$; Section~\ref{sec:discussion} explains why we
-do not measure $q$ by differencing boundary states.
+and head-averaged attention onto the text span, and report the trajectory's
+effective rank as a function of $k$; Section~\ref{sec:discussion} explains why we
+do not measure $q$ directly.
 
 \noindent\textbf{Code, data, settings.}
 The Lean development, stimuli, generation and analysis code, per-item tables and
