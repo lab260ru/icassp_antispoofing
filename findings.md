@@ -35,6 +35,19 @@ only available behaviour.
 
 ## Final results (T+23h)
 
+> **This table's "Theorem A premise" row is SUPERSEDED (2026-08-12) and must
+> not be requoted as written.** "Not measurable" became "measured and
+> refuted" once `analysis/jacobian_q.py` passed its own gates: q = 38.1 on
+> Llasa-1B, q<1 in 0 of 29 items, control arm also expansive. See "Assumption
+> 2 is not unmeasured. It is false." further down this file, and its r19
+> follow-up under "the single-checkpoint correction" for the scope this is
+> entitled to (one checkpoint, not panel-wide). The panel-level count-error and
+> capacity rows in this table are not known to be stale — they were re-verified
+> against later per-checkpoint tables in this file at the time they were
+> written — but this table itself dates from very early in the project (T+23h)
+> and every number in it should be cross-checked against the dated entries
+> below before being requoted, per this file's own convention.
+
 | claim | measurement | status |
 |---|---|---|
 | Models undercount repeated text | median rel. count error −8.3% [−12.5,−6.2] at k≥6, n=457 repeated against 525 control, CTC judge (`count_error.json`) | **confirmed**, 4/6 checkpoints with CIs disjoint from their own control (5/6 below their control) |
@@ -42,7 +55,7 @@ only available behaviour.
 | One model is exempt | Qwen3-TTS-1.7B: 0.0% error, yet still a capacity gap | **second regime**, reported as such |
 | Capacity saturates under repetition | gain ratio 0.46 (`capacity.json`); 0.50 raw / 0.50 diversity-adjusted / 0.52 correct-only (`capacity_confound.json`) | **confirmed**, 5/6 disjoint CIs |
 | Lemma B (attention dilution) | block entropy = 0.97·log k; **average** spread δ ≤ 0.45 nats (entropy gap); **extreme** δ ≤ 1.23, most-attended share ≤ 3.4/k worst case, 1.7/k typical | **confirmed** — the lemma is entitled only to the extreme; see §"Lemma B's two deltas" |
-| Theorem A premise (q<1) | not measurable — the boundary estimator is unsound here | **open**, reported as a negative result |
+| ~~Theorem A premise (q<1) \| not measurable — the boundary estimator is unsound here \| **open**, reported as a negative result~~ | **SUPERSEDED 2026-08-12: measured and refuted on Llasa-1B, q=38.1. See "Assumption 2 is not unmeasured. It is false." below.** | — |
 | Capacity predicts count error across models | Spearman +0.49, n=6 | **underpowered**, not claimed |
 
 Per-model median count error at k≥6 (CTC judge, `data/results/count_error.json`
@@ -159,9 +172,16 @@ since the penalty acts against the behaviour under study.
 
 ## Open Questions
 
-- Is the contraction hypothesis satisfied by all models, or does the panel split
-  into contracting and non-contracting regimes (the two-regime story)?
-- Does q̂ vary monotonically with scale within the Llasa 1B/3B/8B ladder?
+- ~~Is the contraction hypothesis satisfied by all models, or does the panel
+  split into contracting and non-contracting regimes (the two-regime
+  story)?~~ **Partially answered, 2026-08-12**: on Llasa-1B it is not
+  satisfied at all — repeated *and* control text are both expansive (q=38.1
+  and 31.8 respectively), so there is no contraction regime on that checkpoint
+  to split by. Still genuinely open whether a *different* checkpoint
+  contracts; a second architecture family's jacobian is running as of this
+  writing (see `research-state.yaml`'s `active_background_jobs`).
+- Does q̂ vary monotonically with scale within the Llasa 1B/3B/8B ladder? Still
+  open — the one measured point (Llasa-1B, q=38.1) has no sibling yet.
 - Do number phrases ("six hundred sixty-six…") collapse at a different horizon
   than bare word repetitions, i.e. does semantic structure buy extra counting?
 
@@ -231,13 +251,24 @@ have silently folded three repetition-penalty arms into the panel.
 
 ### The premise has now failed to be established twice
 
+> **SUPERSEDED 2026-08-12.** "Unestablished" stopped being the right word once
+> a third, gated estimator (`analysis/jacobian_q.py`) measured q directly and
+> rejected the premise outright — see "Assumption 2 is not unmeasured. It is
+> false." further down this file. The two attempts below are kept as the
+> record of what did *not* work (both were later shown, via the boundary-
+> distance decay reproducing q≈1 at R²=0.02, to be non-localisation failures
+> rather than measurement noise) — they were superseded by a working
+> estimator, not corroborated by one, and neither q-hat below should be
+> presented as validated.
+
 A finite-difference perturbation probe (`analysis/contraction_probe.py`) measured
 local contraction directly. The decisive repeated-vs-control contrast came out
 null: 7 of 18 pairs in the predicted direction, p=0.12, with the trend mildly the
 *wrong* way, replicated at two injection depths. Its own step-size linearity
 control also failed. Together with the earlier boundary-distance attempt, that is
-two independent failures to measure `q`. **Assumption 2 remains unestablished**,
-and the paper says so. Do not present either q-hat as validated.
+two independent failures to measure `q`. ~~**Assumption 2 remains
+unestablished**, and the paper says so.~~ Do not present either q-hat as
+validated.
 
 ### Also worth knowing
 
@@ -366,11 +397,23 @@ criteria — a test called non-discriminating cannot also be a refutation test.
 
 ### Where the mechanism stands (read this before writing any mechanistic claim)
 
+> **SUPERSEDED 2026-08-12 — read "the mechanism stands nowhere" further down
+> this file instead.** By the end of the final day all four candidates raised
+> in this project had been tested to a conclusion, not left open: contraction
+> was measured and refuted (single checkpoint), the dilution dose-response
+> stayed sign-reversed, the stop-head readout came back inseparable/
+> inconclusive, and a causal intervention (rank-1 patch) produced a readable
+> null rather than an uninterpretable one. The paragraph below is kept for the
+> record of where things stood mid-project; it undersells the later evidence
+> by calling the probe merely "non-discriminating" when the causal follow-up
+> shows the decoder actively ignoring a transplanted count.
+
 Nothing directly supports the causal story: two failed attempts at the
 contraction premise, a sign-reversed dilution dose-response, and a probe that
 discriminates nothing. What stands is the *phenomenon* plus six excluded rivals
 (length, periodicity-of-control, repetition penalty, ASR judge, architecture,
-improbability/acoustics). The title says so: "a horizon it does not yet explain."
+improbability/acoustics). The title said so at the time: "a horizon it does not
+yet explain" — the title has since changed twice more; see the entries below.
 
 ### Infrastructure
 
@@ -887,3 +930,301 @@ those rows are original extension-ladder items and feed `behavioural_ext.csv`,
 so the qwen06b (15.0) and qwen17b (0.27) horizon ratios are computed over items
 that rule 4 was supposed to drop. Not fixed here — recomputing `hit_cap` for
 existing rows changes published numbers and is a decision, not a patch.
+
+---
+
+> **The entries below backfill several commits that landed changes without a
+> matching findings.md entry.** They are added 2026-08-12 (late) while
+> reconciling this file, `research-state.yaml` and `implementation-notes.md`
+> against ~15 commits of paper and analysis work. Presented in the order the
+> underlying commits actually landed; every number below was re-checked
+> against its `data/results/*.json` at the time of this reconciliation, not
+> copied from a commit message.
+
+## 2026-08-12 — the judge replication: four recognisers, and the decisive number is the arm spread
+
+The CTC-judge objection had survived five review rounds (eight of nine
+reviewers in r15–r17, two more in r18): the judge was validated against
+concatenative audio with known counts and never against the real generated
+failure audio it scores, and CTC blank-collapse — which merges adjacent
+identical words — is exactly the confound under study. `analysis/
+independent_judge.py` re-scores the same 982 generations with three more
+recognisers (`data/results/independent_judge.json`):
+
+    wav2vec2-large-960h-lv60-self  (primary)      +76.7
+    hubert-large-ls960-ft          (independent)  +72.3
+    whisper-large-v3 (no blank-collapse mechanism at all)  +75.5
+    wav2vec2-large-robust-ft-libri-960h (weakest)  +65.1
+
+Positive in 6 of 6 checkpoints and 3 of 3 families under every one of the four.
+
+**The decisive number is not the gap.** Across the four judges the repeated
+arm's exact rate spans **1.0 point** (17.1–18.2%) while the control arm's spans
+**12.2** (82.1–94.3%). A judge-side collapse of repeated material predicts the
+opposite pattern — the arm that would move is the one the models get *wrong*,
+not the one they get right. It is not there: swapping the scorer moves the arm
+the models already get right (ordinary word-error-rate noise) and leaves the
+arm they get wrong almost exactly where it was.
+
+Disagreement between judges is real and is reported, not buried: judges
+disagree 3.3x more on repeated items than on controls, growing with k (exact
+agreement on repeated items falls 94–97% at k≤8 to 64.4% at k=32). But its
+**sign is wrong for the confound**: the primary judge reports the *higher*
+count in 61.2% of repeated-item disagreements and 72.9% of control ones (65.9%
+pooled across all k) — it under-states the deficit, not manufactures it. Under
+the strongest form of the objection (either judge counting as exact) the gap
+*widens* to +76.2, not narrows.
+
+**Correction this forces.** `noise_floor.py`'s "our judge reports the higher
+count in 11 of 13 disagreements" was computed at n=60. At full n (173
+disagreements out of 1559 paired rows) it is 61–73% depending on arm, not the
+~85% that 11/13 implies. Still the right side of 50, but do not requote 11/13;
+it is superseded and S14 marks it so in place.
+
+Limits: I could not trace the commit message's separately-quoted "+59.4"
+figure (restoring the excluded template) to a single field in
+`independent_judge.json` — the closest candidates are the primary judge's
+template-inclusive gap (62.6) and the independent judge's (58.5). Left out
+rather than guessed at; if you need that number, recompute it directly rather
+than trusting this paragraph.
+
+## 2026-08-12 — the stop-head instrument is clean, and the result is negative
+
+Asked what the stop decision actually reads: the decoded repetition count, or
+elapsed duration. `analysis/stop_head.py`, `data/results/stop_head.json`. The
+instrument is sound, which makes the negative harder to dismiss: EOS logits
+are recovered exactly (0.075 nats against the instrumented pass's own values),
+all four planted positive controls are recovered with zero spurious
+attribution on both checkpoints, and the commonality decomposition is additive
+to 1e-16.
+
+The result fails on its own pre-committed criteria. **Llasa-1B**: predictors
+**inseparable** — canonical correlation between duration and count is 0.970 at
+low k, above the 0.95 threshold fixed before any number was read. **Llasa-8B**:
+**inconclusive** (0.635). The two checkpoints disagree on which direction the
+collinearity even moves — 1B falls 0.97→0.73 low-to-high k, 8B *rises*
+0.47→0.64 — so "duration and count decouple at high k" is true on one
+checkpoint and false on the other.
+
+One structural finding survives the null: log P(EOS) is a flat floor with a
+single spike at the stop step, so at the level of the stop *event* (not the
+per-step regression) elapsed duration is not a rival hypothesis, it is the
+outcome variable. There, only Llasa-8B shows the predicted dissociation
+(repeated under-proportional at high k); Llasa-1B shows the opposite pattern.
+
+An alignment bug was found and fixed while building the instrument:
+`hidden`/`attn_*` were sliced `[plen:]` while `entropy`/`top1` came from
+`logits[plen-1:-1]` — off by one generation step. It failed quietly (0.075
+nats shifted vs 3.55 unshifted), which is why it is recorded here rather than
+assumed impossible.
+
+**Design limitation this makes unavoidable, now stated in the paper**: inside
+the repeated arm, the requested count and the amount of text are one variable,
+so a probe decoding k from decoder states cannot be said to decode a count
+rather than a length. Only the matched control separates those, and only
+behaviourally. This constrains every representational claim in this project.
+
+## 2026-08-12 — the qwen `hit_cap` fix landed: horizon ratio moves in our favour
+
+Follow-up to the bug recorded immediately above (in the previous entry): the
+decision was made to repair the ledgers rather than leave the bug live. Fixed
+from `n_speech_tokens`, which was always recorded correctly, with the budget
+inferred per item from whether it is an extension-ladder id.
+
+    pooled soft-horizon K_rep    30.1  ->  24.8
+    pooled ratio                 3.48  ->  4.22
+    hyperbolic form ratio        4.30  ->  5.40
+    tanh form ratio              2.68  ->  3.14
+    form range                  2.7-4.3 -> 3.1-5.4
+    per-checkpoint: llasa1b 5.97, llasa8b 4.12 (unchanged, not Qwen);
+                    qwen06b 15.0 -> 13.1 (still unbounded at the fit ceiling);
+                    qwen17b 0.27 -> 0.29 (still inverted)
+
+Control-side K_ctl does not move, which is the check that the repair did what
+it claimed — the truncated items were on the repeated arm only. **The
+correction moves the headline in the paper's own favour**: truncated repeated
+items were inflating the repeated arm's fitted saturation scale, so the
+deficit had been understated. Verified directly against
+`data/results/horizon_ext.json` and `data/results/horizon_forms.json` while
+reconciling this file: pooled soft-horizon `N*_rep 24.80 [22.51,42.41]`,
+`N*_ctl 104.77 [93.28,114.78]`, ratio `4.224`; per-form pooled ratios
+`3.142 (tanh) / 4.224 (soft-horizon) / 5.403 (hyperbolic)`.
+
+Every "N\*_rep 30.1" / "ratio 3.5" / "qwen06b 15.0" / "qwen17b 0.27" / "form
+range 2.7-4.3" statement anywhere above this line, and in `research-state.yaml`
+before this reconciliation, is superseded by the numbers in this entry. Do not
+requote the old ones.
+
+## 2026-08-12 — the causal intervention: disruptive, then readable, and a dead lead
+
+The discussion had said the state-vs-policy manipulation was one "we did not
+run." Two arms on Llasa-1B, `analysis/causal_count.py`,
+`data/results/causal_count.json`.
+
+**Whole-state splicing (Arm A).** Patches hidden states from a donor at
+matched positions during teacher-forced generation, then resumes. Sanity gates
+pass (no-op patch bit-identical, n=18). The verdict is neither hit nor null:
+states spliced from an **unrelated** item move the rendered count 1.34x as much
+as a donor that actually differs in k (cap-hit 15.8% reference vs 37.4%
+patched; stop-rate 84.2% vs 62.6%). A protocol in which a random donor is more
+disruptive than an informative one cannot distinguish "the count is not
+causally used" from "we broke generation." Verdict: **"too disruptive to
+interpret."** Arm B (difference-in-means steering, pilot) failed all three of
+its own pre-committed gates.
+
+**The fix: a rank-1 patch.** Replacing whole-state splicing with a rank-1
+projection that transfers only the probe's count coordinate
+(`data/results/causal_count_followup.json`) removes the damage: 0% degenerate
+in every cell (against non-trivial degeneracy in the whole-state/steering
+pilot — e.g. one steering cell ran 88.9% degenerate before this fix), no-op
+self-patch bit-identical 18/18 (max delta exactly zero, which needed a bf16
+numerical trap fixed first — see `implementation-notes.md`), and per-cell
+stop-rate now within 3–17 points of the reference arm (aggregate 73.5% patched
+against 83.3% reference) where the whole-state pilot's aggregate stop-rate sat
+21.6 points below reference (62.6% against 84.2%, with individual cells as far
+as 33.3 points below). **And the
+count still does not move**: cross-k at layer 7, `+0.00` log-count
+`[-0.09,+0.09]` over 36 pairs, no opposite-sign up/down pattern in any cell.
+This is now reported as a **readable null** — the count coordinate transplants
+cleanly and the decoder ignores it — rather than as an uninterpretable
+intervention, and it is direct causal support for the output-policy account
+that the probe evidence could only gesture at.
+
+**The ridge-steering lead died.** A full alpha sweep — 12 repeated items and
+matched controls, 9 alphas, 274 generations — returns Spearman ρ = +0.044,
+p = 0.65 (partialling out duration: +0.050). The repeated curve is not
+monotone but *peaked*: ~15–16 rendered across alpha in [-0.5, +0.25],
+collapsing to 3–6 at both extremes. Controls stay immovable — 24 rendered
+units at every alpha. The earlier +0.96 pilot contrast reproduces in
+magnitude but reads the two ends of a curve whose middle contradicts it: the
+finding that survives is that repeated-text generation destabilises under
+perturbation in *either* direction while aperiodic control text does not — a
+fragility, not a knob.
+
+**Reported against interest.** The pre-committed P1 disruption gate on the
+rank-1 patch still literally returns "too disruptive" at 1.74 — stated as
+such, but flagged post-hoc as a degenerate ratio: both arms' extreme-alpha
+effect medians are exactly 0.0, so the gate divides by ~nothing rather than
+detecting violence.
+
+**This closes the last of four mechanistic candidates.** Contraction: measured
+and refuted (see below). Dilution dose-response: disconfirmed, sign-reversed.
+Stop-head readout: inseparable / inconclusive (previous entry). Causal
+intervention: a readable, causal null. There is no mechanistic spine available
+on this evidence, and the paper does not pretend otherwise.
+
+## 2026-08-12 — the mechanism stands nowhere, plainly
+
+Summary that supersedes every earlier "unestablished" / "nothing directly
+supports the causal story" framing in this file (both marked superseded in
+place above, not deleted): as of this entry, all four mechanistic candidates
+this project ever raised have been *tested to a conclusion*.
+
+1. **Contraction** — measured and refuted on Llasa-1B: q = 38.1, not < 1;
+   control arm expansive too (31.8), so the premise never described this
+   decoder for any input. See "Assumption 2 is not unmeasured. It is false."
+2. **Dilution dose-response** — disconfirmed, sign-reversed (r=+0.59).
+3. **Stop-head readout** — negative: inseparable on Llasa-1B, inconclusive on
+   Llasa-8B.
+4. **Causal intervention** — a readable null: the count transplants cleanly
+   (rank-1 patch) and the decoder ignores it.
+
+What stands is the *phenomenon* (the dissociation, replicated across four
+judges and, as of this reconciliation, a fourth architecture — see below) plus
+the excluded rivals, and the causal half of the state/policy dissociation: the
+decoder represents the count where the horizon permits a readout, and its
+output policy demonstrably does not use that representation. That is a
+narrower, better-supported claim than "a horizon it does not yet explain," and
+it is what the retitled paper (*"Periodicity, Not Length: Locating the
+Repetition-Counting Failure in Neural Text-to-Speech"*) now argues.
+
+## 2026-08-12 — CosyVoice 2, a fourth architecture, and the hierarchical statistics that predicted it
+
+**Hierarchical statistics** (`analysis/hierarchical.py`,
+`data/results/hierarchical.json`), landing the honest n=6 inference seven of
+nine reviewers asked for instead of the "too small for significance testing"
+apology:
+
+- Mixed-effects linear-probability model (architecture as a random effect):
+  arm gap **76.4 points**; six interval constructions (Wald, cluster-family,
+  cluster-checkpoint, GEE, family-t, two cluster bootstraps) all exclude zero,
+  **least favourable lower bound 63.2 points** (cluster-checkpoint). The
+  Wald/REML interval is narrower and marked reference-only: with only 3
+  families, REML over-shrinks the family-varying arm-slope SD (1.4 points
+  against 3.9 observed between families).
+- Hierarchical Bayes (NUTS, r-hat ≤ 1.0005, ESS ≥ 3825; cross-checked against
+  an independent hand-rolled Metropolis sampler, r-hat ≤ 1.026): panel
+  posterior **74.9 [41.5, 89.4]**; every per-checkpoint and per-family
+  posterior has P(gap>0)=1.0; **posterior predictive for an architecture
+  outside the panel: 65.3 [5.9, 93.3], P(gap>0)=0.996.**
+- A 420-specification curve (240 unique populations after collapsing
+  duplicates) over exclusions × kmin × control-type × seeds × aggregation ×
+  outcome: exact-rate gap ranges **34.4 to 86.4 points**, sign never reverses.
+- **The one reading anywhere in this project that touches zero**: under the
+  single widest group-level-scale prior tried (HalfNormal(3.0)) for the
+  out-of-panel posterior, the lower bound is −1.63 and P(gap>0) drops to
+  0.956. Report this when the question is "does *any* credible reading touch
+  zero" — the answer is yes, once.
+
+**CosyVoice 2**, alignment-supervised and autoregressive, lands as a fourth
+architecture (`src/models/cosyvoice_gen.py`,
+`data/results/behavioural_cosyvoice.csv`) — scored and reported separately
+from the panel, excluded by name in `population.py`'s non-panel set so a
+routine rerun of `run_pipeline.sh` cannot silently fold it in. It is a genuine
+held-out test of the fit above: the out-of-panel posterior predictive (65.3
+points) was committed in 6f34945 at 17:28, **before CosyVoice 2's first
+waveform existed** (~17:50, per the commit record; `logs/cosyvoice2_*.log`
+starts at 17:59 and `behavioural_cosyvoice.csv` itself is not scored until
+18:58). Observed gap:
+**64.4 points** (28.9% repeated exact vs 93.3% control, n=90/arm, k≥6 — I
+recomputed this directly from `behavioural_cosyvoice.csv` through
+`population.panel()` while reconciling this file and it reproduces to one
+decimal).
+
+It is the architecture design most likely to be immune (alignment supervision,
+a shipped repetition-aware sampling rule) and is not immune — but it **fails
+differently**: it *over-produces* rather than truncating (median repeated
+relative error **+12.5%**, i.e. too much speech, not too little) at a **0%**
+cap-hit rate. Its generation ceiling scales with the requested text rather
+than being a fixed budget, so it makes roughly the right amount of speech and
+still loses the count. Report this as a **held-out prediction**, not a
+pre-registration: generation was already queued when the fit was committed, so
+the architecture was chosen and only its result was unknown. The predictive
+interval is ~90 points wide, so landing within 0.9 points of the point
+estimate is luckier than the model is entitled to claim credit for.
+
+## 2026-08-12 — the r19 correction: single-checkpoint scope, and a sharper reading of the contraction result
+
+Four reviewers on the substantially-changed paper independently caught the
+same thing: the jacobian and rank-1-patch results above are single-checkpoint
+(n=29 and n=36, both Llasa-1B) and had been written as panel-wide conclusions
+("false for these decoders", plural; "never described this decoder" used to
+withdraw the contraction account across all six checkpoints). **Corrected
+scope, and the correction applies retroactively to every entry above in this
+file that says "these decoders" or implies a panel-wide result**: false for
+the *one* decoder measured, refuting the mechanism where it was tested, not
+panel-wide. A second architecture family's jacobian is running as of this
+writing (see `research-state.yaml`).
+
+**A sharper, less flattering reading of the same number**, also from review:
+the *control* arm's Jacobian is expansive too (31.8, not < 1). That means the
+contraction premise was never a live description of this decoder for *any*
+input — it is not "periodicity breaks contraction," it is "there was no
+contraction here to break." This is now what the abstract and Section 4 say,
+in place of the earlier "repetition makes the map more expansive" framing.
+
+Two smaller corrections from the same round, recorded because a claim that
+moved should show that it moved: (1) the CosyVoice-2 held-out prediction's
+provenance sentence pointed readers at the wrong supplement location, which is
+now fixed with exact timestamps (hierarchical.json written 17:15, committed
+17:28, first CosyVoice-2 waveform 17:50, scored 18:58) — the underlying claim
+was already true, only the citation was wrong. (2) The judge asymmetry (+0.27)
+had been described as "a residual in the confound's direction, just too
+small," which is backwards: +0.27 means our judge reports the *higher* count
+on repeated items, the opposite sign from what a blank-collapse confound would
+produce. It now says "opposite sign to the confound," not "under-states."
+
+The two "confirmatory" subsection headers were renamed "pre-specified" — the
+project fixed the stimulus ladder, controls and exclusion rules before
+generation (S16 dates this), but never pre-registered, so "confirmatory" was
+claiming more than that supports.
