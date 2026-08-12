@@ -25,8 +25,8 @@ count degraded rather than erased (\ProbeRetRep{} against \ProbeRetCtl{}).
 A conditional account risks being unfalsifiable, so we state what would refute
 it: a control with its twin's deficit; a model with the deficit whose capacity
 gain matches its control; a probe reading the count as well late as early; or
-counts that kept tracking $k$ past the ladder. The last was a live possibility
-until we ran it; the others remain available to anyone with the released code.
+counts still tracking $k$ past the ladder. The last was live until we ran it; the
+others remain open to anyone with the released code.
 \ErrBestModel{} is instructive: no deficit yet a capacity gap, so capacity loss
 is necessary, not sufficient.
 
@@ -38,20 +38,19 @@ fail alike, so Figure~\ref{fig:main}(b) is evidence against length alone, and
 \eqref{eq:horizon} supplies a rate in repetitions that a length-indexed bound
 does not. Related dynamical treatments index convergence by depth or an abstract
 temperature~\cite{dong2021attention,geshkovski2023emergence,gao2026clustered};
-ours indexes it by generation step. Expressivity bounds by circuit class and
-state tracking~\cite{strobl2024formal,merrill2024illusion} constrain a worst case
-in one forward pass, where ours constrains a decoder over generation. A competing
-account holds that in text LMs the count survives in the residual stream and only
-the output policy fails~\cite{venkatesh2026repeated}; our probes favour
-representational degradation, though the two are compatible.
+ours indexes it by generation step, and expressivity bounds by circuit class and
+state tracking~\cite{strobl2024formal,merrill2024illusion} constrain one forward
+pass where ours constrains a decoder over generation. A competing account holds
+that in text LMs the count survives in the residual stream and only the output
+policy fails~\cite{venkatesh2026repeated}; our probes favour representational
+degradation, though the two are compatible.
 
 \noindent\textbf{Implications and limits.}
-Existing mitigations act late~\cite{wang2025eliminating,xin2024ralle}, helping
-under this account only insofar as they raise $q$ or enlarge the readout margin.
-Sweeping XTTS-v2's repetition penalty over $\{\MitPenLo{},3,5,\MitPenHi{}\}$ moves
-the deficit only from \MitErrBest{}\% to \MitErrWorst{}\%, slightly the
-\emph{wrong} way, and disabling it breaks the control (one architecture, so
-suggestive only).
+Existing mitigations act late~\cite{wang2025eliminating,xin2024ralle} and, under
+this account, help only insofar as they raise $q$ or enlarge the readout margin.
+Sweeping XTTS-v2's repetition penalty fourfold moves the deficit from
+\MitErrBest{}\% to \MitErrWorst{}\%, the \emph{wrong} way, and disabling it
+breaks the control (S7).
 Limits: the panel is English-only codec-language models with softmax attention
-over text; and CTC blank-collapse merges adjacent copies of a word, depressing
-repeated but not control counts, so high-$k$ magnitudes err our way (S9).
+over text, and CTC blank-collapse merges adjacent word copies, so high-$k$
+magnitudes err our way on repeated items only.

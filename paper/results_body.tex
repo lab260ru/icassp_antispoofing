@@ -3,7 +3,7 @@
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=0.72\textwidth]{figs/fig_main.pdf}
+\includegraphics[width=0.68\textwidth]{figs/fig_main.pdf}
 \caption{(a) Relative count error $(\hat c-k)/k$ against requested repetitions
 $k$, CTC judge: exact below $k\!=\!6$, then a one-directional deficit that stays
 roughly proportional rather than saturating. (b) The same repeated items (solid)
@@ -36,11 +36,11 @@ here it tracks the request, so the horizon is not inside this ladder.
 So we extended it, post hoc, to $k\in\{48,64,96,128\}$ on \HzModelNames{} --- the
 checkpoints whose decoders admit utterances that long (S10). Tracking stops: the
 repeated median \emph{falls} from \HzMedRepKLo{} at $k\!=\!48$ to \HzMedRepKHi{}
-at $k\!=\!128$ as the request grows threefold. Of \HzNGen{} generations,
-\HzExclCap{} hit our token budget and \HzExclDegen{} were degenerate, leaving
-\HzNCellLo{}--\HzNCellHi{} per cell; dropping budget-truncated items is
-conservative here, since their counts are censored downward and keeping them
-would deepen the apparent saturation.
+at $k\!=\!128$ as the request grows threefold. Of \HzNGen{} generations
+\HzExclCap{} hit our budget and \HzExclDegen{} were degenerate, leaving
+\HzNCellLo{}--\HzNCellHi{} per cell; dropping truncated items is conservative,
+since their counts are censored downward and keeping them would deepen the
+apparent saturation.
 
 The controls stop us reading this as counting collapse alone: they saturate too,
 near \HzMedCtlKHi{} units, so these decoders have a general utterance-length
@@ -61,9 +61,16 @@ points the same way (S9), making \HzRatio{} an upper bound.
 
 What degrades with $k$ is reliability rather than proportion: the share rendered
 \emph{exactly} right falls from \ExactRepKLo{}\% at $k\!=\!\ExactRepKLoVal{}$ to
-\ExactRepKHi{}\% at $k\!=\!\ExactRepKHiVal{}$. The effect separates from its own
-control in \ErrNSep{} of \ErrNModels{} checkpoints (\ErrBestModel{} shows none)
-and holds for word, sentence and place-value units alike.
+\ExactRepKHi{}\% at $k\!=\!\ExactRepKHiVal{}$, and holds for word, sentence and
+place-value units alike.
+
+Because the claim is about models, not about our corpus, we take the checkpoint
+as the unit of replication, reducing each to its own repeated-minus-control
+difference. The exactly-correct rate favours the control in all \CkExactN{} (mean
+\CkExact{} points $[\CkExactLo{},\CkExactHi{}]$, signed-rank $p=\CkExactP{}$,
+the exact floor at $n\!=\!6$). The median-error gap is positive in \CkErrNPos{}
+of \CkErrN{} and zero in \ErrBestModel{}, so $p=\CkErrP{}$: on that statistic the
+panel misses even its own floor, which we report rather than counting votes.
 
 \subsection{The limit is periodicity, not length}
 
@@ -87,24 +94,23 @@ attractor is acoustic --- are ruled out by their own predictions (S8).
 under the CTC judge; capacity gain is
 $\mathrm{d}\mathcal{N}_{\mathrm{eff}}/\mathrm{d}\log k$ at deep layers.}
 \label{tab:models}
-{\footnotesize\setlength{\tabcolsep}{3.2pt}\input{table1}}
+{\scriptsize\setlength{\tabcolsep}{3pt}\input{table1}}
 \end{table}
 
 \subsection{The decoder buys states more slowly under repetition}
 
 Theorem~\ref{thm:collapse}(ii) says states visited under periodic conditioning
 stop being mutually distinguishable, so more repetitions should buy distinct
-internal states more slowly than the same amount of non-repetitive text does. We
+internal states more slowly than non-repetitive text of the same length does. We
 count states by the effective rank $\mathcal{N}_{\mathrm{eff}} = \exp(-\sum_i p_i
-\log p_i)$ of the trajectory over normalised singular values; the statistic is
-the \emph{capacity gain}
-$\mathrm{d}\mathcal{N}_{\mathrm{eff}}/\mathrm{d}\log k$, bootstrapped over
-templates.
+\log p_i)$ of the trajectory over normalised singular values, and report the
+\emph{capacity gain} $\mathrm{d}\mathcal{N}_{\mathrm{eff}}/\mathrm{d}\log k$.
 
 Figure~\ref{fig:main}(c,d) shows the result. On repeated text the capacity gain
-is a factor \CapRatio{} of the control gain, with disjoint 95\% intervals for
-\CapSepPhrase{} panel checkpoints; the matched-pair form of
-the comparison gives a positive gap in \CapFracPos{}\% of pairs.
+is a factor \CapRatio{} of the control gain; the gap is positive in all
+\CkCapN{} checkpoints (mean \CkCap{} $[\CkCapLo{},\CkCapHi{}]$, $p=\CkCapP{}$)
+but varies fourfold across them (SD \CkCapSD{}), so the mechanism is general in
+direction, not in magnitude.
 
 An obvious objection is circularity: rendering \emph{very} sixteen times really
 does produce monotonous audio, so a low-rank trajectory might follow from the
@@ -116,11 +122,8 @@ at \CapAdjRatio{}; restricting to correctly rendered items leaves it at
 \emph{positive} in \CapPosModels{} of \ErrNModels{} checkpoints: at $k\le32$
 repetition slows state acquisition without halting it.
 
-Lemma~\ref{lem:dilution} concerns the softmax \emph{restricted to the $k$
-repeated keys}. Renormalised over those columns, profile entropy grows with
-$\log k$ at slope \BlockEntropySlope{} and the most-attended occurrence holds
-$\ShareMedK{}/k$ of the block's mass typically, $\ShareMaxK{}/k$ at worst: the
-extreme spread Assumption~\ref{ass:periodic} needs is $\delta\le\DeltaMax{}$
-nats, so attention is near-uniform typically but not uniformly so (S4).
-Qwen3-TTS sums text and acoustic embeddings per position, so the lemma cannot be
-checked there.
+Lemma~\ref{lem:dilution}'s premise holds only approximately: renormalised over
+the $k$ repeated key columns, the most-attended occurrence holds
+$\ShareMedK{}/k$ of the block's mass typically and $\ShareMaxK{}/k$ at worst, so
+the extreme spread it needs is $\delta\le\DeltaMax{}$ nats (S4). Qwen3-TTS fuses
+text and acoustic embeddings per position and cannot be checked.

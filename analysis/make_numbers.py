@@ -322,6 +322,31 @@ def main() -> None:
             f"{int(k)}: {v:.2f}" for k, v in sorted(
                 (int(a), b) for a, b in hse.get("ratio_by_k", {}).items()))
 
+    # ---- checkpoint-level inference --------------------------------------
+    # Replaces the vote counts ("5 of 6") that round-5 reviewers objected to:
+    # the checkpoint is the unit the paper's claim generalises over, so the
+    # estimate and its interval are computed across checkpoints, not
+    # generations. The exact signed-rank floor at n=6 is 0.031, and the macros
+    # below are quoted with that stated so nobody reads more resolution into
+    # them than six checkpoints can carry.
+    ck_path = Path("data/results/checkpoint_level.json")
+    if ck_path.exists():
+        ck = json.loads(ck_path.read_text())
+        for key, tag in (("count_error_gap", "CkErr"), ("exact_rate_gap", "CkExact"),
+                         ("capacity_gap", "CkCap")):
+            v = ck.get(key)
+            if not v:
+                continue
+            scale = 100 if key != "capacity_gap" else 1
+            nd = 1 if key != "capacity_gap" else 1
+            macros[tag] = fmt(scale * v["mean"], nd)
+            macros[tag + "Lo"] = fmt(scale * v["lo"], nd)
+            macros[tag + "Hi"] = fmt(scale * v["hi"], nd)
+            macros[tag + "P"] = fmt(v["wilcoxon_p"], 3)
+            macros[tag + "NPos"] = str(v["n_positive"])
+            macros[tag + "N"] = str(v["n"])
+            macros[tag + "SD"] = fmt(scale * v["sd"], 1)
+
     # ---- CTC judge on real generated audio (field validation) ------------
     fv_path = Path("data/results/ctc_field_validation.json")
     if fv_path.exists():
