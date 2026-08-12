@@ -711,6 +711,17 @@ def main() -> None:
     if smp.exists():
         macros["SampleN"] = str(len(pd.read_csv(smp)))
 
+    # ---- is the horizon ratio a property of the data or of the curve? -----
+    hf_path = Path("data/results/horizon_forms.json")
+    if hf_path.exists():
+        hf = json.loads(hf_path.read_text())
+        macros["HzFormLo"] = fmt(hf["pooled_ratio_min"], 1)
+        macros["HzFormHi"] = fmt(hf["pooled_ratio_max"], 1)
+        macros["HzFormN"] = str(len(hf["forms"]))
+        macros["HzFormNCk"] = str(hf["n_models"])
+        macros["HzFormStable"] = ("does not" if hf["direction_stable"]
+                                  else "does")
+
     # ---- the probe past the horizon: the theorem's own prediction ---------
     ph_path = Path("data/results/probe_horizon_compare.json")
     if ph_path.exists():

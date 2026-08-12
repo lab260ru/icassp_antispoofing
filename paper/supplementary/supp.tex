@@ -3789,6 +3789,69 @@ The main text labels it post hoc at the point of introduction, reports the
 checkpoint that contradicts it, and does not claim the fitted $\hat K$ is the
 theorem's $N^\ast$.
 
+\section{Is the horizon ratio a property of the data or of the curve?}
+
+The extension ladder and its saturating fit were both chosen after seeing that
+$k\le32$ was proportional. S16 dates that decision against the commit log, but a
+reviewer is right that dating \emph{when} we chose the exponential form does not
+show the form was not chosen because it fit. Cells past $k=48$ hold 21--26
+generations. At that size the curve can move the number a long way.
+
+So we refit with families we did not choose. All three are one-parameter, all
+three have unit slope as $k\to0$ --- so none of them fights the proportional
+regime the main ladder shows --- and all three asymptote to $\hat K$. They differ
+only in how they bend between those two ends.
+
+\begin{center}
+\begin{tabular}{llrrr}
+\toprule
+family & $\hat c(k)$ & $\hat K_{\mathrm{rep}}$ & $\hat K_{\mathrm{ctl}}$ & ratio \\
+\midrule
+soft horizon & $\hat K(1-e^{-k/\hat K})$ & 30.1 & 104.8 & 3.48 \\
+hyperbolic   & $\hat K k/(\hat K+k)$     & 42.3 & 181.7 & 4.30 \\
+tanh         & $\hat K\tanh(k/\hat K)$   & 27.8 &  74.6 & 2.68 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent The soft horizon is the fit reported in the paper; hyperbolic bends
+earliest and has the heaviest tail, tanh bends latest and has the sharpest knee,
+so the two bracket the exponential from either side. Per checkpoint:
+
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+checkpoint & soft horizon & hyperbolic & tanh \\
+\midrule
+Llasa-1B        &  5.97 &  8.46 & 4.50 \\
+Llasa-8B        &  4.12 &  5.23 & 3.06 \\
+Qwen3-TTS-0.6B  & 14.99 & 19.18 & 5.48 \\
+Qwen3-TTS-1.7B  &  0.27 &  0.53 & 0.07 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent \textbf{Direction is form-independent; magnitude is not.} No family
+moves any checkpoint across 1. Which checkpoints show a lowered horizon, and
+which one does not, is the same under all three, and the one below 1 is the
+exception S4.2 already reports. What the family does change is how far: the
+pooled ratio runs 2.7--4.3. The paper's 3.5 should be read as that range and not
+as a measured constant, which is why S4.2 now quotes the range next to it.
+
+\noindent\textbf{What this does not settle.} It tests the choice of saturating
+curve, not the choice to fit a saturating curve at all. Every family here
+saturates by construction, so three of them agreeing says nothing to a reader who
+doubts saturation itself --- and the declining repeated counts past the plateau
+(\texttt{horizon\_ext.py --report-decline}) still fit none of the three. Three
+agreeing curves are easy to mistake for more agreement than they carry, so we say
+plainly what was and was not varied.
+
+\noindent\textbf{Reproduce.} \texttt{python analysis/horizon\_forms.py}. The fit
+grid, exclusion rules and bootstrap are shared with \texttt{horizon\_ext.py}; the
+soft-horizon row reproduces the paper's numbers exactly, which is the check that
+the two scripts see the same population.
+
+
 \bibliographystyle{IEEEtran}
 \bibliography{../refs}
 
