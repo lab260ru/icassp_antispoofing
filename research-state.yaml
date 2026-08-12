@@ -156,3 +156,21 @@ review_round_1:
     - "naturalness/perplexity confound not separately controlled (controls at high k are also unnatural word salad -- state this)"
     - "acoustic/codec-token repetition attractor as an alternative locus: not ruled out"
     - "Lemma B and Theorem A not experimentally separated"
+
+final_day_results:
+  probe_past_horizon:
+    status: "1 of 2 checkpoints; llasa1b loses the count, llasa8b keeps it"
+    range_confound: "ruled out by a matched control arm over the same k"
+    script: analysis/probe_past_horizon.py
+  horizon_ratio:
+    status: "direction form-independent, magnitude form-dependent (2.7-4.3)"
+    script: analysis/horizon_forms.py
+  exclusion_sensitivity:
+    status: "gap 61.7 with every rule off vs 76.1 as reported"
+    script: analysis/exclusion_sensitivity.py
+  vits_config:
+    status: "immunity holds at 3 duration-predictor settings; sign not size"
+    script: analysis/vits_config.py
+  model_revisions:
+    status: "10 repositories pinned incl. judge and vocoder"
+    file: data/results/model_revisions.json

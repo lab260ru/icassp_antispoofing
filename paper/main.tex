@@ -46,7 +46,7 @@ decoder's hidden state, we prove that if $F$ contracts with factor $q<1$ then
 repetition counts beyond a horizon $N^\ast \le \log(\mu/2LC)/\log q$. The theorem
 and a companion attention-dilution lemma are machine-checked in Lean~4 with
 \texttt{mathlib}, free of \texttt{sorry} and of nonstandard axioms. Across
-\NModels{} checkpoints from \NFamilies{} families, judged by a CTC recogniser
+\NModels{} checkpoints from \NFamilies{} architectures, judged by a CTC recogniser
 because the obvious autoregressive judge is itself biased against repetition,
 models render repeated text with a median count error of \ErrRep{}\% at $k\ge6$
 and are exact in \ExactRep{}\% of generations, against \ExactCtl{}\% for
@@ -178,10 +178,11 @@ replaced by fillers from a per-template pool of eight, cycled above $k\!=\!8$
 (S10).
 
 \noindent\textbf{Models.}
-\NModels{} checkpoints spanning \NFamilies{} families: Llasa at 1B/3B/8B (Llama
-backbones over X-codec2 tokens~\cite{ye2025llasa}), a within-architecture scale
-ladder; XTTS-v2~\cite{casanova2024xtts}; and Qwen3-TTS at 0.6B/1.7B, every
-checkpoint rendering every item at \NSeeds{} seeds. VITS~\cite{kim2021vits} and
+\NModels{} checkpoints but only \NFamilies{} designs, scale variants making up
+the difference: Llasa at 1B/3B/8B (Llama backbones over X-codec2
+tokens~\cite{ye2025llasa}) and Qwen3-TTS at 0.6B/1.7B are within-architecture
+ladders, plus XTTS-v2~\cite{casanova2024xtts}; every checkpoint renders every
+item at \NSeeds{} seeds. VITS~\cite{kim2021vits} and
 F5-TTS~\cite{chen2024f5tts} are run as non-autoregressive baselines at the same
 \NSeeds{} seeds, and XTTS-v2 and Qwen3-TTS-0.6B at altered repetition penalty as
 ablations; none is pooled into the panel.

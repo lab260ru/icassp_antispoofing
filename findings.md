@@ -480,9 +480,33 @@ less, and k=48..128 spans a third of the log2 range k=2..32 does — a low R^2 p
 the horizon would prove nothing by itself. The trivial-baseline comparison is
 what makes the result safe.
 
-Limits: one checkpoint, 12 items, one seed, three folds. A single clean
-observation, not a panel result. It does **not** establish the premise (nothing
-here measures q) and does not make the account causal.
+**Superseded 2026-08-12: the second checkpoint does not replicate.** Llasa-8B,
+run through the identical pipeline, *keeps* the count past the horizon (MAE 0.43
+against 0.50 for the constant predictor, R² +0.19) --- and 0.43 is, to two
+decimals, exactly the margin the control arm achieves. So on Llasa-8B, periodic
+conditioning past the horizon does nothing to the probe.
+
+    checkpoint  arm                    MAE   constant   R²
+    Llasa-1B    repeated k=48..128    0.50     0.50    -0.02
+    Llasa-8B    repeated k=48..128    0.43     0.50    +0.19
+    Llasa-1B    control  k=48..128    0.43     0.50    +0.26
+
+The theorem's conclusion therefore holds in **1 of 2** checkpoints, and the paper
+says one of two. Two readings we cannot separate with two checkpoints: Llasa-8B
+may have a horizon past k=128 (making this a range problem, not a failure), or
+the 1B null may be the accident.
+
+Note the falsification list in the discussion names "a probe that recovers the
+count past the horizon" as a refuting observation. Llasa-8B *is* that
+observation, and the list says so rather than dropping the condition.
+
+The range control still holds: over the *same* k, the probe recovers the count
+from control states, so where the count is lost, narrowness is not why. It cannot
+turn a one-of-two result into a panel one.
+
+Limits: two checkpoints, 12 repeated items each plus 12 controls, one seed, three
+folds. It does **not** establish the premise (nothing here measures q) and does
+not make the account causal.
 
 **Two engineering traps if you repeat it:**
 - The instrumented pass uses eager attention to capture weights, which
@@ -491,3 +515,77 @@ here measures q) and does not make the account causal.
   to SDPA when no attention probes are requested.
 - The original extension sweep ran *without* instrumentation, so the items must
   be regenerated (`data/stimuli/stimuli_ext_instr.jsonl`, item ids suffixed `i`).
+
+## 2026-08-12 (final day) — three robustness experiments, one replication failure
+
+Four things were run in the last cycle, three of them because a reviewer
+objection could be answered with data rather than prose. Two came back clean, one
+weakened a headline number, and one killed the paper's only positive result as a
+standalone finding.
+
+**1. The range confound is dead (analysis/probe_past_horizon.py).** The
+probe-past-horizon null rested on an argument: R² falls when the target varies
+less, so we compared against a constant predictor and called it neutralised. A
+reviewer may answer that range is not the only thing that changed. So we ran
+12 *control* items — aperiodic carriers, never-cycled vocabulary — over exactly
+k ∈ {48,64,96,128} with the same instrumentation. The probe reads the count off
+them (MAE 0.43 vs 0.50 constant) while failing on repeated states over the
+identical range. Narrowness is ruled out empirically, not argued away.
+
+**2. But the second checkpoint does not replicate.** See the correction above:
+Llasa-8B keeps the count. 1 of 2, and reported as such.
+
+**3. The 3.5-fold horizon ratio is form-dependent (analysis/horizon_forms.py).**
+Refit with two one-parameter saturating families we did not choose, both with
+unit slope at k→0 and asymptote K̂:
+
+    soft horizon  K(1−e^−k/K)   rep 30.1  ctl 104.8  ratio 3.48  ← reported
+    hyperbolic    Kk/(K+k)      rep 42.3  ctl 181.7  ratio 4.30
+    tanh          K·tanh(k/K)   rep 27.8  ctl  74.6  ratio 2.68
+
+Direction is form-independent — no family moves any checkpoint across 1, and the
+only sub-1 checkpoint under all three is the exception §4.2 already reports.
+Magnitude is not: pooled ratio 2.7–4.3. "3.5-fold" was quoted with more precision
+than the data carries; the range now sits beside it. **Do not** read three
+agreeing curves as evidence that saturation is the right model — every family
+here saturates by construction, and the decline past the plateau fits none.
+
+*Trap:* the first run of horizon_forms.py defaulted to one extension CSV instead
+of two and returned 4.13 for the fit the paper reports as 3.48. If a new script
+disagrees with an old one on the same form, suspect the population before the
+maths. The soft-horizon row now reproduces horizon_ext.py exactly, which is the
+check that both see the same rows.
+
+**4. Our exclusions do not make the gap (analysis/exclusion_sensitivity.py).**
+~24% of panel generations are dropped under three rules. With all of them off:
+
+    panel (as reported)            n=1234   gap 76.1
+    + judge-unmeasurable template  n=1424   gap 62.6
+    + budget-truncated items       n=1362   gap 76.7
+    + degenerate audio (scored 0)  n=1242   gap 76.0
+    nothing excluded at all        n=1620   gap 61.7
+
+Not manufactured; flattered by ~14 points. Only the template rule moves anything
+and it moves the **control** side (94.3 → 79.8), which is the direction the rule
+predicts: a control made of many distinct words loses more to a word the judge
+cannot transcribe than a repeated one does. The rule that could have flattered
+us — dropping budget-truncated items — does not (76.1 → 76.7).
+
+**5. VITS's immunity is not its stock config (analysis/vits_config.py).**
+Perturbing the duration predictor, the component that would have to carry the
+count:
+
+    stock                            rep 67.6%  ctl 49.1%  gap −18.5
+    noise_scale_duration 0.8 → 1.6   rep 53.7%  ctl 20.4%  gap −33.3
+    speaking_rate        1.0 → 1.35  rep 61.1%  ctl 31.5%  gap −29.6
+
+Gap is control minus repeated, so the panel's +76 means the control is counted
+right and the repeated item is not. Every VITS arm is negative and the
+repeated-side median relative error is exactly 0.000 in all three. *Read the sign,
+not the size:* both perturbations hurt the control arm more, which is a judge
+effect (distinct words cost more under fast/noisy speech), not a counting one.
+
+**6. Checkpoint revisions are pinned (S19, data/results/model_revisions.json).**
+All ten repositories including the CTC judge and the vocoder — the judge decides
+every count, so a change to it changes every number. Regenerated from the
+download cache, never typed.
