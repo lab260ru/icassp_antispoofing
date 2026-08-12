@@ -18,6 +18,15 @@
     "median_ctl": 0.0,
     "exact_gap": 0.8455587392550143
   },
+  "k=12-32 re-generated (aperiodic)": {
+    "n_rep": 222,
+    "n_ctl": 240,
+    "exact_rep": 0.11711711711711711,
+    "exact_ctl": 0.8291666666666667,
+    "median_rep": -0.03125,
+    "median_ctl": 0.0,
+    "exact_gap": 0.7120495495495496
+  },
   "extension k>=48 (146-word pool)": {
     "n_rep": 98,
     "n_ctl": 119,
@@ -29,10 +38,12 @@
   },
   "aperiodic_regions": [
     "main ladder, k<=8 (aperiodic)",
+    "k=12-32 re-generated (aperiodic)",
     "extension k>=48 (146-word pool)"
   ],
   "aperiodic_gaps": [
     0.23628287135749826,
+    0.7120495495495496,
     0.06362545018007204
   ],
   "holds_in_all_aperiodic": true

@@ -1,0 +1,119 @@
+{
+  "kmin": 6,
+  "arms": {
+    "xtts2norp": {
+      "n_rep": 72,
+      "n_ctl": 68,
+      "exact_rep": 0.1527777777777778,
+      "exact_ctl": 0.3088235294117647,
+      "median_rep": -0.22916666666666669,
+      "median_ctl": -0.5,
+      "arch": "XTTS-v2",
+      "penalty": 1.0,
+      "control_intact": false
+    },
+    "xtts2rp2": {
+      "n_rep": 90,
+      "n_ctl": 90,
+      "exact_rep": 0.15555555555555556,
+      "exact_ctl": 0.9222222222222223,
+      "median_rep": -0.125,
+      "median_ctl": 0.0,
+      "arch": "XTTS-v2",
+      "penalty": 2.0,
+      "control_intact": true
+    },
+    "xtts2rp3": {
+      "n_rep": 90,
+      "n_ctl": 90,
+      "exact_rep": 0.2111111111111111,
+      "exact_ctl": 0.9111111111111111,
+      "median_rep": -0.125,
+      "median_ctl": 0.0,
+      "arch": "XTTS-v2",
+      "penalty": 3.0,
+      "control_intact": true
+    },
+    "xtts2": {
+      "n_rep": 90,
+      "n_ctl": 90,
+      "exact_rep": 0.16666666666666666,
+      "exact_ctl": 0.8777777777777778,
+      "median_rep": -0.125,
+      "median_ctl": 0.0,
+      "arch": "XTTS-v2",
+      "penalty": 5.0,
+      "control_intact": true
+    },
+    "xtts2rp8": {
+      "n_rep": 90,
+      "n_ctl": 90,
+      "exact_rep": 0.15555555555555556,
+      "exact_ctl": 0.8444444444444444,
+      "median_rep": -0.125,
+      "median_ctl": 0.0,
+      "arch": "XTTS-v2",
+      "penalty": 8.0,
+      "control_intact": true
+    },
+    "qwen06b": {
+      "n_rep": 90,
+      "n_ctl": 90,
+      "exact_rep": 0.07777777777777778,
+      "exact_ctl": 1.0,
+      "median_rep": -0.125,
+      "median_ctl": 0.0,
+      "arch": "Qwen3-TTS-0.6B",
+      "penalty": 1.05,
+      "control_intact": true
+    }
+  },
+  "no_penalty": {
+    "llasa1b": {
+      "n_rep": 60,
+      "n_ctl": 82,
+      "exact_rep": 0.13333333333333333,
+      "exact_ctl": 0.9146341463414634,
+      "median_rep": -0.125,
+      "median_ctl": 0.0
+    },
+    "llasa3b": {
+      "n_rep": 59,
+      "n_ctl": 85,
+      "exact_rep": 0.1694915254237288,
+      "exact_ctl": 0.9411764705882353,
+      "median_rep": -0.08333333333333333,
+      "median_ctl": 0.0
+    },
+    "llasa8b": {
+      "n_rep": 68,
+      "n_ctl": 88,
+      "exact_rep": 0.11764705882352941,
+      "exact_ctl": 0.9318181818181818,
+      "median_rep": -0.16666666666666666,
+      "median_ctl": 0.0
+    }
+  },
+  "no_penalty_summary": {
+    "n_models": 3,
+    "exact_rep": 0.14015730586019717,
+    "exact_ctl": 0.9292095995826268,
+    "exact_gap": 0.7890522937224297
+  },
+  "by_arch": {
+    "XTTS-v2": {
+      "n_usable": 4,
+      "penalties": [
+        2.0,
+        3.0,
+        5.0,
+        8.0
+      ],
+      "exact_rep_lo": 0.15555555555555556,
+      "exact_rep_hi": 0.2111111111111111,
+      "slope_per_unit": -0.003703703703703699,
+      "fold_change": 4.0
+    }
+  },
+  "verdict": "the penalty does not explain the deficit: it is flat across the sweep and present at full size in checkpoints that use no penalty at all"
+}

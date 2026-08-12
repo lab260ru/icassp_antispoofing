@@ -405,6 +405,22 @@ def main() -> None:
     apc_path = Path("data/results/aperiodic_controls.json")
     if apc_path.exists():
         ac = json.loads(apc_path.read_text())
+        # The re-generated k=12..32 controls, against the cycled ones at the same
+        # k. A reviewer estimated the confound cost two thirds of the effect by
+        # comparing k<=8 with k>8, which conflates it with the effect's own
+        # k-dependence; run at matched k it costs about thirteen points.
+        mid = next((v for k, v in ac.items()
+                    if isinstance(v, dict) and "re-generated" in k), None)
+        per = next((v for k, v in ac.items()
+                    if isinstance(v, dict) and "period-8" in k), None)
+        if mid:
+            macros["ApMidGap"] = fmt(100 * mid["exact_gap"], 1)
+            macros["ApMidRep"] = fmt(100 * mid["exact_rep"], 1)
+            macros["ApMidCtl"] = fmt(100 * mid["exact_ctl"], 1)
+            macros["ApMidN"] = str(mid["n_ctl"])
+        if mid and per:
+            macros["ApCycGap"] = fmt(100 * per["exact_gap"], 1)
+            macros["ApCost"] = fmt(100 * (per["exact_gap"] - mid["exact_gap"]), 1)
         lo = next((v for k, v in ac.items()
                    if isinstance(v, dict) and "aperiodic" in k), None)
         hi = next((v for k, v in ac.items()
@@ -432,6 +448,30 @@ def main() -> None:
             macros[f"{tag}Gap"] = fmt(100 * v.get("exact_gap", np.nan), 1)
         macros["NonARAbove"] = str(nb.get("n_ar_above_nonar", 0))
         macros["NonARN"] = str(nb.get("n_ar", 0))
+
+    # ---- is the deficit just the decoding-time repetition penalty? --------
+    # A round-8 reviewer noted the three families ship penalties differing by an
+    # order of magnitude, which is a decoding-level rival to the whole account.
+    # The data already answered it; the paper had not said so.
+    pc_path = Path("data/results/penalty_confound.json")
+    if pc_path.exists():
+        pc = json.loads(pc_path.read_text())
+        x = pc.get("by_arch", {}).get("XTTS-v2", {})
+        if x:
+            macros["PenRepLo"] = fmt(100 * x["exact_rep_lo"], 1)
+            macros["PenRepHi"] = fmt(100 * x["exact_rep_hi"], 1)
+            macros["PenArms"] = str(x["n_usable"])
+            macros["PenFold"] = fmt(x["fold_change"], 0)
+            macros["PenSlope"] = fmt(100 * x["slope_per_unit"], 2)
+        np_ = pc.get("no_penalty_summary", {})
+        if np_:
+            macros["PenNoneN"] = WORDS.get(np_["n_models"], str(np_["n_models"]))
+            macros["PenNoneRep"] = fmt(100 * np_["exact_rep"], 1)
+            macros["PenNoneCtl"] = fmt(100 * np_["exact_ctl"], 1)
+            macros["PenNoneGap"] = fmt(100 * np_["exact_gap"], 1)
+        nr = pc.get("arms", {}).get("xtts2norp", {})
+        if nr:
+            macros["PenOffCtl"] = fmt(100 * nr["exact_ctl"], 1)
 
     # ---- CTC judge on real generated audio (field validation) ------------
     fv_path = Path("data/results/ctc_field_validation.json")
