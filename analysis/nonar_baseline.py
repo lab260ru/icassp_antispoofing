@@ -52,13 +52,20 @@ def summarise(d: pd.DataFrame) -> dict:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--ar", default="data/results/behavioural_ctc.csv")
-    ap.add_argument("--nonar", default="data/results/behavioural_vits.csv")
+    ap.add_argument("--nonar", nargs="+",
+                    default=["data/results/behavioural_vits.csv",
+                             "data/results/behavioural_f5.csv"],
+                    help="one or more non-autoregressive baselines")
     ap.add_argument("--kmin", type=int, default=6)
     ap.add_argument("--out", default="data/results/nonar_baseline.json")
     args = ap.parse_args()
 
-    def load(path: str, keep_ablations: bool = False) -> pd.DataFrame:
-        d = pd.read_csv(path)
+    def load(path, keep_ablations: bool = False) -> pd.DataFrame:
+        paths = [path] if isinstance(path, str) else list(path)
+        frames = [pd.read_csv(p) for p in paths if Path(p).exists()]
+        if not frames:
+            raise SystemExit(f"no baseline table found among {paths}")
+        d = pd.concat(frames, ignore_index=True)
         d = d[d.family.isin(["word_rep", "control_word"])]
         d, _ = panel(d, ablations=keep_ablations)
         d = d[d.k >= args.kmin]
@@ -70,6 +77,7 @@ def main() -> None:
 
     res: dict = {"kmin": args.kmin}
     res["nonar"] = summarise(nonar)
+    res["nonar_per_model"] = {m: summarise(g) for m, g in nonar.groupby("model")}
     res["ar_pooled"] = summarise(ar)
     res["ar_per_model"] = {m: summarise(g) for m, g in ar.groupby("model")}
 
@@ -80,9 +88,9 @@ def main() -> None:
     v = res["ar_pooled"]
     print(f"{'AR pooled':14s} {100*v['exact_rep']:9.1f}% {100*v['exact_ctl']:9.1f}% "
           f"{100*v['exact_gap']:+9.1f}")
-    v = res["nonar"]
-    print(f"{'VITS (non-AR)':14s} {100*v['exact_rep']:9.1f}% {100*v['exact_ctl']:9.1f}% "
-          f"{100*v['exact_gap']:+9.1f}")
+    for m, v in sorted(res["nonar_per_model"].items()):
+        print(f"{m + ' (non-AR)':14s} {100*v['exact_rep']:9.1f}% "
+              f"{100*v['exact_ctl']:9.1f}% {100*v['exact_gap']:+9.1f}")
 
     # Does every AR checkpoint separate from the non-AR baseline?
     gaps = [v["exact_gap"] for v in res["ar_per_model"].values()]
@@ -119,8 +127,10 @@ def main() -> None:
         er, ec = float((r.err == 0).mean()), float((c.err == 0).mean())
         return dict(exact_rep=er, exact_ctl=ec, gap=ec - er, n=int(len(g)))
 
-    def load_all(path: str, keep_ablations: bool) -> pd.DataFrame:
-        d = pd.read_csv(path)
+    def load_all(path, keep_ablations: bool) -> pd.DataFrame:
+        paths = [path] if isinstance(path, str) else list(path)
+        frames = [pd.read_csv(p) for p in paths if Path(p).exists()]
+        d = pd.concat(frames, ignore_index=True)
         d = d[d.family.isin(["word_rep", "control_word"])]
         d, _ = panel(d, ablations=keep_ablations)
         return d.assign(err=(d.count_a - d.k) / d.k)
