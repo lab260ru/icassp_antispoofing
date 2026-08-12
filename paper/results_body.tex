@@ -41,33 +41,33 @@ their twins are not.
 
 \emph{Our \NModels{} checkpoints are only \NFamilies{} architecture families},
 so we model the clustering rather than count checkpoints. By family the gap is
-\FamExact{} points $[\FamExactLo{},\FamExactHi{}]$, all three positive; by
+\FamExact{} $[\FamExactLo{},\FamExactHi{}]$ points, all three positive; by
 checkpoint \CkExact{} $[\CkExactLo{},\CkExactHi{}]$, positive in all
-\CkExactNPos{} --- including the checkpoint whose median-error gap is zero,
-which still renders repeated items exactly \CkRevExact{} points less often than
-its controls (Table~\ref{tab:models}). A mixed-effects linear probability model
-with architecture as a random effect, checkpoint nested inside it, stimulus
-crossed and a family-varying arm slope puts the gap at \MixArm{} points;
-\MixAllClear{} six interval constructions exclude zero, the widest ---
-cluster-robust at the checkpoint level --- being $[\MixLo{},\MixHi{}]$. Partial
-pooling answers the question three families cannot answer directly: the
-posterior predictive gap for an architecture \emph{outside} the panel is
-\BayesNewFam{} points $[\BayesNewFamLo{},\BayesNewFamHi{}]$,
-$P(\text{gap}>0)=\BayesNewFamP{}$ --- enough to place the effect, not enough to
-exclude a fourth architecture that does not show it, and under the widest prior
-on the group-level scales that interval does touch zero
-($\BayesWidePriorLo{}$, $P=\BayesWidePriorP{}$). We then acquired a fourth
-architecture and can report the prediction's outcome. CosyVoice~2, whose
-alignment supervision makes it the design most likely to be immune, renders
-repeated text exactly \CosyRep{}\% of the time against \CosyCtl{}\% for its
+\CkExactNPos{} --- including the one whose median-error gap is zero, which still
+renders repeated items exactly \CkRevExact{} points less often than its controls
+(Table~\ref{tab:models}). A mixed-effects linear probability model with
+architecture as a random effect and checkpoint nested inside it puts the gap at
+\MixArm{} points, and \MixAllClear{} six interval constructions exclude zero,
+the widest being $[\MixLo{},\MixHi{}]$. Partial pooling answers what three
+families cannot: the posterior predictive gap for an architecture
+\emph{outside} the panel is \BayesNewFam{}
+$[\BayesNewFamLo{},\BayesNewFamHi{}]$, $P{=}\BayesNewFamP{}$ --- enough to
+place the effect, not to exclude a fourth architecture lacking it, and under the
+widest prior on the group-level scales it touches zero
+($\BayesWidePriorLo{}$, $P{=}\BayesWidePriorP{}$). We then acquired a fourth architecture.
+CosyVoice~2, whose alignment supervision makes it the design most likely to be
+immune, renders repeated text exactly \CosyRep{}\% against \CosyCtl{}\% for its
 controls ($n=\CosyN{}$): a gap of \CosyGap{} points, inside the predicted
 interval and near its \BayesNewFam{} mean, from a fit committed before the
-checkpoint's first waveform existed (S16 timestamps it). That interval is wide,
-and the agreement is closer than it entitles us to expect. Across \SpecN{} specifications
-spanning every forking choice we made --- exclusion rules, $k$ threshold, cycled
-against never-cycled controls, seed subset, aggregation level and outcome
-definition --- the gap runs \SpecLo{}--\SpecHi{} points and none reverses its
-sign (S11).
+checkpoint's first waveform existed (commit \texttt{6f34945}, so the ordering is
+checkable rather than asserted; S16). That interval is wide, and the agreement
+closer than it entitles us to expect. Across \SpecN{} specifications
+spanning every forking choice we made --- exclusions, $k$ threshold, cycled
+against never-cycled controls, seed subset, aggregation and outcome definition
+--- the gap runs \SpecLo{}--\SpecHi{} points and none reverses its
+sign. These are not independent tests and we correct across none of them: the
+curve is a robustness envelope over one comparison, not a family of hypotheses,
+and our claims rest on effect sizes, not $p$-values (S11).
 
 Above $k\!=\!8$ the control's fillers cycle a pool of eight, making the contrast
 period-$1$ against period-$8$ rather than periodic against aperiodic.
@@ -84,11 +84,9 @@ the deficit stays put (XTTS-v2 \PenRepLo{}--\PenRepHi{}\% exact over a
 \PenQFold{}-fold, S15), and the \PenNoneN{} Llasa checkpoints pass \emph{no}
 penalty and show it at full size, \PenNoneRep{}\% against \PenNoneCtl{}\%. Nor
 is it sampling: greedy decoding gives \GreedyGap{} points against
-\GreedySampGap{} sampled, at $0$\% cap-hit in both arms (S22). Nor our
-exclusions: with every rule off the gap is \ExSensAll{} points against
-\ExSensPanel{} (S18), and the budget rule --- the only one falling unevenly ---
-removes \ExclCapRep{}\% of repeated generations against \ExclCapCtl{}\% of
-controls, working against the contrast.
+\GreedySampGap{} sampled, at $0$\% cap-hit in both arms (S22). Nor our exclusions: with every rule off the gap is
+\ExSensAll{} points against \ExSensPanel{}, and the one rule that falls
+unevenly works against the contrast (S18).
 
 Nor is it the recogniser, the objection this design most has to answer: CTC
 blank-collapse merges adjacent identical words, depressing repeated but not
