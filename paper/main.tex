@@ -167,9 +167,10 @@ The contrast tested is thus period-$8$ repetition at most against period-$1$
 \noindent\textbf{Models.}
 \NModels{} checkpoints spanning \NFamilies{} families: Llasa at 1B/3B/8B (Llama
 backbones over X-codec2 tokens~\cite{ye2025llasa}), a within-architecture scale
-ladder; XTTS-v2~\cite{casanova2024xtts}; and Qwen3-TTS at 0.6B/1.7B, \NSeeds{}
-seeds each. Further XTTS-v2 runs at altered repetition penalty are ablations of a
-panel member, reported separately and never pooled.
+ladder; XTTS-v2~\cite{casanova2024xtts}; and Qwen3-TTS at 0.6B/1.7B. Every
+checkpoint renders every item at \NSeeds{} seeds. Further XTTS-v2 runs at altered
+repetition penalty are ablations of a panel member, reported separately and never
+pooled.
 
 \noindent\textbf{Behavioural measurement, and why the obvious judge is wrong.}
 The natural instrument, Whisper large-v3~\cite{radford2023whisper}, is
