@@ -3944,104 +3944,192 @@ uninterpretable; \texttt{analysis/probe\_past\_horizon.py} decides which of the
 two sentences to print from the measured MAEs rather than leaving the choice to
 us after the fact.
 
-\noindent\textbf{The other checkpoints do not replicate.} Everything above is
-Llasa-1B. We ran the identical pipeline on Llasa-8B and then Llasa-3B --- same
-items, same $k$, same probe, same folds --- because one checkpoint and twelve
-items is not a result. Neither loses the count:
+\noindent\textbf{The panel doubled: three checkpoints to five.} Everything above
+is Llasa-1B. We ran the identical pipeline --- same items, same $k$, same probe,
+same folds --- on Llasa-3B and Llasa-8B, and then, once the two Qwen3-TTS
+checkpoints had been instrumented past the horizon in the same way, on
+Qwen3-TTS-0.6B and Qwen3-TTS-1.7B. Every checkpoint now also has its own control
+arm at $k=48\ldots128$; the first version of this section had one, on Llasa-1B,
+and generalised the range argument to the rest by analogy. It no longer has to:
 
 \begin{center}
 \begin{tabular}{llrrr}
 \toprule
 checkpoint & arm & probe MAE & constant MAE & $R^2$ \\
 \midrule
-Llasa-1B & repeated $k=2\ldots32$   & 0.63 & 1.12 & +0.62 \\
-Llasa-3B & repeated $k=2\ldots32$   & 0.86 & 1.12 & +0.41 \\
-Llasa-8B & repeated $k=2\ldots32$   & 0.75 & 1.12 & +0.52 \\
-Llasa-1B & repeated $k=48\ldots128$ & 0.50 & 0.50 & -0.02 \\
-Llasa-3B & repeated $k=48\ldots128$ & 0.49 & 0.50 & -0.02 \\
-Llasa-8B & repeated $k=48\ldots128$ & 0.43 & 0.50 & +0.19 \\
-Llasa-1B & control $k=48\ldots128$  & 0.43 & 0.50 & +0.26 \\
+Llasa-1B       & repeated $k=2\ldots32$    & 0.63 & 1.12 & $+0.62$ \\
+Llasa-3B       & repeated $k=2\ldots32$    & 0.86 & 1.12 & $+0.41$ \\
+Llasa-8B       & repeated $k=2\ldots32$    & 0.75 & 1.12 & $+0.52$ \\
+Qwen3-TTS-0.6B & repeated $k=2\ldots32$    & 0.79 & 1.12 & $+0.47$ \\
+Qwen3-TTS-1.7B & repeated $k=2\ldots32$    & 0.79 & 1.12 & $+0.47$ \\
+\midrule
+Llasa-1B       & repeated $k=48\ldots128$  & 0.50 & 0.50 & $-0.02$ \\
+Llasa-3B       & repeated $k=48\ldots128$  & 0.49 & 0.50 & $-0.02$ \\
+Llasa-8B       & repeated $k=48\ldots128$  & 0.43 & 0.50 & $+0.19$ \\
+Qwen3-TTS-0.6B & repeated $k=48\ldots128$  & 0.37 & 0.50 & $+0.34$ \\
+Qwen3-TTS-1.7B & repeated $k=48\ldots128$  & 0.45 & 0.50 & $+0.15$ \\
+\midrule
+Llasa-1B       & control $k=48\ldots128$   & 0.43 & 0.50 & $+0.26$ \\
+Llasa-3B       & control $k=48\ldots128$   & 0.41 & 0.50 & $+0.33$ \\
+Llasa-8B       & control $k=48\ldots128$   & 0.29 & 0.50 & $+0.56$ \\
+Qwen3-TTS-0.6B & control $k=48\ldots128$   & 0.47 & 0.50 & $+0.10$ \\
+Qwen3-TTS-1.7B & control $k=48\ldots128$   & 0.44 & 0.50 & $+0.20$ \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\noindent All three decode the count below the horizon. Past it, Llasa-8B's
-probe beats the constant predictor by 0.86 of its MAE --- to two decimals exactly
-the margin the \emph{control} arm achieves, so on that checkpoint periodic
-conditioning past the horizon does nothing to the probe at all.
+\noindent All five decode the count below the horizon. Past it, Llasa-8B's probe
+beats the constant predictor by 0.86 of its MAE --- to two decimals exactly the
+margin its own \emph{control} arm achieves, so on that checkpoint periodic
+conditioning past the horizon does nothing to the probe at all. Both Qwen
+checkpoints beat their constant predictor by a wider margin still (0.74, 0.90);
+the paragraph after next is why that is not the good news it looks like.
 
 \noindent\textbf{A threshold should not decide this, so we report both sides of
-it.} Llasa-3B's ratio against the constant predictor is $0.99$: on the ``keeps
-the count'' side of the threshold by six thousandths of a $\log_2$ unit over
-twelve items, which is not a margin. Reading that as recovery would be as
-misleading as rounding it the other way, so \texttt{probe\_past\_horizon.py}
-calls anything within $2\%$ of the constant predictor indistinguishable and says
-which checkpoints those are.
+it, tie band marked.} Llasa-3B's ratio against the constant predictor is $0.99$:
+on the ``keeps the count'' side of the threshold by six thousandths of a
+$\log_2$ unit over twelve items, which is not a margin. Reading that as recovery
+would be as misleading as rounding it the other way, so
+\texttt{probe\_past\_horizon.py} calls anything within $\pm0.02$ of $1$
+indistinguishable from the constant predictor and says which checkpoints those
+are.
 
 \begin{center}
 \begin{tabular}{lrl}
 \toprule
-checkpoint & MAE ratio & reading \\
+checkpoint & MAE ratio (repeated) & reading \\
 \midrule
-Llasa-1B & 1.01 & indistinguishable from the constant predictor \\
-Llasa-3B & 0.99 & indistinguishable from the constant predictor \\
-Llasa-8B & 0.86 & recovers the count \\
+Llasa-1B       & 1.01 & indistinguishable ($\pm0.02$ tie band) \\
+Llasa-3B       & 0.99 & indistinguishable ($\pm0.02$ tie band) \\
+Llasa-8B       & 0.86 & recovers the count \\
+Qwen3-TTS-0.6B & 0.74 & recovers the count \\
+Qwen3-TTS-1.7B & 0.90 & recovers the count \\
+\bottomrule
+\end{tabular}
+\begin{tabular}{lr}
+\toprule
+checkpoint & MAE ratio (control) \\
+\midrule
+Llasa-1B       & 0.86 \\
+Llasa-3B       & 0.83 \\
+Llasa-8B       & 0.59 \\
+Qwen3-TTS-0.6B & 0.95 \\
+Qwen3-TTS-1.7B & 0.89 \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\noindent By the strict threshold the theorem's prediction holds in 1 of 3; by
-effect size, 2 of 3 checkpoints show nothing recoverable past the horizon and one
-clearly does. \emph{We quote 1 of 3}, the less favourable of the two, and record
-the other here so a reader can weigh it rather than discover it.
+\noindent Every control arm sits below $1$, several by a wide margin, and none
+inside the tie band: on its own data, every checkpoint that lost or tied the
+count on the repeated arm has narrowness ruled out directly, not by analogy with
+Llasa-1B. The range rebuttal generalises across the whole panel.
 
-So the theorem's conclusion holds in one of the three checkpoints we could test
-it on. We report it that way rather than quoting Llasa-1B and calling the others
-future work: a prediction that survives one case in three is an open question
-with one encouraging instance, not support. The range control
-still does its job --- it says that \emph{where} the count is lost, narrowness is
-not why --- but it cannot make a one-of-three result into a panel one.
+\noindent By the strict threshold the theorem's prediction holds in 1 of 5; by
+effect size, 2 of 5 checkpoints show nothing recoverable past the horizon and 3
+clearly do. \emph{We quote 1 of 5}, the less favourable of the two, and record
+the other here so a reader can weigh it rather than discover it. Widening the
+panel made the reading worse, not better: it was 1 of 3 with three checkpoints
+and stays 1 of 5 with five, so the two Qwen checkpoints did not rescue the
+theorem's prediction --- they extended the pattern against it. That is reported
+at the stricter count for the same reason the previous paragraph is.
 
-\noindent\textbf{The checkpoints favour opposite accounts.} This is worth
-stating more sharply than ``a failure to replicate''. The rival to Theorem~1 is
-the dissociation account~\cite{venkatesh2026repeated}, on which the count
-survives in the states and only the output policy fails. That account predicts a
-probe \emph{can} still read the count past the horizon; Theorem~1(iv) predicts it
-cannot. Llasa-1B's result is what Theorem~1 predicts and the dissociation account does
-not; Llasa-8B's is what the dissociation account predicts and Theorem~1 does not;
-Llasa-3B's sits between them, close enough to the constant predictor to favour
-neither. So the experiment is diagnostic --- it is the one measurement in this paper
-that could have chosen between the two --- and it split. We report it as a split
-rather than as support for either.
+So the theorem's conclusion holds in one of the five checkpoints we could test it
+on. We report it that way rather than quoting Llasa-1B and calling the others
+future work: a prediction that survives one case in five is a weaker basis than
+one in three was, and we do not round it up. The range control still does its
+job --- it says that \emph{where} the count is lost, narrowness is not why --- but
+it cannot make a one-of-five result into a panel one.
 
-Two further readings we cannot separate with three checkpoints. Llasa-8B may have a
-horizon past $k=128$, which would make this a range problem again and not a
-failure; or the 1B null may be the accident. Distinguishing them needs the ladder pushed
-further on 8B, which its token budget does not currently allow.
+\noindent\textbf{The checkpoints favour opposite accounts, and scale does not
+predict which.} This is worth stating more sharply than ``a failure to
+replicate''. The rival to Theorem~1 is the dissociation
+account~\cite{venkatesh2026repeated}, on which the count survives in the states
+and only the output policy fails. That account predicts a probe \emph{can} still
+read the count past the horizon; Theorem~1(iv) predicts it cannot. Llasa-1B's
+result is what Theorem~1 predicts and the dissociation account does not;
+Llasa-8B's, Qwen-0.6B's and Qwen-1.7B's are what the dissociation account
+predicts and Theorem~1 does not; Llasa-3B's sits between them, close enough to
+the constant predictor to favour neither. So the experiment is diagnostic --- it
+is the one measurement in this paper that could have chosen between the two ---
+and it split, more sharply against Theorem~1 than before. A slogan that looked
+plausible at three checkpoints does not survive the fourth and fifth: within
+Llasa, the ratio falls with scale (1.01, 0.99, 0.86), which reads as ``a bigger
+model keeps a persistent counter longer''; within Qwen it \emph{rises} with scale
+(0.6B 0.74, 1.7B 0.90), the smaller checkpoint being the one whose states the
+probe reads best. Two families point opposite ways on the same axis, so scale is
+not the variable doing the work, and we do not tell a scale story here.
+
+Two further readings we cannot separate with five checkpoints. Llasa-8B and both
+Qwen checkpoints may have a horizon past $k=128$, which would make this a range
+problem again and not a failure; or the two 1B/3B nulls may be the accident.
+Distinguishing them needs the ladder pushed further, which token budgets do not
+currently allow on any of the three.
 
 This remains the only place any of our measurements test the theorem's conclusion
 rather than its consequences. It does not establish the premise --- nothing here
 measures $q$ --- and it does not make the account causal.
 
-\noindent\textbf{Which checkpoints, and why not the rest.} Two limits apply, and
-they are different in kind. XTTS-v2 cannot be run at all: its $602$-mel-token
-ceiling censors every $k\ge48$ item outright, so there are no post-horizon states
-to probe. Every other checkpoint could be, and the constraint there is only
-time --- the instrumented pass captures hidden states the original extension
-sweep did not, so it must be re-run from scratch at roughly a minute per item for
-the larger models. We say that plainly rather than implying a capability limit
-where there is none: the Qwen3-TTS checkpoints are absent because we did not get
-to them, and one of the Llasa runs was added late for exactly that reason.
+\noindent\textbf{The two Qwen ratios are not evidence about the representation at
+all.} A predictor given only the log length of the generated trajectory --- no
+hidden states, nothing the theorem is about --- beats the state probe on both
+Qwen checkpoints, while losing on all three Llasa checkpoints:
 
-\noindent\textbf{Limits.} Three checkpoints, 12 repeated items each plus 12
-controls, one seed, three cross-validation folds --- and they disagree, as
-above. Two engineering
-notes for anyone repeating it: the instrumented pass uses eager attention to
-capture attention weights, which materialises a $T\times T$ matrix per layer and
-runs out of memory at these sequence lengths --- the count probe needs hidden
-states only, so SDPA suffices and the run completes; and the extension items must
-be regenerated rather than reused, since the original extension sweep was run
-without instrumentation.
+\begin{center}
+\begin{tabular}{lrr}
+\toprule
+checkpoint & length-only MAE & state-probe MAE \\
+\midrule
+Llasa-1B       & 0.61 & 0.51 \\
+Llasa-3B       & 0.56 & 0.49 \\
+Llasa-8B       & 0.45 & 0.43 \\
+Qwen3-TTS-0.6B & 0.30 & 0.37 \\
+Qwen3-TTS-1.7B & 0.36 & 0.45 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent(repeated arm, $k=48\ldots128$; the length-only predictor is a ridge fit
+on nothing but $\log$ of the number of generated tokens, same folds as the state
+probe.) On Llasa the state probe beats a bare length count by a comfortable
+margin on every checkpoint; on Qwen, length alone beats the state probe. The
+cause is visible in the generation record rather than being a puzzle: the probe
+applies no cap-hit filter, so budget-truncated trajectories sit in every cell of
+the table above, and they are far more common on the repeated arm (1--6 of 12
+items per checkpoint) than on the matched control (0--1 of 12). Qwen3-TTS-0.6B is
+the worst case --- 6 of its 12 repeated items run all the way to the 8192-token
+budget, concentrated at the high-$k$ end of the ladder --- and a truncated
+trajectory's length is not independent of $k$: the more repetitions requested,
+the more likely the model is still going when the budget cuts it off, so ``how
+long it babbled'' carries $k$ on its own, with no count recovered from the state
+at all. This is exactly the count/length confound the main discussion now flags
+as a measurement rather than a caveat. It is why the two Qwen ratios in the table
+two paragraphs up cannot be read as ``the count survives in Qwen's states'': a
+predictor that never looks at a hidden state does at least as well. The Llasa
+checkpoints are not exposed this way --- their probes beat the length-only
+baseline on all three --- so the representational reading of \emph{their} ratios
+is not undermined by this confound.
+
+\noindent\textbf{Which checkpoints, and why not the rest.} One limit remains, and
+it is unchanged. XTTS-v2 cannot be run at all: its $602$-mel-token ceiling
+censors every $k\ge48$ item outright, so there are no post-horizon states to
+probe. Every other checkpoint has now been probed past the horizon; the earlier
+version of this section left the Qwen3-TTS pair out only because the instrumented
+pass had not yet been run on them, at roughly a minute per item, and we said so
+plainly rather than implying a capability limit where there was none. That gap is
+closed here.
+
+\noindent\textbf{Limits.} Five checkpoints, 12 repeated items each plus 12
+controls, one seed, three cross-validation folds --- and they disagree, as above.
+Two engineering notes for anyone repeating it: the instrumented pass uses eager
+attention to capture attention weights, which materialises a $T\times T$ matrix
+per layer and runs out of memory at these sequence lengths --- the count probe
+needs hidden states only, so SDPA suffices and the run completes; and the
+extension items must be regenerated rather than reused, since the original
+extension sweep was run without instrumentation. Neither the original nor the
+widened panel applies a cap-hit filter to the probe items themselves, which is
+what makes the length-only baseline above informative rather than moot ---
+excluding truncated items outright would need the ladder regenerated a third
+time, which we have not done.
 
 \section{The non-autoregressive baselines}
 \label{sec:s13}
@@ -4612,8 +4700,12 @@ selected after seeing which way they came out. They were not, and the log shows
 the shape of it: the second was run because one is not a result, and it
 contradicted the first; the third was launched with the 1-of-2 split already
 written into the paper, so its result could only confirm or further weaken a
-claim already reported at its weakest. It weakened it, to 1 of 3. XTTS-v2 cannot be run at all (S12) and the
-Qwen checkpoints were not reached.
+claim already reported at its weakest. It weakened it, to 1 of 3. At the time,
+XTTS-v2 could not be run at all (S12) and the Qwen checkpoints had not been
+reached; both were instrumented later in the same spirit as the third
+checkpoint --- launched with the 1-of-3 split already written down, not after
+seeing which way they would land --- and the split weakened again, to 1 of 5
+(S12). XTTS-v2 still cannot be run.
 
 \noindent\textbf{The extension ladder is the exception, and we flag it as such.}
 It was run because the pre-specified range failed to show the theorem's
@@ -4630,6 +4722,27 @@ reviewer is right that dating \emph{when} we chose the exponential form does not
 show the form was not chosen because it fit. Cells past $k=48$ hold 21--26
 generations. At that size the curve can move the number a long way.
 
+\noindent\textbf{A repair landed between drafts, and every number below moved.}
+\texttt{src/models/qwen\_gen.py} computed its decode-step count one token short
+(\texttt{n\_steps = len(hidden\_states) - 1}), so \texttt{hit\_cap} read False on
+every Qwen row ever generated --- including twenty-one that had saturated the
+token budget outright (8191 tokens against a cap of 8192; 2047 against 2048).
+Population rule 4 was therefore never able to exclude a Qwen generation, and
+budget-truncated items --- whose counts are censored \emph{downward} by the
+cutoff, not by the model giving up --- sat inside the extension-ladder horizon
+fits below. The ledgers were repaired from \texttt{n\_speech\_tokens}, which was
+always recorded correctly, and every horizon analysis in this section was rerun
+against the repaired population. The headline soft-horizon ratio moves
+$3.5\to4.2$ and the three-family range moves $2.7$--$4.3\to3.1$--$5.4$:
+\emph{in the direction that flatters us}. The truncated repeated-arm items were
+inflating the fitted saturation scale on the repeated side, so the uncorrected
+number had been \emph{understating} our own effect, not overstating it. We say
+that in these words rather than let a correction that helps the paper pass
+quietly --- a favourable correction is the one that most needs to be visible, not
+less. The tables below are the refit, post-repair; only the two Qwen checkpoints
+move, since the bug is specific to \texttt{qwen\_gen.py} and never touched the
+Llasa generations.
+
 So we refit with families we did not choose. All three are one-parameter, all
 three have unit slope as $k\to0$ --- so none of them fights the proportional
 regime the main ladder shows --- and all three asymptote to $\hat K$. They differ
@@ -4640,16 +4753,19 @@ only in how they bend between those two ends.
 \toprule
 family & $\hat c(k)$ & $\hat K_{\mathrm{rep}}$ & $\hat K_{\mathrm{ctl}}$ & ratio \\
 \midrule
-soft horizon & $\hat K(1-e^{-k/\hat K})$ & 30.1 & 104.8 & 3.48 \\
-hyperbolic   & $\hat K k/(\hat K+k)$     & 42.3 & 181.7 & 4.30 \\
-tanh         & $\hat K\tanh(k/\hat K)$   & 27.8 &  74.6 & 2.68 \\
+soft horizon & $\hat K(1-e^{-k/\hat K})$ & 24.8 & 104.8 & 4.22 \\
+hyperbolic   & $\hat K k/(\hat K+k)$     & 33.6 & 181.7 & 5.40 \\
+tanh         & $\hat K\tanh(k/\hat K)$   & 23.7 &  74.6 & 3.14 \\
 \bottomrule
 \end{tabular}
 \end{center}
 
 \noindent The soft horizon is the fit reported in the paper; hyperbolic bends
 earliest and has the heaviest tail, tanh bends latest and has the sharpest knee,
-so the two bracket the exponential from either side. Per checkpoint:
+so the two bracket the exponential from either side. The control-side $\hat
+K_{\mathrm{ctl}}$ is unchanged to the digit shown, which is consistent with the
+bug: it is the repeated arm's budget-truncated items, not the control's, that
+were biasing the fit. Per checkpoint:
 
 \begin{center}
 \begin{tabular}{lrrr}
@@ -4658,18 +4774,20 @@ checkpoint & soft horizon & hyperbolic & tanh \\
 \midrule
 Llasa-1B        &  5.97 &  8.46 & 4.50 \\
 Llasa-8B        &  4.12 &  5.23 & 3.06 \\
-Qwen3-TTS-0.6B  & 14.99 & 19.18 & 5.48 \\
-Qwen3-TTS-1.7B  &  0.27 &  0.53 & 0.07 \\
+Qwen3-TTS-0.6B  & 13.13 & 16.33 & 4.90 \\
+Qwen3-TTS-1.7B  &  0.29 &  0.57 & 0.07 \\
 \bottomrule
 \end{tabular}
 \end{center}
 
 \noindent \textbf{Direction is form-independent; magnitude is not.} No family
-moves any checkpoint across 1. Which checkpoints show a lowered horizon, and
-which one does not, is the same under all three, and the one below 1 is the
-exception S4.2 already reports. What the family does change is how far: the
-pooled ratio runs 2.7--4.3. The paper's 3.5 should be read as that range and not
-as a measured constant, which is why S4.2 now quotes the range next to it.
+moves any checkpoint across 1, before or after the repair. Which checkpoints show
+a lowered horizon, and which one does not, is the same under all three, and the
+one below 1 is the exception S4.2 already reports. What the family does change is
+how far: the pooled ratio runs 3.1--5.4, up from the pre-repair 2.7--4.3. The
+paper's headline, now 4.2 where it was 3.5, should be read as a point inside that
+range and not as a measured constant, which is why S4.2 quotes the range next to
+it.
 
 \noindent\textbf{What this does not settle.} It tests the choice of saturating
 curve, not the choice to fit a saturating curve at all. Every family here
