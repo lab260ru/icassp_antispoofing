@@ -24,7 +24,13 @@ ORDER = ["llasa1b", "llasa3b", "llasa8b", "xtts2", "qwen06b", "qwen17b"]
 # Re-runs of a panel member under a changed decoding setting. Reported on their
 # own, never pooled into panel statistics -- pooling inflates the panel with a
 # non-independent copy, which a reviewer caught us doing.
-ABLATIONS = {"xtts2norp"}
+# The single definition, imported rather than copied: this file kept its own
+# stale list of one entry while the panel grew four ablation arms and two non-AR
+# baselines, so any macro filtering on it was quietly including them.
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).resolve().parent.parent))
+from src.common.population import ABLATIONS  # noqa: E402
 # LaTeX macro names cannot contain digits, so each model key gets an explicit
 # spelled-out tag. An explicit map beats string munging: it is what the .tex
 # files are written against, and a silent mismatch shows up as an undefined
@@ -239,6 +245,24 @@ def main() -> None:
         macros["MainExclCap"] = str(_drop.get("cap_hits", 0))
         macros["MainExclDegen"] = str(len(_kept) - len(_final))
         macros["MainKept"] = str(len(_final))
+
+    # ---- do the exclusions fall evenly on the two arms? -------------------
+    # A reviewer noted that an exclusion concentrated on one arm could
+    # manufacture the contrast it is used to support. The template rule is
+    # balanced by construction; the budget rule is not, and its asymmetry runs
+    # against the effect, which is worth saying rather than leaving to be found.
+    if beh_all.exists():
+        from src.common.population import excluded_templates, cap_flags
+        _b = pd.read_csv(beh_all)
+        _b = _b[_b.family.isin(["word_rep", "control_word"])
+                & ~_b.model.isin(ABLATIONS)]
+        _bad, _flags = excluded_templates(), cap_flags()
+        _b = _b.assign(cap=[_flags.get((r.model, r.item_id, r.seed), False)
+                            for r in _b.itertuples()])
+        for fam, tag in (("word_rep", "Rep"), ("control_word", "Ctl")):
+            g = _b[_b.family == fam]
+            macros[f"ExclTmpl{tag}"] = fmt(100 * g.template.isin(_bad).mean(), 1)
+            macros[f"ExclCap{tag}"] = fmt(100 * g.cap.mean(), 1)
 
     # ---- exactly-right rates ---------------------------------------------
     # The median relative error understates the contrast, because a control's

@@ -3257,6 +3257,36 @@ is never cycled; the generator asserts this and fails loudly rather than falling
 back.
 
 
+\subsection{Do the exclusions fall evenly on the two arms?}
+
+An exclusion concentrated on one arm could manufacture the contrast it is used to
+support, so a reviewer asked for the per-condition breakdown. Rates over the
+panel, before any other filter:
+
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+arm & template rule & token budget & degenerate \\
+\midrule
+repeated ($n=1080$) & 16.7\% & 10.5\% & 4.4\% \\
+control ($n=972$)   & 16.7\% & 5.6\%  & 3.7\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The template rule is exactly balanced, which is structural rather than lucky:
+template t2 is one of six carriers and contributes equally to both arms, so
+removing it removes a sixth of each.
+
+The budget rule is not balanced --- repeated items run into it about twice as
+often, which is what a model that loops or over-runs on periodic text should do.
+The direction matters more than the imbalance: cap-hit items carry a median
+relative error of $-0.44$ against $-0.08$ for the rest, so excluding them removes
+the \emph{worst} repeated generations and shrinks the very gap the paper reports.
+Keeping them would make the effect look larger, not smaller.
+
+Degeneracy is near-balanced and small on both arms.
+
 \section{Checkpoint-level inference}
 \label{sec:s11}
 
