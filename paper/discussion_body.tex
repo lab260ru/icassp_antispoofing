@@ -3,9 +3,14 @@
 \noindent\textbf{What is proved, and what would refute it.}
 The Lean artifact certifies an implication: periodic conditioning plus
 contraction implies a finite counting horizon. It does not prove that any
-transformer contracts, and our attempt to measure that premise directly failed
-(Section~\ref{sec:negative}). What we establish empirically is the theorem's
-\emph{consequence}, not its antecedent.
+transformer contracts, and our attempt to measure $q$ directly failed:
+estimating it from boundary distances needs a monotone text read-head, and
+these decoders' attention centroid advances on barely half of generation
+steps --- self-defeating, since the flatter the attention the worse any such
+localiser gets (supplement, S5). Nor is the count \emph{absent}: a probe
+retains it at \ProbeRetRep{} of its early level on repeated text against
+\ProbeRetCtl{} on controls, degradation rather than erasure. What we establish empirically
+is the theorem's \emph{consequence}, not its antecedent.
 
 A conditional account risks being unfalsifiable, so we state what would refute
 it: a control with the same deficit as its repeated twin; a model with the
@@ -13,7 +18,9 @@ deficit whose capacity gain matches its control; or a probe reading the count as
 well late as early. Our data could have shown any of the three.
 \ErrBestModel{} is instructive --- no deficit yet still a capacity gap, so
 capacity loss is necessary but not sufficient, as \eqref{eq:horizon} allows when
-the readout margin is large.
+the readout margin is large --- though it is also, unhelpfully, the one
+architecture whose attention is not separable, so the dilution premise cannot be
+checked on the very model carrying this argument.
 
 The closest prior result is representational
 collapse~\cite{barbero2024glasses}: as a sequence grows, distinct prefixes map to
@@ -46,6 +53,5 @@ span across a fourfold change in the penalty, sloping \MitSlope{} points per uni
 ($\!=\!\MitBrokenPen{}$) breaks the control too, so no setting both preserves
 general quality and removes the deficit: this lever does not act on the quantity
 that sets the horizon.
-Limits: the panel is English-only, and all six checkpoints are codec-language
-models with softmax attention over text, so the claim concerns that class
-rather than AR TTS at large.
+Limits: the panel is English-only and entirely codec-language models with softmax
+attention over text, so the claim concerns that class, not AR TTS at large.

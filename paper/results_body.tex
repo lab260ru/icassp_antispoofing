@@ -50,13 +50,9 @@ the requested number of distinct words, at every $k$ up to $32$, for every model
 in the panel. The same decoders that drop one word in six from a repeated
 sequence render thirty-two \emph{different} words without a single miscount.
 
-Two further alternatives fail on their own predictions (supplement, S8). Were
-improbability the cause, controls would be the more natural member of each pair;
-under a causal LM outside the panel the control is the \emph{less} probable member
-in \NllIndCtlHigherPct{}\% of \NllIndPairs{} pairs. Were the attractor acoustic,
-the horizon would be counted in tokens and sentence repetition would fail after
-far fewer repetitions; it does not, differing by \UnitKDiff{} repetitions while
-the token count at collapse differs \UnitTokRatio{}$\times$.
+Two rival explanations --- that repeated text simply being improbable is the
+cause, and that the attractor is acoustic rather than text-side --- are ruled out
+by their own predictions in the supplement (S8).
 
 \begin{table}[t]
 \centering
@@ -92,8 +88,8 @@ restricting to items each model rendered \emph{correctly}, where the audio is by
 construction what was asked for, leaves it at \CapCorrRatio{}. The decoder does
 not merely err on repeated text --- it stops acquiring internal states at the rate
 non-repetitive text buys them. \emph{Stops acquiring}, not \emph{loses}: a
-stalled state budget need not drive the surviving signal to zero, and the probe
-below finds the count degraded rather than erased.
+stalled state budget need not drive the surviving signal to zero, and a probe on
+those states finds the count degraded rather than erased (Section~5).
 
 Lemma~\ref{lem:dilution} concerns the softmax \emph{restricted to the $k$ repeated
 keys}: raw attention weight is normalised over the whole sequence, whose length
@@ -106,20 +102,3 @@ percent of uniform, which is what Assumption~\ref{ass:periodic} needs. This
 covers the \LemBModels{} checkpoints with separable text attention; Qwen3-TTS
 sums text and acoustic embeddings per position, so no attention column belongs to
 the text and the lemma cannot be checked there.
-
-\subsection{Two things we could not establish}
-\label{sec:negative}
-
-We could not measure $q$ itself. Estimating it from boundary distances
-($\log\lVert h_{m+1}-h_m\rVert = a + m\log q$) needs a monotone text read-head,
-and these decoders' deep-layer attention centroid advances on barely half of
-generation steps, so the distances measure localisation error instead. The
-failure is self-defeating: the flatter the attention over repeated spans ---
-exactly what Lemma~\ref{lem:dilution} predicts --- the worse any attention-based
-localiser gets. The capacity measure needs no boundaries.
-
-Nor can we claim the count is \emph{absent}: contrasting a ridge probe on the
-first and last third of the \emph{same} trajectory, so probe capacity cancels, it
-is retained at \ProbeRetRep{} of its early level on repeated text against
-\ProbeRetCtl{} on controls --- lower for repeated text in \ProbePhrase{}
-checkpoints, but degradation rather than erasure.

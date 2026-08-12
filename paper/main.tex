@@ -62,7 +62,10 @@ into a loop. The behaviour is well documented as a stability
 problem~\cite{wang2025eliminating,song2024ellav}, and is usually attributed to
 exposure bias or to the absence of a monotonic alignment constraint, with fixes
 proposed at the level of attention supervision or decoding
-rules~\cite{xin2024ralle,du2024cosyvoice2}.
+rules~\cite{xin2024ralle,du2024cosyvoice2}. It is the speech analogue of neural
+text degeneration, where autoregressive models fall into repetition loops and the
+remedies are likewise sampling- or objective-level~\cite{holtzman2020curious,%
+welleck2020neural}.
 
 We argue that a large part of this behaviour has a simpler and more fundamental
 cause, and that the cause can be stated as a theorem. When the conditioning text
@@ -207,14 +210,19 @@ For each instrumented generation we record per-step hidden states at probe layer
 and head-averaged attention onto the text span. The statistic is the effective
 rank of the generation trajectory, $\mathcal{N}_{\mathrm{eff}} =
 \exp(-\sum_i p_i \log p_i)$ over normalised singular values, as a function of
-$k$; Section~\ref{sec:negative} explains why we do not measure $q$ by
+$k$; Section~\ref{sec:discussion} explains why we do not measure $q$ by
 differencing boundary states.
 
-\noindent\textbf{Code and data.}
-Everything --- Lean development, stimuli, code, per-item tables, both transcript
-sets --- is at \url{https://github.com/lab260ru/icassp_antispoofing}.
-\texttt{check\_lean.sh} reruns the axiom audit; \texttt{build.sh} regenerates
-every number here.
+\noindent\textbf{Code, data, settings.}
+The Lean development, stimuli, all generation and analysis code, the per-item
+result tables and both transcript sets are at
+\url{https://github.com/lab260ru/icassp_antispoofing};
+\texttt{check\_lean.sh} reruns the axiom audit and \texttt{build.sh} regenerates
+every number here. Audio ($2.5$\,GB) and activations ($25$\,GB) are not in the
+repository --- available on request, and regenerable from the released code and
+seeds. Sampling uses each model's shipped defaults (XTTS-v2 $T{=}0.75$,
+top-$p$ $0.85$, top-$k$ $50$, penalty $5.0$; Llasa $T{=}0.8$, top-$p$ $1.0$),
+three seeds per item; the penalty is the one parameter we vary.
 
 \section{Results}
 \label{sec:results}
