@@ -321,3 +321,62 @@ abstract states both failures itself. Do not quietly restore the old framing.
   vs aperiodic. Checked the two genuinely aperiodic regions: k<=8 (54.2% vs
   77.9% exact) and the extension ladder's never-cycled 146-word pool (median
   error -0.62 vs -0.12). It survives both.
+
+## 2026-08-12 (evening) — three more rivals excluded, one more claim retracted
+
+### The rivals that are now dead, with the data that killed them
+
+* **The repetition penalty is not the cause** (`analysis/penalty_confound.py`).
+  This was the strongest decoding-level alternative and we had the data all
+  along without reporting it. XTTS-v2 across a 4x penalty range: repeated
+  exact-rate 15.6-21.1%, slope -0.37 pts per unit. The three Llasa checkpoints
+  pass **no penalty at all** and show the effect at full size (14.0% vs 92.9%).
+  Note the asymmetry: disabling XTTS-v2's penalty collapses its *control* to
+  30.9%, so 1.0 is an unusable setting, not an informative one — fit slopes only
+  over arms whose control survives.
+* **The control is genuinely aperiodic now** (`analysis/aperiodic_controls.py`,
+  `scripts/run_aperiodic.sh`). Three review rounds objected that above k=8 the
+  fillers cycle an 8-word pool. Re-generated k=12..32 from the never-cycled
+  146-word pool, paired against the same repeated items: gap +71.2 pts against
+  +84.6 for cycled controls. **The confound is worth 13.4 points, not the bulk
+  of the effect.** A reviewer estimated two-thirds by comparing k<=8 with k>8,
+  which conflates the confound with the effect's own k-dependence.
+* **Architecture** (earlier today): VITS shows no dissociation at all.
+
+### The claim we retracted
+
+`analysis/probe_discrimination.py`. The paper cited a linear probe as evidence
+that repetition *erases* the count from the state, against the rival where the
+count survives and only the output policy fails. It does not show that:
+
+    repeated-item late R^2: median 0.48 (0.41-0.62) -- still decodable
+    retention > 1.0 in 2 of 6 checkpoints (range 0.77-1.92)
+    repeated retention < its own control in 6 of 6
+
+A state that had lost the count could not support a late R^2 near a half, and
+the rival predicts exactly that persistence. Only the *relative* effect survives,
+and it is equally consistent with a policy degrading faster on repeated text.
+**Do not cite the probe as mechanistic support.** We also removed "a probe
+reading the count as well late as early" from the paper's list of refutation
+criteria — a test called non-discriminating cannot also be a refutation test.
+
+### Where the mechanism stands (read this before writing any mechanistic claim)
+
+Nothing directly supports the causal story: two failed attempts at the
+contraction premise, a sign-reversed dilution dose-response, and a probe that
+discriminates nothing. What stands is the *phenomenon* plus six excluded rivals
+(length, periodicity-of-control, repetition penalty, ASR judge, architecture,
+improbability/acoustics). The title says so: "a horizon it does not yet explain."
+
+### Infrastructure
+
+**GPUs 2 and 3 only.** `src/common/gpus.py` is the single source; every entry
+point calls `check_gpu()` and refuses 0/1. Escape hatch `ICASSP_ALLOW_ANY_GPU=1`.
+When wiring that guard I broke all seven entry points with a missing `sys.path`
+insert — the failure was loud and immediate, which is the argument for enforcing
+constraints in code rather than in a README.
+
+**Page budget is the binding constraint on everything.** `main.tex` ends with
+`\vfill\pagebreak`, so a single spilled body line costs a whole page. Every
+addition must be paid for by a cut. Check with the pypdf snippet in
+`implementation-notes.md` before and after any edit.
