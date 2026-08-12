@@ -33,8 +33,8 @@
 
 \input{numbers}
 
-\title{Periodicity, Not Length: A Controlled Benchmark for\\
-       Repetition Miscounting in Neural Text-to-Speech}
+\title{Periodicity, Not Length: Locating the Repetition-Counting\\
+       Failure in Neural Text-to-Speech}
 
 \twoauthors
   {Ivan Viakhirev$^{1}$, Kirill Borodin$^{2,3}$, Grach Mkrtchian$^{2}$}
@@ -74,7 +74,7 @@ The empirical result stands independently of it.
 \end{abstract}
 
 \begin{keywords}
-speech synthesis, hallucination, evaluation benchmark, autoregressive models,
+speech synthesis, hallucination, probing, autoregressive models,
 formal verification
 \end{keywords}
 
@@ -94,7 +94,7 @@ degeneration~\cite{holtzman2020curious,welleck2020neural}.
 Reports of this behaviour confound two things, because repeating a phrase $k$
 times makes the text both \emph{longer} and \emph{periodic}. If long inputs are
 simply harder --- through attention span, exposure bias or a duration budget ---
-then nothing about repetition needs explaining. The benchmark here separates
+then nothing about repetition needs explaining. The manipulation here separates
 them by construction: every repeated item is paired with a
 \emph{length-matched control} of the same carrier and the same word count, in
 which the $k$ copies of one word become $k$ non-adjacent distinct ones. A
@@ -106,16 +106,17 @@ failure it is meant to detect: a judge biased in the direction of the effect can
 manufacture it. That constrains the design rather than decorating it, and
 Section~\ref{sec:method} treats it as a result in its own right.
 
-We contribute, in order of what the evidence supports: a parametric
-repetition-ladder benchmark with matched controls, \NModels{} checkpoints and
-two non-autoregressive baselines, on which the deficit tracks periodicity rather
-than length and survives the field's standard mitigations; a judge methodology
-for repetitive speech, the obvious judge shown to be disqualified; and, as a
-motivating conjecture rather than an explanation, a conditional impossibility
-result for repetition counting, machine-checked in Lean~4, whose premise we
-could not measure and whose one directional prediction our data contradict. The
-work is a companion to a spectral study of hallucination in encoder--decoder
-ASR~\cite{viakhirev2026dispersion}.
+We contribute, in order of what the evidence supports: a controlled
+manipulation that isolates periodicity from length across \NModels{}
+checkpoints and two non-autoregressive baselines, on which the deficit tracks
+periodicity and survives the field's standard mitigations; a judge methodology
+for repetitive speech, the obvious judge shown to be disqualified; and an
+account of \emph{where} the failure sits, separating what the decoder
+represents from what its output policy uses. A conditional impossibility result,
+machine-checked in Lean~4, motivated the study; we report it as a conjecture
+whose premise we could not measure and whose one directional prediction our data
+contradict. The work is a companion to a spectral study of hallucination in
+encoder--decoder ASR~\cite{viakhirev2026dispersion}.
 
 \section{Method}
 \label{sec:method}
@@ -217,7 +218,7 @@ difference ($7/18$ pairs, $p=0.12$) while failing its own linearity control
 untested but \emph{disconfirmed}: within a $(\text{model},k)$ cell, flatter
 attention goes with \emph{better} counting ($r=\DilR{}$
 $[\DilRLo{},\DilRHi{}]$; S12), the opposite of what dilution-driven collapse
-requires. We report the bound because it is what motivated the benchmark, not
+requires. We report the bound because it is what motivated the study, not
 because the data support it; nothing in Section~\ref{sec:results} rests on it.
 
 \section{Discussion}
