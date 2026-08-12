@@ -136,6 +136,8 @@ active_background_jobs:
 # --------------------------------------------------------------- what is next
 next_actions:
   - "extension ladder COMPLETE: 4 checkpoints, 2 families, 21-26 items/cell"
+  - "THEOREM'S CONCLUSION now has one direct test that passes (probe past the
+     horizon, analysis/probe_past_horizon.py). The PREMISE is still unsupported:"
   - "MECHANISM IS UNSUPPORTED: contraction unmeasured (2 attempts), dilution
      dose-response sign-reversed, probe non-discriminating. Do not write a
      mechanistic claim without reading findings.md first."

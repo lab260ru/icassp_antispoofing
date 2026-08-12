@@ -457,3 +457,37 @@ otherwise unchanged parallel decoder. That is the first thing to run next.
 would have depressed its repeated items too — same recogniser, same strings — and
 did not. No amount of auditing the recogniser against reference audio could show
 that, because that audio is not the audio in question.
+
+## 2026-08-12 (late) — first positive evidence for the theorem
+
+`analysis/probe_past_horizon.py`. Every probe in this project ran at k<=32, at or
+below the fitted horizon (~30), which is the range where Theorem 1(iv) *permits*
+a Lipschitz readout to succeed. So the probe's success there tested nothing, and
+its failure to discriminate the state-vs-policy question was not evidence either.
+
+Regenerated k=48..128 with hidden-state capture and reran the same ridge probe:
+
+                          probe MAE   constant-predictor MAE     R2
+    k=2..32   (below N*)     0.63             1.12            +0.62
+    k=48..128 (past N*)      0.50             0.50            -0.02
+
+**Past the horizon the probe matches a predictor that ignores the states and
+answers the mean.** It has learned nothing. That is the theorem's own conclusion,
+tested where it applies, and it passes.
+
+**Always quote the constant-predictor column.** R^2 falls when the target varies
+less, and k=48..128 spans a third of the log2 range k=2..32 does — a low R^2 past
+the horizon would prove nothing by itself. The trivial-baseline comparison is
+what makes the result safe.
+
+Limits: one checkpoint, 12 items, one seed, three folds. A single clean
+observation, not a panel result. It does **not** establish the premise (nothing
+here measures q) and does not make the account causal.
+
+**Two engineering traps if you repeat it:**
+- The instrumented pass uses eager attention to capture weights, which
+  materialises a T×T matrix per layer and OOMs at ~4000 tokens. The count probe
+  reads hidden states only, so pass `--attn-probes 0`; llasa_gen.py now switches
+  to SDPA when no attention probes are requested.
+- The original extension sweep ran *without* instrumentation, so the items must
+  be regenerated (`data/stimuli/stimuli_ext_instr.jsonl`, item ids suffixed `i`).
