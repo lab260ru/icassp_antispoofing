@@ -35,9 +35,19 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-# registry key -> repetition_penalty actually used
-SWEEP = {"xtts2norp": 1.0, "xtts2rp2": 2.0, "xtts2rp3": 3.0,
-         "xtts2": 5.0, "xtts2rp8": 8.0}
+# registry key -> repetition_penalty actually used, per architecture.
+# Two review rounds objected that a sweep on one model cannot support a claim
+# about the field's standard mitigation, so Qwen3-TTS-0.6B is swept too. Its
+# shipped penalty is 1.05 against XTTS-v2's 5.0, so the two cover different
+# parts of the range rather than repeating one.
+SWEEPS = {
+    "XTTS-v2": {"xtts2norp": 1.0, "xtts2rp2": 2.0, "xtts2rp3": 3.0,
+                "xtts2": 5.0, "xtts2rp8": 8.0},
+    "Qwen3-TTS-0.6B": {"qwen06brp10": 1.0, "qwen06b": 1.05,
+                       "qwen06brp15": 1.5, "qwen06brp30": 3.0},
+}
+SWEEP = {k: v for d in SWEEPS.values() for k, v in d.items()}
+ARCH_OF = {k: arch for arch, d in SWEEPS.items() for k in d}
 DATA_ROOT = "/home/kirill/mnt/hdd_6tb_1/icassp_tts"
 
 
@@ -78,7 +88,7 @@ def main() -> None:
     res: dict = {"kmin": args.kmin, "arms": {}}
     print(f"{'penalty':>8s} {'repeated rel.err':>26s} {'control rel.err':>26s} {'degen%':>7s}")
     for m in sorted(have, key=lambda k: SWEEP[k]):
-        row: dict = {"model": m, "penalty": SWEEP[m]}
+        row: dict = {"model": m, "penalty": SWEEP[m], "arch": ARCH_OF[m]}
         for fam, key in (("word_rep", "rep"), ("control_word", "ctl")):
             s = d[(d.model == m) & (d.family == fam) & (d.k >= args.kmin) & ok]
             v = s.rel_err.to_numpy(dtype=float)
@@ -97,24 +107,40 @@ def main() -> None:
     # Is the deficit explained by the penalty? Restrict to arms whose control is
     # intact, since an arm that cannot render the control at all says nothing
     # about repetition specifically.
-    usable = [r for r in res["arms"].values()
-              if np.isfinite(r["ctl"]["median"]) and abs(r["ctl"]["median"]) < 0.05
-              and np.isfinite(r["rep"]["median"])]
-    res["n_usable_arms"] = len(usable)
-    if len(usable) >= 3:
+    # Fit each architecture separately: the two ship penalties an order of
+    # magnitude apart, so a single slope across both would be meaningless.
+    res["by_arch"] = {}
+    for arch, keys in SWEEPS.items():
+        usable = [r for k, r in res["arms"].items()
+                  if k in keys and np.isfinite(r["ctl"]["median"])
+                  and abs(r["ctl"]["median"]) < 0.05
+                  and np.isfinite(r["rep"]["median"])]
+        if len(usable) < 3:
+            print(f"\n{arch}: {len(usable)} usable arms, too few to fit")
+            continue
         x = np.array([r["penalty"] for r in usable])
         y = np.array([r["rep"]["median"] for r in usable])
         slope = float(np.polyfit(x, y, 1)[0])
-        res["slope_per_penalty_unit"] = slope
-        res["rep_err_range"] = [float(y.min()), float(y.max())]
-        res["usable_penalties"] = [float(v) for v in x]
-        print(f"\nover the {len(usable)} arms with an intact control "
-              f"(penalties {list(x)}):")
-        print(f"  repeated error spans {y.min():+.3f} to {y.max():+.3f}")
-        print(f"  slope {slope:+.4f} per unit of penalty")
+        res["by_arch"][arch] = dict(
+            n_usable=len(usable), slope_per_penalty_unit=slope,
+            rep_err_range=[float(y.min()), float(y.max())],
+            penalties=[float(v) for v in x],
+            removes_deficit=bool(y.max() > -0.02))
+        print(f"\n{arch}: {len(usable)} arms with an intact control "
+              f"(penalties {list(x)})")
+        print(f"  repeated error spans {y.min():+.3f} to {y.max():+.3f}, "
+              f"slope {slope:+.4f} per unit")
         print("  -> the penalty does not remove the deficit"
-              if abs(slope) < 0.02 and y.max() < -0.02 else
-              "  -> the penalty moves the deficit materially; revisit the claim")
+              if y.max() < -0.02 else
+              "  -> the penalty removes the deficit here; revisit the claim")
+    # Keep the flat keys the paper's macros already read, from XTTS-v2.
+    x_arch = res["by_arch"].get("XTTS-v2")
+    if x_arch:
+        res["n_usable_arms"] = x_arch["n_usable"]
+        res["slope_per_penalty_unit"] = x_arch["slope_per_penalty_unit"]
+        res["rep_err_range"] = x_arch["rep_err_range"]
+        res["usable_penalties"] = x_arch["penalties"]
+    res["n_architectures"] = len(res["by_arch"])
 
     Path(args.out).parent.mkdir(parents=True, exist_ok=True)
     Path(args.out).write_text(json.dumps(res, indent=2))

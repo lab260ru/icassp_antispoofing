@@ -8,18 +8,22 @@ a k=32 control repeats each filler four times. That contrast is period-1 against
 period-8, not against aperiodic, and the Discussion's claim about what
 collapse-by-length would predict does not sit comfortably with it.
 
-The stimulus set happens to contain two regions where the control genuinely has
-no repetition at all, and they sit at opposite ends of the ladder:
+Three regions have controls that genuinely carry no repetition:
 
   * k <= 8 on the main ladder, where the eight-word pool covers k without
-    cycling; and
-  * the whole extension ladder (k = 48..128), whose controls are drawn from a
-    146-word pool that is never cycled and whose generator asserts it.
+    cycling;
+  * the whole extension ladder (k = 48..128), whose controls come from a
+    146-word pool that is never cycled and whose generator asserts it; and
+  * **k = 12..32, re-generated for this check** with the same 146-word pool
+    (`data/stimuli/stimuli_aperiodic.jsonl`, `scripts/run_aperiodic.sh`). This
+    is the range the objection was actually about, so working around it with
+    sub-analyses at the two ends was the cheap answer; running it is the right
+    one. These items are paired against the *same* repeated items the main
+    ladder already scored, so only the control side changes.
 
-If the effect is really about periodicity it must survive in both, and its
-absence in either would mean the main result was partly an artifact of comparing
-two periodic conditions. This script reports the contrast in each region
-separately, using the same population rules as everything else.
+If the effect is about periodicity it must survive in all three, and its absence
+in any would mean the headline was partly an artifact of comparing two periodic
+conditions.
 
 Usage:  python analysis/aperiodic_controls.py
 """
@@ -62,6 +66,8 @@ def main() -> None:
     ap.add_argument("--ext", nargs="+",
                     default=["data/results/behavioural_ext.csv",
                              "data/results/behavioural_ext_llasa.csv"])
+    ap.add_argument("--aperiodic", default="data/results/behavioural_aperiodic.csv",
+                    help="re-generated aperiodic controls for k=12..32")
     ap.add_argument("--pool-size", type=int, default=8,
                     help="main-ladder filler pool; controls are aperiodic at k<=this")
     ap.add_argument("--out", default="data/results/aperiodic_controls.json")
@@ -74,13 +80,27 @@ def main() -> None:
     main_d, _ = panel(main_d)
     main_d = main_d.assign(err=(main_d.count_a - main_d.k) / main_d.k)
 
-    print("Controls contain no repeated filler in the two regions below; "
-          "between them\nthe eight-word pool is cycled and the contrast is "
-          "period-1 against period-8.\n")
+    print("Rows marked aperiodic have controls with no repeated filler at all.\n"
+          "The period-8 row is the main ladder above k=8, kept for comparison.\n")
     contrast(main_d[(main_d.k >= 2) & (main_d.k <= args.pool_size)],
              f"main ladder, k<={args.pool_size} (aperiodic)", res)
     contrast(main_d[main_d.k > args.pool_size],
              f"main ladder, k>{args.pool_size} (period-8 ctl)", res)
+
+    # The re-generated controls for the range the objection was about. Pair them
+    # with the repeated items already scored on the main ladder at the same k,
+    # so the only thing that differs between the two arms is whether the control
+    # repeats its own fillers.
+    apc = Path(args.aperiodic)
+    if apc.exists():
+        a = pd.read_csv(apc)
+        a, _ = panel(a)
+        a = a.assign(err=(a.count_a - a.k) / a.k)
+        ks = sorted(a.k.unique())
+        rep_same = main_d[(main_d.family == "word_rep") & main_d.k.isin(ks)
+                          & main_d.model.isin(a.model.unique())]
+        contrast(pd.concat([rep_same, a[a.family == "control_word"]]),
+                 f"k={min(ks)}-{max(ks)} re-generated (aperiodic)", res)
 
     frames = [pd.read_csv(p) for p in args.ext if Path(p).exists()]
     if frames:
