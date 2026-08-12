@@ -49,10 +49,17 @@ from src.common.score_counts import (  # noqa: E402
 )
 
 DATA_ROOT = Path("/home/kirill/mnt/hdd_6tb_1/icassp_tts")
-KEYS = {"A": "patch1b", "B": "steer1b"}
+KEYS = {"A": "patch1b", "B": "steer1b", "P1": "patchr1", "R": "steerr"}
 DEGEN_TOL = 15.0        # percentage points, pre-committed
 SPECIFICITY = 1.5       # rep/ctl effect ratio below which the direction is generic
 RHO_MIN = 0.5
+# ---- follow-up thresholds, all pre-committed in causal_count.py's docstring
+BAND_DEGEN = 25.0       # an alpha above this degeneracy rate is out of band
+R_RHO_MIN = 0.4         # R1 pooled Spearman
+R_RHO_PARTIAL_MIN = 0.25  # R2 after partialling out duration
+R_SIGN_FRAC = 2 / 3     # R1/D-c per-item sign consistency
+D_EFFECT_FLOOR = 0.35   # D-a: below this the first pass's +0.96 was noise
+P1_DISRUPTION_MAX = 0.5  # P1 gate: unrelated must move it less than half as much
 
 
 # ---------------------------------------------------------------- loading
@@ -422,13 +429,291 @@ def analyse_b(rows: list[dict]) -> dict:
     return res
 
 
+# ---------------------------------------------------------------- follow-up
+
+
+def partial_spearman(x, y, z) -> float:
+    """Spearman of x vs y with z partialled out, on ranks.
+
+    Cheap and adequate: rank everything, regress the two rank vectors on the
+    rank of z, correlate the residuals. This is the standard rank partial
+    correlation and it answers the only question we need it to --- whether the
+    dose still tracks the count once "the utterance simply got longer" has been
+    taken out.
+    """
+    x, y, z = (stats.rankdata(np.asarray(v, dtype=float)) for v in (x, y, z))
+    if len(x) < 6 or np.std(z) < 1e-9:
+        return float("nan")
+    Z = np.column_stack([np.ones_like(z), z])
+    rx = x - Z @ np.linalg.lstsq(Z, x, rcond=None)[0]
+    ry = y - Z @ np.linalg.lstsq(Z, y, rcond=None)[0]
+    if np.std(rx) < 1e-12 or np.std(ry) < 1e-12:
+        return float("nan")
+    return float(np.corrcoef(rx, ry)[0, 1])
+
+
+def analyse_ridge(rows: list[dict]) -> dict:
+    """The follow-up alpha sweep, judged against R1-R3 and D-a..D-d."""
+    res: dict = {}
+    zero = [r for r in rows if r["alpha"] == 0.0]
+    res["n_alpha0"] = len(zero)
+    res["alpha0_all_identical"] = bool(zero) and all(
+        r.get("noop_identical") is True for r in zero)
+    res["alpha0_failures"] = [r["cond_id"] for r in zero
+                              if r.get("noop_identical") is not True]
+
+    alphas = sorted({r["alpha"] for r in rows})
+    fams: dict = {}
+    for fam in ("word_rep", "control_word"):
+        sel = [r for r in rows if r["family"] == fam]
+        if not sel:
+            continue
+        by_a = {a: [r for r in sel if r["alpha"] == a] for a in alphas}
+        per_a = {}
+        for a in alphas:
+            v = by_a[a]
+            per_a[f"{a:+.2f}"] = dict(
+                n=len(v),
+                median_count=float(np.median([r["count"] for r in v])),
+                median_y=float(np.median([r["y"] for r in v])),
+                median_duration_s=float(np.median([r["duration_s"] for r in v])),
+                median_speech_tokens=float(np.median([r["n_speech_tokens"] for r in v])),
+                degenerate_pct=100 * float(np.mean([r["degenerate"] for r in v])),
+                stop_pct=100 * float(np.mean([not bool(r["hit_cap"]) for r in v])),
+            )
+        band = [a for a in alphas
+                if per_a[f"{a:+.2f}"]["degenerate_pct"] <= BAND_DEGEN]
+        by_item: dict[str, dict[float, dict]] = defaultdict(dict)
+        for r in sel:
+            by_item[r["recv_item"]][r["alpha"]] = r
+        # pooled Spearman on within-item z-scores, inside the band only
+        za, zy, rhos = [], [], []
+        for iid, d in by_item.items():
+            pts = [(a, d[a]) for a in band if a in d]
+            if len(pts) < 3:
+                continue
+            aa = np.array([a for a, _ in pts], float)
+            yy = np.array([r["y"] for _, r in pts], float)
+            s = yy.std()
+            rhos.append(float(stats.spearmanr(aa, yy).statistic))
+            za += aa.tolist()
+            zy += ((yy - yy.mean()) / (s if s > 1e-9 else 1.0)).tolist()
+        rhos_a = np.array([r for r in rhos if r == r])
+        pooled = stats.spearmanr(za, zy) if len(za) > 5 else None
+        # partial out duration, on the same in-band rows
+        pa = [r["alpha"] for r in sel if r["alpha"] in band]
+        py = [r["y"] for r in sel if r["alpha"] in band]
+        pd_ = [math.log(max(r["duration_s"], 1e-3)) for r in sel if r["alpha"] in band]
+        # extreme-alpha within-item effect, inside the band
+        eff = []
+        if band:
+            lo_a, hi_a = min(band), max(band)
+            eff = [math.log1p(d[hi_a]["count"]) - math.log1p(d[lo_a]["count"])
+                   for d in by_item.values() if lo_a in d and hi_a in d]
+        eff_a = np.array(eff, dtype=float)
+        # the contrast the first pass ran, re-run at three times the items
+        pm = [math.log1p(d[+1.0]["count"]) - math.log1p(d[-1.0]["count"])
+              for d in by_item.values() if +1.0 in d and -1.0 in d]
+        pm_a = np.array(pm, dtype=float)
+        pos, neg, p_sign = sign_test(eff_a) if eff_a.size else (0, 0, float("nan"))
+        fams[fam] = dict(
+            n_items=len(by_item), band=band, by_alpha=per_a,
+            pooled_rho=float(pooled.statistic) if pooled is not None else float("nan"),
+            pooled_p=float(pooled.pvalue) if pooled is not None else float("nan"),
+            partial_rho=partial_spearman(pa, py, pd_),
+            per_item_rho_median=float(np.median(rhos_a)) if rhos_a.size else float("nan"),
+            sign_consistency=(float(np.mean(np.sign(eff_a) == np.sign(np.median(eff_a))))
+                              if eff_a.size else float("nan")),
+            effect_n=int(eff_a.size),
+            effect_median=float(np.median(eff_a)) if eff_a.size else float("nan"),
+            effect_ci=boot_median_ci(eff_a),
+            effect_pos=pos, effect_neg=neg, effect_p=p_sign,
+            pm_n=int(pm_a.size),
+            pm_median=float(np.median(pm_a)) if pm_a.size else float("nan"),
+            pm_ci=boot_median_ci(pm_a),
+        )
+    res["families"] = fams
+
+    rep, ctl = fams.get("word_rep"), fams.get("control_word")
+    if not (rep and ctl):
+        res["verdict"] = "ridge sweep: no data"
+        return res
+
+    er, ec = abs(rep["effect_median"]), abs(ctl["effect_median"])
+    ratio = (er / ec) if ec > 1e-9 else (float("inf") if er > 1e-9 else float("nan"))
+    res["effect_ratio_rep_over_ctl"] = ratio
+
+    r1 = (abs(rep["pooled_rho"]) > R_RHO_MIN and rep["pooled_p"] < 0.05
+          and rep["sign_consistency"] >= R_SIGN_FRAC)
+    r2 = (rep["partial_rho"] == rep["partial_rho"]
+          and abs(rep["partial_rho"]) > R_RHO_PARTIAL_MIN
+          and np.sign(rep["partial_rho"]) == np.sign(rep["pooled_rho"])
+          and all(v["degenerate_pct"] <= BAND_DEGEN
+                  for a, v in rep["by_alpha"].items() if float(a) in rep["band"]))
+    r3 = ratio == ratio and ratio >= SPECIFICITY
+    res.update(R1_dose_response=bool(r1), R2_not_duration=bool(r2), R3_specific=bool(r3))
+
+    d_a = er < D_EFFECT_FLOOR and rep["effect_n"] >= 16
+    d_b = ratio == ratio and ratio < SPECIFICITY
+    d_c = (rep["sign_consistency"] == rep["sign_consistency"]
+           and rep["sign_consistency"] < R_SIGN_FRAC)
+    d_d = len(rep["band"]) < 3
+    res.update(Da_effect_vanished=bool(d_a), Db_control_moves_too=bool(d_b),
+               Dc_sign_inconsistent=bool(d_c), Dd_no_band=bool(d_d))
+    dead = [n for n, f in (("D-a effect below 0.35 log-count", d_a),
+                           ("D-b control moves as much as repeated", d_b),
+                           ("D-c fewer than two thirds of items agree on sign", d_c),
+                           ("D-d no interpretable band of three alphas", d_d)) if f]
+    res["dead_reasons"] = dead
+    if not res["alpha0_all_identical"]:
+        res["verdict"] = "pipeline inconclusive: alpha=0 is not bitwise identical"
+    elif r1 and r2 and r3:
+        res["verdict"] = ("the lead survived: the ridge direction is a count knob "
+                          f"(pooled rho {rep['pooled_rho']:+.2f}, partial "
+                          f"{rep['partial_rho']:+.2f}, repeated/control effect "
+                          f"{ratio:.1f}x)")
+    elif dead:
+        res["verdict"] = "the lead did not survive: " + "; ".join(dead)
+    elif rep["effect_n"] < 16:
+        res["verdict"] = (f"underpowered: only {rep['effect_n']} items have both "
+                          "extreme in-band alphas")
+    else:
+        res["verdict"] = ("the lead did not survive: it clears no death criterion "
+                          "but also fails R1-R3, so it is neither a count knob nor "
+                          "cleanly dead -- reported as unresolved")
+    return res
+
+
 # ---------------------------------------------------------------- report
+
+
+def main_followup(out: str) -> None:
+    """The 2026-08-12 follow-up: ridge alpha sweep + rank-1 projection patch."""
+    stim = {json.loads(l)["item_id"]: json.loads(l)
+            for l in (REPO / "data/stimuli/stimuli.jsonl").open()}
+    R = load_arm("R", stim)
+    P = load_arm("P1", stim)
+    res: dict = {"n_rows_ridge": len(R), "n_rows_rank1": len(P)}
+
+    if R:
+        r = analyse_ridge(R)
+        res["ridge_sweep"] = r
+        print("=" * 78)
+        print(f"RIDGE ALPHA SWEEP  (alpha=0 bitwise identical: "
+              f"{r['alpha0_all_identical']}, {r['n_alpha0']} runs)")
+        for fam in ("word_rep", "control_word"):
+            e = r["families"].get(fam)
+            if not e:
+                continue
+            print(f"\n  {fam}  n_items={e['n_items']}  "
+                  f"band={[f'{a:+.2f}' for a in e['band']]}")
+            print(f"    {'alpha':>7s} {'count':>7s} {'dur':>7s} {'tok':>7s} "
+                  f"{'degen%':>7s} {'stop%':>7s} {'n':>4s}")
+            for a, v in sorted(e["by_alpha"].items(), key=lambda t: float(t[0])):
+                mark = " " if float(a) in e["band"] else "*"
+                print(f"   {mark}{a:>6s} {v['median_count']:7.1f} "
+                      f"{v['median_duration_s']:7.2f} {v['median_speech_tokens']:7.0f} "
+                      f"{v['degenerate_pct']:7.1f} {v['stop_pct']:7.1f} {v['n']:4d}")
+            print(f"    pooled rho={e['pooled_rho']:+.3f} (p={e['pooled_p']:.3f})  "
+                  f"partial(dur) rho={e['partial_rho']:+.3f}  "
+                  f"per-item rho med={e['per_item_rho_median']:+.3f}")
+            print(f"    in-band extreme effect: median {e['effect_median']:+.3f} "
+                  f"[{e['effect_ci'][0]:+.2f},{e['effect_ci'][1]:+.2f}] log-count, "
+                  f"{e['effect_pos']}+/{e['effect_neg']}- of {e['effect_n']}, "
+                  f"p={e['effect_p']:.3f}, sign-consistency "
+                  f"{e['sign_consistency']:.2f}")
+            print(f"    first pass's contrast (a=+1 vs -1): median "
+                  f"{e['pm_median']:+.3f} "
+                  f"[{e['pm_ci'][0]:+.2f},{e['pm_ci'][1]:+.2f}] on {e['pm_n']} items")
+        print(f"\n  (* = out of band, degeneracy above {BAND_DEGEN:.0f}%)")
+        print(f"  repeated/control effect ratio: "
+              f"{r.get('effect_ratio_rep_over_ctl', float('nan')):.2f}")
+        print(f"  R1 {r.get('R1_dose_response')}  R2 {r.get('R2_not_duration')}  "
+              f"R3 {r.get('R3_specific')}   |   death criteria fired: "
+              f"{r.get('dead_reasons') or 'none'}")
+        print(f"\n  VERDICT (ridge sweep): {r['verdict']}")
+
+    if P:
+        a = analyse_a(P)
+        res["rank1_patch"] = a
+        print("\n" + "=" * 78)
+        print(f"RANK-1 PROJECTION PATCH  (no-op bitwise identical: "
+              f"{a['noop_all_identical']}, {a['n_noop']} runs)")
+        for nm in ("reference", "patched"):
+            print(f"  {nm:9s} arm: n={a.get(nm + '_n')}, "
+                  f"median count {a.get(nm + '_median_count')}, "
+                  f"degenerate {a.get(nm + '_degenerate_pct', float('nan')):.1f}%, "
+                  f"cap-hit {a.get(nm + '_caphit_pct', float('nan')):.1f}%, "
+                  f"stopped {a.get(nm + '_stop_pct', float('nan')):.1f}%")
+        print(f"\n{'cell':>23s} {'n':>4s} {'med d':>7s} {'95% CI':>17s} "
+              f"{'p':>6s} {'holm':>6s} {'|d|':>5s} {'up':>6s} {'down':>6s} "
+              f"{'degen%':>7s} {'stop%':>6s}")
+        for c, e in sorted(a["cells"].items()):
+            up = e.get("up", {}).get("median", float("nan"))
+            dn = e.get("down", {}).get("median", float("nan"))
+            print(f"{c:>23s} {e['n']:4d} {e['median']:+7.3f} "
+                  + f"[{e['ci_lo']:+.2f},{e['ci_hi']:+.2f}]".rjust(17)
+                  + f" {e['p']:6.3f} {e.get('p_holm', float('nan')):6.3f} "
+                  f"{e['median_abs_delta']:5.2f} {up:+6.2f} {dn:+6.2f} "
+                  f"{e['degenerate_pct']:7.1f} {e['stop_pct']:6.1f}")
+        idx = a.get("disruption_index", {})
+        worst = max(idx.values()) if idx else float("nan")
+        p1 = worst == worst and worst < P1_DISRUPTION_MAX
+        a["P1_readable"] = bool(p1)
+        a["P1_threshold"] = P1_DISRUPTION_MAX
+        # ---- POST-HOC, and labelled as such. P1 is a ratio, and a ratio of two
+        # near-zero numbers carries no information. Record the absolute
+        # magnitudes so a reader can see whether the gate failed because the
+        # patch is violent or because nothing moved at all. The reference-arm
+        # noise floor is the median |shift| of the two donors that carry no
+        # count information (control at the receiver's own k, and same-k
+        # different-seed): if every cell sits at that floor, the arm is gentle
+        # and null, not disruptive.
+        floor = [a["cells"][c]["median_abs_delta"] for c in
+                 ("control|L7|P128", "diffseed|L7|P128") if c in a["cells"]]
+        xk = [a["cells"][c]["median_abs_delta"] for c in a["cells"]
+              if c.startswith("crossk|")]
+        a["posthoc_noise_floor_abs_shift"] = float(np.median(floor)) if floor else float("nan")
+        a["posthoc_crossk_abs_shift"] = float(np.median(xk)) if xk else float("nan")
+        a["posthoc_all_cells_at_noise_floor"] = bool(
+            floor and xk and max(xk + floor) < 0.5)
+        print(f"  [post-hoc] median |shift|: cross-k {a['posthoc_crossk_abs_shift']:.2f}, "
+              f"no-count-information donors {a['posthoc_noise_floor_abs_shift']:.2f} "
+              f"log-count; all cells below 0.5: "
+              f"{a['posthoc_all_cells_at_noise_floor']}")
+        print(f"\n  disruption index (unrelated / cross-k median |shift|): "
+              f"{ {k: round(v, 2) for k, v in idx.items()} }")
+        print(f"  P1 readable (needs < {P1_DISRUPTION_MAX}): {p1}")
+        if not p1:
+            a["verdict"] = ("rank-1 patch still too disruptive to interpret "
+                            f"(disruption index {worst:.2f} >= "
+                            f"{P1_DISRUPTION_MAX})")
+        elif a.get("causal_hit"):
+            a["verdict"] = ("rank-1 patch is a causal locus: transplanting the "
+                            "count coordinate moves the rendered count toward "
+                            "the donor")
+        else:
+            a["verdict"] = ("readable and null: the count coordinate transplants "
+                            "without damaging the utterance, and moving it does "
+                            "not move the rendered count")
+        print(f"\n  VERDICT (rank-1 patch): {a['verdict']}")
+
+    Path(out).write_text(json.dumps(res, indent=2, default=float))
+    print(f"\nwrote {out}")
 
 
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default=str(REPO / "data/results/causal_count.json"))
+    ap.add_argument("--followup", action="store_true",
+                    help="score the ridge sweep and the rank-1 patch instead")
     args = ap.parse_args()
+
+    if args.followup:
+        out = args.out
+        if out.endswith("causal_count.json"):
+            out = str(REPO / "data/results/causal_count_followup.json")
+        return main_followup(out)
 
     stim = {json.loads(l)["item_id"]: json.loads(l)
             for l in (REPO / "data/stimuli/stimuli.jsonl").open()}

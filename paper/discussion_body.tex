@@ -6,22 +6,23 @@
 % hard and main.tex ends with \vfill\pagebreak, so a spilled line costs a page.
 
 \noindent\textbf{The rival the evidence favours.}
-With contraction refuted, the live question is where the count fails: on the
-state-contraction account it is erased from the state, on the output-policy
-account~\cite{venkatesh2026repeated} it survives and only the policy reading it
-fails. Our evidence points the second way: repetition costs probe retention relative to
-the control in all \ProbeNBelowCtl{} of \ProbeNCk{}, as contraction predicts,
-but the count is not erased --- it stays decodable late ($R^2$ \ProbeLateMed{})
-and retention exceeds $1$ in \ProbeAboveOne{}. Past the extension horizon the
-\PhNCk{} checkpoints we could run reach \PhAllRatios{} of a mean-answering
-predictor: inconclusive at $n=\PhNCk{}$, and on the two Qwen checkpoints no
-evidence about the representation at all, a predictor given only the generated
-trajectory's length beating the state probe there outright --- the count/length
-confound above is not hypothetical. Deciding between them needs a manipulation of
-the readout at fixed state. We attempted one and report it uninterpretable
-rather than null: states from an \emph{unrelated} item move the rendered count
-$1.3\times$ as much as a donor differing in $k$, so the protocol perturbs
-generation rather than transplanting a count~(S26).
+With contraction refuted, the live question is where the count fails: erased
+from the state, or surviving there while the policy that reads it
+fails~\cite{venkatesh2026repeated}. Our evidence points the second way: repetition costs probe retention against the
+control in all \ProbeNBelowCtl{} of \ProbeNCk{}, as contraction predicts, but
+the count is not erased --- it stays decodable late ($R^2$ \ProbeLateMed{}). Past the extension horizon the
+\PhNCk{} checkpoints reach \PhAllRatios{} of a mean-answering predictor:
+inconclusive at $n=\PhNCk{}$, and on the two Qwen checkpoints no evidence about
+the representation at all, since trajectory length alone beats the state probe
+there. Deciding between them needs a manipulation of
+the readout at fixed state, and we ran two. Splicing whole donor states is too disruptive
+to read (an \emph{unrelated} donor moves the count $1.3\times$ as much as one
+differing in $k$). A rank-1 patch transferring only
+the probe's count coordinate removes the damage (\CausalDegen{}\% degenerate,
+self-patch bitwise-identical \CausalNoop{}/\CausalNoop{}) and moves the count
+not at all ($\CausalShift{}$ log-count $[\CausalShiftLo{},\CausalShiftHi{}]$,
+$n=\CausalN{}$); steering along it gives no dose-response. The count coordinate
+transplants cleanly and the decoder ignores it (S26).
 
 \noindent\textbf{Related work, and what the control decides.}
 Closest is representational collapse~\cite{barbero2024glasses}: distinct
@@ -29,8 +30,8 @@ prefixes converge with length, which our control separates from periodicity.
 Counting-specific expressivity results reach a compatible conclusion another way
 --- transformers count only under conditions on precision, depth and positional
 encoding~\cite{yehudai2024when,salzer2025counting,zhang2024counting}, with
-single-pass bounds~\cite{hahn2020theoretical,strobl2024formal} and state
-tracking~\cite{li2025statetracking} bracketing it. The two predict differently,
+single-pass~\cite{hahn2020theoretical,strobl2024formal} and state-tracking
+bounds~\cite{li2025statetracking} bracketing it. The two predict differently,
 which is the point of the control: an inductive-bias limit is a property of the
 model and survives at fixed periodicity, a contraction limit is a property of
 the \emph{conditioning}. Ours varies periodicity at fixed length, and the

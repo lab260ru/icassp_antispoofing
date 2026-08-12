@@ -170,10 +170,90 @@ prompts differ by 24 tokens); the same-$k$-different-seed donor is the arm that
 holds prompt length exactly fixed, which is why it is a control and not an
 afterthought.
 
+------------------------------------------------------------------------------
+FOLLOW-UP (2026-08-12, after the first pass returned "too disruptive").
+PRE-COMMITTED before any follow-up audio existed.
+------------------------------------------------------------------------------
+
+The first pass failed for two separable reasons, and each has one fix.
+
+*Arm A failed because the intervention was too coarse.* Splicing a whole
+2048-dimensional state transfers the donor's count and also its phase, its
+speaker state, its position in its own sentence, and everything else. The
+**rank-1 projection patch** transfers only the component along the count
+direction: at layer $L$ it adds $(c_{\\text{donor}} - c_{\\text{recv}})\\hat v$,
+where $c = h\\cdot\\hat v$ and $\\hat v$ is the ridge probe's weight vector at that
+layer. This is exactly "replace the count coordinate, keep everything else", and
+because the correction is written as a *difference* rather than as a
+subtract-then-re-add, the self-patch adds precisely zero and the no-op gate stays
+bitwise exact in bfloat16.
+
+*Arm B failed because the dose was too large.* The difference-in-means direction
+has $\\Delta=17.0$ against a mean per-position state norm of 37.8 --- $\\alpha=1$
+is a 45% perturbation, and at $|\\alpha|\\ge0.5$ it simply destroys the audio
+(100% degenerate at $\\alpha=-1$). The ridge direction is a third of that
+($\\Delta=5.84$, 15%) and stayed inside the interpretable range. The follow-up
+sweeps **only the ridge direction**, at $\\alpha\\in\\{0,\\pm0.25,\\pm0.5,\\pm0.75,
+\\pm1\\}$, over $k\\in\\{16,24,32\\}$ and four carriers --- 12 repeated items and
+their 12 length-matched controls, three times the items of the first pass.
+
+**Interpretable band.** For any arm, an $\\alpha$ (or cell) whose degenerate-plus-
+empty rate exceeds **25%** is out of band and is excluded from the dose-response
+before it is fitted. If no band of at least three $\\alpha$ values survives, the
+sweep is *underpowered*, not null.
+
+**Ridge sweep counts as a hit (R)** iff all three hold:
+
+  R1 *dose-response*: pooled Spearman $\\rho$ between $\\alpha$ and
+     $\\log(1+\\text{count})$ on within-item z-scores of the repeated arm, computed
+     inside the band, with $|\\rho|>0.4$, $p<0.05$, and consistent per-item sign
+     in at least two thirds of items; AND
+  R2 *not a duration artifact*: the same correlation, partialling out
+     $\\log(\\text{duration})$, keeps its sign and $|\\rho_{\\text{partial}}|>0.25$;
+     and every in-band $\\alpha$ has degeneracy $\\le 25\\%$; AND
+  R3 *specificity*: the repeated arm's effect (median within-item log-count
+     difference between the extreme in-band $\\alpha$s) is at least **1.5x** the
+     control arm's.
+
+**The lead is declared dead** --- and I will say so in exactly those words --- if
+any one of:
+
+  D-a the paired $\\alpha{=}{+}1$ vs $\\alpha{=}{-}1$ effect on repeated items
+      shrinks below **0.35** log-count in median magnitude at $n\\ge16$ items
+      (the first pass's +0.96 on 8 items is what justified this follow-up; less
+      than about 40% of it means the first pass was noise);
+  D-b the control arm moves as much as the repeated arm (ratio $<1.5$);
+  D-c fewer than two thirds of repeated items agree on the sign;
+  D-d no interpretable band of three or more $\\alpha$ values exists.
+
+A hit and a death are both single sentences. There is no third option in which
+the lead "still looks promising"; if it clears R1--R3 it is real, if it trips
+D-a--D-d it is dead, and anything else is reported as underpowered with the
+number of items that would be needed.
+
+**Rank-1 patch counts as readable (P1)** iff the disruption index --- the
+unrelated donor's median $|\\text{shift}|$ over the informative cross-$k$ donor's
+--- falls **below 0.5**, i.e. a donor that actually differs in $k$ moves the
+count at least twice as much as one that cannot know it. P1 is a gate, not a
+result: **if P1 fails the arm stays uninterpretable and nothing else in it is
+reported**, exactly as in the first pass. Conditional on P1:
+
+  P2 cross-$k$ signed shift positive, sign test surviving Holm across cells, and
+     higher-$k$ and lower-$k$ donors moving the count in opposite raw directions;
+  P3 patched degeneracy no more than 15 points above the reference arm's, and
+     stop-rate no more than 15 points below it.
+
+P1 ∧ P2 ∧ P3 is a causal locus. **P1 ∧ ¬P2 is the outcome I expect and it is a
+real result**: the count coordinate can be transplanted without damaging the
+utterance, and moving it does not move the rendered count --- which would say the
+stop decision does not read this direction, rather than that we cannot tell.
+
 Usage (generation only; scoring is `analysis/causal_count_score.py`):
   python analysis/causal_count.py --arm A --gpu 3 --selftest
   python analysis/causal_count.py --arm A --gpu 3
   python analysis/causal_count.py --arm B --gpu 3
+  python analysis/causal_count.py --arm R --gpu 2            # ridge alpha sweep
+  python analysis/causal_count.py --arm A --rank1 --gpu 3    # rank-1 patch
 """
 from __future__ import annotations
 
@@ -238,6 +318,11 @@ STEER_LAYER = 13               # the probe's best late layer on word_rep
 STEER_LAYER_2 = 7
 ALPHAS = [-2.0, -1.0, -0.5, 0.0, 0.5, 1.0, 2.0]
 STEER_KS = [16, 32]
+# Follow-up: the ridge direction only, finely and symmetrically, over three k
+# and four carriers. The first pass had two alphas and eight items, which is
+# why its rep-vs-control dissociation was a lead and not a result.
+RIDGE_ALPHAS = [-1.0, -0.75, -0.5, -0.25, 0.0, 0.25, 0.5, 0.75, 1.0]
+RIDGE_KS = [16, 24, 32]
 LOW_K = [2, 3, 4]
 HIGH_K = [16, 24, 32]
 
@@ -273,6 +358,62 @@ class PatchHook:
         hs = hs.clone()
         idx = (cp[sel] - self.lo).to(self.states.device)
         hs[0, sel, :] = self.states[idx].to(device=hs.device, dtype=hs.dtype)
+        return (hs,) + tuple(output[1:]) if isinstance(output, tuple) else hs
+
+
+class Rank1PatchHook:
+    """Transfer only the donor's coordinate along one direction.
+
+    At each patched position the hook adds ``(c_donor - c_recv) * v``, where
+    ``c = h . v`` for a unit vector ``v``. That is algebraically the same as
+    projecting the receiver's component out and writing the donor's in, but it
+    is written as a *difference* on purpose: for a self-patch the two
+    coefficients are the same number, the correction is exactly ``0 * v``, and
+    ``h + 0`` is bitwise ``h``. The subtract-then-re-add form
+    ``h - (h.v)v + (h.v)v`` is mathematically identical and numerically is not
+    --- in bfloat16 it perturbs every patched position, which would break the
+    no-op gate and, worse, would leave a small nonspecific perturbation in every
+    real patch as well.
+
+    The two coefficients are computed *inside* the hook, by the same expression,
+    on contiguous float32 copies. That also looks like pedantry and also is not:
+    computing the donor's coefficient outside with a matmul and the receiver's
+    inside with another left them disagreeing by 1.5e-3 on a self-patch --- a
+    different reduction order for a different stride pattern --- which is small,
+    nonzero, and therefore fatal to a bitwise no-op gate. Same function, same
+    layout, bitwise-equal inputs, bitwise-equal outputs, exact zero.
+    """
+
+    def __init__(self, states: torch.Tensor, vec: torch.Tensor, lo: int) -> None:
+        self.states = states        # [P, d] donor states
+        self.vec = vec              # [d] unit direction
+        self.lo = lo
+        self.hi = lo + states.shape[0]
+        self.fired = 0
+        self.max_abs_delta = 0.0
+
+    @staticmethod
+    def _coeff(h: torch.Tensor, v32: torch.Tensor) -> torch.Tensor:
+        return (h.contiguous().to(torch.float32) * v32).sum(-1)
+
+    def __call__(self, module, args, kwargs, output):  # noqa: ANN001
+        hs = output[0] if isinstance(output, tuple) else output
+        cp = kwargs.get("cache_position")
+        if cp is None:
+            return output
+        sel = (cp >= self.lo) & (cp < self.hi)
+        if not bool(sel.any()):
+            return output
+        self.fired += int(sel.sum())
+        idx = (cp[sel] - self.lo).to(self.states.device)
+        v = self.vec.to(device=hs.device, dtype=hs.dtype)
+        v32 = self.vec.to(device=hs.device, dtype=torch.float32)
+        cur = self._coeff(hs[0, sel, :], v32)
+        don = self._coeff(self.states[idx].to(hs.device), v32)
+        delta = don - cur
+        self.max_abs_delta = max(self.max_abs_delta, float(delta.abs().max()))
+        hs = hs.clone()
+        hs[0, sel, :] = hs[0, sel, :] + (delta.to(hs.dtype)[:, None] * v[None, :])
         return (hs,) + tuple(output[1:]) if isinstance(output, tuple) else hs
 
 
@@ -475,10 +616,17 @@ def rec_base(**kw) -> dict:
 # ---------------------------------------------------------------- arm A
 
 
-def arm_a(run: Runner, store: Store, stim: dict) -> None:
+def arm_a(run: Runner, store: Store, stim: dict, rank1: bool = False) -> None:
     t0 = time.time()
     n_gen = 0
     receivers = [(t, k) for k in RECEIVER_KS for t in PATCH_TEMPLATES]
+    # Rank-1 mode needs a direction at every patched layer. The ridge weight
+    # vector is the one the probe actually leans on, and the one that stayed in
+    # the interpretable range when it was used for steering.
+    dirs = ({L: build_directions(L, stim)["ridge"]["v"] for L in PATCH_LAYERS}
+            if rank1 else {})
+    if rank1:
+        print("[A/rank1] ridge directions at layers " + str(sorted(dirs)), flush=True)
 
     cache: dict[tuple[str, int], torch.Tensor] = {}
 
@@ -592,7 +740,12 @@ def arm_a(run: Runner, store: Store, stim: dict) -> None:
                 if p_eff <= 0:
                     continue
                 prefix = torch.cat([rprompt[0], r_body[:p_eff]]).unsqueeze(0)
-                hook = PatchHook(src[L][:p_eff].to(run.device), rprompt.shape[1])
+                if rank1:
+                    v = torch.from_numpy(dirs[L]).to(run.device)
+                    hook = Rank1PatchHook(src[L][:p_eff].to(run.device), v,
+                                          rprompt.shape[1])
+                else:
+                    hook = PatchHook(src[L][:p_eff].to(run.device), rprompt.shape[1])
                 gen, hit = run.generate(prefix, seed, MAX_NEW - p_eff,
                                         hook_layer=L, hook=hook)
                 full = torch.cat([r_body[:p_eff], gen])
@@ -614,6 +767,8 @@ def arm_a(run: Runner, store: Store, stim: dict) -> None:
                                    n_gen_tokens=int(full.shape[0]),
                                    n_speech_tokens=len(sp), hit_cap=bool(hit),
                                    noop_identical=identical,
+                                   rank1=bool(rank1),
+                                   max_abs_delta=getattr(hook, "max_abs_delta", None),
                                    hook_fired=int(hook.fired)), sp)
                 n_gen += 1
                 del hook, gen, full
@@ -803,13 +958,91 @@ def selftest(run: Runner, stim: dict) -> bool:
     print(f"  [4] donor patch changes the continuation: {moved}")
     ok &= moved
 
+    # ---- rank-1 projection variant: the same two questions again, because the
+    # difference form is the whole reason its no-op can be exact.
+    v = torch.from_numpy(build_directions(CENTRAL[0], stim)["ridge"]["v"]).to(run.device)
+    h5 = Rank1PatchHook(caps[CENTRAL[0]].to(run.device), v, rprompt.shape[1])
+    n5, _ = run.generate(prefix, 0, 512 - P, hook_layer=CENTRAL[0], hook=h5)
+    same5 = bool(n5.shape == ref.shape and bool((n5 == ref).all()))
+    print(f"  [5] rank-1 no-op reproduces reference bitwise: {same5} "
+          f"(max |delta| {h5.max_abs_delta:.3g})")
+    ok &= same5
+    h6 = Rank1PatchHook(dcaps[CENTRAL[0]][:n].to(run.device), v, rprompt.shape[1])
+    p6, _ = run.generate(prefix, 0, 512 - P, hook_layer=CENTRAL[0], hook=h6)
+    moved6 = not (p6.shape == ref.shape and bool((p6 == ref).all()))
+    print(f"  [6] rank-1 donor patch changes the continuation: {moved6} "
+          f"(max |delta| {h6.max_abs_delta:.3g})")
+    ok &= moved6
+
     print(f"  SANITY GATE: {'PASS' if ok else 'FAIL'}")
     return bool(ok)
 
 
+def arm_r(run: Runner, store: Store, stim: dict, seeds: list[int]) -> None:
+    """The follow-up sweep: ridge direction only, fine alphas, three times the items."""
+    t0 = time.time()
+    n_gen = 0
+    d = build_directions(STEER_LAYER, stim)["ridge"]
+    meta = {k: v for k, v in d.items() if k != "v"}
+    meta["alphas"] = RIDGE_ALPHAS
+    meta["rel_magnitude_at_alpha1"] = float(d["delta"] / d["mean_pos_norm"])
+    (REPO / "data/results/causal_ridge_direction.json").write_text(json.dumps(meta, indent=2))
+    print("[R] ridge@L%d: %s" % (STEER_LAYER, json.dumps(meta)), flush=True)
+
+    items: list[str] = []
+    for k in RIDGE_KS:
+        for tmpl in TEMPLATES:
+            for fam in ("word_rep", "control_word"):
+                iid = item_id(fam, tmpl, k, stim)
+                if iid:
+                    items.append(iid)
+    print(f"[R] {len(items)} items x {len(RIDGE_ALPHAS)} alphas x {len(seeds)} seeds",
+          flush=True)
+
+    for seed in seeds:
+        for iid in items:
+            it = stim[iid]
+            prompt = run.prompt(it["text"])
+            for a in RIDGE_ALPHAS:
+                cond = f"ridge|{iid}|s{seed}|L{STEER_LAYER}|a{a:+.2f}"
+                if store.has(cond):
+                    continue
+                vec = torch.from_numpy(d["v"] * np.float32(a * d["delta"] * d["sign"]))
+                hook = SteerHook(vec.to(run.device), prompt.shape[1])
+                gen, hit = run.generate(prompt, seed, MAX_NEW,
+                                        hook_layer=STEER_LAYER, hook=hook)
+                sp = run.speech_ids(gen)
+                identical = None
+                if a == 0.0:
+                    base, _ = run.generate(prompt, seed, MAX_NEW)
+                    identical = bool(gen.shape == base.shape
+                                     and bool((gen == base).all()))
+                    del base
+                store.put(rec_base(cond_id=cond, stem=stem_for(cond), arm="R",
+                                   kind="steer", recv_item=iid, recv_k=it["k"],
+                                   family=it["family"], template=it["template"],
+                                   seed=seed, layer=STEER_LAYER, alpha=float(a),
+                                   direction="ridge",
+                                   rel_magnitude=float(abs(a) * d["delta"]
+                                                       / d["mean_pos_norm"]),
+                                   n_gen_tokens=int(gen.shape[0]),
+                                   n_speech_tokens=len(sp), hit_cap=bool(hit),
+                                   noop_identical=identical,
+                                   hook_fired=int(hook.fired)), sp)
+                n_gen += 1
+                del hook, gen
+                torch.cuda.empty_cache()
+            if n_gen % 20 < len(RIDGE_ALPHAS):
+                print(f"[R] {n_gen} generations, {(time.time()-t0)/60:.1f} min",
+                      flush=True)
+    print(f"[R] DONE {n_gen} generations in {(time.time()-t0)/60:.1f} min", flush=True)
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--arm", choices=["A", "B"], required=True)
+    ap.add_argument("--arm", choices=["A", "B", "R"], required=True)
+    ap.add_argument("--rank1", action="store_true",
+                    help="arm A: transfer only the count coordinate, not the state")
     ap.add_argument("--gpu", type=int, default=3)
     ap.add_argument("--selftest", action="store_true",
                     help="run the sanity gate only, and exit")
@@ -822,7 +1055,10 @@ def main() -> None:
     if args.selftest:
         raise SystemExit(0 if selftest(run, stim) else 1)
     if args.arm == "A":
-        arm_a(run, Store("patch1b"), stim)
+        arm_a(run, Store("patchr1" if args.rank1 else "patch1b"), stim,
+              rank1=args.rank1)
+    elif args.arm == "R":
+        arm_r(run, Store("steerr"), stim, args.b_seeds)
     else:
         arm_b(run, Store("steer1b"), stim, args.b_seeds)
 
