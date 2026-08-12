@@ -593,6 +593,17 @@ def main() -> None:
                                  else f"{n_below} of {len(pr)}")
 
 
+    # ---- what the probe does and does not discriminate --------------------
+    pd_path = Path("data/results/probe_discrimination.json")
+    if pd_path.exists():
+        pdc = json.loads(pd_path.read_text())
+        macros["ProbeLateMed"] = fmt(pdc["rep_late_r2_median"], 2)
+        macros["ProbeLateLo"] = fmt(pdc["rep_late_r2_lo"], 2)
+        macros["ProbeLateHi"] = fmt(pdc["rep_late_r2_hi"], 2)
+        macros["ProbeAboveOne"] = str(pdc["n_retention_above_one"])
+        macros["ProbeNBelowCtl"] = str(pdc["n_rep_below_ctl"])
+        macros["ProbeNCk"] = str(pdc["n_models"])
+
     # ---- the dissociation, pooled over the PANEL (ablations excluded) -----
     if len(beh):
         panel_beh = beh[~beh.model.isin(ABLATIONS)]

@@ -23,7 +23,7 @@ import pandas as pd  # noqa: E402
 
 # ICASSP two-column: a single-column figure is 3.35in wide.
 plt.rcParams.update({
-    "font.size": 7, "axes.labelsize": 7, "axes.titlesize": 7.5,
+    "font.size": 6, "axes.labelsize": 6, "axes.titlesize": 6.5,
     "xtick.labelsize": 6.5, "ytick.labelsize": 6.5, "legend.fontsize": 6,
     "figure.dpi": 200, "savefig.dpi": 400, "savefig.bbox": "tight",
     "savefig.pad_inches": 0.01, "axes.grid": True, "grid.alpha": 0.25,
@@ -63,7 +63,7 @@ def fig_main(beh: pd.DataFrame, state: pd.DataFrame, cap: dict, out: Path,
     # text width), not the full text width: including a 7-inch figure at 0.66
     # scales 7pt labels down to 4pt, which is unreadable in print. Drawing it at
     # final size keeps the type at its stated point size.
-    fig, axes = plt.subplots(1, 3, figsize=(4.62, 1.15))
+    fig, axes = plt.subplots(1, 3, figsize=(3.78, 1.12))
 
     # Relative count error rather than exact-match accuracy: signed, so
     # premature stopping separates from looping, and scale-free, so k=4 and

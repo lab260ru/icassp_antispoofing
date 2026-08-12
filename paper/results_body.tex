@@ -3,7 +3,7 @@
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=0.57\textwidth]{figs/fig_main.pdf}
+\includegraphics[width=0.54\textwidth]{figs/fig_main.pdf}
 \caption{(a) Relative count error $(\hat c-k)/k$ against requested repetitions
 $k$ under the CTC judge, repeated items (solid) against their length-matched
 controls (dashed): control medians sit at zero throughout. (b) The extension
@@ -74,30 +74,29 @@ become non-adjacent ones. Were the failure about length, attention span or
 exposure bias the curves would coincide. They do not: at $k\ge6$ the median
 control error is \ErrCtl{}\% $[\ErrCtlLo{},\ErrCtlHi{}]$ ($n=\ErrCtlN{}$), at
 every $k$ to $32$ and for every model. The contrast is sharpest
-in exactly-correct renderings --- \ExactCtl{}\% for controls against
+in exactly-correct renderings, \ExactCtl{}\% for controls against
 \ExactRep{}\% for their twins: decoders that miscount a repeated sequence five
-times in six render its non-adjacent twin correctly nineteen times in twenty. Controls are not perfect --- the residual \CtlMissPct{}\% carry
-genuine truncations --- but they are exact where the repeated items are not.
+times in six render its non-adjacent twin right nineteen times in twenty. Controls are not perfect --- \CtlMissPct{}\% carry genuine
+truncations --- but they are exact where the repeated items are not.
 
 Above $k\!=\!8$ the control's fillers cycle a pool of eight, making that contrast
 period-$1$ against period-$8$. We therefore re-generated the $k=12\ldots32$
 controls from a never-cycled $146$-word pool, pairing them with the repeated
-items already scored so only the control side changes. The dissociation survives
-at \ApMidGap{} points (\ApMidRep{}\% against \ApMidCtl{}\%, $n=\ApMidN{}$)
-where cycled controls give \ApCycGap{}: the confound is worth \ApCost{} points,
-not the bulk of the effect. Two further rivals, improbability and an acoustic attractor, fail
-their own predictions (S8).
+items already scored so only the control changes. The dissociation survives at
+\ApMidGap{} points (\ApMidRep{}\% against \ApMidCtl{}\%, $n=\ApMidN{}$) where
+cycled controls give \ApCycGap{}: the confound is worth \ApCost{} points, not
+the bulk of the effect. Improbability and an acoustic attractor fail their own
+predictions (S8).
 
 A third rival is a decoding rule rather than a mechanism: the families ship
 repetition penalties differing by an order of magnitude, and a penalty suppresses
 repeated tokens by construction. It is not the cause. Sweeping XTTS-v2 over a
 \PenFold{}-fold penalty range leaves the repeated exact-rate between
-\PenRepLo{}\% and \PenRepHi{}\% (\PenSlope{} points per unit, over the
+\PenRepLo{}\% and \PenRepHi{}\% (\PenSlope{} points per unit over the
 \PenArms{} arms whose control survives; at $1.0$ the control itself collapses to
-\PenOffCtl{}\%, which makes that setting unusable rather than informative). The
-\PenNoneN{} Llasa checkpoints pass \emph{no} penalty at all --- their decoding
-rule suppresses nothing --- yet show the effect at full size, \PenNoneRep{}\%
-against \PenNoneCtl{}\%.
+\PenOffCtl{}\%, making that setting unusable rather than informative), and the
+\PenNoneN{} Llasa checkpoints pass \emph{no} penalty at all yet show the effect
+at full size, \PenNoneRep{}\% against \PenNoneCtl{}\%.
 
 The last rival is architectural, the one the title stakes: perhaps any
 synthesiser mishandles long repeated text. The same ladder through
@@ -129,13 +128,12 @@ states by the trajectory's effective rank, the capacity gain
 $\mathrm{d}\mathcal{N}_{\mathrm{eff}}/\mathrm{d}\log k$ on repeated text is a
 factor \CapRatio{} of the control's (Figure~\ref{fig:main}(c)), positive in all
 \CkCapN{} checkpoints (mean \CkCap{} $[\CkCapLo{},\CkCapHi{}]$) but varying
-fourfold across them: general in direction, not magnitude. Rendering \emph{very}
-sixteen times does produce monotonous audio, so the low rank could be the
-stimulus rather than lost capacity; covarying out realised output diversity
-leaves the ratio at \CapAdjRatio{}, and restricting to correctly rendered items
-at \CapCorrRatio{} on a subset that is admittedly not like-for-like. Staying
-positive, the gain says repetition slows state acquisition at $k\le32$ without
-halting it.
+fourfold: general in direction, not magnitude. Rendering \emph{very} sixteen
+times does produce monotonous audio, so the low rank could be the stimulus rather
+than lost capacity; covarying out realised output diversity leaves the ratio at
+\CapAdjRatio{}, and restricting to correctly rendered items at \CapCorrRatio{}
+on a subset that is admittedly not like-for-like. Staying positive, the gain says
+repetition slows state acquisition without halting it.
 
 Lemma~\ref{lem:dilution}'s premise holds only approximately
 ($\delta\le\DeltaMax{}$ nats, S4) and its dose-response prediction fails

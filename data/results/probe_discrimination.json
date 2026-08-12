@@ -1,0 +1,68 @@
+{
+  "models": {
+    "llasa1b": {
+      "rep_early": 0.6425221273886063,
+      "rep_late": 0.6244152447501343,
+      "ctl_early": 0.6448689356913525,
+      "ctl_late": 0.7045589561897383,
+      "rep_retention": 0.9718190520347315,
+      "ctl_retention": 1.0925614759755689,
+      "rep_below_ctl": true
+    },
+    "llasa3b": {
+      "rep_early": 0.47467857129169544,
+      "rep_late": 0.41063739464959426,
+      "ctl_early": 0.6750658145232671,
+      "ctl_late": 0.669125098128921,
+      "rep_retention": 0.8650851744416599,
+      "ctl_retention": 0.9911997967212405,
+      "rep_below_ctl": true
+    },
+    "llasa8b": {
+      "rep_early": 0.5448817331770461,
+      "rep_late": 0.5228348877708618,
+      "ctl_early": 0.5090548018275527,
+      "ctl_late": 0.5548489704113045,
+      "rep_retention": 0.9595382923232981,
+      "ctl_retention": 1.0899592115020753,
+      "rep_below_ctl": true
+    },
+    "qwen06b": {
+      "rep_early": 0.3211234152079192,
+      "rep_late": 0.4686667825879447,
+      "ctl_early": 0.18010104306045271,
+      "ctl_late": 0.3126574226027231,
+      "rep_retention": 1.459460009431249,
+      "ctl_retention": 1.7360111706725458,
+      "rep_below_ctl": true
+    },
+    "qwen17b": {
+      "rep_early": 0.6154620543063969,
+      "rep_late": 0.47423137818840333,
+      "ctl_early": 0.3698380474057241,
+      "ctl_late": 0.413747557590621,
+      "rep_retention": 0.7705290275333784,
+      "ctl_retention": 1.1187263195144623,
+      "rep_below_ctl": true
+    },
+    "xtts2": {
+      "rep_early": 0.25359497198160263,
+      "rep_late": 0.4864692646039438,
+      "ctl_early": 0.21870241051365136,
+      "ctl_late": 0.6224475699768051,
+      "rep_retention": 1.9182922311221349,
+      "ctl_retention": 2.8460937788244087,
+      "rep_below_ctl": true
+    }
+  },
+  "n_models": 6,
+  "n_rep_below_ctl": 6,
+  "rep_late_r2_median": 0.48035032139617356,
+  "rep_late_r2_lo": 0.41063739464959426,
+  "rep_late_r2_hi": 0.6244152447501343,
+  "n_retention_above_one": 2,
+  "rep_retention_median": 0.9656786721790148,
+  "rep_retention_lo": 0.7705290275333784,
+  "rep_retention_hi": 1.9182922311221349,
+  "discriminates": false
+}
