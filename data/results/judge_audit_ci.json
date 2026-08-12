@@ -1,0 +1,650 @@
+{
+  "n_boot": 20000,
+  "boot_seed": 0,
+  "fragility_rule": {
+    "donor_ci_width_above": 0.2,
+    "fewer_donors_than": 10,
+    "missing_trial_fraction_above": 0.25
+  },
+  "ctc_validation": {
+    "source": "data/results/ctc_validation.json",
+    "macro_source": "analysis/make_numbers.py, from summary.*_kge4",
+    "unit_of_analysis": "one concatenated utterance (atom x k x judge)",
+    "cells": {
+      "periodic_ctc_kge4": {
+        "label": "periodic_ctc_kge4",
+        "statistic": "median",
+        "n_trials": 24,
+        "n_donors": 6,
+        "n_expected": 24,
+        "fraction_missing": 0.0,
+        "point": 1.0,
+        "ci95_trial": [
+          1.0,
+          1.0
+        ],
+        "ci95_donor": [
+          1.0,
+          1.0
+        ],
+        "donor_ci_width": 0.0,
+        "bootstrap_degenerate": true,
+        "distinct_values": [
+          0.9375,
+          0.96875,
+          1.0
+        ],
+        "mean_ratio": 0.99609375,
+        "mean_ci95_donor": [
+          0.98828125,
+          1.0
+        ],
+        "fraction_exact": 0.9166666666666666,
+        "fragile": true,
+        "fragile_because": [
+          "only 6 independent donors"
+        ],
+        "published_value": 1.0,
+        "ks_present": [
+          4,
+          8,
+          16,
+          32
+        ],
+        "ks_missing": [],
+        "macro": "\\CtcValPer"
+      },
+      "periodic_whisper_kge4": {
+        "label": "periodic_whisper_kge4",
+        "statistic": "median",
+        "n_trials": 12,
+        "n_donors": 6,
+        "n_expected": 24,
+        "fraction_missing": 0.5,
+        "point": 0.1875,
+        "ci95_trial": [
+          0.125,
+          0.25
+        ],
+        "ci95_donor": [
+          0.1875,
+          0.1875
+        ],
+        "donor_ci_width": 0.0,
+        "bootstrap_degenerate": false,
+        "distinct_values": [
+          0.125,
+          0.25
+        ],
+        "mean_ratio": 0.1875,
+        "mean_ci95_donor": [
+          0.1875,
+          0.1875
+        ],
+        "fraction_exact": 0.0,
+        "fragile": true,
+        "fragile_because": [
+          "only 6 independent donors",
+          "50% of the trials never returned"
+        ],
+        "published_value": 0.1875,
+        "ks_present": [
+          4,
+          8
+        ],
+        "ks_missing": [
+          16,
+          32
+        ],
+        "macro": "\\WhisperValPer"
+      },
+      "distinct_ctc_kge4": {
+        "label": "distinct_ctc_kge4",
+        "statistic": "median",
+        "n_trials": 24,
+        "n_donors": 6,
+        "n_expected": 24,
+        "fraction_missing": 0.0,
+        "point": 1.0,
+        "ci95_trial": [
+          1.0,
+          1.0
+        ],
+        "ci95_donor": [
+          1.0,
+          1.0
+        ],
+        "donor_ci_width": 0.0,
+        "bootstrap_degenerate": true,
+        "distinct_values": [
+          0.96875,
+          1.0
+        ],
+        "mean_ratio": 0.9986979166666666,
+        "mean_ci95_donor": [
+          0.99609375,
+          1.0
+        ],
+        "fraction_exact": 0.9583333333333334,
+        "fragile": true,
+        "fragile_because": [
+          "only 6 independent donors"
+        ],
+        "published_value": 1.0,
+        "ks_present": [
+          4,
+          8,
+          16,
+          32
+        ],
+        "ks_missing": [],
+        "macro": "\\CtcValDis"
+      },
+      "distinct_whisper_kge4": {
+        "label": "distinct_whisper_kge4",
+        "statistic": "median",
+        "n_trials": 12,
+        "n_donors": 6,
+        "n_expected": 24,
+        "fraction_missing": 0.5,
+        "point": 0.25,
+        "ci95_trial": [
+          0.125,
+          0.25
+        ],
+        "ci95_donor": [
+          0.1875,
+          0.625
+        ],
+        "donor_ci_width": 0.4375,
+        "bootstrap_degenerate": false,
+        "distinct_values": [
+          0.125,
+          0.25,
+          1.0
+        ],
+        "mean_ratio": 0.3229166666666667,
+        "mean_ci95_donor": [
+          0.1875,
+          0.59375
+        ],
+        "fraction_exact": 0.16666666666666666,
+        "fragile": true,
+        "fragile_because": [
+          "donor-level 95% interval spans 0.44",
+          "only 6 independent donors",
+          "50% of the trials never returned"
+        ],
+        "published_value": 0.25,
+        "ks_present": [
+          4,
+          8
+        ],
+        "ks_missing": [
+          16,
+          32
+        ],
+        "macro": "\\WhisperValDis"
+      }
+    },
+    "whisper_periodic_missing_ks": [
+      16,
+      32
+    ],
+    "whisper_periodic_is_median_of_two_levels": true,
+    "whisper_periodic_counted_values": [
+      1
+    ],
+    "whisper_periodic_uniform_failure": true,
+    "whisper_periodic_note": "all 12 returning trials transcribed the repeated word exactly 1 time(s), so the ratio is 1/k by construction and has no sampling spread; the 2 higher k values (16, 32) returned no transcript at all"
+  },
+  "asr_reliability": {
+    "source": "data/results/asr_reliability.json",
+    "judge": "openai/whisper-large-v3",
+    "note": "quoted in main.tex as literals, not macros",
+    "repeated_by_k": {
+      "2": {
+        "label": "repeated_k2",
+        "statistic": "mean",
+        "n_trials": 6,
+        "n_donors": 6,
+        "n_expected": null,
+        "fraction_missing": 0.0,
+        "point": 0.9166666666666666,
+        "ci95_trial": [
+          0.75,
+          1.0
+        ],
+        "ci95_donor": [
+          0.75,
+          1.0
+        ],
+        "donor_ci_width": 0.25,
+        "bootstrap_degenerate": false,
+        "distinct_values": [
+          0.5,
+          1.0
+        ],
+        "fraction_exact": 0.8333333333333334,
+        "fragile": true,
+        "fragile_because": [
+          "donor-level 95% interval spans 0.25",
+          "only 6 independent donors"
+        ],
+        "published_value": 0.9166666666666666
+      },
+      "4": {
+        "label": "repeated_k4",
+        "statistic": "mean",
+        "n_trials": 6,
+        "n_donors": 6,
+        "n_expected": null,
+        "fraction_missing": 0.0,
+        "point": 0.5,
+        "ci95_trial": [
+          0.25,
+          0.75
+        ],
+        "ci95_donor": [
+          0.25,
+          0.75
+        ],
+        "donor_ci_width": 0.5,
+        "bootstrap_degenerate": false,
+        "distinct_values": [
+          0.25,
+          1.0
+        ],
+        "fraction_exact": 0.3333333333333333,
+        "fragile": true,
+        "fragile_because": [
+          "donor-level 95% interval spans 0.50",
+          "only 6 independent donors"
+        ],
+        "published_value": 0.5
+      },
+      "8": {
+        "label": "repeated_k8",
+        "statistic": "mean",
+        "n_trials": 6,
+        "n_donors": 6,
+        "n_expected": null,
+        "fraction_missing": 0.0,
+        "point": 0.2708333333333333,
+        "ci95_trial": [
+          0.125,
+          0.5625
+        ],
+        "ci95_donor": [
+          0.125,
+          0.5625
+        ],
+        "donor_ci_width": 0.4375,
+        "bootstrap_degenerate": false,
+        "distinct_values": [
+          0.125,
+          1.0
+        ],
+        "fraction_exact": 0.16666666666666666,
+        "fragile": true,
+        "fragile_because": [
+          "donor-level 95% interval spans 0.44",
+          "only 6 independent donors"
+        ],
+        "published_value": 0.2708333333333333
+      },
+      "16": {
+        "label": "repeated_k16",
+        "statistic": "mean",
+        "n_trials": 6,
+        "n_donors": 6,
+        "n_expected": null,
+        "fraction_missing": 0.0,
+        "point": 0.6458333333333334,
+        "ci95_trial": [
+          0.4270833333333333,
+          0.8020833333333334
+        ],
+        "ci95_donor": [
+          0.4270833333333333,
+          0.8020833333333334
+        ],
+        "donor_ci_width": 0.37500000000000006,
+        "bootstrap_degenerate": false,
+        "distinct_values": [
+          0.125,
+          0.625,
+          0.6875,
+          0.75,
+          0.8125,
+          0.875
+        ],
+        "fraction_exact": 0.0,
+        "fragile": true,
+        "fragile_because": [
+          "donor-level 95% interval spans 0.38",
+          "only 6 independent donors"
+        ],
+        "published_value": 0.6458333333333334
+      },
+      "32": {
+        "label": "repeated_k32",
+        "statistic": "mean",
+        "n_trials": 6,
+        "n_donors": 6,
+        "n_expected": null,
+        "fraction_missing": 0.0,
+        "point": 0.53125,
+        "ci95_trial": [
+          0.3229166666666667,
+          0.7083333333333334
+        ],
+        "ci95_donor": [
+          0.3229166666666667,
+          0.7135416666666666
+        ],
+        "donor_ci_width": 0.39062499999999994,
+        "bootstrap_degenerate": false,
+        "distinct_values": [
+          0.09375,
+          0.40625,
+          0.46875,
+          0.65625,
+          0.75,
+          0.8125
+        ],
+        "fraction_exact": 0.0,
+        "fragile": true,
+        "fragile_because": [
+          "donor-level 95% interval spans 0.39",
+          "only 6 independent donors"
+        ],
+        "published_value": 0.53125
+      }
+    },
+    "control_by_k": {
+      "2": {
+        "label": "distinct_k2",
+        "statistic": "mean",
+        "n_trials": 3,
+        "n_donors": 3,
+        "n_expected": null,
+        "fraction_missing": 0.0,
+        "point": 1.0,
+        "ci95_trial": [
+          1.0,
+          1.0
+        ],
+        "ci95_donor": [
+          1.0,
+          1.0
+        ],
+        "donor_ci_width": 0.0,
+        "bootstrap_degenerate": true,
+        "distinct_values": [
+          1.0
+        ],
+        "fraction_exact": 1.0,
+        "all_trials_exact": true,
+        "failure_rate_upper_95_by_trial": 0.6315968501359612,
+        "failure_rate_upper_95_by_donor": 0.6315968501359612,
+        "fragile": true,
+        "fragile_because": [
+          "only 3 independent donors"
+        ],
+        "published_value": 1.0
+      },
+      "4": {
+        "label": "distinct_k4",
+        "statistic": "mean",
+        "n_trials": 3,
+        "n_donors": 3,
+        "n_expected": null,
+        "fraction_missing": 0.0,
+        "point": 1.0,
+        "ci95_trial": [
+          1.0,
+          1.0
+        ],
+        "ci95_donor": [
+          1.0,
+          1.0
+        ],
+        "donor_ci_width": 0.0,
+        "bootstrap_degenerate": true,
+        "distinct_values": [
+          1.0
+        ],
+        "fraction_exact": 1.0,
+        "all_trials_exact": true,
+        "failure_rate_upper_95_by_trial": 0.6315968501359612,
+        "failure_rate_upper_95_by_donor": 0.6315968501359612,
+        "fragile": true,
+        "fragile_because": [
+          "only 3 independent donors"
+        ],
+        "published_value": 1.0
+      },
+      "8": {
+        "label": "distinct_k8",
+        "statistic": "mean",
+        "n_trials": 3,
+        "n_donors": 3,
+        "n_expected": null,
+        "fraction_missing": 0.0,
+        "point": 1.0,
+        "ci95_trial": [
+          1.0,
+          1.0
+        ],
+        "ci95_donor": [
+          1.0,
+          1.0
+        ],
+        "donor_ci_width": 0.0,
+        "bootstrap_degenerate": true,
+        "distinct_values": [
+          1.0
+        ],
+        "fraction_exact": 1.0,
+        "all_trials_exact": true,
+        "failure_rate_upper_95_by_trial": 0.6315968501359612,
+        "failure_rate_upper_95_by_donor": 0.6315968501359612,
+        "fragile": true,
+        "fragile_because": [
+          "only 3 independent donors"
+        ],
+        "published_value": 1.0
+      },
+      "16": {
+        "label": "distinct_k16",
+        "statistic": "mean",
+        "n_trials": 3,
+        "n_donors": 3,
+        "n_expected": null,
+        "fraction_missing": 0.0,
+        "point": 1.0,
+        "ci95_trial": [
+          1.0,
+          1.0
+        ],
+        "ci95_donor": [
+          1.0,
+          1.0
+        ],
+        "donor_ci_width": 0.0,
+        "bootstrap_degenerate": true,
+        "distinct_values": [
+          1.0
+        ],
+        "fraction_exact": 1.0,
+        "all_trials_exact": true,
+        "failure_rate_upper_95_by_trial": 0.6315968501359612,
+        "failure_rate_upper_95_by_donor": 0.6315968501359612,
+        "fragile": true,
+        "fragile_because": [
+          "only 3 independent donors"
+        ],
+        "published_value": 1.0
+      },
+      "32": {
+        "label": "distinct_k32",
+        "statistic": "mean",
+        "n_trials": 3,
+        "n_donors": 3,
+        "n_expected": null,
+        "fraction_missing": 0.0,
+        "point": 1.0,
+        "ci95_trial": [
+          1.0,
+          1.0
+        ],
+        "ci95_donor": [
+          1.0,
+          1.0
+        ],
+        "donor_ci_width": 0.0,
+        "bootstrap_degenerate": true,
+        "distinct_values": [
+          1.0
+        ],
+        "fraction_exact": 1.0,
+        "all_trials_exact": true,
+        "failure_rate_upper_95_by_trial": 0.6315968501359612,
+        "failure_rate_upper_95_by_donor": 0.6315968501359612,
+        "fragile": true,
+        "fragile_because": [
+          "only 3 independent donors"
+        ],
+        "published_value": 1.0
+      }
+    },
+    "repeated_kge4_range_of_points": [
+      0.2708333333333333,
+      0.6458333333333334
+    ],
+    "repeated_kge4_envelope_of_cis": [
+      0.125,
+      0.8020833333333334
+    ],
+    "repeated_kge4_pooled": {
+      "label": "repeated_kge4_pooled",
+      "statistic": "mean",
+      "n_trials": 24,
+      "n_donors": 6,
+      "n_expected": null,
+      "fraction_missing": 0.0,
+      "point": 0.4869791666666667,
+      "ci95_trial": [
+        0.35546875,
+        0.6197916666666666
+      ],
+      "ci95_donor": [
+        0.34375,
+        0.58203125
+      ],
+      "donor_ci_width": 0.23828125,
+      "bootstrap_degenerate": false,
+      "distinct_values": [
+        0.09375,
+        0.125,
+        0.25,
+        0.40625,
+        0.46875,
+        0.625,
+        0.65625,
+        0.6875
+      ],
+      "fraction_exact": 0.125,
+      "fragile": true,
+      "fragile_because": [
+        "donor-level 95% interval spans 0.24",
+        "only 6 independent donors"
+      ]
+    },
+    "distinct_kge4_pooled": {
+      "label": "distinct_kge4_pooled",
+      "statistic": "mean",
+      "n_trials": 12,
+      "n_donors": 3,
+      "n_expected": null,
+      "fraction_missing": 0.0,
+      "point": 1.0,
+      "ci95_trial": [
+        1.0,
+        1.0
+      ],
+      "ci95_donor": [
+        1.0,
+        1.0
+      ],
+      "donor_ci_width": 0.0,
+      "bootstrap_degenerate": true,
+      "distinct_values": [
+        1.0
+      ],
+      "fraction_exact": 1.0,
+      "all_trials_exact": true,
+      "failure_rate_upper_95_by_trial": 0.22092219194555585,
+      "failure_rate_upper_95_by_donor": 0.6315968501359612,
+      "fragile": true,
+      "fragile_because": [
+        "only 3 independent donors"
+      ]
+    }
+  },
+  "cross_experiment_notes": {
+    "distinct_word_claim_supported_by": "asr_reliability.py cyclic-rotation control (the only genuine distinct-word arm)",
+    "distinct_word_n_trials": 12,
+    "distinct_word_n_rotations": 3,
+    "distinct_word_ratio": 1.0,
+    "distinct_word_failure_rate_upper_95_by_rotation": 0.6315968501359612,
+    "ctc_validation_distinct_arm_is_not_distinct_words": true,
+    "ctc_validation_distinct_whisper_kge4": 0.25,
+    "ctc_validation_distinct_note": "0.25, but that arm repeats one control sentence N times, so it is periodic audio too; it is consistent with the periodicity account, not a counterexample to it, and \\WhisperValDis should stay unused or be renamed",
+    "whisper_vs_ctc_on_identical_material": {
+      "whisper": 0.1875,
+      "ctc": 1.0,
+      "n_trials_whisper": 12,
+      "n_trials_ctc": 24,
+      "same_audit": true
+    }
+  },
+  "fragile_ratios": {
+    "periodic_ctc_kge4": [
+      "only 6 independent donors"
+    ],
+    "periodic_whisper_kge4": [
+      "only 6 independent donors",
+      "50% of the trials never returned"
+    ],
+    "distinct_ctc_kge4": [
+      "only 6 independent donors"
+    ],
+    "distinct_whisper_kge4": [
+      "donor-level 95% interval spans 0.44",
+      "only 6 independent donors",
+      "50% of the trials never returned"
+    ],
+    "asr_reliability repeated k=2": [
+      "donor-level 95% interval spans 0.25",
+      "only 6 independent donors"
+    ],
+    "asr_reliability repeated k=4": [
+      "donor-level 95% interval spans 0.50",
+      "only 6 independent donors"
+    ],
+    "asr_reliability repeated k=8": [
+      "donor-level 95% interval spans 0.44",
+      "only 6 independent donors"
+    ],
+    "asr_reliability repeated k=16": [
+      "donor-level 95% interval spans 0.38",
+      "only 6 independent donors"
+    ],
+    "asr_reliability repeated k=32": [
+      "donor-level 95% interval spans 0.39",
+      "only 6 independent donors"
+    ]
+  }
+}

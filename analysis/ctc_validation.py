@@ -62,6 +62,24 @@ def main() -> None:
     # translate instead of transcribe, which would score zero occurrences of a
     # Spanish target for a reason that has nothing to do with counting.
     ap.add_argument("--language", default="en")
+    # How the CTC judge is fed long audio. This is not a tuning knob, it is part
+    # of the instrument, and it turns out to be judge-specific. The English judge
+    # (wav2vec2-large-960h-lv60-self, fine-tuned on LibriSpeech utterances that
+    # run to tens of seconds) scores 1.00 on this ground truth at 25 s chunks.
+    # The Spanish judge is an XLSR-53 fine-tune on Common Voice, whose training
+    # clips are almost all under 10 s, and at 25 s chunks it drops to 0.75 --- not
+    # by collapsing repetitions the way an AR judge does, but by shedding letters
+    # from short words ("muy" -> "my", "veloz" -> "velz") once the segment is
+    # long. At 5 s chunks it recovers to 1.00 at every k on the same audio. The
+    # value is therefore chosen *on ground truth, where the answer is known by
+    # construction*, never on the outcome measure, and whatever is chosen here
+    # must also be passed to `src/common/asr_ctc.py` for the production pass, or
+    # the audit certifies an instrument that was never used.
+    # Defaults reproduce the English run byte-for-byte (25 s, no overlap).
+    ap.add_argument("--chunk-s", type=float, default=25.0)
+    ap.add_argument("--chunk-overlap-s", type=float, default=0.0,
+                    help="0.0 is the English run's setting; asr_ctc.py's "
+                         "production transcriber uses 0.25")
     args = ap.parse_args()
 
     from common.score_counts import count_occurrences, normalise
@@ -97,15 +115,18 @@ def main() -> None:
 
     @torch.no_grad()
     def ctc_text(w: np.ndarray, sr: int) -> str:
-        step, out = int(25 * sr), []
-        for i in range(0, w.size, step):
-            seg = w[i:i + step]
+        step = int(args.chunk_s * sr)
+        overlap = int(args.chunk_overlap_s * sr)
+        out, i = [], 0
+        while i < w.size:
+            seg = w[max(0, i - (overlap if i else 0)): i + step]
             if seg.size < sr // 20:
                 break
             lg = cmod(cproc(seg, sampling_rate=sr,
                             return_tensors="pt").input_values.to(dev)).logits
             out.append(cproc.batch_decode(torch.argmax(lg, -1))[0].strip())
-        return " ".join(out)
+            i += step
+        return " ".join(p for p in out if p)
 
     @torch.no_grad()
     def whisper_text(w: np.ndarray, sr: int) -> str:

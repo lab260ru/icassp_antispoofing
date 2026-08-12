@@ -1,0 +1,804 @@
+{
+  "alpha": 0.05,
+  "n_boot": 20000,
+  "boot_seed": 0,
+  "margins_precommitted": {
+    "rank1_fraction_of_full_transfer": 0.5,
+    "duration_fraction_of_low_k_gain": 0.5,
+    "probe_tie_band": 0.02,
+    "probe_rival_control_ratio": 0.14
+  },
+  "rank1_patch": {
+    "point": 0.0,
+    "ci90": [
+      -0.08899157759767817,
+      0.06988097118757941
+    ],
+    "ci95": [
+      -0.09354741777330622,
+      0.08701137698962969
+    ],
+    "margin": 0.49603284046887786,
+    "tost_p": 0.0,
+    "equivalent_at_margin": true,
+    "bound": 0.08899157759767817,
+    "one_sided_bound": 0.06988097118757941,
+    "margin_of_safety": 0.4070412628711997,
+    "margin_of_safety_ratio": 5.573930183723584,
+    "direction": 1,
+    "cell": "crossk|L7|P128",
+    "n": 36,
+    "unit": "log(1+count), signed toward donor",
+    "full_transfer_logcount": 0.9920656809377557,
+    "bound_as_fraction_of_transfer": 0.08970331229839378,
+    "one_sided_bound_as_fraction_of_transfer": 0.07043986353960358,
+    "median_reference_count": 18.5,
+    "bound_repetitions_at_median_count": 1.8148932750008235,
+    "bound_repetitions_at_k": {
+      "16": 1.5822146500007186,
+      "24": 2.3267862500010565,
+      "32": 3.071357850001391
+    },
+    "one_sided_bound_repetitions_at_k": {
+      "16": 1.230469001098136,
+      "24": 1.809513236909023,
+      "32": 2.38855747271991
+    },
+    "sensitivity_mean": {
+      "point": -0.057284705583916025,
+      "ci90": [
+        -0.2012219265788318,
+        0.08605371052308375
+      ],
+      "ci95": [
+        -0.22973685108496378,
+        0.113772745699781
+      ],
+      "margin": 0.49603284046887786,
+      "tost_p": 0.0,
+      "equivalent_at_margin": true,
+      "bound": 0.2012219265788318,
+      "one_sided_bound": 0.08605371052308375,
+      "margin_of_safety": 0.29481091389004604,
+      "margin_of_safety_ratio": 2.4651033259765023,
+      "direction": 1
+    },
+    "sensitivity_cluster_by_receiver": {
+      "point": 0.0,
+      "ci90": [
+        -0.11338665968239425,
+        0.05666434265350162
+      ],
+      "ci95": [
+        -0.13976194237515882,
+        0.08231098984727692
+      ],
+      "margin": 0.49603284046887786,
+      "tost_p": 0.0,
+      "equivalent_at_margin": true,
+      "bound": 0.11338665968239425,
+      "one_sided_bound": 0.05666434265350162,
+      "margin_of_safety": 0.3826461807864836,
+      "margin_of_safety_ratio": 4.374701943405938,
+      "direction": 1,
+      "n_clusters": 9
+    },
+    "entitled_to_no": true,
+    "verdict": "a shift larger than 0.089 log-count (9% of a full transfer, +2.3 repetitions at k=24) is excluded at 95%; the paper may say the patch does not transfer the count"
+  },
+  "duration_supply": {
+    "point": 0.0,
+    "ci90": [
+      -0.08333333333333333,
+      0.08333333333333333
+    ],
+    "ci95": [
+      -0.1,
+      0.1
+    ],
+    "margin": 0.16666666666666669,
+    "tost_p": 0.00055,
+    "equivalent_at_margin": true,
+    "bound": 0.08333333333333333,
+    "one_sided_bound": 0.08333333333333333,
+    "margin_of_safety": 0.08333333333333336,
+    "margin_of_safety_ratio": 2.0000000000000004,
+    "direction": 1,
+    "n_pairs": 60,
+    "unit": "exact-rendering rate, difference",
+    "discordant_fixed_only": 5,
+    "discordant_free_only": 5,
+    "low_k_gain": 0.33333333333333337,
+    "bound_points": 8.333333333333332,
+    "one_sided_bound_points": 8.333333333333332,
+    "low_k_gain_excluded": true,
+    "sensitivity_abs_rel_error": {
+      "point": 0.0,
+      "ci90": [
+        -0.04166666666666667,
+        0.03645833333333334
+      ],
+      "ci95": [
+        -0.046875,
+        0.04166666666666667
+      ],
+      "margin": 0.1,
+      "tost_p": 0.0,
+      "equivalent_at_margin": true,
+      "bound": 0.04166666666666667,
+      "one_sided_bound": -0.04166666666666667,
+      "margin_of_safety": 0.058333333333333334,
+      "margin_of_safety_ratio": 2.4,
+      "direction": -1
+    },
+    "sensitivity_cluster_by_template": {
+      "point": 0.0,
+      "ci90": [
+        -0.06666666666666667,
+        0.06666666666666667
+      ],
+      "ci95": [
+        -0.08333333333333333,
+        0.06666666666666667
+      ],
+      "margin": 0.16666666666666669,
+      "tost_p": 0.0,
+      "equivalent_at_margin": true,
+      "bound": 0.06666666666666667,
+      "one_sided_bound": 0.06666666666666667,
+      "margin_of_safety": 0.10000000000000002,
+      "margin_of_safety_ratio": 2.5000000000000004,
+      "direction": 1,
+      "n_clusters": 5
+    },
+    "median_abs_rel_error_free": 0.08333333333333333,
+    "median_abs_rel_error_fixed": 0.08333333333333333,
+    "bound_ceiling_exact_pct": 25.0,
+    "bound_extra_items": 5.0,
+    "entitled_to_no": true,
+    "verdict": "an improvement larger than 8.3 points is excluded at 95% (one-sided); the low-k gain of 33.3 points is excluded, so the low/high split is established but a smaller genuine benefit is not ruled out"
+  },
+  "probe_vs_constant": {
+    "margins": {
+      "tie_band": 0.02,
+      "rival_control_ratio": 0.14
+    },
+    "checkpoints": {
+      "past:llasa1b": {
+        "point": -0.009337263452587008,
+        "ci90": [
+          -0.11872465431749414,
+          0.09335807081402611
+        ],
+        "ci95": [
+          -0.13883519891807544,
+          0.11287799878964587
+        ],
+        "margin": 0.14,
+        "tost_p": 0.0244,
+        "equivalent_at_margin": true,
+        "bound": 0.11872465431749414,
+        "one_sided_bound": 0.09335807081402611,
+        "margin_of_safety": 0.021275345682505872,
+        "margin_of_safety_ratio": 1.179199053514287,
+        "direction": 1,
+        "model": "llasa1b",
+        "arm": "past",
+        "n_items": 12,
+        "sensitivity_cluster_by_template": {
+          "point": -0.009337263452587008,
+          "ci90": [
+            -0.048260526781324975,
+            0.02958599987615118
+          ],
+          "ci95": [
+            -0.08417783156097425,
+            0.0325919584252401
+          ],
+          "margin": 0.14,
+          "tost_p": 0.0,
+          "equivalent_at_margin": true,
+          "bound": 0.048260526781324975,
+          "one_sided_bound": 0.02958599987615118,
+          "margin_of_safety": 0.09173947321867504,
+          "margin_of_safety_ratio": 2.900921505361081,
+          "direction": 1,
+          "n_clusters": 3
+        },
+        "layer": 0,
+        "mae": 0.5046686317262935,
+        "const_mae": 0.5,
+        "mae_ratio": 1.009337263452587,
+        "ratio_ci90": [
+          0.9066419291859739,
+          1.1187246543174942
+        ],
+        "ratio_ci95": [
+          0.8871220012103541,
+          1.1388351989180754
+        ],
+        "unit": "improvement in MAE over the constant predictor, as a fraction of the constant predictor's MAE",
+        "equivalent_at_tie_band": false,
+        "tost_p_tie_band": 0.4348,
+        "layer_selection_not_bootstrapped": true,
+        "bound_log2_units": 0.05936232715874707,
+        "bound_factor_in_k": 1.0420050916103833,
+        "verdict": "improvements above 9% of the constant predictor's MAE are excluded"
+      },
+      "control:llasa1b": {
+        "point": 0.1373947957331193,
+        "ci90": [
+          0.06658996745706956,
+          0.2014847957986629
+        ],
+        "ci95": [
+          0.051686127320082584,
+          0.2138069941908944
+        ],
+        "margin": 0.14,
+        "tost_p": 0.4746,
+        "equivalent_at_margin": false,
+        "bound": 0.2014847957986629,
+        "one_sided_bound": 0.2014847957986629,
+        "margin_of_safety": -0.061484795798662895,
+        "margin_of_safety_ratio": 0.6948415112170419,
+        "direction": 1,
+        "model": "llasa1b",
+        "arm": "control",
+        "n_items": 12,
+        "sensitivity_cluster_by_template": {
+          "point": 0.1373947957331193,
+          "ci90": [
+            0.09212327645841512,
+            0.1826663150078235
+          ],
+          "ci95": [
+            0.0850560958135782,
+            0.22087065363769076
+          ],
+          "margin": 0.14,
+          "tost_p": 0.3657,
+          "equivalent_at_margin": false,
+          "bound": 0.1826663150078235,
+          "one_sided_bound": 0.1826663150078235,
+          "margin_of_safety": -0.042666315007823474,
+          "margin_of_safety_ratio": 0.7664248331390705,
+          "direction": 1,
+          "n_clusters": 3
+        },
+        "layer": 15,
+        "mae": 0.43130260213344035,
+        "const_mae": 0.5,
+        "mae_ratio": 0.8626052042668807,
+        "ratio_ci90": [
+          0.798515204201337,
+          0.9334100325429304
+        ],
+        "ratio_ci95": [
+          0.7861930058091056,
+          0.9483138726799174
+        ],
+        "unit": "improvement in MAE over the constant predictor, as a fraction of the constant predictor's MAE",
+        "equivalent_at_tie_band": false,
+        "tost_p_tie_band": 0.9957,
+        "layer_selection_not_bootstrapped": true,
+        "bound_log2_units": 0.10074239789933145,
+        "bound_factor_in_k": 1.0723251294549467,
+        "verdict": "improvements above 20% of the constant predictor's MAE are excluded"
+      },
+      "past:llasa3b": {
+        "point": 0.012999668931398034,
+        "ci90": [
+          -0.09750744195243163,
+          0.12344058052265573
+        ],
+        "ci95": [
+          -0.12005949718242535,
+          0.14551849496207123
+        ],
+        "margin": 0.14,
+        "tost_p": 0.0296,
+        "equivalent_at_margin": true,
+        "bound": 0.12344058052265573,
+        "one_sided_bound": 0.12344058052265573,
+        "margin_of_safety": 0.01655941947734428,
+        "margin_of_safety_ratio": 1.1341489112189085,
+        "direction": 1,
+        "model": "llasa3b",
+        "arm": "past",
+        "n_items": 12,
+        "sensitivity_cluster_by_template": {
+          "point": 0.012999668931398034,
+          "ci90": [
+            -0.009544970902151784,
+            0.03554430876494796
+          ],
+          "ci95": [
+            -0.021193366393692514,
+            0.04644055310695716
+          ],
+          "margin": 0.14,
+          "tost_p": 0.0,
+          "equivalent_at_margin": true,
+          "bound": 0.03554430876494796,
+          "one_sided_bound": 0.03554430876494796,
+          "margin_of_safety": 0.10445569123505205,
+          "margin_of_safety_ratio": 3.9387458882886217,
+          "direction": 1,
+          "n_clusters": 3
+        },
+        "layer": 1,
+        "mae": 0.493500165534301,
+        "const_mae": 0.5,
+        "mae_ratio": 0.987000331068602,
+        "ratio_ci90": [
+          0.8765594194773443,
+          1.0975074419524316
+        ],
+        "ratio_ci95": [
+          0.8544815050379287,
+          1.1200594971824254
+        ],
+        "unit": "improvement in MAE over the constant predictor, as a fraction of the constant predictor's MAE",
+        "equivalent_at_tie_band": false,
+        "tost_p_tie_band": 0.46425,
+        "layer_selection_not_bootstrapped": true,
+        "bound_log2_units": 0.061720290261327866,
+        "bound_factor_in_k": 1.0437095533785352,
+        "verdict": "improvements above 12% of the constant predictor's MAE are excluded"
+      },
+      "control:llasa3b": {
+        "point": 0.1739357549877979,
+        "ci90": [
+          0.04380843985263669,
+          0.28394337491444355
+        ],
+        "ci95": [
+          0.013664815288835045,
+          0.30351614885586276
+        ],
+        "margin": 0.14,
+        "tost_p": 0.68975,
+        "equivalent_at_margin": false,
+        "bound": 0.28394337491444355,
+        "one_sided_bound": 0.28394337491444355,
+        "margin_of_safety": -0.14394337491444353,
+        "margin_of_safety_ratio": 0.49305605401846103,
+        "direction": 1,
+        "model": "llasa3b",
+        "arm": "control",
+        "n_items": 12,
+        "sensitivity_cluster_by_template": {
+          "point": 0.1739357549877979,
+          "ci90": [
+            0.1667478672597985,
+            0.1811236427157974
+          ],
+          "ci95": [
+            0.16037240760694083,
+            0.1819360707909392
+          ],
+          "margin": 0.14,
+          "tost_p": 1.0,
+          "equivalent_at_margin": false,
+          "bound": 0.1811236427157974,
+          "one_sided_bound": 0.1811236427157974,
+          "margin_of_safety": -0.04112364271579738,
+          "margin_of_safety_ratio": 0.7729526521265652,
+          "direction": 1,
+          "n_clusters": 3
+        },
+        "layer": 14,
+        "mae": 0.41303212250610105,
+        "const_mae": 0.5,
+        "mae_ratio": 0.8260642450122021,
+        "ratio_ci90": [
+          0.7160566250855565,
+          0.9561915601473633
+        ],
+        "ratio_ci95": [
+          0.6964838511441372,
+          0.986335184711165
+        ],
+        "unit": "improvement in MAE over the constant predictor, as a fraction of the constant predictor's MAE",
+        "equivalent_at_tie_band": false,
+        "tost_p_tie_band": 0.9706,
+        "layer_selection_not_bootstrapped": true,
+        "bound_log2_units": 0.14197168745722177,
+        "bound_factor_in_k": 1.1034120856329985,
+        "verdict": "improvements above 28% of the constant predictor's MAE are excluded"
+      },
+      "past:llasa8b": {
+        "point": 0.1364103451116473,
+        "ci90": [
+          -0.007916537972232116,
+          0.275642824788632
+        ],
+        "ci95": [
+          -0.038070979242312494,
+          0.30118711511888585
+        ],
+        "margin": 0.14,
+        "tost_p": 0.48275,
+        "equivalent_at_margin": false,
+        "bound": 0.275642824788632,
+        "one_sided_bound": 0.275642824788632,
+        "margin_of_safety": -0.135642824788632,
+        "margin_of_safety_ratio": 0.5079036615858026,
+        "direction": 1,
+        "model": "llasa8b",
+        "arm": "past",
+        "n_items": 12,
+        "sensitivity_cluster_by_template": {
+          "point": 0.1364103451116473,
+          "ci90": [
+            0.07302449897571817,
+            0.19979619124757642
+          ],
+          "ci95": [
+            0.06398671232086972,
+            0.2541442507286571
+          ],
+          "margin": 0.14,
+          "tost_p": 0.3668,
+          "equivalent_at_margin": false,
+          "bound": 0.19979619124757642,
+          "one_sided_bound": 0.19979619124757642,
+          "margin_of_safety": -0.0597961912475764,
+          "margin_of_safety_ratio": 0.700714058290129,
+          "direction": 1,
+          "n_clusters": 3
+        },
+        "layer": 7,
+        "mae": 0.43179482744417635,
+        "const_mae": 0.5,
+        "mae_ratio": 0.8635896548883527,
+        "ratio_ci90": [
+          0.724357175211368,
+          1.0079165379722321
+        ],
+        "ratio_ci95": [
+          0.6988128848811141,
+          1.0380709792423124
+        ],
+        "unit": "improvement in MAE over the constant predictor, as a fraction of the constant predictor's MAE",
+        "equivalent_at_tie_band": false,
+        "tost_p_tie_band": 0.90925,
+        "layer_selection_not_bootstrapped": true,
+        "bound_log2_units": 0.137821412394316,
+        "bound_factor_in_k": 1.100242404684525,
+        "verdict": "improvements above 28% of the constant predictor's MAE are excluded"
+      },
+      "control:llasa8b": {
+        "point": 0.41444127096303285,
+        "ci90": [
+          0.34548329660744176,
+          0.5173382403710317
+        ],
+        "ci95": [
+          0.3355712574898182,
+          0.536191543969962
+        ],
+        "margin": 0.14,
+        "tost_p": 1.0,
+        "equivalent_at_margin": false,
+        "bound": 0.5173382403710317,
+        "one_sided_bound": 0.5173382403710317,
+        "margin_of_safety": -0.3773382403710317,
+        "margin_of_safety_ratio": 0.27061598983982493,
+        "direction": 1,
+        "model": "llasa8b",
+        "arm": "control",
+        "n_items": 12,
+        "sensitivity_cluster_by_template": {
+          "point": 0.41444127096303285,
+          "ci90": [
+            0.411443077204365,
+            0.41743946472170057
+          ],
+          "ci95": [
+            0.4104142095404879,
+            0.4194087908164912
+          ],
+          "margin": 0.14,
+          "tost_p": 1.0,
+          "equivalent_at_margin": false,
+          "bound": 0.41743946472170057,
+          "one_sided_bound": 0.41743946472170057,
+          "margin_of_safety": -0.27743946472170056,
+          "margin_of_safety_ratio": 0.3353779693382261,
+          "direction": 1,
+          "n_clusters": 3
+        },
+        "layer": 4,
+        "mae": 0.2927793645184836,
+        "const_mae": 0.5,
+        "mae_ratio": 0.5855587290369672,
+        "ratio_ci90": [
+          0.4826617596289683,
+          0.6545167033925583
+        ],
+        "ratio_ci95": [
+          0.46380845603003795,
+          0.6644287425101818
+        ],
+        "unit": "improvement in MAE over the constant predictor, as a fraction of the constant predictor's MAE",
+        "equivalent_at_tie_band": false,
+        "tost_p_tie_band": 1.0,
+        "layer_selection_not_bootstrapped": true,
+        "bound_log2_units": 0.25866912018551586,
+        "bound_factor_in_k": 1.196374545162931,
+        "verdict": "improvements above 52% of the constant predictor's MAE are excluded"
+      },
+      "past:qwen06b": {
+        "point": 0.25975683531979066,
+        "ci90": [
+          0.10540790622024793,
+          0.4071857143622592
+        ],
+        "ci95": [
+          0.06642401446040992,
+          0.43401115381289496
+        ],
+        "margin": 0.14,
+        "tost_p": 0.9041,
+        "equivalent_at_margin": false,
+        "bound": 0.4071857143622592,
+        "one_sided_bound": 0.4071857143622592,
+        "margin_of_safety": -0.2671857143622592,
+        "margin_of_safety_ratio": 0.34382345711531226,
+        "direction": 1,
+        "model": "qwen06b",
+        "arm": "past",
+        "n_items": 12,
+        "sensitivity_cluster_by_template": {
+          "point": 0.25975683531979066,
+          "ci90": [
+            0.10925385915846741,
+            0.4102598114811139
+          ],
+          "ci95": [
+            -0.021357329090708976,
+            0.43015159939326075
+          ],
+          "margin": 0.14,
+          "tost_p": 0.73845,
+          "equivalent_at_margin": false,
+          "bound": 0.4102598114811139,
+          "one_sided_bound": 0.4102598114811139,
+          "margin_of_safety": -0.2702598114811139,
+          "margin_of_safety_ratio": 0.34124717089537504,
+          "direction": 1,
+          "n_clusters": 3
+        },
+        "layer": 9,
+        "mae": 0.37012158234010467,
+        "const_mae": 0.5,
+        "mae_ratio": 0.7402431646802093,
+        "ratio_ci90": [
+          0.5928142856377407,
+          0.894592093779752
+        ],
+        "ratio_ci95": [
+          0.565988846187105,
+          0.9335759855395901
+        ],
+        "unit": "improvement in MAE over the constant predictor, as a fraction of the constant predictor's MAE",
+        "equivalent_at_tie_band": false,
+        "tost_p_tie_band": 0.99055,
+        "layer_selection_not_bootstrapped": true,
+        "bound_log2_units": 0.2035928571811296,
+        "bound_factor_in_k": 1.1515626141217201,
+        "verdict": "improvements above 41% of the constant predictor's MAE are excluded"
+      },
+      "control:qwen06b": {
+        "point": 0.052629396571400644,
+        "ci90": [
+          0.040730152534418015,
+          0.06265289799203716
+        ],
+        "ci95": [
+          0.038108237828764935,
+          0.06432228734611728
+        ],
+        "margin": 0.14,
+        "tost_p": 0.0,
+        "equivalent_at_margin": true,
+        "bound": 0.06265289799203716,
+        "one_sided_bound": 0.06265289799203716,
+        "margin_of_safety": 0.07734710200796285,
+        "margin_of_safety_ratio": 2.234533509013314,
+        "direction": 1,
+        "model": "qwen06b",
+        "arm": "control",
+        "n_items": 12,
+        "sensitivity_cluster_by_template": {
+          "point": 0.052629396571400644,
+          "ci90": [
+            0.043556135249672834,
+            0.061702657893128454
+          ],
+          "ci95": [
+            0.03633298511939431,
+            0.06355276908457785
+          ],
+          "margin": 0.14,
+          "tost_p": 0.0,
+          "equivalent_at_margin": true,
+          "bound": 0.061702657893128454,
+          "one_sided_bound": 0.061702657893128454,
+          "margin_of_safety": 0.07829734210687156,
+          "margin_of_safety_ratio": 2.2689460191890887,
+          "direction": 1,
+          "n_clusters": 3
+        },
+        "layer": 9,
+        "mae": 0.4736853017142997,
+        "const_mae": 0.5,
+        "mae_ratio": 0.9473706034285994,
+        "ratio_ci90": [
+          0.9373471020079629,
+          0.959269847465582
+        ],
+        "ratio_ci95": [
+          0.9356777126538827,
+          0.9618917621712351
+        ],
+        "unit": "improvement in MAE over the constant predictor, as a fraction of the constant predictor's MAE",
+        "equivalent_at_tie_band": false,
+        "tost_p_tie_band": 0.99985,
+        "layer_selection_not_bootstrapped": true,
+        "bound_log2_units": 0.03132644899601858,
+        "bound_factor_in_k": 1.0219513008337224,
+        "verdict": "improvements above 6% of the constant predictor's MAE are excluded"
+      },
+      "past:qwen17b": {
+        "point": 0.10409751674049283,
+        "ci90": [
+          0.006184087349599582,
+          0.20539185848360791
+        ],
+        "ci95": [
+          -0.014035315007233918,
+          0.2261880832006793
+        ],
+        "margin": 0.14,
+        "tost_p": 0.27455,
+        "equivalent_at_margin": false,
+        "bound": 0.20539185848360791,
+        "one_sided_bound": 0.20539185848360791,
+        "margin_of_safety": -0.0653918584836079,
+        "margin_of_safety_ratio": 0.6816239019093021,
+        "direction": 1,
+        "model": "qwen17b",
+        "arm": "past",
+        "n_items": 12,
+        "sensitivity_cluster_by_template": {
+          "point": 0.10409751674049283,
+          "ci90": [
+            0.03872534425293506,
+            0.1694696892280505
+          ],
+          "ci95": [
+            0.0008616580395397477,
+            0.19697817550221286
+          ],
+          "margin": 0.14,
+          "tost_p": 0.2572,
+          "equivalent_at_margin": false,
+          "bound": 0.1694696892280505,
+          "one_sided_bound": 0.1694696892280505,
+          "margin_of_safety": -0.02946968922805049,
+          "margin_of_safety_ratio": 0.8261064302278033,
+          "direction": 1,
+          "n_clusters": 3
+        },
+        "layer": 5,
+        "mae": 0.4479512416297536,
+        "const_mae": 0.5,
+        "mae_ratio": 0.8959024832595072,
+        "ratio_ci90": [
+          0.7946081415163921,
+          0.9938159126504004
+        ],
+        "ratio_ci95": [
+          0.7738119167993207,
+          1.0140353150072339
+        ],
+        "unit": "improvement in MAE over the constant predictor, as a fraction of the constant predictor's MAE",
+        "equivalent_at_tie_band": false,
+        "tost_p_tie_band": 0.9219,
+        "layer_selection_not_bootstrapped": true,
+        "bound_log2_units": 0.10269592924180396,
+        "bound_factor_in_k": 1.0737781320737136,
+        "verdict": "improvements above 21% of the constant predictor's MAE are excluded"
+      },
+      "control:qwen17b": {
+        "point": 0.11218659112986584,
+        "ci90": [
+          0.09291031085270555,
+          0.13456479374210567
+        ],
+        "ci95": [
+          0.08939585055944042,
+          0.13922177570460736
+        ],
+        "margin": 0.14,
+        "tost_p": 0.02215,
+        "equivalent_at_margin": true,
+        "bound": 0.13456479374210567,
+        "one_sided_bound": 0.13456479374210567,
+        "margin_of_safety": 0.005435206257894343,
+        "margin_of_safety_ratio": 1.0403909975763121,
+        "direction": 1,
+        "model": "qwen17b",
+        "arm": "control",
+        "n_items": 12,
+        "sensitivity_cluster_by_template": {
+          "point": 0.11218659112986584,
+          "ci90": [
+            0.10356947026551666,
+            0.12080371199421502
+          ],
+          "ci95": [
+            0.09668761691171346,
+            0.12253897950476089
+          ],
+          "margin": 0.14,
+          "tost_p": 0.0,
+          "equivalent_at_margin": true,
+          "bound": 0.12080371199421502,
+          "one_sided_bound": 0.12080371199421502,
+          "margin_of_safety": 0.01919628800578499,
+          "margin_of_safety_ratio": 1.1589047860276367,
+          "direction": 1,
+          "n_clusters": 3
+        },
+        "layer": 9,
+        "mae": 0.4439067044350671,
+        "const_mae": 0.5,
+        "mae_ratio": 0.8878134088701342,
+        "ratio_ci90": [
+          0.8654352062578943,
+          0.9070896891472945
+        ],
+        "ratio_ci95": [
+          0.8607782242953926,
+          0.9106041494405596
+        ],
+        "unit": "improvement in MAE over the constant predictor, as a fraction of the constant predictor's MAE",
+        "equivalent_at_tie_band": false,
+        "tost_p_tie_band": 1.0,
+        "layer_selection_not_bootstrapped": true,
+        "bound_log2_units": 0.06728239687105284,
+        "bound_factor_in_k": 1.0477411946092083,
+        "verdict": "improvements above 13% of the constant predictor's MAE are excluded"
+      }
+    },
+    "null_side": [
+      "past:llasa1b",
+      "past:llasa3b"
+    ],
+    "worst_bound": 0.12344058052265573,
+    "worst_bound_log2_units": 0.061720290261327866,
+    "worst_bound_factor_in_k": 1.0437095533785352,
+    "worst_bound_clustered": 0.048260526781324975,
+    "rival_effect_excluded": true,
+    "rival_effect_excluded_clustered": true,
+    "tie_band_excluded": false,
+    "entitled_to_no": true,
+    "caveats": [
+      "the rival effect is excluded by only 0.02 in MAE-ratio units (0.14 margin vs 0.12 bound)",
+      "the probe layer was chosen to maximise R^2 and that choice is held fixed under resampling, so every interval here is narrower than the procedure's true sampling variability",
+      "three carrier templates are both the sampled unit and the cross-validation folds, so the clustered bootstrap has three clusters and is coarse"
+    ],
+    "margin_of_safety": 0.01655941947734428,
+    "fragile": true,
+    "verdict": "at n=12 per checkpoint the tightest excludable improvement on the null side is 12% of the constant predictor's MAE (5% clustering by template, the design's own unit); the rival's predicted effect (14%) is excluded, and the repo's 2% tie band is far outside reach -- but only just, and this null is the shakiest of the three"
+  },
+  "entitled_to_no": {
+    "rank1_patch": true,
+    "duration_supply": true,
+    "probe_vs_constant": true
+  }
+}

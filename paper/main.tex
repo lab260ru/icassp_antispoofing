@@ -119,11 +119,11 @@ encoder--decoder ASR~\cite{viakhirev2026dispersion}.
 
 \noindent\textbf{Stimuli.}
 A parametric repetition ladder of \NStimuli{} items: carrier sentences with a
-target word repeated $k \in \{1,2,3,4,6,8,12,16,24,32\}$ times, plus repeated
-sentences, tongue twisters and number phrases. Every item at $k\ge2$ has a
+target word repeated $k \in \{1,2,3,4,6,8,12,16,24,32\}$ times, plus
+sentence-repetition, tongue-twister and number-phrase families. Every item at
+$k\ge2$ has a
 \emph{length-matched control}: same carrier and word count, the repeated token
-replaced by fillers from a per-template pool of eight, cycled above $k\!=\!8$
-(S10).
+replaced by fillers from a per-template pool of eight, cycled above $k\!=\!8$.
 
 \noindent\textbf{Models.}
 The panel is \NModels{} checkpoints but only \NFamilies{} designs, scale
@@ -137,14 +137,16 @@ pooled into the panel. Every arm renders every item at \NSeeds{} seeds.
 \noindent\textbf{Behavioural measurement, and why the obvious judge is wrong.}
 The natural instrument, Whisper large-v3~\cite{radford2023whisper}, is
 demonstrably the wrong one: its decoder is autoregressive with a language-model
-prior, so it is subject to the very dynamics under study. Audited against
-concatenative audio with known ground truth its counted/true ratio falls to
-$0.27$--$0.65$ over $k\ge4$ and to \WhisperValPer{} at the top of the ladder,
-while \emph{same-voice distinct-word} sequences of identical length score
-$1.00$: a bias specific to periodicity, pointing the way of the effect we want
-to measure. We score instead with a CTC recogniser
+prior, so it is subject to the very dynamics under study. Audited against concatenative
+audio with known ground truth it transcribes the repeated word \emph{exactly
+once} in every trial that returns anything (\WhisperValPer{} of the true count,
+$n{=}\AuditWhisperN{}$ over \AuditDonors{} donors), and at the two highest $k$
+returns no transcript at all --- at the top of the ladder there is no
+measurement rather than a poor one. We score instead with a CTC recogniser
 (\texttt{wav2vec2-large-960h-lv60-self}, greedy best-path, no language model),
-put through the same audit --- ratio \CtcValPer{} on the same ground truth: worse in absolute WER, right for this purpose.
+put through the same audit on the identical audio: ratio \CtcValPer{}
+($n{=}\AuditCtcN{}$, mean \AuditCtcMean{}). Worse in absolute WER, right here; a
+separate audit at wider splice gaps agrees (S9).
 
 $\hat c$ is obtained by matching the target unit against the transcript's word
 sequence, counting non-overlapping occurrences in order and skipping

@@ -215,6 +215,19 @@ KS = (16, 24, 32)          # the repetition levels the task specifies
 LAG_NAMES = ("half_tau", "tau", "two_tau", "tau_rendered")
 SUBSTACK_FRACS = (0.0, 0.25, 0.5, 0.75)   # depth->= sweep, as fractions of L
 N_ANCHORS = 3              # boundary pairs sampled per item
+# Narrowest window we will call "one repetition", in decoder frames. This was 8
+# while only Llasa had been measured, which was a rate heuristic masquerading as
+# a principle: Llasa's codec runs at 50 Hz, so 8 frames is 0.16 s, whereas
+# Qwen3-TTS runs at 12.5 Hz and one repetition there is genuinely only ~5-7
+# frames. Keeping 8 would have silently discarded almost every Qwen item -- i.e.
+# thrown out the checkpoint the reviewer actually asked about, for a reason that
+# is about sample rate and not about the decoder. 3 is the floor at which a
+# window is still a window rather than a single position. Note the direction of
+# the resulting bias: sigma_max grows with window width (measured on Llasa-1B:
+# 16.2 at a 1-frame window against 39.4 at 77), so a genuinely short tau makes
+# the estimate SMALLER, i.e. more favourable to the contraction premise, not
+# less. Llasa is unaffected -- its tau never came near either value.
+MIN_TAU = 3
 POWER_ITERS = 20
 POWER_TOL = 2e-3
 N_TYPICAL = 3              # random directions for the Frobenius/typical-gain probe
@@ -429,6 +442,11 @@ class Backend:
     def tokens_for(self, item_id: str, seed: int):
         raise NotImplementedError
 
+    def extra_selftests(self) -> dict:
+        """Checkpoint-specific gates, if the family needs any. Merged into
+        gate 0 so they cannot be reported separately from the numbers."""
+        return {}
+
     # -- shared --------------------------------------------------------------
     @property
     def n_layers(self) -> int:
@@ -482,7 +500,99 @@ class LlasaBackend(Backend):
         return TFInput({"input_ids": full}, int(prompt_ids.shape[1]), int(len(sp_ids)))
 
 
-BACKENDS: dict[str, type[Backend]] = {"llasa": LlasaBackend}
+class QwenBackend(Backend):
+    """Qwen3-TTS "talker": a 28-layer Llama-shaped stack over *fused* embeddings.
+
+    Two differences from Llasa, neither of which touches the estimator:
+
+    * There is no flat token stream to teacher-force. Each decode step's input
+      is a sum of 16 RVQ-codebook embeddings plus a text term, so the
+      teacher-forced input is a sequence of *embeddings*, dumped by
+      `analysis/qwen_codec_dump.py` straight from the generation that produced
+      them. `TFInput` carries `inputs_embeds` instead of `input_ids`; nothing
+      downstream cares.
+    * The architecture exposes no text-attention span (text and codec content
+      are added into the same vector). That is fatal for an attention-based
+      boundary localiser -- the estimator that failed first -- and irrelevant
+      here, because this estimator reads no attention at all. It is, if
+      anything, a reason the Jacobian route is the only one that generalises
+      across these families.
+
+    The dumped sequence is not assumed correct: `extra_selftests` promotes the
+    dump's one-shot-versus-incremental equivalence check into gate 0, so a
+    mis-captured input cannot reach a reported number.
+    """
+
+    key = "qwen"
+
+    def load(self):
+        from qwen_tts import Qwen3TTSModel
+        print(f"[{self.spec.key}] loading {self.spec.hf_id} float32 on {self.device}",
+              flush=True)
+        self.tts = Qwen3TTSModel.from_pretrained(
+            self.spec.hf_id, device_map=self.device, dtype=torch.float32,
+            attn_implementation="sdpa")
+        self.talker = self.tts.model.talker
+        self.model = self.talker
+        for p in self.tts.model.parameters():
+            p.requires_grad_(False)
+        return self
+
+    @property
+    def layers(self):
+        return self.talker.model.layers
+
+    def run(self, inp: TFInput):
+        return self.talker.model(use_cache=False, **inp.kwargs)
+
+    def _npz(self, item_id: str, seed: int):
+        f = Path(DATA_ROOT) / "tokens" / self.spec.key / f"{item_id}_s{seed}.npz"
+        return np.load(f) if f.exists() else None
+
+    def tokens_for(self, item_id: str, seed: int):
+        z = self._npz(item_id, seed)
+        if z is None or bool(z["hit_cap"]):
+            return None
+        return z
+
+    def build(self, item: dict, sp_ids, seed: int) -> TFInput:
+        E = torch.tensor(sp_ids["embeds"], dtype=torch.float32,
+                         device=self.device).unsqueeze(0)
+        return TFInput({"inputs_embeds": E}, int(sp_ids["plen"]),
+                       int(sp_ids["n_speech_tokens"]))
+
+    def extra_selftests(self) -> dict:
+        """S4: the dumped teacher-forcing input reproduces generation.
+
+        Checked at dump time over every item (`analysis/qwen_codec_dump.py`),
+        summarised here so gate 0 fails loudly if it did not. The residual floor
+        is the bf16-sampled / fp32-differentiated split, the same split Llasa
+        runs under; the sharp quantity is direction agreement.
+        """
+        d = Path(DATA_ROOT) / "tokens" / self.spec.key
+        cos, rel, n = [], [], 0
+        for f in sorted(d.glob("*.npz")):
+            z = np.load(f)
+            c, r = float(z["equiv_cos"]), float(z["equiv_rel"])
+            if np.isfinite(c):
+                cos.append(c)
+                rel.append(r)
+            n += 1
+        if not cos:
+            return {"S4": dict(name="S4_teacher_forcing_equivalence", n=0,
+                               passed=False,
+                               note="no equivalence values in the dumps -- rerun "
+                                    "analysis/qwen_codec_dump.py")}
+        return {"S4": dict(
+            name="S4_teacher_forcing_equivalence", n_items=len(cos),
+            cosine_min=float(np.min(cos)), cosine_median=float(np.median(cos)),
+            rel_error_max=float(np.max(rel)),
+            passed=bool(np.min(cos) > 0.999 and np.max(rel) < 0.05),
+            note="one-shot teacher-forced pass vs the incremental generation it "
+                 "was captured from; floor is bf16-vs-fp32")}
+
+
+BACKENDS: dict[str, type[Backend]] = {"llasa": LlasaBackend, "qwen": QwenBackend}
 
 
 class WindowMap:
@@ -570,7 +680,14 @@ def boundaries(plen: int, t_gen: int, k: int) -> tuple[list[int], int]:
     checked by a caller that might forget.
     """
     tau = int(round(t_gen / k))
-    if tau < 8:
+    if tau >= MIN_TAU and (k - 1) * tau + tau > t_gen and (k - 1) * tau >= t_gen:
+        # Rounding up can push the last span past the end of the trajectory once
+        # k is large and T/k has a fractional part >= 0.5 (e.g. T=243, k=32 ->
+        # 8, and 31*8 = 248 > 243). Fall back to the floor in exactly that case,
+        # which leaves every item where rounding fits -- all of Llasa's --
+        # bit-identical to what was already measured.
+        tau = int(t_gen // k)
+    if tau < MIN_TAU:
         return [], tau
     b = [plen + m * tau for m in range(k)]
     assert len(b) == k, "boundary count must equal k"
@@ -617,9 +734,11 @@ def run_item(be: Backend, item: dict, sp_ids, seed: int,
     torch.cuda.empty_cache()
 
     # --- lag grid ------------------------------------------------------------
-    lags = {"half_tau": max(8, tau_k // 2), "tau": tau_k, "two_tau": 2 * tau_k}
+    lags = {"half_tau": max(MIN_TAU, tau_k // 2), "tau": tau_k,
+            "two_tau": 2 * tau_k}
     if rendered_count and rendered_count >= 2:
-        lags["tau_rendered"] = max(8, int(round(t_gen / rendered_count)))
+        lags["tau_rendered"] = max(MIN_TAU, int(round(t_gen / rendered_count)))
+    lags = {k_: v for k_, v in lags.items() if v >= MIN_TAU}
     diag["lags"] = dict(lags)
 
     L = be.n_layers
@@ -1039,7 +1158,11 @@ def load_meta(model: str) -> dict:
 
 
 def rendered_counts(model: str) -> dict:
-    import pandas as pd
+    try:
+        import pandas as pd
+    except ImportError:   # the `qwen` env need not carry pandas
+        print("[warn] pandas unavailable: the tau_rendered lag will be skipped")
+        return {}
     p = REPO / "data/results/behavioural_ctc.csv"
     if not p.exists():
         return {}
@@ -1167,6 +1290,12 @@ def main() -> None:
         raise SystemExit(f"no stored generation for {wr0} seed {s0}")
     s2 = causality_check(be, stim[wr0], sp0, s0, max_tokens=args.max_tokens)
     selftests["S2"] = s2
+    for name, v in be.extra_selftests().items():
+        selftests[name] = v
+        print(f"  {name} {v['name']}: "
+              + " ".join(f"{kk}={vv:.6g}" for kk, vv in v.items()
+                         if isinstance(vv, (int, float)) and not isinstance(vv, bool))
+              + f" -> {'PASS' if v['passed'] else 'FAIL'}", flush=True)
     print(f"  S2 causality: forward={s2['sigma_forward']:.6e} "
           f"backward={s2['sigma_backward']:.6e} -> "
           f"{'PASS' if s2['passed'] else 'FAIL'}", flush=True)
@@ -1274,6 +1403,7 @@ def main() -> None:
                     n_items=len(items), substacks=substacks,
                     power_iters=POWER_ITERS, power_tol=POWER_TOL,
                     max_tokens=args.max_tokens, n_anchors=args.n_anchors,
+                    min_tau=MIN_TAU,
                     metric="per-layer RMS-normalised residual stack",
                     lag_grid=list(LAG_NAMES)),
         selftests=selftests, summary=summary, diagnostics=diags,
