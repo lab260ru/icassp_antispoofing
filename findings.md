@@ -160,3 +160,91 @@ since the penalty acts against the behaviour under study.
 - Does q̂ vary monotonically with scale within the Llasa 1B/3B/8B ladder?
 - Do number phrases ("six hundred sixty-six…") collapse at a different horizon
   than bare word repetitions, i.e. does semantic structure buy extra counting?
+
+## 2026-08-12 — The ladder was too short, and three claims were overstated
+
+*Prompted by the round-4 Opus reviewer panel, which was right on all three
+counts. Every item here was verified against our own data before being acted on.*
+
+### The headline changed twice in one morning
+
+**First:** the reviewer objected that a constant *relative* deficit is not what a
+fixed horizon predicts, and the data agreed. Fitting the panel's median rendered
+count above k=6 gave SSE 485 for a constant against 2.6 for `c = 0.95k`. Within
+k<=32 the count tracks the request; there is no horizon in that range.
+(`analysis/horizon_shape.py`.)
+
+**Then:** so we extended the ladder to k = 48, 64, 96, 128
+(`data/stimuli/make_stimuli_ext.py`, `scripts/run_ext_ladder.sh`). Past k=32 the
+count stops tracking. Repeated medians fall 27 -> 15 between k=48 and k=128 while
+the request grows threefold.
+
+**The controls are the point.** They saturate too, near 60 units — these decoders
+have a general utterance-length ceiling, and the repeated plateau *alone* cannot
+distinguish counting collapse from "the model will not talk for two minutes". So
+the reportable quantity is the ratio, which divides that ceiling out:
+
+    N*_rep  23 [16, 39]      N*_ctl  94 [71, 111]      ratio 4.1
+    disjoint bootstrap CIs in both checkpoints (`analysis/horizon_ext.py`)
+
+If you extend this: **do not quote a repeated horizon without its matched
+control horizon.** On its own it is uninterpretable.
+
+Known weaknesses, stated so nobody rediscovers them as surprises: two
+checkpoints only (Qwen was still generating), few items per cell, and the
+repeated median *declines* past the plateau where a pure horizon predicts a flat
+line — so something beyond the theorem acts at these lengths. CTC blank-collapse
+biases the same way, making 4.1 an upper bound.
+
+### Three claims that were wrong, and are now fixed
+
+1. **"Controls come out without a single miscount"** — false. 22.4% of control
+   generations carried a nonzero error. Most of it was one word: our CTC judge
+   renders `okay` as "o k" in 106 of 106 items. The honest and sharper statement
+   is the exact-rate, **94.3% control against 18.2% repeated**.
+2. **"The states the decoder visits stop multiplying"** — false. Capacity gain
+   stays positive in 5 of 6 checkpoints. Repetition *slows* state acquisition; it
+   does not halt it. A decoder at the theorem's fixed point would gain none, and
+   none is at it — which fits the horizon result above.
+3. **Lemma B's delta was quoted as 0.06 and implied 0.64.** Those bound the
+   *average* and the *extreme* logit spread. Both are now reported; the lemma is
+   entitled only to the worst case.
+
+### Two scoring bugs that were changing the numbers
+
+* `count_units` stopped scanning at the first unit it could not find. Correct for
+  repeated items (all units identical, so a miss means all later ones miss too),
+  wrong for controls, where one mis-transcribed filler voided credit for every
+  filler after it. Now skips. Verified bit-identical on repeated items.
+* **Items truncated by our own token budget were being scored as model failures.**
+  `hit_cap` items carry median relative error -0.44 against -0.08 for the rest.
+  11.3% of the headline population. Now excluded.
+
+`src/common/population.py` is now the single definition of the reportable
+population — the exclusion lists had already drifted between `count_error.py`
+(one ablation) and `capacity.py` (four), so re-scoring the full model list would
+have silently folded three repetition-penalty arms into the panel.
+
+### The premise has now failed to be established twice
+
+A finite-difference perturbation probe (`analysis/contraction_probe.py`) measured
+local contraction directly. The decisive repeated-vs-control contrast came out
+null: 7 of 18 pairs in the predicted direction, p=0.12, with the trend mildly the
+*wrong* way, replicated at two injection depths. Its own step-size linearity
+control also failed. Together with the earlier boundary-distance attempt, that is
+two independent failures to measure `q`. **Assumption 2 remains unestablished**,
+and the paper says so. Do not present either q-hat as validated.
+
+### Also worth knowing
+
+* The main ladder's controls are **not** repetition-free above k=8: fillers cycle
+  an eight-word pool, so they carry period-8 repetition. The contrast the paper
+  tests is period-8 against period-1. The extension ladder uses a 146-word pool
+  that is never cycled, and asserts it.
+* **XTTS-v2 cannot be run past k=32 at all** — a built-in ~602 mel-token ceiling
+  (~26 s) censors every longer item. Not a result about XTTS-v2; a limit of the
+  extension.
+* Whisper's failure on *real* generated audio is worse than the de-duplication
+  the original audit found: at k>=24 it emits 10.7-12.3 words/sec, which is not
+  physically speech. It hallucinates fluent text over garbled audio. The decision
+  to drop it is better supported than when it was made.

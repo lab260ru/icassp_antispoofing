@@ -13,7 +13,7 @@ question: >
   artifact? If the per-repetition state map contracts, the model provably
   cannot count past a finite horizon.
 
-phase: "P3-refinement"   # P0 scaffold, P1 bringup, P2 sweep, P3 refinement, P4 ship
+phase: "P4-ship"   # P0 scaffold, P1 bringup, P2 sweep, P3 refinement, P4 ship
 
 # ---------------------------------------------------------------- what is done
 settled:
@@ -32,36 +32,63 @@ settled:
   behavioural_pipeline: "generate -> vocode (Llasa only) -> Whisper -> score_counts"
 
 # --------------------------------------------------------------- key findings
+# ALL numbers below are CTC-judged on the population defined by
+# src/common/population.py (ablations, degenerate audio, judge-unmeasurable
+# template t2, and items truncated by our own token budget all excluded).
+# Whisper-judged numbers from before 2026-08-12 are superseded; see findings.md.
 findings_headline:
   dissociation: >
-    Every model fails on repeated text where length-matched distinct-word
-    controls survive. k>=6 accuracy, repeated vs control:
-    llasa1b 0.07/0.30, llasa3b 0.06/0.11, xtts2 0.14/0.59,
-    qwen06b 0.08/0.64, qwen17b 0.29/0.69.
-  collapse_points: "k* = 0, 1, 4, 4, 8 for llasa1b, llasa3b, xtts2, qwen06b, qwen17b"
-  scale_effect: "within Qwen, 0.6B -> 1.7B doubles k* (4 -> 8)"
+    Repeated text is miscounted where length-matched controls are not. At k>=6:
+    repeated median relative error -8.3% [-12.5,-6.2] n=457, control 0.0
+    [0.0,0.0] n=525. Exact-rate is the sharper statement: 94.3% of control
+    generations come back exactly right against 18.2% of repeated ones.
+    Separated from own control in 4 of 6 checkpoints.
+  horizon: >
+    THE MAIN LADDER WAS TOO SHORT. Within k<=32 the count is proportional
+    (c = 0.95k, SSE 2.6 against 485 for a constant), so no horizon is visible.
+    The extension ladder k=48..128 finds it: repeated medians fall 27 -> 15
+    between k=48 and 128. Controls saturate too, near 60 -- these decoders have
+    a general utterance-length ceiling -- so the reportable quantity is the
+    RATIO: N*_rep 23 [16,39] vs N*_ctl 94 [71,111], disjoint in both
+    checkpoints, i.e. repetition lowers the counting horizon ~4x.
+    NEVER quote a repeated horizon without its matched control horizon.
   mechanism: >
-    Representational capacity gain dN_eff/dlog k is ~0.5x on repeated text vs
-    control, with disjoint 95% template-bootstrap CIs (llasa1b 22.0 vs 52.7;
-    xtts2 21.6 vs 36.1). Rerunning over all 7 variants now.
+    Capacity gain dN_eff/dlog k on repeated text is 0.46x the control gain,
+    disjoint 95% template-bootstrap CIs in 5 of 6. Crucially the gain stays
+    POSITIVE in 5 of 6: repetition slows state acquisition, it does not halt it,
+    which is consistent with decoders below their horizon at k<=32.
   lemma_b: >
-    Confirmed tightly. Renormalised over the k repeated keys: block entropy =
-    0.98 log k, implied delta <= 0.06 nats, max share never exceeds 1.9/k.
-  negative_result: >
-    The boundary-difference estimator for q is unsound here -- deep-layer
-    attention centroid advances on ~51% of steps, so boundary localisation
-    dominates the measurement. Reported in the paper, code kept in
-    src/common/boundaries.py.
+    Renormalised over the k repeated keys, block entropy grows with log k. The
+    entropy gap bounds the AVERAGE spread (<=0.45 nats); the most-attended
+    occurrence bounds the EXTREME (delta <= 1.23, share <= 3.4/k worst case,
+    1.7/k typical). The lemma needs the extreme. Do not quote the average as
+    though it were the bound -- an earlier draft did, and it read as inconsistent.
+  negative_results: >
+    (1) The boundary-difference estimator for q is unsound here: deep-layer
+    attention centroid advances on ~51% of steps. (2) A finite-difference
+    perturbation probe (analysis/contraction_probe.py) found NO difference in
+    local contraction between repeated items and controls -- 7 of 18 pairs in
+    the predicted direction, p=0.12, replicated at two injection depths, with
+    its own linearity control failing. Assumption 2 (contraction) is therefore
+    UNESTABLISHED after two independent attempts. Say so; do not present either
+    q-hat as validated.
+  judge: >
+    CTC (wav2vec2-large-960h-lv60-self), never Whisper. On real generated audio
+    Whisper emits 10.7-12.3 words/sec at k>=24, which is not physically speech.
+    CTC's own limit: blank-collapse can merge adjacent identical words, which
+    depresses repeated counts but not control counts -- it inflates our reported
+    gap rather than manufacturing it, so magnitudes at k>=16 are approximate.
 
 model_panel:
-  - {key: llasa1b, status: complete}
-  - {key: llasa3b, status: complete}
-  - {key: llasa8b, status: generating, note: "~23s/item; use whatever is done"}
-  - {key: xtts2,   status: complete}
-  - {key: qwen06b, status: complete}
-  - {key: qwen17b, status: complete}
-  - {key: xtts2norp, status: generating,
-     note: "ablation, repetition_penalty=1.0, rules out the decoding-time confound"}
+  - {key: llasa1b, status: complete, ext_ladder: complete}
+  - {key: llasa3b, status: complete, ext_ladder: "not run"}
+  - {key: llasa8b, status: complete, ext_ladder: complete}
+  - {key: xtts2,   status: complete,
+     ext_ladder: "IMPOSSIBLE -- built-in ~602 mel-token ceiling (~26 s) censors every k>=48 item"}
+  - {key: qwen06b, status: complete, ext_ladder: generating}
+  - {key: qwen17b, status: complete, ext_ladder: generating}
+  - {key: "xtts2norp / xtts2rp{2,3,8}", status: complete,
+     note: "ablation arms, repetition penalty sweep. NEVER pool into panel stats."}
 instrumentation_notes:
   qwen: "hidden states yes, text attention NOT obtainable (text+codec embeddings additively fused)"
   xtts: "full; note shipped repetition_penalty=5.0 -> conservative panel member"
@@ -69,17 +96,14 @@ instrumentation_notes:
 
 # ------------------------------------------------------------------- in flight
 active_background_jobs:
-  - "analysis/state_dynamics.py over all 7 variants -> logs/state_all.log"
-  - "analysis/probe_count.py early-vs-late probe -> logs/probe.log"
-  - "src/models/llasa_gen.py --model llasa8b (GPU 2)"
-  - "src/models/xtts_gen.py --model xtts2norp (GPU 2, ablation)"
+  - "llasa1b/llasa8b extension ladder seeds 1,2 (GPU 0,1) -> experiments/exp08_ext_ladder/logs/seeds12.log"
+  - "qwen06b/qwen17b extension ladder seed 0 (GPU 2,3) -> scripts/run_ext_ladder.sh"
 
 # --------------------------------------------------------------- what is next
 next_actions:
-  - "when state_all finishes: capacity.py, horizon_fit.py, figures.py, paper/build.sh"
-  - "fold llasa8b + xtts2norp in as they complete (all analyses take whatever exists)"
-  - "trim paper to 4 pages + 1 of refs (currently 6; content must end on p4)"
-  - "second /paper-review round on the revised draft, then revise again"
+  - "when qwen ext lands: rerun analysis/horizon_ext.py, make_numbers.py, build.sh"
+  - "the horizon ratio is currently 2 checkpoints; qwen makes it 4 and covers a second family"
+  - "paper is at 5 pages (4 content + 1 refs) and must stay there -- check every build"
   - "final: check_lean.sh, build both PDFs, tag v1.0-submission"
 
 review_round_1:

@@ -170,3 +170,69 @@ carries no information; the informative quantities are `attn_share_max`,
   trajectory so a difference cannot be explained by probe capacity or item count.
   A linear probe is exactly the readout class Theorem A(iii) constrains, so this is
   the theorem's own claim tested rather than an analogy.
+
+## Population and exclusions (added 2026-08-12) — read before touching any analysis
+
+`src/common/population.py` is the **single** definition of which rows the paper
+may report. Call `panel(df)`; do not re-implement the filters. They had already
+drifted: `count_error.py` listed one ablation where `capacity.py` listed four, so
+re-scoring the full model list would have folded three repetition-penalty arms
+into the panel with nothing failing.
+
+Four rules, each with a reason you should not undo without one of your own:
+
+1. Ablation arms (`xtts2norp`, `xtts2rp*`) are one checkpoint under altered
+   decoding. Pooling counts XTTS-v2 five times.
+2. Degenerate/empty audio has no count; reported as its own rate.
+3. Templates whose vocabulary the judge cannot transcribe. The criterion is
+   *near-total absence* (`analysis/judge_vocab_audit.py`), which no decoder
+   behaviour can produce — six checkpoints do not fail on one filler in 106 of
+   106 items while rendering its neighbours. Only t2 fails (`okay`, `hmm`).
+   Applied to **both** families so it cannot favour the control side.
+4. `hit_cap` items — generation stopped on *our* token budget, not the model's
+   stop decision. Median relative error -0.44 against -0.08 for the rest. Scoring
+   them as model failures was inflating the deficit.
+
+### Generation budgets
+
+The main sweep runs `--max-new-tokens 2048`. Llasa hits that on 12–21% of items
+**including at k=1**, so a cap hit means runaway generation, not long text. The
+extension ladder raises it to 8192 because a k=128 item is genuinely ~55 s of
+speech at X-codec2's 50 Hz; scoring a budget truncation as a counting failure is
+exactly rule 4's artifact.
+
+**XTTS-v2 cannot run the extension at all.** `model.gpt.max_gen_mel_tokens` is
+~602 (~26 s) and `xtts_gen.py` only ever *shrinks* it (`min(...)`). Raising it
+would run the model outside its training range. Excluded with that reason stated;
+it is not a result about XTTS-v2.
+
+### Scoring
+
+`count_units` skips a unit it cannot find rather than ending the item. For
+repeated items this is provably a no-op — all units are the same word, so a miss
+from position `i` means every later one misses too — and it is verified
+bit-identical on them. For controls it stops one mis-transcribed filler from
+voiding credit for every filler after it.
+
+### Judge
+
+CTC only. Beyond the known Whisper de-duplication bias, `analysis/ctc_field_validation.py`
+found Whisper emitting 10.7–12.3 words/sec on real generated audio at k>=24 —
+not physically speech. CTC's own limit is blank-collapse merging adjacent
+identical words: it depresses repeated counts and not control counts, so it
+inflates our reported gap rather than creating it. Treat magnitudes at k>=16 as
+approximate; no claim in the paper rests on one.
+
+### Paper page budget
+
+ICASSP allows 4 content pages + 1 of references. The body **must** end on page 4.
+`paper/build.sh` reports the count; to find the overflow:
+
+```python
+import pypdf
+r = pypdf.PdfReader('paper/build/main.pdf')
+print(r.pages[4].extract_text().find('REFERENCES'))  # chars of body on page 5
+```
+
+Anything above 0 means the body spills. Reference text totals ~3.9 k chars and a
+full page holds ~5.1 k, so references fit on page 5 once the body clears it.
