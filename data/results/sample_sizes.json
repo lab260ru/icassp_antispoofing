@@ -1,0 +1,48 @@
+{
+  "cascade": [
+    {
+      "population": "all generations scored",
+      "n": 5400,
+      "why": "every model, every family, every seed"
+    },
+    {
+      "population": "repeated and control families",
+      "n": 3420,
+      "why": "drops numbers, twisters, sentence_rep --- other questions"
+    },
+    {
+      "population": "panel checkpoints only",
+      "n": 2052,
+      "why": "drops 1368 ablation and baseline rows"
+    },
+    {
+      "population": "judge-measurable templates",
+      "n": 1710,
+      "why": "drops 342 rows in t2, whose fillers the CTC judge never emits"
+    },
+    {
+      "population": "stopped by the model, not our budget",
+      "n": 1578,
+      "why": "drops 132 budget-truncated rows, whose counts are censored downward"
+    },
+    {
+      "population": "audible speech",
+      "n": 1559,
+      "why": "drops 19 empty or degenerate rows, which have no count at all"
+    },
+    {
+      "population": "$k\\ge6$, where the deficit lives",
+      "n": 982,
+      "why": "below k=6 every checkpoint is essentially exact"
+    }
+  ],
+  "leaves": {
+    "word_rep at k>=6": 457,
+    "control_word at k>=6": 525,
+    "VITS per family (word_rep)": 108,
+    "VITS per family (control_word)": 108,
+    "greedy per arm (word_rep)": 36,
+    "greedy per arm (control_word)": 36
+  },
+  "leaves_sum_matches": true
+}

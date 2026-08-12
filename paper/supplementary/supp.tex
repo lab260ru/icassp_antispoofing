@@ -4192,6 +4192,68 @@ that the horizon result rests on discarding a checkpoint that contradicts it ---
 the checkpoint that fails to saturate is the one with almost nothing to saturate.
 
 
+\section{Where every sample size comes from}
+
+A reviewer counted the $n$'s across Sections 3--5 --- 2052, 1559, 457, 525, 108,
+36 --- and noted that the paper never reconciles them against each other. That is
+a fair complaint about a paper whose argument is ``trust the numbers because you
+can regenerate them'': a reader who cannot see how 2052 becomes 457 cannot tell a
+defensible restriction from a convenient one.
+
+\begin{center}
+\begin{tabular}{lrp{6.2cm}}
+\toprule
+population & $n$ & what leaves, and why \\
+\midrule
+all generations scored & 5400 & every model, every family, every seed \\
+repeated and control families & 3420 & drops numbers, twisters, \texttt{sentence\_rep} --- other questions \\
+panel checkpoints only & 2052 & drops 1368 ablation and baseline rows \\
+judge-measurable templates & 1710 & drops 342 rows in t2, whose fillers the CTC judge never emits \\
+stopped by the model, not our budget & 1578 & drops 132 budget-truncated rows, whose counts are censored downward \\
+audible speech & 1559 & drops 19 empty or degenerate rows, which have no count at all \\
+$k\ge6$, where the deficit lives & 982 & below k=6 every checkpoint is essentially exact \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent The leaves of that cascade are the numbers the analyses quote:
+
+\begin{center}
+\begin{tabular}{lr}
+\toprule
+analysis population & $n$ \\
+\midrule
+word\_rep at $k\ge6$ & 457 \\
+control\_word at $k\ge6$ & 525 \\
+VITS per family (word\_rep) & 108 \\
+VITS per family (control\_word) & 108 \\
+greedy per arm (word\_rep) & 36 \\
+greedy per arm (control\_word) & 36 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent $457 + 525 = 982$, which is the $k\ge6$ row: the two arms exhaust it,
+with no third category quietly absorbing rows. \texttt{analysis/sample\_sizes.py}
+asserts that identity rather than leaving it to the reader, so a future change to
+the exclusion rules that broke the reconciliation would fail rather than produce
+a table that no longer adds up.
+
+Two features of the cascade are worth naming because they look like padding and
+are not. The drop from 3420 to 2052 removes ablation arms and non-autoregressive
+baselines, which are re-runs of panel members under altered settings and
+contrasts respectively --- pooling them would count XTTS-v2 five times. The drop
+from 1559 to 982 is the $k\ge6$ restriction, and it is the one place a reader
+should be suspicious, since $k$ is the independent variable. Figure~1(a) shows
+the full ladder including $k<6$; the restriction exists because every checkpoint
+is essentially exact below it, so those rows contribute no variance to a median
+and would dilute the effect size without changing its direction.
+
+The generation counts differ from these because a generation that produced no
+audible speech was still generated. Section~3's total is generations attempted;
+every $n$ here is rows that survived to be scored.
+
+
 \bibliographystyle{IEEEtran}
 \bibliography{../refs}
 
