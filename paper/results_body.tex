@@ -18,8 +18,8 @@ gain, 95\% bootstrap intervals over stimulus templates.}
 Figure~\ref{fig:main}(a) shows the relative count error against $k$. Below
 $k\!=\!6$ every model is essentially exact; above it, repeated items are rendered
 with a median error of \ErrRepCk{}\% per checkpoint, or \ErrRep{}\%
-$[\ErrRepLo{},\ErrRepHi{}]$ pooling items ($n=\ErrRepN{}$) --- pooling weights
-checkpoints by surviving item count, so we quote both. Either way models produce
+$[\ErrRepLo{},\ErrRepHi{}]$ pooling items ($n=\ErrRepN{}$), whose interval ignores
+clustering and is narrower for it; we lean on the first. Either way models produce
 \emph{fewer} repetitions than requested.
 
 Within $k\le32$ that deficit is \emph{proportional}, not saturating --- not what
