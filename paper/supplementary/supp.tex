@@ -3443,6 +3443,15 @@ learned stop decision, and being a smaller and older model. Absolute accuracy is
 therefore not comparable between them and we do not compare it. The comparison is
 the within-model dissociation, which is scale-free.
 
+\noindent\textbf{A pacing check, which cuts our way.} One could object that VITS
+avoids the deficit by rendering repeated words so slowly that the recogniser
+cannot miss them. The opposite is true. Removing the carrier baseline, VITS
+spends $0.305$\,s per requested unit on repeated items against $0.384$\,s on
+controls --- it \emph{compresses} repetitions to $79\%$ of the control pace,
+which is exactly the acoustic condition that makes CTC blank-collapse most
+likely. Its repeated items are therefore the harder case for the judge, and they
+are still counted correctly more often than the panel's.
+
 \noindent\textbf{It is also the control the judge most needed.} Two rounds of
 reviewers noted that CTC blank-collapse depresses counts on same-word runs
 specifically (\S\ref{sec:s9-field}), which is the direction of our own effect,
