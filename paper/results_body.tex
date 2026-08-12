@@ -34,7 +34,8 @@ than as a failed prediction. The effect is present in the other
 \ErrNSep{} of \ErrNModels{} panel checkpoints with intervals disjoint from their
 own controls.
 
-The repeated unit can be a word, a sentence, or a place-value pattern alike.
+The repeated unit can be a word, a sentence, or a place-value pattern; all three
+behave the same way.
 
 \subsection{The limit is periodicity, not length}
 
@@ -49,16 +50,13 @@ the requested number of distinct words, at every $k$ up to $32$, for every model
 in the panel. The same decoders that drop one word in six from a repeated
 sequence render thirty-two \emph{different} words without a single miscount.
 
-Two further alternatives fail on their own predictions, and the supplement gives
-both in full. If repeated text simply being improbable were the cause, the
-controls would have to be the more natural member of each pair; scored under a
-causal LM outside the panel, the control is the \emph{less} probable member in
-\NllIndCtlHigherPct{}\% of the \NllIndPairs{} matched pairs, so naturalness runs
-opposite to the effect. If the attractor were acoustic, the horizon would be
-counted in tokens, and sentence repetition --- whose unit costs several times more
-tokens --- would fail after far fewer repetitions; it does not, differing by
-\UnitKDiff{} repetitions while the token count at collapse differs by
-\UnitTokRatio{}$\times$.
+Two further alternatives fail on their own predictions (supplement, S8). Were
+improbability the cause, controls would be the more natural member of each pair;
+under a causal LM outside the panel the control is the \emph{less} probable member
+in \NllIndCtlHigherPct{}\% of \NllIndPairs{} pairs. Were the attractor acoustic,
+the horizon would be counted in tokens and sentence repetition would fail after
+far fewer repetitions; it does not, differing by \UnitKDiff{} repetitions while
+the token count at collapse differs \UnitTokRatio{}$\times$.
 
 \begin{table}[t]
 \centering
@@ -92,8 +90,10 @@ Adding realised output diversity (type/token ratio over emitted acoustic tokens,
 adjacent-repeat rate, length) as covariates leaves the ratio at \CapAdjRatio{};
 restricting to items each model rendered \emph{correctly}, where the audio is by
 construction what was asked for, leaves it at \CapCorrRatio{}. The decoder does
-not merely err on repeated text --- it runs out of internal states in which an
-error and a correct continuation could differ.
+not merely err on repeated text --- it stops acquiring internal states at the rate
+non-repetitive text buys them. \emph{Stops acquiring}, not \emph{loses}: a
+stalled state budget need not drive the surviving signal to zero, and the probe
+below finds the count degraded rather than erased.
 
 Lemma~\ref{lem:dilution} concerns the softmax \emph{restricted to the $k$ repeated
 keys}: raw attention weight is normalised over the whole sequence, whose length
