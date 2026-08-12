@@ -3256,6 +3256,120 @@ would no longer be a control. The extension pool holds $146$ distinct words and
 is never cycled; the generator asserts this and fails loudly rather than falling
 back.
 
+
+\section{Checkpoint-level inference}
+\label{sec:s11}
+
+Round-5 reviewers objected that the paper's evidentiary standard was a set of
+vote counts --- ``5 of 6'', ``4 of 6'', ``a positive gap in 80\% of pairs'' ---
+with shifting denominators, no common test and no multiplicity control, while the
+pooled confidence intervals were computed over \emph{generations}. The objection
+is correct, and the two answer different questions: pooling generations asks
+whether the effect is present in this corpus, where the paper's claim is about
+models of this kind, for which the checkpoint is the sampling unit.
+
+\texttt{analysis/checkpoint\_level.py} reduces each checkpoint to a single
+repeated-minus-control difference and does inference across the six. Signs are
+oriented so that positive means the effect is present.
+
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+checkpoint & exact-rate (pts) & median-error (pts) & capacity \\
+\midrule
+\texttt{llasa1b} & +78.1 & +12.5 & +38.5 \\
+\texttt{llasa3b} & +77.2 & +8.3 & +46.5 \\
+\texttt{llasa8b} & +81.4 & +16.7 & +30.5 \\
+\texttt{qwen06b} & +92.2 & +12.5 & +14.0 \\
+\texttt{qwen17b} & +60.0 & +0.0 & +8.1 \\
+\texttt{xtts2} & +71.1 & +12.5 & +10.7 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{lrrrl}
+\toprule
+contrast & mean & 95\% CI & $p$ & positive \\
+\midrule
+exact-rate gap (pts) & 76.7 & [68.4, 84.4] & 0.031 & 6/6 \\
+median-error gap (pts) & 10.4 & [5.6, 13.9] & 0.062 & 5/6 \\
+capacity gap & 24.7 & [13.7, 36.5] & 0.031 & 6/6 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Three things about these numbers deserve stating rather than glossing.
+
+\noindent\textbf{The signed-rank test has a floor at $n=6$.} Its smallest
+attainable two-sided $p$ is $2/2^6 = 0.031$, so a perfect result cannot do better
+and the two contrasts that reach it sit at the ceiling of what six checkpoints
+can show. We compute the test exactly, enumerating all $2^n$ sign assignments;
+the normal approximation is not valid at this $n$.
+
+\noindent\textbf{The median-error contrast does not reach even that floor.}
+Qwen3-TTS-1.7B's gap is exactly zero, which drops the effective $n$ and gives
+$p=0.062$. An earlier draft reported this as ``4 of 6 checkpoints'', which
+reads as a weaker version of the same evidence when it is in fact a different and
+less favourable result. The exact-rate contrast, which the paper now leads with,
+is the one holding in all six.
+
+\noindent\textbf{Direction generalises; magnitude does not.} The
+between-checkpoint SD of the capacity gap is 16.0 against a mean of
+24.7 --- a fourfold spread. ``Holds in all six'' and ``holds in all six by
+comparable amounts'' are different claims that a vote count cannot distinguish.
+The first is supported; the second is not.
+
+\section{Does dilution select which generations fail?}
+\label{sec:s12}
+
+Lemma 1 is proved and its premise is measured; Assumption 2 is neither. A
+reviewer asked the consequent question: if attention dilution alone accounts for
+the behaviour, the contraction half of the theory is idle and the honest theory
+is the smaller one. The test came out against the lemma rather than for it.
+
+Both dilution and the deficit grow with $k$, so their unconditional correlation
+is guaranteed and uninformative. We therefore correlate them \emph{within} each
+(model, $k$) cell and pool the per-cell correlations by Fisher $z$ weighted by
+cell size. Three flatness measures are used, fixed in advance because ``flat
+attention'' has no single operationalisation and choosing one after seeing
+results would be selection: the largest single occurrence's share, the block
+entropy, and the deviation from uniform, each signed so that higher means
+flatter.
+
+The relative count error is negative when a model undercounts, so Lemma 1 ---
+under which flattening is what destroys the decoder's ability to tell occurrences
+apart --- predicts a \emph{negative} correlation.
+
+\begin{center}
+\begin{tabular}{lrr}
+\toprule
+flatness measure & repeated & control \\
+\midrule
+\texttt{attn\_share\_max} & +0.59 [+0.35, +0.75] & +0.01 [-0.34, +0.37] \\
+\texttt{attn\_block\_entropy} & +0.43 [+0.16, +0.65] & +0.17 [-0.20, +0.49] \\
+\texttt{attn\_unif\_dev} & +0.55 [+0.30, +0.72] & +0.05 [-0.31, +0.39] \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+All three run positive on repeated items with intervals excluding zero: within a
+cell, the items whose attention is \emph{flattest} are counted \emph{best}. The
+matched controls sit at zero on all three, which is the sanity check --- a
+control has no repeated block over which to dilute, so an association there would
+have indicated something generic about item difficulty instead.
+
+What this does and does not establish. It does not rescue Assumption 2; nothing
+here measures contraction. It does not falsify Lemma 1, a theorem about softmax
+that remains true and that continues to hold in aggregate --- attention over
+repeated spans is near-uniform and its entropy grows with $\log k$. What it
+removes is the item-level reading: dilution is not what picks out which
+generations fail. Causation in the reverse direction is not established either. A
+decoder that has stalled on one occurrence would produce exactly this peaked
+profile as a \emph{consequence}, and a correlational design cannot separate that
+from a cause. Only an intervention on the attention profile could, and that is
+the experiment we would run next.
+
 \bibliographystyle{IEEEtran}
 \bibliography{../refs}
 
