@@ -2,18 +2,18 @@
 
 \noindent\textbf{What is proved, and what the measurements do not show.}
 The Lean artifact certifies an implication: periodicity plus contraction imply a finite counting horizon. It does not prove any transformer
-contracts, and two attempts to measure $q$ failed --- a boundary-distance
-estimator needs a monotone read-head these decoders lack, and a perturbation
-probe found no difference between repeated and control items ($7/18$ pairs,
+contracts, and two attempts to measure $q$ failed --- one estimator
+needs a monotone read-head these decoders lack, and a perturbation
+probe found no difference between repeated and control items ($7/18$,
 $p=0.12$), its linearity control failing (S5).
 
 The theorem's distinctive prediction is a constant $N^\ast$, invisible where our
-ladder stopped; extending to $k=128$ found saturation of the predicted kind,
+ladder stopped; extending to $k=128$ found saturation of that kind,
 though not from a measured $q$. A linear probe does not separate this
 from the rival on which the count survives and only the output policy
 fails~\cite{venkatesh2026repeated}: it retains less on repeated text in
 \ProbeNBelowCtl{} of \ProbeNCk{} checkpoints, but the count stays decodable late
-($R^2$ \ProbeLateMed{}), as that rival predicts.
+($R^2$ \ProbeLateMed{}).
 
 Past the horizon the probe does test the theorem, which forbids a Lipschitz
 readout only \emph{beyond} $N^\ast$. On \PhLostName{} it reaches MAE
@@ -23,15 +23,16 @@ the states and answers the mean, where below the horizon it reaches
 $k$ it still reads the count off control states (\PhCtlMae{}). But \PhKeptName{}
 keeps it (\PhKeptMae{}, the control's own margin): the prediction holds in
 \PhNLost{} of \PhNCk{} checkpoints, a failure to replicate (S12).
-To keep this falsifiable, we say what would refute it: a
+What would refute it: a
 control with its twin's deficit, a model whose capacity gain matches its control,
-or a probe that recovers the count past the horizon --- and the third has now
+or a probe recovering the count past the horizon --- and the third has now
 happened once.
 
 Closest is representational collapse~\cite{barbero2024glasses}: distinct prefixes
 converge with length, which our control separates from periodicity. Related
 bounds~\cite{dong2021attention,geshkovski2023emergence,gao2026clustered,%
-strobl2024formal,merrill2024illusion} bound a pass.
+strobl2024formal,merrill2024illusion} bound a pass; state
+tracking~\cite{li2025statetracking} asks it empirically.
 
 % Any further body text pushes the references onto a sixth page: main.tex ends
 % with \vfill\pagebreak, so the bibliography always starts on a fresh page and

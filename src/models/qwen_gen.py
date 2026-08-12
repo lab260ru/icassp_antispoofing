@@ -204,6 +204,13 @@ def main() -> None:
     ap.add_argument("--instrument-seed", type=int, default=0,
                     help="only this seed gets the instrumented capture saved")
     ap.add_argument("--limit", type=int, default=0)
+    # The theorem bounds a readout, so no property of the sampling rule enters
+    # it -- the bound is supposed to cover greedy, sampled and beam decoding
+    # alike. That is a claim about the proof; whether the *deficit* survives
+    # greedy decoding is a separate, empirical question, and this flag is how it
+    # gets asked. Greedy is deterministic, so one seed is the whole experiment.
+    ap.add_argument("--greedy", action="store_true",
+                    help="argmax decoding: do_sample=False, no temperature/top-p")
     ap.add_argument("--language", default="English")
     args = ap.parse_args()
     check_gpu(args.gpu)
@@ -260,9 +267,15 @@ def main() -> None:
                 pass
 
     gen_kwargs_base = dict(max_new_tokens=args.max_new_tokens)
-    if args.temperature is not None:
+    if args.greedy:
+        # Passing temperature or top_p alongside do_sample=False makes
+        # transformers warn and ignore them; leaving them out keeps the run
+        # honestly greedy rather than nearly so.
+        gen_kwargs_base["do_sample"] = False
+        print(f"[{args.model}] greedy decoding: do_sample=False", flush=True)
+    if args.temperature is not None and not args.greedy:
         gen_kwargs_base["temperature"] = args.temperature
-    if args.top_p is not None:
+    if args.top_p is not None and not args.greedy:
         gen_kwargs_base["top_p"] = args.top_p
     if args.repetition_penalty is not None:
         gen_kwargs_base["repetition_penalty"] = args.repetition_penalty

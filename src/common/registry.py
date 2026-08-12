@@ -74,6 +74,14 @@ PANEL = [
               12.5, 24000, "every3", False, "Qwen3-TTS-0.6B, repetition_penalty=1.5"),
     ModelSpec("qwen06brp30", "Qwen/Qwen3-TTS-12Hz-0.6B-Base", "qwen", "0.6B", "qwen",
               12.5, 24000, "every3", False, "Qwen3-TTS-0.6B, repetition_penalty=3.0"),
+    # Greedy decoding. The theorem bounds a readout, so no property of the
+    # sampling rule enters the proof -- it covers greedy, sampled and beam
+    # alike. Whether the *deficit* survives greedy decoding is a separate,
+    # empirical question, and round 14 was right that we had never asked it:
+    # every panel run samples. Greedy is deterministic, so one seed is the
+    # whole experiment.
+    ModelSpec("qwen06bgreedy", "Qwen/Qwen3-TTS-12Hz-0.6B-Base", "qwen", "0.6B", "qwen",
+              12.5, 24000, "every3", False, "Qwen3-TTS-0.6B, greedy (do_sample=False)"),
     # Non-autoregressive baselines and the duration intervention on one of them.
     # Contrasts, never panel members.
     ModelSpec("vits", "facebook/mms-tts-eng", "vits", "0.04B", "base",
