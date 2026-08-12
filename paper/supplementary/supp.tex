@@ -3568,6 +3568,42 @@ $66.7\%$ of control items exactly --- both far off the floor, and ordered the
 opposite way. A model pinned at its ceiling of competence would show two low arms,
 not one high arm and a reversal.
 
+\noindent\textbf{VITS's null is not its stock configuration either.} VITS was
+run once, at defaults, while the AR panel got a repetition-penalty sweep --- so
+its stock duration predictor could be what is immune rather than its
+architecture. The duration predictor is the component that would have to carry
+the count (output length is the sum of predicted phoneme durations), so it is the
+right thing to perturb. Two settings, both well away from stock, chosen to
+degrade it:
+
+\begin{center}
+\begin{tabular}{llrrr}
+\toprule
+arm & setting & exact rep & exact ctl & gap \\
+\midrule
+stock     & ---                          & 67.6\% & 49.1\% & $-18.5$ \\
+duration  & \texttt{noise\_scale\_duration} 1.6 & 53.7\% & 20.4\% & $-33.3$ \\
+rate      & \texttt{speaking\_rate} 1.35        & 61.1\% & 31.5\% & $-29.6$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent The gap is control minus repeated, so the AR panel's $+76$ means the
+control is counted right and the repeated item is not. Every VITS arm is
+negative: the repeated item is counted \emph{better} than its own control, and
+the repeated-side median relative error is exactly zero in all three.
+
+Both perturbations lower absolute accuracy on both arms, and the control side
+further. That is a judge effect, not a counting one --- a control sentence made
+of many distinct words has more to lose from faster or noisier speech than a
+repeated one does --- so it inflates the size of VITS's negative gap and says
+nothing about repetition. The sign, not the size, is what this arm reports.
+
+What it rules out is the specific objection that stock defaults were
+load-bearing. It does not rule out the broader one that VITS is small and old,
+which no amount of knob-turning on VITS can address.
+\texttt{python analysis/vits\_config.py}.
+
 \noindent\textbf{What plausibly separates them.} VITS predicts a duration for
 each input token and expands the sequence accordingly, so ``how many'' is carried
 structurally by the input and never has to be represented. F5-TTS estimates one
@@ -3883,6 +3919,56 @@ plainly what was and was not varied.
 grid, exclusion rules and bootstrap are shared with \texttt{horizon\_ext.py}; the
 soft-horizon row reproduces the paper's numbers exactly, which is the check that
 the two scripts see the same population.
+
+
+\section{Do our own exclusions make the gap?}
+
+About a quarter of panel generations are removed before the headline statistics
+are computed: a judge-unmeasurable template, generations cut off by our own token
+budget, and degenerate audio. Each rule was adopted for a stated reason and each
+is defensible alone. That is precisely the situation in which a reader should
+want the numbers without them, because three defensible rules can still add up to
+a selected sample.
+
+\begin{center}
+\begin{tabular}{lrrrr}
+\toprule
+population & $n$ & exact rep & exact ctl & gap \\
+\midrule
+panel (as reported)   & 1234 & 18.2\% & 94.3\% & 76.1 \\
+$+$ judge-unmeasurable template & 1424 & 17.2\% & 79.8\% & 62.6 \\
+$+$ budget-truncated items & 1362 & 16.3\% & 93.1\% & 76.7 \\
+$+$ degenerate audio (scored 0) & 1242 & 17.9\% & 93.9\% & 76.0 \\
+nothing excluded at all & 1620 & 14.8\% & 76.5\% & 61.7 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent With every rule switched off the gap is 61.7 points against the 76.1
+we report, on 1620 generations rather than 1234. The effect is not manufactured
+by the exclusions; it is somewhat flattered by them, by about fourteen points,
+and the main text now gives both numbers.
+
+\noindent\textbf{Which rule does the work, and why.} Only the template rule moves
+anything, and it moves the \emph{control} side: restoring t2 drops control
+accuracy from 94.3\% to 79.8\% while the repeated side barely changes. That is
+the expected direction and the reason the rule exists. The CTC judge emits
+\texttt{okay} in 0 of 106 items and \texttt{hmm} in 0 of 89, so t2 rows score our
+recogniser's vocabulary rather than the decoder --- and a control sentence made
+of many distinct words has more to lose from an unmeasurable word than a repeated
+one does. Restoring those rows therefore adds judge noise to the control arm
+specifically, which shrinks the gap without telling us anything about counting.
+
+The budget-truncation rule is the one that could have flattered us, since
+truncated generations are censored downward and dropping them removes bad-looking
+repeated items. It does not: restoring them moves the gap from 76.1 to 76.7,
+because truncation hits both arms. We report that arm separately for exactly this
+reason.
+
+\noindent\textbf{Reproduce.} \texttt{python analysis/exclusion\_sensitivity.py}.
+Degenerate audio has no transcript to count, so scoring it means choosing a
+number; zero is the harshest reading available and the only one that cannot be
+accused of flattering the repeated side.
 
 
 \bibliographystyle{IEEEtran}

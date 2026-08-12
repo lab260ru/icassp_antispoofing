@@ -51,6 +51,15 @@ def main() -> None:
     ap.add_argument("--seeds", type=int, nargs="+", default=[0, 1, 2])
     ap.add_argument("--stimuli", default=str(REPO / "data/stimuli/stimuli.jsonl"))
     ap.add_argument("--limit", type=int, default=0)
+    # The duration predictor is the part of VITS that decides how long the
+    # utterance is, and so the part that would have to carry the count. Running
+    # it at one stock setting and concluding "VITS is immune" leaves open that
+    # the setting, not the architecture, is what is immune -- so both knobs are
+    # exposed and the ablation arm varies them.
+    ap.add_argument("--noise-scale-duration", type=float, default=None,
+                    help="stochastic duration-predictor temperature (stock 0.8)")
+    ap.add_argument("--speaking-rate", type=float, default=None,
+                    help="divides predicted durations (stock 1.0)")
     args = ap.parse_args()
     check_gpu(args.gpu)
 
@@ -60,7 +69,13 @@ def main() -> None:
     dev = f"cuda:{args.gpu}" if torch.cuda.is_available() else "cpu"
     tok = AutoTokenizer.from_pretrained(args.checkpoint)
     model = VitsModel.from_pretrained(args.checkpoint).to(dev).eval()
+    if args.noise_scale_duration is not None:
+        model.noise_scale_duration = args.noise_scale_duration
+    if args.speaking_rate is not None:
+        model.speaking_rate = args.speaking_rate
     sr = model.config.sampling_rate
+    print(f"[{args.model}] duration predictor: noise_scale_duration="
+          f"{model.noise_scale_duration}, speaking_rate={model.speaking_rate}")
 
     items = [json.loads(l) for l in open(args.stimuli)]
     # Only the families the architectural comparison is about. Numbers and

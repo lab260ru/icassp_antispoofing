@@ -1,0 +1,111 @@
+{
+  "kmin": 6,
+  "arms": {
+    "panel": {
+      "rep": {
+        "n": 457,
+        "exact": 0.18161925601750548,
+        "median_err": -0.08333333333333333
+      },
+      "ctl": {
+        "n": 525,
+        "exact": 0.9428571428571428,
+        "median_err": 0.0
+      },
+      "exact_gap": 0.7612378868396373,
+      "err_gap": 0.08333333333333333,
+      "n": 1234,
+      "dropped": {
+        "ablations": 1080,
+        "degenerate": 45,
+        "bad_templates": 213,
+        "cap_hits": 128
+      }
+    },
+    "plus_bad_templates": {
+      "rep": {
+        "n": 552,
+        "exact": 0.1721014492753623,
+        "median_err": -0.08333333333333333
+      },
+      "ctl": {
+        "n": 620,
+        "exact": 0.7983870967741935,
+        "median_err": 0.0
+      },
+      "exact_gap": 0.6262856474988312,
+      "err_gap": 0.08333333333333333,
+      "n": 1424,
+      "dropped": {
+        "ablations": 1080,
+        "degenerate": 45,
+        "cap_hits": 151
+      }
+    },
+    "plus_cap_hits": {
+      "rep": {
+        "n": 515,
+        "exact": 0.16310679611650486,
+        "median_err": -0.08333333333333333
+      },
+      "ctl": {
+        "n": 533,
+        "exact": 0.9305816135084428,
+        "median_err": 0.0
+      },
+      "exact_gap": 0.7674748173919379,
+      "err_gap": 0.08333333333333333,
+      "n": 1362,
+      "dropped": {
+        "ablations": 1080,
+        "degenerate": 45,
+        "bad_templates": 213
+      }
+    },
+    "plus_degenerate": {
+      "rep": {
+        "n": 463,
+        "exact": 0.17926565874730022,
+        "median_err": -0.08333333333333333
+      },
+      "ctl": {
+        "n": 527,
+        "exact": 0.9392789373814042,
+        "median_err": 0.0
+      },
+      "exact_gap": 0.7600132786341041,
+      "err_gap": 0.08333333333333333,
+      "n": 1242,
+      "dropped": {
+        "ablations": 1080,
+        "bad_templates": 216,
+        "cap_hits": 162
+      }
+    },
+    "everything": {
+      "rep": {
+        "n": 648,
+        "exact": 0.14814814814814814,
+        "median_err": -0.125
+      },
+      "ctl": {
+        "n": 648,
+        "exact": 0.7654320987654321,
+        "median_err": 0.0
+      },
+      "exact_gap": 0.6172839506172839,
+      "err_gap": 0.125,
+      "n": 1620,
+      "dropped": {
+        "ablations": 1080
+      }
+    }
+  },
+  "gap_min": 0.6172839506172839,
+  "gap_max": 0.7674748173919379,
+  "gap_panel": 0.7612378868396373,
+  "all_arms_positive": true,
+  "gap_everything": 0.6172839506172839,
+  "shrinkage": 0.14395393622235342,
+  "verdict": "the gap survives every exclusion rule being switched off"
+}

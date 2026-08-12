@@ -65,7 +65,7 @@ def fig_main(beh: pd.DataFrame, state: pd.DataFrame, cap: dict, out: Path,
     # it at final size keeps the type at its stated point size -- so when the
     # page budget forces the figure narrower, the fix is to redraw it here, not
     # to lower the \includegraphics width and shrink the type with it.
-    fig, axes = plt.subplots(1, 3, figsize=(3.40, 1.00))
+    fig, axes = plt.subplots(1, 3, figsize=(3.40, 0.92))
 
     # Relative count error rather than exact-match accuracy: signed, so
     # premature stopping separates from looping, and scale-free, so k=4 and

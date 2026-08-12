@@ -19,8 +19,8 @@ Figure~\ref{fig:main}(a) shows the relative count error against $k$. Below
 $k\!=\!6$ every model is essentially exact; above it, repeated items are rendered
 with a median error of \ErrRepCk{}\% per checkpoint, or \ErrRep{}\%
 $[\ErrRepLo{},\ErrRepHi{}]$ pooling items ($n=\ErrRepN{}$) --- pooling weights
-checkpoints by surviving item count, so we quote both. Either way it is
-one-directional: models produce \emph{fewer} repetitions than requested.
+checkpoints by surviving item count, so we quote both. Either way models produce
+\emph{fewer} repetitions than requested.
 
 Within $k\le32$ that deficit is \emph{proportional}, not saturating --- not what
 Theorem~\ref{thm:collapse}(iv) predicts. The panel's median count above
@@ -59,14 +59,15 @@ at $k\le32$, though its exact-rate gap is \CkRevExact{} points --- the deficit i
 there, just not in the median. We report it as an unexplained exception, not as
 the theorem behaving conditionally.
 
-The checkpoint, not the generation, is the unit of replication. The exactly-correct rate favours the control in all \CkExactN{} (mean
-\CkExact{} points $[\CkExactLo{},\CkExactHi{}]$); the median-error gap is
-positive in \CkErrNPos{} of \CkErrN{}, zero in \ErrBestModel{}. Grouped into
-\FamExactN{} families the gap is \FamExact{} points, range
-$[\FamExactLo{},\FamExactHi{}]$, positive in all three. The panel is too small
+The checkpoint, not the generation, is the unit of replication. The exact rate
+favours the control in all \CkExactN{} (mean \CkExact{}
+$[\CkExactLo{},\CkExactHi{}]$ points); the median-error gap is positive in
+\CkErrNPos{} of \CkErrN{}, zero in \ErrBestModel{}. By \FamExactN{} families:
+\FamExact{} points, $[\FamExactLo{},\FamExactHi{}]$, all three positive. The panel is too small
 for significance testing --- the exact signed-rank floor at $n\!=\!6$ is $0.031$
 and no multiplicity correction clears $0.05$ (S11) --- so we rest on effect sizes
-and their consistency.
+and their consistency. Our exclusions do not make it: with every rule off it is
+\ExSensAll{} points against \ExSensPanel{} (S18).
 
 \subsection{The limit is periodicity, not length}
 
@@ -99,10 +100,11 @@ construction. Swept on \PenNArch{} architectures (S15) the deficit stays put ---
 The last rival is architectural, the one we cannot exclude: two
 non-autoregressive systems disagree. VITS~\cite{kim2021vits} shows \emph{no}
 dissociation (\VitsRep{}\% of repeated items exact against \VitsCtl{}\% of
-controls, $n=90$ each at \NSeeds{} seeds, a gap of \VitsGap{} against the panel's
+controls, $n=90$ at \NSeeds{} seeds, a gap of \VitsGap{} against the panel's
 $+\ARPoolGap{}$), and not for want of competence: at $k\!=\!6\text{--}8$, where
-the panel's gap reaches \ARMidGap{} points, it renders \NonARMidRep{}\% and
-\NonARMidCtl{}\% exactly, off the floor and ordered the other way. But
+the panel's gap reaches \ARMidGap{} points, it renders \NonARMidRep{}\% against
+\NonARMidCtl{}\%, the other way round; nor for its defaults, the sign holding at
+\VitsCfgWord{} duration-predictor settings (S13). But
 F5-TTS~\cite{chen2024f5tts}, contemporary and flow-matching rather than
 recurrent, \emph{does} show it: \FivettsRep{}\% against \FivettsCtl{}\%,
 $+\FivettsGap{}$, growing with $k$ as the panel's does. Absence of an

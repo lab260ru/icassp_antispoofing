@@ -711,6 +711,25 @@ def main() -> None:
     if smp.exists():
         macros["SampleN"] = str(len(pd.read_csv(smp)))
 
+    # ---- is VITS immune, or is its stock configuration immune? ------------
+    vc_path = Path("data/results/vits_config.json")
+    if vc_path.exists():
+        vc = json.loads(vc_path.read_text())
+        macros["VitsCfgN"] = str(vc["n_arms"])
+        macros["VitsCfgWord"] = WORDS.get(vc["n_arms"], str(vc["n_arms"]))
+        macros["VitsCfgStock"] = fmt(100 * vc["arms"]["vits"]["gap"], 1)
+        macros["VitsCfgWorst"] = fmt(
+            100 * max(v["gap"] for v in vc["arms"].values()), 1)
+
+    # ---- do our own exclusions manufacture the gap? -----------------------
+    es_path = Path("data/results/exclusion_sensitivity.json")
+    if es_path.exists():
+        es = json.loads(es_path.read_text())
+        macros["ExSensPanel"] = fmt(100 * es["gap_panel"], 1)
+        macros["ExSensAll"] = fmt(100 * es["gap_everything"], 1)
+        macros["ExSensMin"] = fmt(100 * es["gap_min"], 1)
+        macros["ExSensN"] = str(es["arms"]["everything"]["n"])
+
     # ---- is the horizon ratio a property of the data or of the curve? -----
     hf_path = Path("data/results/horizon_forms.json")
     if hf_path.exists():

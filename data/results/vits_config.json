@@ -1,0 +1,37 @@
+{
+  "kmin": 6,
+  "stock_settings": {
+    "noise_scale_duration": 0.8,
+    "speaking_rate": 1.0
+  },
+  "arms": {
+    "vits": {
+      "setting": "stock",
+      "n": 216,
+      "rep_exact": 0.6759259259259259,
+      "ctl_exact": 0.49074074074074076,
+      "rep_median_err": 0.0,
+      "gap": -0.18518518518518517
+    },
+    "vitsdur": {
+      "setting": "noise_scale_duration 1.6",
+      "n": 216,
+      "rep_exact": 0.5370370370370371,
+      "ctl_exact": 0.2037037037037037,
+      "rep_median_err": 0.0,
+      "gap": -0.33333333333333337
+    },
+    "vitsrate": {
+      "setting": "speaking_rate 1.35",
+      "n": 216,
+      "rep_exact": 0.6111111111111112,
+      "ctl_exact": 0.3148148148148148,
+      "rep_median_err": 0.0,
+      "gap": -0.29629629629629634
+    }
+  },
+  "n_arms": 3,
+  "all_negative": true,
+  "all_median_zero": true,
+  "verdict": "VITS shows no repeated-side deficit at any duration-predictor setting tested; its immunity is not an artifact of stock configuration"
+}
