@@ -568,3 +568,17 @@ statistic is not transportable, and the arm is not reportable.** Details in
 The `coqui` env has been upgraded to transformers 5.15 and can no longer import
 coqui-tts 0.27.5 (`isin_mps_friendly` was removed). Work was done in `coqui_es`,
 a clone pinned to transformers 4.57.1. The live `coqui` env is still broken.
+
+## The availability line is a standing hazard
+
+`paper/main.tex` names an immutable git tag so a reader can fetch exactly the
+code and data behind the numbers. Nothing checks that the tag is the right one.
+`verify_submission.sh` gates on a clean tree, `check_numbers.py` gates on macros,
+and `check_supp_tables.py` gates on the supplement -- none of them would notice
+the line pointing at a snapshot cut before half the paper existed, which is
+precisely what happened: it read `v1.1-icassp` through the judge replication,
+CosyVoice 2, the q measurement, the causal intervention and every bug fix since.
+
+**Re-cut the tag and update the line as the last action before submission**, in
+that order, and check the tag actually contains the built PDF you are sending.
+Tags currently in play: `v1.0-submission`, `v1.1-icassp`, `v1.2-locating`.
