@@ -1,7 +1,21 @@
 {
-  "model": "llasa1b",
   "rows": {
-    "below": {
+    "past:llasa1b": {
+      "ks": [
+        48,
+        64,
+        96,
+        128
+      ],
+      "reps": 3,
+      "mae": 0.5046686317262935,
+      "r2": -0.022442299389002773,
+      "n": 12,
+      "const_mae": 0.5,
+      "beats_constant": false,
+      "mae_ratio": 1.009337263452587
+    },
+    "below:llasa1b": {
       "ks": [
         2,
         3,
@@ -14,14 +28,14 @@
         32
       ],
       "reps": 6,
-      "r2": 0.6244152447501343,
       "mae": 0.6310933406441512,
+      "r2": 0.6244152447501343,
       "n": 54,
       "const_mae": 1.1153067901590692,
       "beats_constant": true,
       "mae_ratio": 0.5658473042687585
     },
-    "past": {
+    "past:llasa8b": {
       "ks": [
         48,
         64,
@@ -29,14 +43,34 @@
         128
       ],
       "reps": 3,
-      "r2": -0.022442299389002773,
-      "mae": 0.5046686317262935,
+      "mae": 0.43179482744417635,
+      "r2": 0.1888125941894241,
       "n": 12,
       "const_mae": 0.5,
-      "beats_constant": false,
-      "mae_ratio": 1.009337263452587
+      "beats_constant": true,
+      "mae_ratio": 0.8635896548883527
     },
-    "past_control": {
+    "below:llasa8b": {
+      "ks": [
+        2,
+        3,
+        4,
+        6,
+        8,
+        12,
+        16,
+        24,
+        32
+      ],
+      "reps": 6,
+      "mae": 0.7460967160821513,
+      "r2": 0.5228348877708618,
+      "n": 54,
+      "const_mae": 1.1153067901590692,
+      "beats_constant": true,
+      "mae_ratio": 0.668960973487609
+    },
+    "control:llasa1b": {
       "ks": [
         48,
         64,
@@ -44,14 +78,22 @@
         128
       ],
       "reps": 3,
-      "r2": 0.2617774966826517,
       "mae": 0.43130260213344035,
+      "r2": 0.2617774966826517,
       "n": 12,
       "const_mae": 0.5,
       "beats_constant": true,
       "mae_ratio": 0.8626052042668807
     }
   },
-  "verdict": "the probe recovers the count below the horizon and not past it",
-  "range_confound_ruled_out": true
+  "n_checkpoints": 2,
+  "lost_past_horizon": [
+    "llasa1b"
+  ],
+  "kept_past_horizon": [
+    "llasa8b"
+  ],
+  "replicates": false,
+  "range_confound_ruled_out": true,
+  "verdict": "the prediction holds in 1 of 2 checkpoints: llasa1b lose the count past the horizon, llasa8b do not"
 }

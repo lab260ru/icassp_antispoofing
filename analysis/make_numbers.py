@@ -725,20 +725,39 @@ def main() -> None:
     # ---- the probe past the horizon: the theorem's own prediction ---------
     ph_path = Path("data/results/probe_horizon_compare.json")
     if ph_path.exists():
-        ph = json.loads(ph_path.read_text())["rows"]
-        macros["PhBelowMae"] = fmt(ph["below"]["mae"], 2)
-        macros["PhBelowConst"] = fmt(ph["below"]["const_mae"], 2)
-        macros["PhBelowRTwo"] = fmt(ph["below"]["r2"], 2)
-        macros["PhPastMae"] = fmt(ph["past"]["mae"], 2)
-        macros["PhPastConst"] = fmt(ph["past"]["const_mae"], 2)
-        macros["PhPastRTwo"] = fmt(ph["past"]["r2"], 2)
-        macros["PhPastN"] = str(ph["past"]["n"])
+        phj = json.loads(ph_path.read_text())
+        ph = phj["rows"]
+        # The checkpoint that loses the count past the horizon, and the one that
+        # does not. Both are named from the result rather than fixed here, so a
+        # rerun that flipped them could not leave the paper quoting the wrong
+        # one as the confirmatory case.
+        lost = phj.get("lost_past_horizon") or []
+        kept = phj.get("kept_past_horizon") or []
+        macros["PhNLost"] = str(len(lost))
+        macros["PhNCk"] = str(phj.get("n_checkpoints", 0))
+        if lost:
+            m = lost[0]
+            macros["PhLostName"] = LABEL.get(m, m)
+            macros["PhPastMae"] = fmt(ph[f"past:{m}"]["mae"], 2)
+            macros["PhPastConst"] = fmt(ph[f"past:{m}"]["const_mae"], 2)
+            macros["PhPastRTwo"] = fmt(ph[f"past:{m}"]["r2"], 2)
+            macros["PhPastN"] = str(ph[f"past:{m}"]["n"])
+            if f"below:{m}" in ph:
+                macros["PhBelowMae"] = fmt(ph[f"below:{m}"]["mae"], 2)
+                macros["PhBelowConst"] = fmt(ph[f"below:{m}"]["const_mae"], 2)
+                macros["PhBelowRTwo"] = fmt(ph[f"below:{m}"]["r2"], 2)
+        if kept:
+            m = kept[0]
+            macros["PhKeptName"] = LABEL.get(m, m)
+            macros["PhKeptMae"] = fmt(ph[f"past:{m}"]["mae"], 2)
+            macros["PhKeptRTwo"] = fmt(ph[f"past:{m}"]["r2"], 2)
         # Control items over the identical k range. If the probe reads the count
         # off these while failing on the repeated ones, "the range is too narrow"
         # is dead as an explanation -- the range is the same.
-        if "past_control" in ph:
-            macros["PhCtlMae"] = fmt(ph["past_control"]["mae"], 2)
-            macros["PhCtlRTwo"] = fmt(ph["past_control"]["r2"], 2)
+        ctl = next((k for k in ph if k.startswith("control:")), None)
+        if ctl:
+            macros["PhCtlMae"] = fmt(ph[ctl]["mae"], 2)
+            macros["PhCtlRTwo"] = fmt(ph[ctl]["r2"], 2)
 
     # ---- what the probe does and does not discriminate --------------------
     pd_path = Path("data/results/probe_discrimination.json")

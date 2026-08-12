@@ -3466,13 +3466,46 @@ uninterpretable; \texttt{analysis/probe\_past\_horizon.py} decides which of the
 two sentences to print from the measured MAEs rather than leaving the choice to
 us after the fact.
 
-This is the first positive evidence in the paper for the theorem's own
-conclusion, and it is the only place any of our measurements test that
-conclusion rather than its consequences. It does not establish the premise ---
-nothing here measures $q$ --- and it does not make the account causal.
+\noindent\textbf{The second checkpoint does not replicate.} Everything above is
+Llasa-1B. We ran the identical pipeline on Llasa-8B --- same items, same $k$,
+same probe, same folds --- because one checkpoint and twelve items is not a
+result. It keeps the count:
 
-\noindent\textbf{Limits.} One checkpoint (Llasa-1B), 12 repeated and 12 control
-items, one seed, three cross-validation folds. It is a single clean observation. Two engineering
+\begin{center}
+\begin{tabular}{llrrr}
+\toprule
+checkpoint & arm & probe MAE & constant MAE & $R^2$ \\
+\midrule
+Llasa-1B & repeated $k=48\ldots128$ & 0.50 & 0.50 & -0.02 \\
+Llasa-8B & repeated $k=48\ldots128$ & 0.43 & 0.50 & +0.19 \\
+Llasa-1B & control $k=48\ldots128$  & 0.43 & 0.50 & +0.26 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent Llasa-8B's repeated-side probe beats the constant predictor by 0.86 of
+its MAE --- which is, to two decimals, exactly the margin the \emph{control} arm
+achieves. On that checkpoint, periodic conditioning past the horizon does nothing
+to the probe at all.
+
+So the theorem's conclusion holds in one of the two checkpoints we could test it
+on. We report it that way rather than quoting Llasa-1B and calling the 8B run
+future work: a prediction that survives half the cases it was tested in is an
+open question with one encouraging instance, not support. The range control
+still does its job --- it says that \emph{where} the count is lost, narrowness is
+not why --- but it cannot make a one-of-two result into a panel one.
+
+Two readings we cannot separate with two checkpoints. Llasa-8B may have a horizon
+past $k=128$, which would make this a range problem again and not a failure; or
+the 1B null may be the accident. Distinguishing them needs the ladder pushed
+further on 8B, which its token budget does not currently allow.
+
+This remains the only place any of our measurements test the theorem's conclusion
+rather than its consequences. It does not establish the premise --- nothing here
+measures $q$ --- and it does not make the account causal.
+
+\noindent\textbf{Limits.} Two checkpoints, 12 repeated items each plus 12
+controls, one seed, three cross-validation folds. It is a single clean observation. Two engineering
 notes for anyone repeating it: the instrumented pass uses eager attention to
 capture attention weights, which materialises a $T\times T$ matrix per layer and
 runs out of memory at these sequence lengths --- the count probe needs hidden

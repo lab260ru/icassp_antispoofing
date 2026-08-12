@@ -16,16 +16,17 @@ fails~\cite{venkatesh2026repeated}: it retains less on repeated text in
 ($R^2$ \ProbeLateMed{}), as that rival predicts.
 
 Past the horizon the probe does test the theorem, which forbids a Lipschitz
-readout only \emph{beyond} $N^\ast$. On $k=48\ldots128$ states it reaches MAE
+readout only \emph{beyond} $N^\ast$. On \PhLostName{} it reaches MAE
 \PhPastMae{} in $\log_2 k$ against \PhPastConst{} for a predictor that ignores
-them and answers the mean; below the horizon, \PhBelowMae{} against
-\PhBelowConst{}. Range cannot explain this: over the \emph{same} $k$ it still
-reads the count off control states (\PhCtlMae{}, $R^2$ \PhCtlRTwo{}), what it loses is
-periodicity, not range. The theorem's prediction tested where it
-applies --- \PhPastN{} items, one checkpoint: one observation, not a panel (S12).
-To keep this falsifiable, we say what would refute it:
-a control with its twin's deficit, or a model whose capacity gain matches its
-control.
+the states and answers the mean, where below the horizon it reaches
+\PhBelowMae{} against \PhBelowConst{}. Range is not why: over the \emph{same}
+$k$ it still reads the count off control states (\PhCtlMae{}). But \PhKeptName{}
+keeps it (\PhKeptMae{}, the control's own margin): the prediction holds in
+\PhNLost{} of \PhNCk{} checkpoints, a failure to replicate (S12).
+To keep this falsifiable, we say what would refute it: a
+control with its twin's deficit, a model whose capacity gain matches its control,
+or a probe that recovers the count past the horizon --- and the third has now
+happened once.
 
 Closest is representational collapse~\cite{barbero2024glasses}: distinct prefixes
 converge with length; our control separates that from periodicity. Related
