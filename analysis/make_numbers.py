@@ -711,6 +711,25 @@ def main() -> None:
     if smp.exists():
         macros["SampleN"] = str(len(pd.read_csv(smp)))
 
+    # ---- is the horizon exception arbitrary, or the weakest checkpoint? ----
+    # A reviewer asked for a substantive account of the one checkpoint that
+    # shows no repeated-side saturation, rather than "unexplained exception".
+    # It turns out to rank last on every panel measure we have, which is an
+    # account: the exception is where the effect is smallest, not arbitrary.
+    hf_early = Path("data/results/horizon_forms.json")
+    if ck_path.exists() and hf_early.exists():
+        ck2 = json.loads(ck_path.read_text())
+        rev = [m for m, v in json.loads(hf_early.read_text()).get("models", {}).items()
+               if v.get("soft_horizon", {}).get("ratio", 1) < 1]
+        keys = ["exact_rate_gap", "count_error_gap", "capacity_gap"]
+        if len(rev) == 1:
+            last = [k for k in keys
+                    if min(ck2[k]["per_model"], key=ck2[k]["per_model"].get) == rev[0]]
+            macros["RevWeakestN"] = str(len(last))
+            macros["RevWeakestOf"] = str(len(keys))
+            macros["RevWeakestAll"] = ("all" if len(last) == len(keys)
+                                       else f"{len(last)} of {len(keys)}")
+
     # ---- does the deficit survive greedy decoding? ------------------------
     gd_path = Path("data/results/greedy_decoding.json")
     if gd_path.exists():

@@ -4136,6 +4136,48 @@ the panel, and beam search remains untested. \texttt{python
 analysis/greedy\_decoding.py}.
 
 
+\section{The horizon exception is the weakest checkpoint}
+
+Qwen3-TTS-1.7B shows no repeated-side saturation within $k\le128$ and inverts the
+horizon ratio. Earlier drafts called it an unexplained exception and left it
+there, which a reviewer rightly read as setting an inconvenient checkpoint aside
+rather than accounting for it. The panel numbers do account for it.
+
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+checkpoint & exact-rate gap & median-error gap & capacity gain gap \\
+\midrule
+Llasa-1B        & 78.1 & 12.5 & 38.5 \\
+Llasa-3B        & 77.2 &  8.3 & 46.5 \\
+Llasa-8B        & 81.4 & 16.7 & 30.5 \\
+Qwen3-TTS-0.6B  & 92.2 & 12.5 & 14.0 \\
+XTTS-v2         & 71.1 & 12.5 & 10.7 \\
+Qwen3-TTS-1.7B  & \textbf{60.0} & \textbf{0.0} & \textbf{8.1} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent It ranks last on all three, and it is the only checkpoint that ranks
+last on any of them. The exception is therefore not arbitrary: it is where the
+effect is smallest on every measure we have, and the horizon ratio is the measure
+on which smallest tips over into absent.
+
+This is an account, not an explanation. It says the exception is consistent with
+the rest of the panel rather than in tension with it; it does not say \emph{why}
+this checkpoint has the weakest effect. Two candidates we cannot separate: its
+per-repetition map may not contract, or its horizon may simply lie past $k=128$,
+which for the checkpoint with the smallest deficit is exactly what one would
+expect. Distinguishing them needs a ladder longer than its generation budget
+allows.
+
+One thing this does \emph{not} license: reading the ranking as evidence for the
+theorem. A weakest checkpoint exists in any panel, and it will be the one nearest
+any threshold by construction. What the ranking rules out is the specific worry
+that the horizon result rests on discarding a checkpoint that contradicts it ---
+the checkpoint that fails to saturate is the one with almost nothing to saturate.
+
+
 \bibliographystyle{IEEEtran}
 \bibliography{../refs}
 
