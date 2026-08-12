@@ -483,3 +483,40 @@ concurrently. Nothing was corrupted (checked: no duplicate meta rows, every
 **Cost note.** The HF cache is on the spinning disk, and three model loads at
 once saturate it at ~75 MB/s: Llasa-8B took ~10 minutes to reach the GPU and
 19 minutes to do the actual 12 items. Stagger loads rather than launching a fleet.
+
+## The trap that would have manufactured a causal result
+
+`analysis/causal_count.py` nearly produced a spurious positive, and the failure
+mode generalises to any activation-patching work in this repo.
+
+**Record donor states on the same code path you write them into.** The first
+implementation captured states with a plain `model(...)` forward and spliced
+them into `generate()`'s prefill. Those two paths disagree in bf16 by up to
+**1.0 absolute** at layer 7, because `generate` passes an explicit attention
+mask and a cache and so dispatches a different SDPA kernel. The no-op patch --
+splicing an item's own states back into itself -- diverged from its reference by
+generation step 26. That is a spurious causal effect **of roughly the size we
+were looking for, made out of rounding**. `Runner.capture` now records from
+`generate`'s own prefill, and the no-op is bitwise-identical in 18/18 runs.
+
+Three more, all load-bearing:
+
+* **A patched run and a free baseline consume the sampler's random stream at
+  different offsets**, so they are not comparable even with the same seed. Every
+  patched cell is paired against a *resume reference*: same prefix, no hook,
+  same seed. This is what makes the no-op an exact test rather than an
+  approximate one.
+* **A donor pool skewed toward lower k makes "shift toward the donor"
+  satisfiable by mere shortening.** Ours was 2:1. An opposite-directions
+  requirement (up-donors and down-donors must move the count opposite ways) was
+  added mid-flight and recorded in the docstring as a strengthening.
+* **Steering magnitude scaled from a difference-in-means gap is far too large.**
+  The layer-13 difference-in-means direction has norm 17.0 against a mean state
+  norm of 37.8, so alpha=1 is a 45% perturbation and everything above alpha=0.5
+  is degenerate audio, not steering. The ridge-probe direction at the same layer
+  is 5.84 (15%) and stays interpretable.
+
+**Cost, measured**: 185 generations/GPU-hour for Llasa-1B at a 3584-token
+budget. A full layer x position x donor-type x receiver grid is ~17 GPU-hours on
+1B and an estimated 75-85 on 8B. Do not buy precision on an artifact: fix the
+protocol's disruption index first.
