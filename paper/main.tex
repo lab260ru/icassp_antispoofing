@@ -53,10 +53,11 @@ ladder: \NStimuli{} stimuli in which a target word recurs $k$ times, each paired
 with a \emph{length-matched control} of the same carrier and word count whose
 repeated token is replaced by distinct fillers. Across \NModels{} checkpoints
 from \NFamilies{} architectures, models render repeated text exactly in
-\ExactRep{}\% of generations against \ExactCtl{}\% for their controls: a gap of
-\FamExact{} points $[\FamExactLo{},\FamExactHi{}]$ by architecture family
-($n{=}\FamExactN{}$), favouring the control in all \CkExactN{} checkpoints. The
-limit tracks \emph{periodicity, not length}. It survives greedy decoding, an
+\ExactRep{}\% of generations against \ExactCtl{}\% for their controls at
+$k\ge6$: a gap of \FamExact{} points $[\FamExactLo{},\FamExactHi{}]$ by
+architecture family ($n{=}\FamExactN{}$), favouring the control in all
+\CkExactN{} checkpoints, and \FullLadderGap{} points over the whole ladder from
+$k{=}1$. The limit tracks \emph{periodicity, not length}. It survives greedy decoding, an
 order-of-magnitude repetition-penalty sweep, checkpoints that pass no penalty at
 all, never-cycled controls, and every exclusion rule switched off
 (\ExSensAll{} points). Measuring it needs care: the obvious judge, Whisper, is
@@ -109,12 +110,12 @@ We contribute, in order of what the evidence supports: a parametric
 repetition-ladder benchmark with matched controls, \NModels{} checkpoints and
 two non-autoregressive baselines, on which the deficit tracks periodicity rather
 than length and survives the field's standard mitigations; a judge methodology
-for repetitive speech, the obvious judge shown to be disqualified; and a
-conditional impossibility result for repetition counting, machine-checked in
-Lean~4 over \texttt{mathlib} --- to our knowledge the first hallucination result
-in speech synthesis carried out as a formal artifact --- whose premise we state
-plainly that we could not measure. The work is a companion to a spectral study
-of hallucination in encoder--decoder ASR~\cite{viakhirev2026dispersion}.
+for repetitive speech, the obvious judge shown to be disqualified; and, as a
+motivating conjecture rather than an explanation, a conditional impossibility
+result for repetition counting, machine-checked in Lean~4, whose premise we
+could not measure and whose one directional prediction our data contradict. The
+work is a companion to a spectral study of hallucination in encoder--decoder
+ASR~\cite{viakhirev2026dispersion}.
 
 \section{Method}
 \label{sec:method}
@@ -189,45 +190,36 @@ decoding. The penalty is the one parameter we vary.
 % ---- placeholder: filled by analysis/make_numbers.py ----
 \input{results_body}
 
-\section{A Conditional Bound, and a Premise We Could Not Measure}
+\section{A Candidate Mechanism, and the Evidence Against It}
 \label{sec:theory}
 
-One mechanism for a periodicity-specific limit can be stated exactly. Softmax
-attention over $k$ repeated spans whose logits differ by at most $\delta$ gives
-each weight in $[e^{-\delta}/k, e^{\delta}/k]$, so the profile flattens and
-$H\ge\log k-\delta$ (Lemma~1, formalised). A decoder that cannot tell the spans
-apart meets the same conditioning at every \emph{repetition boundary}: with $S$
-complete and $s_m\in S$ the state at boundary $m$, one $F:S\to S$ has
-$s_{m+1}=F(s_m)$. Assume $F$ is $q$-Lipschitz, $q<1$; write
-$C=d(s_0,Fs_0)/(1-q)$.
+One mechanism for a periodicity-specific limit can be stated exactly, so we
+state it and then report that our own tests of it failed. Softmax attention over
+$k$ repeated spans whose logits differ by at most $\delta$ gives each weight in
+$[e^{-\delta}/k,e^{\delta}/k]$, so the profile flattens (Lemma~1). A decoder
+that cannot tell the spans apart meets the same conditioning at every
+\emph{repetition boundary}, making the map $F$ between consecutive boundary
+states autonomous; if $F$ is a $q$-contraction with orbit scale $C$, boundary
+states converge geometrically and no $L$-Lipschitz readout --- the stop head
+included --- separates counts with margin $\mu$ beyond
+$N^\ast=\log(\mu/2LC)/\log q$ (Theorem~1). Both are machine-checked in Lean~4
+over \texttt{mathlib}, free of \texttt{sorry} and with an axiom audit;
+statements, proofs, and a clause-by-clause correspondence to their informal
+versions are in S1--S2.
 
-\begin{theorem}[Counting collapse]\label{thm:collapse}
-(i) $d(s_m,s^\ast)\le Cq^m$ for the unique fixed point $s^\ast$; (ii) for every
-$\varepsilon>0$ there is $N$ with $d(s_m,s_n)<\varepsilon$ for $m,n\ge N$; (iii)
-every $L$-Lipschitz readout $g$ satisfies $|g(s_m)-g(s_n)|\le LC(q^m+q^n)$; so
-(iv) if $g$ separates counts $m\le n$ with margin $\mu>0$ then $\mu\le 2LCq^m$,
-$m \le \log(\mu/(2LC))/\log q =: N^\ast$.
-\end{theorem}
-
-Part~(iv) bounds how far a decoder can count by how fast its per-repetition map
-contracts, how large its orbit is and how much separation its readout needs; no
-property of the decoding rule enters. Both results are formalised in Lean~4
-against \texttt{mathlib}
---- part~(i) specialises its Banach machinery, the rest is proved from scratch
---- with no \texttt{sorry} and an axiom audit confirming dependence only on
-\texttt{propext}, \texttt{Classical.choice} and \texttt{Quot.sound}.
-
-Formalisation separates what is proved (the implication) from what is measured
-(the premise), and \emph{the premise is not measured}. Two independent
-estimators of $q$ failed: one needs a monotone attention read-head these
-decoders lack --- the flatter the profile, the worse any attention-based
-localiser, so Lemma~1 undercuts it structurally --- and a finite-difference
-probe found no repeated-versus-control difference ($7/18$ pairs, $p=0.12$) while
-failing its own linearity control (S5). Lemma~1's premise holds only
-approximately ($\delta\le\DeltaMax{}$ nats) and its dose-response prediction
-fails outright: within a $(\text{model},k)$ cell, flatter attention goes with
-\emph{better} counting ($r=\DilR{}$ $[\DilRLo{},\DilRHi{}]$; S12). Nothing in
-Section~\ref{sec:results} depends on this and none of it is evidence for it.
+\emph{We could not measure the premise, and the lemma's one directional
+prediction came out backwards.} Two independent estimators of $q$ failed: one
+needs a monotone attention read-head these decoders lack --- the flatter the
+profile, the worse any attention-based localiser, so Lemma~1 undercuts it
+structurally --- and a finite-difference probe found no repeated-versus-control
+difference ($7/18$ pairs, $p=0.12$) while failing its own linearity control
+(S5). Lemma~1's premise itself holds only approximately
+($\delta\le\DeltaMax{}$ nats). And its dose-response prediction is not merely
+untested but \emph{disconfirmed}: within a $(\text{model},k)$ cell, flatter
+attention goes with \emph{better} counting ($r=\DilR{}$
+$[\DilRLo{},\DilRHi{}]$; S12), the opposite of what dilution-driven collapse
+requires. We report the bound because it is what motivated the benchmark, not
+because the data support it; nothing in Section~\ref{sec:results} rests on it.
 
 \section{Discussion}
 \label{sec:discussion}

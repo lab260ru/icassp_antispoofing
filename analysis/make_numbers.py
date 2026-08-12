@@ -969,6 +969,20 @@ def main() -> None:
                 macros["BayesWidePriorLo"] = fmt(ps["new_family_gap_pts"]["lo"], 1)
                 macros["BayesWidePriorP"] = fmt(ps["new_family_gap_pts"]["p_gt0"], 3)
         if sc:
+            # The headline gap is computed over k>=6, and a reviewer correctly
+            # objected that conditioning on the regime where the effect is
+            # largest, without saying so, inflates what the abstract appears to
+            # claim. The unconditioned full-ladder gap comes from the same
+            # specification grid, at otherwise identical settings.
+            for s in sc.get("specs", []):
+                if (s.get("kmin") == 1 and s.get("outcome") == "exact_rate"
+                        and s.get("exclusions") == "panel"
+                        and s.get("control") == "cycled"
+                        and s.get("seeds") == "all"
+                        and s.get("aggregation") == "family"):
+                    macros["FullLadderGap"] = fmt(s["gap"], 1)
+                    macros["FullLadderN"] = str(s["n"])
+                    break
             er, allsp = sc["exact_rate"], sc["all_specifications"]
             macros["SpecN"] = str(allsp["n"])
             macros["SpecLo"] = fmt(er["min"], 1)

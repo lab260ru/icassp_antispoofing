@@ -6,27 +6,24 @@
 % hard and main.tex ends with \vfill\pagebreak, so a spilled line costs a page.
 
 \noindent\textbf{Where the count lives, and the rival the evidence favours.}
-A linear probe recovers the count from decoder states, which lets the bound's
-one distinctive prediction be tested: a readout should fail \emph{beyond}
-$N^\ast$, not before. Against a predictor that ignores the states and answers
-the mean, the \PhNCk{} checkpoints we could run past the
-extension horizon (\PhAllNames{}) reach \PhAllRatios{} of its error. Read
-strictly the prediction holds in \PhNLost{} of \PhNCk{}: only \PhLostName{} is
-at or above the trivial predictor, \PhClearName{} plainly \emph{keeps} the count
-past the horizon --- which the bound forbids --- and the third sits inside a
-\PhTieBand{}\% band where neither reading holds. Range is not the explanation:
-over the same $k$ the probe reads control states at \PhCtlRatio{}. At
-$n=\PhNCk{}$ this is inconclusive, and we report it for transparency rather than
-as evidence either way.
+A linear probe tests the bound's one distinctive prediction --- a readout should
+fail \emph{beyond} $N^\ast$, not before. Against a predictor that ignores the
+states and answers the mean, the \PhNCk{} checkpoints we could run past the
+extension horizon (\PhAllNames{}) reach \PhAllRatios{} of its error: the
+prediction holds in \PhNLost{}, \PhClearName{} plainly \emph{keeps} the count
+past the horizon, which the bound forbids, and the third sits in a
+\PhTieBand{}\% band where neither reading holds. Range is not the explanation
+(controls read \PhCtlRatio{} over the same $k$). At $n=\PhNCk{}$ this is
+inconclusive and we report it for transparency.
 
-It does, though, bear on the live rival. On the state-contraction account the
-count is erased from the state; on the output-policy
+It does bear on the live rival. On the state-contraction account the count is
+erased from the state; on the output-policy
 account~\cite{venkatesh2026repeated} it survives and only the policy reading it
 fails. Repetition does cost retention relative to the control in all
-\ProbeNBelowCtl{} of \ProbeNCk{} checkpoints, which is what contraction
-predicts --- but the count is not erased: it stays decodable late ($R^2$
-\ProbeLateMed{}) and repeated-item retention exceeds $1$ in
-\ProbeAboveOne{}, the probe reading it \emph{better} deeper in. Deciding between the two needs a manipulation of the
+\ProbeNBelowCtl{} of \ProbeNCk{} checkpoints, as contraction predicts --- but
+the count is not erased: it stays decodable late ($R^2$ \ProbeLateMed{}) and
+repeated-item retention exceeds $1$ in \ProbeAboveOne{}, the probe reading it
+\emph{better} deeper in. Deciding between them needs a manipulation of the
 readout at fixed state, which we did not run; as things stand the output-policy
 account is the better supported.
 
@@ -44,6 +41,16 @@ and the result is the periodicity-specific one --- whether contraction is the
 reason remains open. Other
 bounds~\cite{hahn2020theoretical,dong2021attention,strobl2024formal} treat one
 pass, state tracking~\cite{li2025statetracking} many.
+
+\noindent\textbf{What the design does not separate.}
+Our manipulation varies periodicity and \emph{verbatim token identity} together,
+so ``periodicity'' here should be read as the pair. Neither is separated from
+\emph{training-set frequency}: $k$-fold verbatim repetition is far rarer in
+speech corpora than a length-matched sentence of distinct words, so an
+out-of-distribution account predicts the same dissociation. The duration story
+about VITS and F5-TTS rests on one model per strategy and is a hypothesis, not
+a contrast. Exclusions are rule-based and applied by script without reference to
+arm or score; no per-item judgement was made.
 
 \noindent\textbf{Limitations.}
 The panel is \NFamilies{} families and English the only language tested. The

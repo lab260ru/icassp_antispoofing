@@ -17,10 +17,11 @@
 \includegraphics[width=\columnwidth]{figs/fig_main.pdf}
 \caption{(a) Relative count error $(\hat c-k)/k$ against requested repetitions
 $k$ under the CTC judge, repeated items (solid) against their length-matched
-controls (dashed): control medians sit at zero throughout. (b) The extension
-ladder --- rendered against requested count, both families, dotted line
-$y\!=\!x$. Both level off; the repeated curve far lower. (c) Fitted capacity
-gain, 95\% bootstrap intervals over stimulus templates.}
+controls (dashed), one pair per checkpoint: control medians sit at zero
+throughout. (b) The extension ladder --- rendered against requested count, both
+families, dotted line $y\!=\!x$. Both level off, the repeated far lower.
+(c) Fitted capacity gain per checkpoint, repeated (dark) against control
+(light, hatched), 95\% bootstrap intervals over templates.}
 \label{fig:main}
 \end{figure}
 
@@ -59,16 +60,15 @@ on the group-level scales that interval does touch zero
 ($\BayesWidePriorLo{}$, $P=\BayesWidePriorP{}$). Across \SpecN{} specifications
 spanning every forking choice we made --- exclusion rules, $k$ threshold, cycled
 against never-cycled controls, seed subset, aggregation level and outcome
-definition --- the gap runs \SpecLo{}--\SpecHi{} points and \SpecNRev{} reverse
-its sign (S11).
+definition --- the gap runs \SpecLo{}--\SpecHi{} points and none reverses its
+sign (S11).
 
 Above $k\!=\!8$ the control's fillers cycle a pool of eight, making the contrast
 period-$1$ against period-$8$ rather than periodic against aperiodic.
 Re-generating $k=12\ldots32$ from a never-cycled $146$-word pool leaves the
 dissociation at \ApMidGap{} points (\ApMidRep{}\% against \ApMidCtl{}\%,
-$n=\ApMidN{}$) where cycled controls over the same range give \ApCycGap{}: the
-residual periodicity in the control arm is worth \ApCost{} points of the gap,
-not the bulk of it. The de-confounded number is the smaller and we quote both.
+$n=\ApMidN{}$) where cycled controls give \ApCycGap{}: residual periodicity in
+the control arm is worth \ApCost{} points, not the bulk. We quote both.
 
 \subsection{Confirmatory: not the decoding rule, the judge, or our exclusions}
 
@@ -123,26 +123,23 @@ capacity gain as a fraction of the control's, at deep layers.}
 \subsection{Exploratory: past the ladder, the count levels off}
 
 Both analyses here were decided on after seeing the results above; S16 dates
-every analysis decision against the commit log.
+every analysis decision against the commit log, and we claim little from either.
 
 Within $k\le32$ the deficit is \emph{proportional}, not saturating: the panel
 median above $k\!=\!6$ is fitted far better by $\hat c=\ShapePropSlope{}k$ than
 by any constant (RSS \ShapePropSSE{} against \ShapeSatSSE{}), so no counting
 horizon lies inside this ladder. On the \HzNModels{} checkpoints admitting
-utterances long enough to extend it to $k\in\{48,64,96,128\}$, tracking does
+utterances long enough to extend it to $k\in\{48,64,96,128\}$ tracking does
 stop --- but so does the controls', these decoders having a general
 utterance-length ceiling, so the reportable quantity is the ratio of fitted
 saturation scales: \HzRatio{}-fold, just past where the main ladder stopped,
-which is why $k\le32$ looked proportional. We claim little from it. The
-magnitude is form-dependent (\HzFormLo{}--\HzFormHi{}, S17), the panel is not
-unanimous (\HzRevNames{} inverts the ratio), and a saturation scale read off
-counts is \emph{not} the $N^\ast$ of Section~\ref{sec:theory}, which is a
-function of a $q$ we never measured: this is consistent with any process that
-saturates. S10 gives fits, exclusions and per-cell $n$.
+which is why $k\le32$ looked proportional. The magnitude is form-dependent
+(\HzFormLo{}--\HzFormHi{}, S17), the panel is not unanimous (\HzRevNames{}
+inverts it), and a saturation scale read off counts is \emph{not} the $N^\ast$
+of Section~\ref{sec:theory}: this is consistent with any saturating process.
 
 Internally, repetition slows state acquisition without halting it: the capacity
 gain --- states visited, by the trajectory's effective rank --- is a median
-factor \CapRatio{} of the control's on repeated text (Fig.~\ref{fig:main}(c);
-S8), positive in all \CkCapN{} checkpoints. Positive is what a decoder below a
-horizon looks like and equally what a decoder with no horizon looks like, so we
-draw nothing from that either.
+factor \CapRatio{} of the control's (Fig.~\ref{fig:main}(c); S8), positive in
+all \CkCapN{} checkpoints. Positive is what a decoder below a horizon looks like
+and equally what a decoder with none looks like.

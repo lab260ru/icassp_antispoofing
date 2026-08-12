@@ -18,6 +18,7 @@ from pathlib import Path
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
+import matplotlib.ticker as mticker  # noqa: E402
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 
@@ -29,16 +30,36 @@ plt.rcParams.update({
     "savefig.pad_inches": 0.01, "axes.grid": True, "grid.alpha": 0.25,
     "grid.linewidth": 0.4, "axes.linewidth": 0.6, "lines.linewidth": 1.1,
     "lines.markersize": 3.2, "legend.frameon": False,
+    # A bar in the main figure is 6pt wide; the 1pt default hatch stroke reads
+    # as a second colour rather than as texture at that size.
+    "hatch.linewidth": 0.35,
 })
 
 ORDER = ["llasa1b", "llasa3b", "llasa8b", "xtts2", "qwen06b", "qwen17b"]
 LABEL = {"llasa1b": "Llasa-1B", "llasa3b": "Llasa-3B", "llasa8b": "Llasa-8B",
          "xtts2": "XTTS-v2", "qwen06b": "Qwen3-TTS-0.6B", "qwen17b": "Qwen3-TTS-1.7B"}
+# Short forms for the one place a tick label has to carry the checkpoint name:
+# panel (c) gives each of six models about 9pt of x-axis.
+SHORT = {"llasa1b": "Llasa-1B", "llasa3b": "Llasa-3B", "llasa8b": "Llasa-8B",
+         "xtts2": "XTTS-v2", "qwen06b": "Qwen-0.6B", "qwen17b": "Qwen-1.7B"}
 COLOR = {"llasa1b": "#4C72B0", "llasa3b": "#DD8452", "llasa8b": "#55A868",
          "xtts2": "#C44E52", "qwen06b": "#8172B3", "qwen17b": "#937860"}
-# Ablation re-runs of a panel member. Kept out of the main figure for the same
-# reason they are kept out of pooled statistics: they are not extra checkpoints.
-ABLATIONS = {"xtts2norp"}
+# Repeated vs. control is the figure's one recurring contrast, so it gets one
+# encoding everywhere: colour *and* line style *and* marker in (b), colour *and*
+# fill lightness *and* hatch in (c), so neither greyscale printing nor a
+# red-green deficiency can erase it.
+C_REP, C_CTL = "#C44E52", "#4C72B0"
+# Ablation re-runs of a panel member -- the penalty sweep and the no-penalty
+# arm. Kept out of the main figure for the same reason they are kept out of
+# pooled statistics: they are one checkpoint under altered decoding, not extra
+# checkpoints. The canonical list lives with the population filter; falling back
+# to a local copy only keeps this script runnable outside the repo.
+try:  # pragma: no cover - import path convenience
+    import sys as _sys
+    _sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+    from src.common.population import ABLATIONS
+except Exception:  # pragma: no cover
+    ABLATIONS = {"xtts2norp", "xtts2rp2", "xtts2rp3", "xtts2rp8"}
 
 
 def ordered(models, drop_ablations: bool = True) -> list[str]:
@@ -46,27 +67,91 @@ def ordered(models, drop_ablations: bool = True) -> list[str]:
     return [m for m in ORDER if m in ms] + sorted(ms - set(ORDER))
 
 
+# The figure is drawn at the size it is printed at: 246.3 x 65.5pt, one ICASSP
+# column wide. Nothing here may change that size. LaTeX scales whatever it is
+# handed to the width in results_body.tex, so drawing wider only shrinks the
+# type (a 7in draw would land 6pt labels on the page at 2pt), and drawing
+# taller costs page budget the body does not have. Every panel is therefore
+# laid out in points against this fixed canvas rather than by tight_layout,
+# which cannot honour a height this small and silently lets titles, legends
+# and tick labels collide -- which is exactly how it used to fail.
+FIG_W_PT, FIG_H_PT = 246.315, 65.473
+PT = 1.0 / 72.0
+
+
+def _rect(x, y, w, h):
+    """Points from the bottom-left of the canvas -> a figure-fraction rect."""
+    return [x / FIG_W_PT, y / FIG_H_PT, w / FIG_W_PT, h / FIG_H_PT]
+
+
+def _int_ticks(ax, axis: str, ticks) -> None:
+    """Label an axis with the integers themselves.
+
+    A base-2 log axis defaults to mathtext powers ($2^{5}$), which at 5.5pt in
+    a 0.9in-tall figure prints as a lone digit sitting above another digit --
+    the single most-reported defect in this figure's review history, read by
+    reviewers as a log-exponent extraction artifact. Every quantity on these
+    axes is a small integer count; print the integers.
+    """
+    a = ax.xaxis if axis == "x" else ax.yaxis
+    a.set_major_locator(mticker.FixedLocator(ticks))
+    a.set_major_formatter(mticker.FuncFormatter(lambda v, _: f"{v:g}"))
+    a.set_minor_locator(mticker.NullLocator())
+
+
+def _fit_ylabels(fig, axes) -> None:
+    """Nudge y labels that are longer than their axis back onto the canvas.
+
+    "count error (%)" is 46pt of type and the axes are 36pt tall, but the
+    label's own column is empty from the top of the canvas to the bottom, so
+    the label needs moving, not shrinking. Matplotlib recomputes only the
+    horizontal position of a y label at draw time, so the vertical nudge set
+    here survives the save.
+    """
+    fig.canvas.draw()
+    r = fig.canvas.get_renderer()
+    for ax in axes:
+        lbl = ax.yaxis.label
+        if not lbl.get_text():
+            continue
+        bb = lbl.get_window_extent(r).transformed(fig.dpi_scale_trans.inverted())
+        y0, y1 = bb.y0 * 72.0, bb.y1 * 72.0
+        dy = max(1.0 - y0, 0.0) - max(y1 - (FIG_H_PT - 1.0), 0.0)
+        if dy:
+            x, y = lbl.get_position()
+            lbl.set_position((x, y + dy / (ax.get_position().height * FIG_H_PT)))
+
+
 def fig_main(beh: pd.DataFrame, state: pd.DataFrame, cap: dict, out: Path,
              beh_ext: pd.DataFrame | None = None) -> None:
     """The paper's single figure: behaviour, the control contrast, and the
     capacity mechanism, in one full-width row.
 
-    Four panels in a row rather than two stacked two-panel figures: an ICASSP
-    page is 4 pages and two figure environments cost roughly a third of one.
+    Three panels, not four. The old panel (a) plotted repeated-item error
+    against k, which panel (b) already contains as its solid curves; dropping
+    it buys the remaining three enough width to stay legible.
     """
-    models = ordered(beh.model.unique())
-    # Three panels, not four. The old panel (a) plotted repeated-item error
-    # against k, which panel (b) already contains as its solid curves; dropping
-    # it buys the remaining three enough width to stay legible once the figure
-    # is scaled to fit four pages.
-    # Native size is the size it is *rendered* at in the paper (0.485 of a
-    # 7-inch text width), not the full text width: including a 7-inch figure at
-    # 0.485 scales 6pt labels down to 3pt, which is unreadable in print. Drawing
-    # it at final size keeps the type at its stated point size -- so when the
-    # page budget forces the figure narrower, the fix is to redraw it here, not
-    # to lower the \includegraphics width and shrink the type with it.
-    fig, axes = plt.subplots(1, 3, figsize=(3.40, 0.92))
+    models = [m for m in ordered(beh.model.unique()) if m in ORDER]
 
+    fig = plt.figure(figsize=(FIG_W_PT * PT, FIG_H_PT * PT))
+    # Vertical budget, in points: 27 under the axes -- set by the six rotated
+    # checkpoint names of panel (c), the tallest thing below any axis -- 2.5
+    # above, and 36 of plot in between. The panel letters go *inside* the axes:
+    # a title row would cost a fifth of the plot height.
+    bot, top_pad = 27.0, 2.5
+    axh = FIG_H_PT - bot - top_pad
+    # Horizontal budget: each panel keeps its own gutter for a rotated y label
+    # plus its widest tick label.
+    gut = (29.0, 27.0, 23.0)
+    axw = (FIG_W_PT - sum(gut) - 4.0) / 3.0
+    x0 = [gut[0], gut[0] + axw + gut[1], gut[0] + axw + gut[1] + axw + gut[2]]
+    axes = [fig.add_axes(_rect(x, bot, axw, axh)) for x in x0]
+    for ax, letter in zip(axes, "abc"):
+        ax.tick_params(labelsize=5.5, pad=1.2, length=1.8, width=0.5)
+        ax.text(0.035, 0.955, f"({letter})", transform=ax.transAxes, ha="left",
+                va="top", fontsize=6)
+
+    # ---- (a) relative count error against k ---------------------------
     # Relative count error rather than exact-match accuracy: signed, so
     # premature stopping separates from looping, and scale-free, so k=4 and
     # k=32 are on the same axis.
@@ -82,67 +167,105 @@ def fig_main(beh: pd.DataFrame, state: pd.DataFrame, cap: dict, out: Path,
             if s.empty:
                 continue
             g = s.groupby("k")["rel_err"].median().sort_index()
-            ax.plot(g.index, 100 * g.values, ls, marker=mk, color=COLOR.get(m), alpha=al)
-    ax.axhline(0, color="k", lw=0.7, ls=":")
-    ax.plot([], [], "ko-", label="repeated")
-    ax.plot([], [], "ks--", alpha=0.55, label="control")
+            ax.plot(g.index, 100 * g.values, ls, marker=mk, color=COLOR.get(m),
+                    alpha=al, lw=0.8, ms=1.9, mew=0)
+    ax.axhline(0, color="k", lw=0.5, ls=":")
+    ax.plot([], [], "k-", marker="o", ms=1.9, mew=0, lw=0.8, label="repeated")
+    ax.plot([], [], "k--", marker="s", ms=1.9, mew=0, lw=0.8, alpha=0.55,
+            label="control")
     ax.set_xscale("log", base=2)
-    ax.set_xlabel(r"$k$")
-    ax.set_ylabel(r"count error (\%)")
-    ax.set_title("(a) periodicity, not length")
-    ax.legend(fontsize=6, loc="lower left", handlelength=1.4)
+    _int_ticks(ax, "x", [1, 8, 32])
+    ax.set_yticks([-100, -50, 0])
+    # Headroom below the data for the legend, and above it for the panel letter;
+    # -100% is the floor of the measure, so nothing is hidden by either.
+    ax.set_ylim(-196, 58)
+    ax.set_xlabel(r"repetitions $k$", fontsize=6, labelpad=0.8)
+    ax.set_ylabel("count error (%)", fontsize=6, labelpad=1.0)
+    # The band under -100% is empty by construction -- the measure floors at
+    # -100% -- so the legend can sit in it without a patch and without covering
+    # the one curve that runs along the floor.
+    ax.legend(fontsize=5, loc="lower right", handlelength=1.5, handletextpad=0.4,
+              labelspacing=0.1, borderpad=0.1, borderaxespad=0.1)
 
-    # Panel (c) used to show raw effective rank against k under the title
-    # "states saturate", which the data do not support -- the gain stays
-    # positive everywhere (panel d). The extension ladder is the better use of
-    # the space: it is where the count actually stops tracking the request, and
-    # the control curve is what stops that being read as counting collapse when
-    # it is partly a general utterance-length ceiling.
+    # ---- (b) the extension ladder -------------------------------------
+    # This is where the count actually stops tracking the request, and the
+    # control curve is what stops that being read as counting collapse when it
+    # is partly a general utterance-length ceiling.
     ax = axes[1]
     if beh_ext is not None and len(beh_ext):
         e = beh_ext.copy()
-        e["rel_err"] = (e.count_a - e.k) / e.k
         eok = ~e.outcome.isin(["empty", "degenerate"])
         ks = np.array(sorted(e.k.unique()), dtype=float)
-        ax.plot(ks, ks, ":", color="0.45", lw=0.8, label="requested")
-        for fam, ls, mk, col, lab in (
-                ("word_rep", "-", "o", "#C44E52", "repeated"),
-                ("control_word", "--", "s", "#4C72B0", "control")):
+        # Linear on both axes, where the old panel was log-log: the requested
+        # counts span less than two octaves, so the log axes bought nothing and
+        # cost a set of power-of-two tick labels. Linear also makes y=x the
+        # straight diagonal a reader expects.
+        ax.plot([ks[0] - 20, ks[-1]], [ks[0] - 20, ks[-1]], ":", color="0.35",
+                lw=0.7)
+        for fam, ls, mk, col in (("word_rep", "-", "o", C_REP),
+                                 ("control_word", "--", "s", C_CTL)):
             g = e[(e.family == fam) & eok].groupby("k")["count_a"].median().sort_index()
             if g.empty:
                 continue
-            ax.plot(g.index, g.values, ls, marker=mk, color=col, label=lab, ms=2.4)
-        ax.set_xscale("log", base=2)
-        ax.set_yscale("log", base=2)
-        ax.set_xlabel(r"$k$")
-        ax.set_ylabel("rendered count")
-        ax.set_title("(b) the horizon")
-        ax.legend(fontsize=6, loc="upper left", handlelength=1.2)
+            ax.plot(g.index, g.values, ls, marker=mk, color=col, lw=0.9,
+                    ms=2.0, mew=0)
+        _int_ticks(ax, "x", [48, 64, 96, 128])
+        _int_ticks(ax, "y", [0, 64, 128])
+        ax.set_xlim(ks[0] - 8, ks[-1] + 8)
+        ax.set_ylim(0, 148)
+        ax.set_xlabel(r"requested $k$", fontsize=6, labelpad=0.8)
+        ax.set_ylabel("rendered count", fontsize=6, labelpad=1.0)
+        # The two families and the reference line are named on themselves. A
+        # legend box would have to sit in the wedge above the diagonal, which
+        # is the only free space this panel has and is not big enough for it.
+        ax.text(0.5, 0.02, "repeated", transform=ax.transAxes, ha="center",
+                va="bottom", fontsize=5, color=C_REP)
+        ax.text(0.97, 0.57, "control", transform=ax.transAxes, ha="right",
+                va="center", fontsize=5, color=C_CTL)
+        p0 = ax.transData.transform((ks[0], ks[0]))
+        p1 = ax.transData.transform((ks[-1], ks[-1]))
+        ax.text(0.5 * (ks[0] + ks[-1]), 0.5 * (ks[0] + ks[-1]) + 7, r"$y=x$",
+                ha="center", va="bottom", fontsize=5, color="0.25",
+                rotation=np.degrees(np.arctan2(p1[1] - p0[1], p1[0] - p0[0])),
+                rotation_mode="anchor")
     else:
         ax.set_axis_off()
 
+    # ---- (c) fitted capacity gain, 95% bootstrap CIs -------------------
     ax = axes[2]
-    cm = ordered(list(cap["models"].keys()))  # ablations dropped
+    cm = [m for m in ordered(list(cap["models"].keys())) if m in ORDER]
     xs = np.arange(len(cm), dtype=float)
-    w = 0.34
-    for off, key, lab, col in ((-w / 2, "repeated", "rep.", "#C44E52"),
-                               (w / 2, "control", "ctrl.", "#4C72B0")):
+    w = 0.36
+    # Light hatched fill against dark flat fill, not two saturated hues: the
+    # bars carry the repeated/control contrast with no line style available to
+    # back the colour up, and #C44E52 and #4C72B0 have the same greyscale value.
+    for off, key, face, edge, hatch in (
+            (-w / 2, "repeated", C_REP, C_REP, ""),
+            (w / 2, "control", "#AEC8E0", C_CTL, "//")):
         v = [cap["models"][m][key]["gain"] for m in cm]
         lo = [cap["models"][m][key]["lo"] for m in cm]
         hi = [cap["models"][m][key]["hi"] for m in cm]
         err = np.array([[max(a - b, 0) for a, b in zip(v, lo)],
                         [max(b - a, 0) for a, b in zip(v, hi)]])
-        ax.bar(xs + off, v, w, label=lab, color=col, alpha=1.0 if key == "repeated" else 0.8)
-        ax.errorbar(xs + off, v, yerr=err, fmt="none", ecolor="0.2", elinewidth=0.6,
-                    capsize=1.4)
+        ax.bar(xs + off, v, w, color=face, hatch=hatch, edgecolor=edge,
+               linewidth=0.4)
+        ax.errorbar(xs + off, v, yerr=err, fmt="none", ecolor="0.15",
+                    elinewidth=0.5, capsize=0.9, capthick=0.5)
     ax.set_xticks(xs)
-    ax.set_xticklabels([LABEL.get(m, m) for m in cm], rotation=32, ha="right", fontsize=5.6)
-    ax.set_ylabel(r"$\mathrm{d}\mathcal{N}_{\mathrm{eff}}/\mathrm{d}\log k$")
-    ax.set_title("(c) capacity gain")
-    ax.legend(fontsize=6, loc="upper right", handlelength=1.2)
+    ax.set_xticklabels([SHORT.get(m, m) for m in cm], rotation=45, ha="right",
+                       rotation_mode="anchor", fontsize=5.0)
+    ax.tick_params(axis="x", pad=0.6)
+    ax.set_xlim(-0.6, len(cm) - 0.4)
+    ax.set_yticks([0, 25, 50])
+    ax.set_ylim(0, 88)     # room above the tallest interval for the letter
+    ax.set_ylabel(r"$\mathrm{d}\mathcal{N}_{\mathrm{eff}}/\mathrm{d}\log k$",
+                  fontsize=5.6, labelpad=1.0)
 
-    fig.tight_layout(pad=0.25, w_pad=0.7)
-    fig.savefig(out)
+    _fit_ylabels(fig, axes)
+    # Not bbox_inches="tight" (the rcParam default): a tight box would resize
+    # the output to whatever overflowed, and the printed size is the one thing
+    # this figure is not allowed to change.
+    fig.savefig(out, bbox_inches=fig.bbox_inches, pad_inches=0.0)
     plt.close(fig)
     print(f"  {out}")
 
