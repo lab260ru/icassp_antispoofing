@@ -3,15 +3,13 @@
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=0.62\textwidth]{figs/fig_main.pdf}
+\includegraphics[width=0.78\textwidth]{figs/fig_main.pdf}
 \caption{(a) Relative count error $(\hat c-k)/k$ against requested repetitions
-$k$, CTC judge: exact below $k\!=\!6$, then a one-directional deficit that stays
-roughly proportional rather than saturating. (b) The same repeated items (solid)
-against their length-matched controls (dashed), in which the repeated word is
-replaced by non-adjacent fillers --- control medians sit at zero throughout.
-(c) The extension ladder: rendered against requested count, both families,
-dotted line $y\!=\!x$. Both level off; the repeated curve does so far lower.
-(d) Fitted capacity gain, 95\% bootstrap intervals over stimulus templates.}
+$k$ under the CTC judge, repeated items (solid) against their length-matched
+controls (dashed): control medians sit at zero throughout. (b) The extension
+ladder --- rendered against requested count, both families, dotted line
+$y\!=\!x$. Both level off; the repeated curve far lower. (c) Fitted capacity
+gain, 95\% bootstrap intervals over stimulus templates.}
 \label{fig:main}
 \end{figure*}
 
@@ -26,19 +24,18 @@ requested, never systematically more.
 Within $k\le32$ that deficit is \emph{proportional}, not saturating --- not what
 Theorem~\ref{thm:collapse}(iv) predicts. A constant fits the panel's median count
 above $k\!=\!6$ with residual sum of squares \ShapeSatSSE{} against
-\ShapePropSSE{} for $\hat c=\ShapePropSlope{}k$, in \ShapePropModels{} of
-\ErrNModels{} checkpoints (S10): the count tracks the request, so no horizon lies
-inside this ladder.
+\ShapePropSSE{} for $\hat c=\ShapePropSlope{}k$ (S10): the count tracks the
+request, so no horizon lies inside this ladder.
 
 \subsection{Past the ladder, the count does level off}
 
 So we extended it, post hoc, to $k\in\{48,64,96,128\}$ on the \HzNModels{}
 checkpoints whose decoders admit utterances that long (S10). Tracking stops: the
-repeated median sits at \HzMedRepKLo{} at $k\!=\!48$ and \HzMedRepKHi{} at
-$k\!=\!128$ while the request triples and the control climbs \HzMedCtlKLo{} to
-\HzMedCtlKHi{}. Of \HzNGen{} generations \HzExclCap{} hit our budget and
-\HzExclDegen{} were degenerate, leaving \HzNCellLo{}--\HzNCellHi{} per cell;
-dropping truncated items is conservative, their counts being censored downward.
+repeated median sits at \HzMedRepKLo{} and \HzMedRepKHi{} at $k\!=\!48$ and
+$128$ while the control climbs \HzMedCtlKLo{} to \HzMedCtlKHi{}. Of \HzNGen{}
+generations \HzExclCap{} hit our budget and \HzExclDegen{} were degenerate,
+leaving \HzNCellLo{}--\HzNCellHi{} per cell; dropping truncated items is
+conservative, their counts being censored downward.
 
 The controls stop us reading this as counting collapse alone: they saturate too,
 so these decoders have a general utterance-length ceiling and the reportable
@@ -53,14 +50,12 @@ ladder stopped, which is why $k\le32$ looked proportional.
 The panel is not unanimous, and the exception is informative: intervals are
 disjoint for \HzSepNames{}, while \HzRevNames{} shows \emph{no} repeated-side
 saturation within $k\le128$ and inverts the ratio --- the same checkpoint that
-shows no deficit at $k\le32$ (Table~\ref{tab:models}), a conditional theorem
-behaving conditionally. The judge's bias points the same way as the effect (S9),
-making \HzRatio{} an upper bound.
+shows no deficit at $k\le32$, a conditional theorem behaving conditionally.
 
 What degrades with $k$ is reliability, not proportion: the exactly-right share
-falls from \ExactRepKLo{}\% at $k\!=\!\ExactRepKLoVal{}$ to \ExactRepKHi{}\% at
-$k\!=\!\ExactRepKHiVal{}$, for word, sentence and place-value units alike.
-Because the claim is about models, not about our corpus, we take the checkpoint
+falls from \ExactRepKLo{}\% to \ExactRepKHi{}\% between
+$k\!=\!\ExactRepKLoVal{}$ and $\ExactRepKHiVal{}$, for word, sentence and
+place-value units alike. Because the claim is about models, not about our corpus, we take the checkpoint
 as the unit of replication, reducing each to its own repeated-minus-control
 difference. The exactly-correct rate favours the control in all \CkExactN{} (mean
 \CkExact{} points $[\CkExactLo{},\CkExactHi{}]$); the median-error gap is
@@ -74,12 +69,12 @@ we rest on effect sizes and their consistency.
 
 \subsection{The limit is periodicity, not length}
 
-Figure~\ref{fig:main}(b) is the paper's sharpest test. Each control has its
+Figure~\ref{fig:main}(a) is also the paper's sharpest test. Each control has its
 twin's carrier and word count, differing only in that the $k$ copies of one word
 become non-adjacent ones. Were the failure about length, attention span or
 exposure bias, the curves would coincide. They do not: at $k\ge6$ the median
-control error is \ErrCtl{}\% $[\ErrCtlLo{}, \ErrCtlHi{}]$ over $n=\ErrCtlN{}$
-generations, at every $k$ up to $32$, for every model. The contrast is sharpest
+control error is \ErrCtl{}\% $[\ErrCtlLo{}, \ErrCtlHi{}]$ ($n=\ErrCtlN{}$), at
+every $k$ up to $32$ and for every model. The contrast is sharpest
 in exactly-correct renderings --- \ExactCtl{}\% for controls against
 \ExactRep{}\% for their twins: decoders that miscount a repeated sequence five
 times in six render its non-adjacent twin correctly nineteen times in twenty. Controls are not perfect --- the residual \CtlMissPct{}\% carry
@@ -94,11 +89,23 @@ median error \ApHiMedRep{} against \ApHiMedCtl{} at $k\ge48$. Two further
 rivals, improbability and an acoustic attractor, fail their own predictions
 (S8).
 
+A fourth rival is architectural, and the one the title stakes: perhaps any
+synthesiser mishandles long repeated text. We ran the same ladder through
+VITS~\cite{kim2021vits}, which has no autoregressive decoder --- a duration
+predictor and a flow vocoder emit the waveform in one shot, leaving
+Assumption~\ref{ass:periodic} no recurrence to apply to. It shows \emph{no}
+dissociation: \NonARRep{}\% of repeated items exact against
+\NonARCtl{}\% of controls, a gap of \NonARGap{} points where the panel's is
+$+\ARPoolGap{}$, and all \NonARAbove{} AR checkpoints separate from it. VITS
+degrades with length, on both families alike. This also settles what auditing the
+recogniser could not: were blank-collapse manufacturing the gap, it would have
+depressed VITS's repeated items too, same judge, same strings. VITS is smaller
+than the panel, so only the within-model dissociation is compared.
+
 \begin{table}[t]
 \centering
 \caption{Panel summary. Count error is the median $(\hat c-k)/k$ over $k\ge6$
-under the CTC judge; capacity gain is
-$\mathrm{d}\mathcal{N}_{\mathrm{eff}}/\mathrm{d}\log k$ at deep layers.}
+under the CTC judge; capacity gain is measured at deep layers.}
 \label{tab:models}
 {\scriptsize\setlength{\tabcolsep}{3pt}\input{table1}}
 \end{table}
@@ -109,32 +116,24 @@ Theorem~\ref{thm:collapse}(ii) says states visited under periodic conditioning
 stop being mutually distinguishable, so more repetitions should buy distinct
 internal states more slowly than non-repetitive text of the same length does. We
 count states by the effective rank $\mathcal{N}_{\mathrm{eff}}$ of the trajectory
-over normalised singular values and report the \emph{capacity gain}
-$\mathrm{d}\mathcal{N}_{\mathrm{eff}}/\mathrm{d}\log k$.
-
-Figure~\ref{fig:main}(c,d) shows the result. On repeated text the capacity gain
-is a factor \CapRatio{} of the control gain; the gap is positive in all
-\CkCapN{} checkpoints (mean \CkCap{} $[\CkCapLo{},\CkCapHi{}]$, $p=\CkCapP{}$)
-but varies fourfold across them (SD \CkCapSD{}), so the mechanism is general in
-direction, not in magnitude.
-
-An obvious objection is circularity: rendering \emph{very} sixteen times really
-does produce monotonous audio, so a low-rank trajectory might follow from the
-stimulus rather than lost capacity. It does not --- covarying out realised output
-diversity leaves the ratio at \CapAdjRatio{}, and restricting to correctly
-rendered items at \CapCorrRatio{}, though that filter is not like-for-like
-(\ExactCtl{}\% of controls survive it against \ExactRep{}\% of repeated items).
-The gain stays \emph{positive} in \CapPosModels{} of \ErrNModels{}: at $k\le32$
+and report the \emph{capacity gain}
+$\mathrm{d}\mathcal{N}_{\mathrm{eff}}/\mathrm{d}\log k$
+(Figure~\ref{fig:main}(c)). On repeated text it is a factor \CapRatio{} of the
+control gain, positive in all \CkCapN{} checkpoints (mean \CkCap{}
+$[\CkCapLo{},\CkCapHi{}]$) but varying fourfold across them (SD \CkCapSD{}):
+general in direction, not in magnitude. The obvious objection is circularity ---
+rendering \emph{very} sixteen times really does produce monotonous audio --- but
+covarying out realised output diversity leaves the ratio at \CapAdjRatio{} and
+restricting to correctly rendered items at \CapCorrRatio{}, on a subset that is
+admittedly not like-for-like (\ExactCtl{}\% of controls survive that filter
+against \ExactRep{}\%). The gain stays \emph{positive} everywhere: at $k\le32$
 repetition slows state acquisition without halting it.
 
-Lemma~\ref{lem:dilution}'s premise holds only approximately --- renormalised
-over the $k$ repeated key columns the most-attended occurrence takes
-$\ShareMaxK{}/k$ of the block's mass at worst, so $\delta\le\DeltaMax{}$ nats
-(S4) --- and its dose-response prediction fails outright. \emph{Within} a
+Lemma~\ref{lem:dilution}'s premise holds only approximately ($\delta\le\DeltaMax{}$
+nats, S4) and its dose-response prediction fails outright: \emph{within} a
 $(\text{model},k)$ cell, items with flatter attention are counted \emph{better},
 not worse ($r=\DilR{}$ $[\DilRLo{},\DilRHi{}]$, \DilCells{} cells, all
 \DilNAgainst{} measures agreeing; controls at $\DilCtlR{}$; S12). We record this
 as disconfirming: whatever selects which generations fail is not the degree of
-dilution, and an observational design cannot say whether peaked attention instead
-follows from a stalled decoder. Qwen3-TTS fuses text and acoustic embeddings and
-cannot be checked.
+dilution, though an observational design cannot say whether peaked attention
+instead follows from a stalled decoder.

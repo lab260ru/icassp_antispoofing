@@ -83,13 +83,12 @@ sequence of $k$ distinct words should survive where $k$ identical ones do not.
 That contrast is the sharpest test we run.
 
 We contribute a quantitative impossibility result for repetition counting in AR
-decoders, with an explicit horizon in terms of the contraction factor, the orbit
-scale and the readout's decision margin; a machine-checked proof of it, and of
-the attention-dilution lemma, in Lean~4 over \texttt{mathlib} with a reproducible
-axiom audit --- to our knowledge the first hallucination result in speech
-synthesis carried out as a formal artifact; and a parametric repetition-ladder
-benchmark with a measurement protocol that reads the theorem's own consequence
-off a model's activations. The work is the autoregressive-decoder companion to a
+decoders, with an explicit horizon in the contraction factor, orbit scale and
+readout margin; a machine-checked proof of it and of the attention-dilution
+lemma, in Lean~4 over \texttt{mathlib} with a reproducible axiom audit --- to our
+knowledge the first hallucination result in speech synthesis carried out as a
+formal artifact; and a parametric repetition-ladder benchmark with matched
+controls and a non-autoregressive baseline. The work is the autoregressive-decoder companion to a
 spectral study of hallucination in encoder--decoder
 ASR~\cite{viakhirev2026dispersion}, which identified an attractor regime
 descriptively; here the attractor is what the theorem is about.
@@ -122,8 +121,8 @@ $F$ is $q$-Lipschitz with $q < 1$.
 \end{assumption}
 
 Assumption~\ref{ass:contraction} is an empirical claim about a particular
-decoder, not something we prove about transformers; where it fails the theorem is
-silent. Write $C = d(s_0, F s_0)/(1-q)$ for the orbit scale.
+decoder, not a theorem about transformers; where it fails, so is the bound. Write
+$C = d(s_0, F s_0)/(1-q)$ for the orbit scale.
 
 \begin{theorem}[Counting collapse]\label{thm:collapse}
 Under Assumptions~\ref{ass:periodic} and~\ref{ass:contraction}: (i)
@@ -166,10 +165,10 @@ replaced by fillers from a per-template pool of eight, cycled above $k\!=\!8$
 \noindent\textbf{Models.}
 \NModels{} checkpoints spanning \NFamilies{} families: Llasa at 1B/3B/8B (Llama
 backbones over X-codec2 tokens~\cite{ye2025llasa}), a within-architecture scale
-ladder; XTTS-v2~\cite{casanova2024xtts}; and Qwen3-TTS at 0.6B/1.7B. Every
-checkpoint renders every item at \NSeeds{} seeds. Further XTTS-v2 runs at altered
-repetition penalty are ablations of a panel member, reported separately and never
-pooled.
+ladder; XTTS-v2~\cite{casanova2024xtts}; and Qwen3-TTS at 0.6B/1.7B, every
+checkpoint rendering every item at \NSeeds{} seeds. VITS~\cite{kim2021vits} is
+run as a non-autoregressive baseline, and further XTTS-v2 runs at altered
+repetition penalty as ablations; neither is pooled into the panel.
 
 \noindent\textbf{Behavioural measurement, and why the obvious judge is wrong.}
 The natural instrument, Whisper large-v3~\cite{radford2023whisper}, is

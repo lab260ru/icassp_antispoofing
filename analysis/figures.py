@@ -55,7 +55,11 @@ def fig_main(beh: pd.DataFrame, state: pd.DataFrame, cap: dict, out: Path,
     page is 4 pages and two figure environments cost roughly a third of one.
     """
     models = ordered(beh.model.unique())
-    fig, axes = plt.subplots(1, 4, figsize=(7.0, 1.20))
+    # Three panels, not four. The old panel (a) plotted repeated-item error
+    # against k, which panel (b) already contains as its solid curves; dropping
+    # it buys the remaining three enough width to stay legible once the figure
+    # is scaled to fit four pages.
+    fig, axes = plt.subplots(1, 3, figsize=(7.0, 1.45))
 
     # Relative count error rather than exact-match accuracy: signed, so
     # premature stopping separates from looping, and scale-free, so k=4 and
@@ -65,20 +69,6 @@ def fig_main(beh: pd.DataFrame, state: pd.DataFrame, cap: dict, out: Path,
     ok = ~beh.outcome.isin(["empty", "degenerate"])
 
     ax = axes[0]
-    for m in models:
-        s = beh[(beh.model == m) & (beh.family == "word_rep") & ok]
-        if s.empty:
-            continue
-        g = s.groupby("k")["rel_err"].median().sort_index()
-        ax.plot(g.index, 100 * g.values, "o-", color=COLOR.get(m), label=LABEL.get(m, m))
-    ax.axhline(0, color="k", lw=0.7, ls=":")
-    ax.set_xscale("log", base=2)
-    ax.set_xlabel(r"repetitions $k$")
-    ax.set_ylabel(r"count error (\%)")
-    ax.set_title("(a) undercount")
-    ax.legend(fontsize=4.6, loc="lower left", handlelength=1.2)
-
-    ax = axes[1]
     for m in models:
         for fam, ls, mk, al in (("word_rep", "-", "o", 1.0),
                                 ("control_word", "--", "s", 0.55)):
@@ -93,8 +83,8 @@ def fig_main(beh: pd.DataFrame, state: pd.DataFrame, cap: dict, out: Path,
     ax.set_xscale("log", base=2)
     ax.set_xlabel(r"$k$")
     ax.set_ylabel(r"count error (\%)")
-    ax.set_title("(b) periodicity, not length")
-    ax.legend(fontsize=5, loc="lower left", handlelength=1.4)
+    ax.set_title("(a) periodicity, not length")
+    ax.legend(fontsize=6, loc="lower left", handlelength=1.4)
 
     # Panel (c) used to show raw effective rank against k under the title
     # "states saturate", which the data do not support -- the gain stays
@@ -102,7 +92,7 @@ def fig_main(beh: pd.DataFrame, state: pd.DataFrame, cap: dict, out: Path,
     # the space: it is where the count actually stops tracking the request, and
     # the control curve is what stops that being read as counting collapse when
     # it is partly a general utterance-length ceiling.
-    ax = axes[2]
+    ax = axes[1]
     if beh_ext is not None and len(beh_ext):
         e = beh_ext.copy()
         e["rel_err"] = (e.count_a - e.k) / e.k
@@ -120,12 +110,12 @@ def fig_main(beh: pd.DataFrame, state: pd.DataFrame, cap: dict, out: Path,
         ax.set_yscale("log", base=2)
         ax.set_xlabel(r"$k$")
         ax.set_ylabel("rendered count")
-        ax.set_title("(c) the horizon")
-        ax.legend(fontsize=4.6, loc="upper left", handlelength=1.2)
+        ax.set_title("(b) the horizon")
+        ax.legend(fontsize=6, loc="upper left", handlelength=1.2)
     else:
         ax.set_axis_off()
 
-    ax = axes[3]
+    ax = axes[2]
     cm = ordered(list(cap["models"].keys()))  # ablations dropped
     xs = np.arange(len(cm), dtype=float)
     w = 0.34
@@ -140,10 +130,10 @@ def fig_main(beh: pd.DataFrame, state: pd.DataFrame, cap: dict, out: Path,
         ax.errorbar(xs + off, v, yerr=err, fmt="none", ecolor="0.2", elinewidth=0.6,
                     capsize=1.4)
     ax.set_xticks(xs)
-    ax.set_xticklabels([LABEL.get(m, m) for m in cm], rotation=32, ha="right", fontsize=4.8)
+    ax.set_xticklabels([LABEL.get(m, m) for m in cm], rotation=32, ha="right", fontsize=5.6)
     ax.set_ylabel(r"$\mathrm{d}\mathcal{N}_{\mathrm{eff}}/\mathrm{d}\log k$")
-    ax.set_title("(d) capacity gain")
-    ax.legend(fontsize=5, loc="upper right", handlelength=1.2)
+    ax.set_title("(c) capacity gain")
+    ax.legend(fontsize=6, loc="upper right", handlelength=1.2)
 
     fig.tight_layout(pad=0.25, w_pad=0.7)
     fig.savefig(out)

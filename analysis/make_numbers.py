@@ -408,6 +408,21 @@ def main() -> None:
             macros["ApHiMedRep"] = fmt(hi["median_rep"], 2)
             macros["ApHiMedCtl"] = fmt(hi["median_ctl"], 2)
 
+    # ---- the non-autoregressive baseline ---------------------------------
+    # The architectural control the paper's own title asks for, and -- because a
+    # non-AR decoder renders the same repeated strings through the same judge --
+    # the only control that can show the recogniser is not manufacturing the gap.
+    nb_path = Path("data/results/nonar_baseline.json")
+    if nb_path.exists():
+        nb = json.loads(nb_path.read_text())
+        for key, tag in (("nonar", "NonAR"), ("ar_pooled", "ARPool")):
+            v = nb.get(key, {})
+            macros[f"{tag}Rep"] = fmt(100 * v.get("exact_rep", np.nan), 1)
+            macros[f"{tag}Ctl"] = fmt(100 * v.get("exact_ctl", np.nan), 1)
+            macros[f"{tag}Gap"] = fmt(100 * v.get("exact_gap", np.nan), 1)
+        macros["NonARAbove"] = str(nb.get("n_ar_above_nonar", 0))
+        macros["NonARN"] = str(nb.get("n_ar", 0))
+
     # ---- CTC judge on real generated audio (field validation) ------------
     fv_path = Path("data/results/ctc_field_validation.json")
     if fv_path.exists():
