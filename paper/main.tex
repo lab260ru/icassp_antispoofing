@@ -68,9 +68,9 @@ recogniser scores \CtcValPer{}. Nor is the failure peculiar to autoregressive
 decoding --- of two non-autoregressive baselines one is immune, one is not.
 A Lean-4-verified bound says that if the per-repetition state map contracts, no
 Lipschitz readout can separate counts past a computable horizon. We measure that
-premise with a validated estimator and reject it: $q=\JacQRep{}$, and repetition
-makes the map \emph{more} expansive rather than less. The proposed mechanism is
-refuted; the phenomenon is not.
+premise with a validated estimator and reject it: $q=\JacQRep{}$, expansive on
+repeated and control text alike, so it never described this decoder. The
+mechanism is refuted; the phenomenon is not.
 \end{abstract}
 
 \begin{keywords}
@@ -187,8 +187,8 @@ The mechanism that motivated this study can be stated exactly, and we can now
 report that it is false for these decoders. Attention over $k$ repeated spans
 whose logits differ by at most $\delta$ gives each weight in
 $[e^{-\delta}/k,e^{\delta}/k]$, so the profile flattens and the decoder meets
-the same conditioning at every \emph{repetition boundary}, making the map $F$
-between consecutive boundary states autonomous; if $F$ contracts with factor
+the same conditioning at every \emph{repetition boundary}; the map $F$ between
+consecutive boundary states is then autonomous, and if it contracts with factor
 $q<1$, no Lipschitz readout --- the stop head included --- separates counts
 beyond $N^\ast=\log(\mu/2LC)/\log q$. Both are machine-checked in Lean~4 over
 \texttt{mathlib}, free of \texttt{sorry} and with an axiom audit (S1--S2). The
@@ -205,7 +205,9 @@ differences to $2\times10^{-5}$ where the map is linear. On Llasa-1B, over
 \JacQN{} repeated items and their length-matched controls,
 $q=\JacQRep{}$ $[\JacQRepLo{},\JacQRepHi{}]$ against \JacQCtl{}. \emph{The map
 is not a contraction:} $q<1$ in \JacQNBelow{} of \JacQN{} items, in every lag
-and sub-stack measured. Teacher-forcing removes the token channel, so this is a
+and sub-stack measured. The \emph{control} arm is expansive too, so this
+is not something periodicity breaks: the premise never described this decoder,
+repeated text or not. Teacher-forcing removes the token channel, so this is a
 \emph{lower} bound on the true Lipschitz constant, which makes $q\gg1$ decisive
 rather than marginal; for the theorem to place $N^\ast$ where counts actually
 saturate it would need $q\approx\JacQNeeded{}$.

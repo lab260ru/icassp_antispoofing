@@ -209,7 +209,6 @@ from torch.nn.attention import SDPBackend, sdpa_kernel  # noqa: E402
 
 from src.common.gpus import DEFAULT_GPU, check_gpu  # noqa: E402
 from common.registry import BY_KEY, DATA_ROOT  # noqa: E402
-from models.llasa_gen import build_prompt, extract_speech_ids  # noqa: E402
 
 # ---- pre-committed constants ------------------------------------------------
 KS = (16, 24, 32)          # the repetition levels the task specifies
@@ -369,31 +368,123 @@ def selftest_synthetic(device: str, dim: int = 256, seed: int = 0) -> dict:
 
 
 # ==============================================================================
-# Teacher-forcing input reconstruction (copied from contraction_probe.py)
-# ==============================================================================
-def reconstruct_ids(tok, item: dict, sp_ids: np.ndarray) -> tuple[torch.Tensor, int]:
-    """Rebuild [prompt ++ generated] ids from the recorded codec integers.
-
-    Asserted, not assumed: mapping each integer back through `<|s_{id}|>` and
-    re-running the SAME `extract_speech_ids` used at recording time must
-    reproduce the saved array exactly.
-    """
-    prompt_ids = build_prompt(tok, item["text"])
-    strs = [f"<|s_{int(i)}|>" for i in sp_ids]
-    ids = tok.convert_tokens_to_ids(strs)
-    if any(x is None for x in ids):
-        raise ValueError(f"{item['item_id']}: unrecognised speech-token id")
-    speech_t = torch.tensor(ids, dtype=prompt_ids.dtype).unsqueeze(0)
-    full = torch.cat([prompt_ids, speech_t], dim=1)
-    back = extract_speech_ids(tok.convert_ids_to_tokens(ids))
-    if back != sp_ids.tolist():
-        raise ValueError(f"{item['item_id']}: reconstruction round-trip mismatch")
-    return full, int(prompt_ids.shape[1])
-
-
-# ==============================================================================
 # The window map S_m -> S_{m+1}
 # ==============================================================================
+class TFInput:
+    """A teacher-forced forward's inputs, plus where the generated span starts.
+
+    Kept opaque on purpose: Llasa feeds `input_ids`, Qwen3-TTS has no flat token
+    stream to feed (its per-step input embedding is a *sum* of a codec and a
+    text embedding) and must feed `inputs_embeds`. Everything downstream only
+    needs to be able to truncate the sequence and run it.
+    """
+
+    def __init__(self, kwargs: dict, plen: int, t_gen: int):
+        self.kwargs, self.plen, self.t_gen = kwargs, plen, t_gen
+
+    @property
+    def T(self) -> int:
+        for v in self.kwargs.values():
+            if torch.is_tensor(v) and v.dim() >= 2:
+                return int(v.shape[1])
+        raise ValueError("no sequence tensor in TFInput")
+
+    def truncate(self, t_eff: int) -> "TFInput":
+        """Cut the sequence at `t_eff`.
+
+        This is EXACT, not an approximation: the model is causal, so positions
+        after the read window cannot influence anything inside it. Truncation
+        therefore never changes a measured sigma; it only decides which anchors
+        are affordable. That distinction matters when a bigger checkpoint forces
+        a smaller budget -- the estimand is untouched, the anchor set shrinks
+        towards the start of the trajectory, and that selection is reported.
+        """
+        cut = {k: (v[:, :t_eff] if torch.is_tensor(v) and v.dim() >= 2 else v)
+               for k, v in self.kwargs.items()}
+        return TFInput(cut, self.plen, self.t_gen)
+
+
+class Backend:
+    """Family-specific glue: the decoder stack, and how to teacher-force it."""
+
+    key = "base"
+
+    def __init__(self, spec, device: str):
+        self.spec, self.device = spec, device
+
+    # -- to be provided by subclasses ---------------------------------------
+    def load(self):
+        raise NotImplementedError
+
+    @property
+    def layers(self):
+        raise NotImplementedError
+
+    def run(self, inp: TFInput):
+        raise NotImplementedError
+
+    def build(self, item: dict, sp_ids, seed: int) -> TFInput:
+        raise NotImplementedError
+
+    def tokens_for(self, item_id: str, seed: int):
+        raise NotImplementedError
+
+    # -- shared --------------------------------------------------------------
+    @property
+    def n_layers(self) -> int:
+        return len(self.layers)
+
+    @property
+    def hidden(self) -> int:
+        return int(self.model.config.hidden_size)
+
+
+class LlasaBackend(Backend):
+    """Llama backbone over a flat [text ++ speech] token stream."""
+
+    key = "llasa"
+
+    def load(self):
+        from transformers import AutoModelForCausalLM, AutoTokenizer
+        print(f"[{self.spec.key}] loading {self.spec.hf_id} float32 on {self.device}",
+              flush=True)
+        self.tok = AutoTokenizer.from_pretrained(self.spec.hf_id)
+        self.model = AutoModelForCausalLM.from_pretrained(
+            self.spec.hf_id, dtype=torch.float32,
+            attn_implementation="sdpa").to(self.device).eval()
+        for p in self.model.parameters():
+            p.requires_grad_(False)
+        return self
+
+    @property
+    def layers(self):
+        return self.model.model.layers
+
+    def run(self, inp: TFInput):
+        return self.model.model(**inp.kwargs)
+
+    def tokens_for(self, item_id: str, seed: int):
+        f = Path(DATA_ROOT) / "tokens" / self.spec.key / f"{item_id}_s{seed}.npy"
+        return np.load(f) if f.exists() else None
+
+    def build(self, item: dict, sp_ids, seed: int) -> TFInput:
+        from models.llasa_gen import build_prompt, extract_speech_ids
+        prompt_ids = build_prompt(self.tok, item["text"])
+        strs = [f"<|s_{int(i)}|>" for i in sp_ids]
+        ids = self.tok.convert_tokens_to_ids(strs)
+        if any(x is None for x in ids):
+            raise ValueError(f"{item['item_id']}: unrecognised speech-token id")
+        speech_t = torch.tensor(ids, dtype=prompt_ids.dtype).unsqueeze(0)
+        full = torch.cat([prompt_ids, speech_t], dim=1).to(self.device)
+        back = extract_speech_ids(self.tok.convert_ids_to_tokens(ids))
+        if back != list(sp_ids):
+            raise ValueError(f"{item['item_id']}: reconstruction round-trip mismatch")
+        return TFInput({"input_ids": full}, int(prompt_ids.shape[1]), int(len(sp_ids)))
+
+
+BACKENDS: dict[str, type[Backend]] = {"llasa": LlasaBackend}
+
+
 class WindowMap:
     """Builds `S_{m+1} = F(S_m)` as a retained autograd graph.
 
@@ -407,12 +498,11 @@ class WindowMap:
     l are functions of layer l's input at that position and nothing else.
     """
 
-    def __init__(self, model, ids: torch.Tensor, w_in: tuple[int, int],
+    def __init__(self, be: Backend, inp: TFInput, w_in: tuple[int, int],
                  w_out: tuple[int, int], rms: torch.Tensor, requires_grad: bool = True,
                  x_value: torch.Tensor | None = None):
-        L = model.config.num_hidden_layers
-        d = model.config.hidden_size
-        dev = ids.device
+        L, d = be.n_layers, be.hidden
+        dev = be.device
         n_in = w_in[1] - w_in[0]
         if x_value is None:
             self.x = torch.zeros(L, n_in, d, device=dev, dtype=torch.float32,
@@ -431,23 +521,23 @@ class WindowMap:
                 return (h + pad,) + tuple(args[1:])
             return hook
 
-        handles = [model.model.layers[l].register_forward_pre_hook(make(l))
+        handles = [be.layers[l].register_forward_pre_hook(make(l))
                    for l in range(L)]
         try:
             ctx = torch.enable_grad() if requires_grad else torch.no_grad()
             with ctx, sdpa_kernel([SDPBackend.MATH]):
-                model.model(ids)
+                be.run(inp)
         finally:
             for h in handles:
                 h.remove()
         self.y = torch.stack([caps[l] for l in range(L)], dim=0)  # [L, n_out, d]
 
 
-def clean_states(model, ids: torch.Tensor, plen: int) -> tuple[torch.Tensor, torch.Tensor]:
+def clean_states(be: Backend, inp: TFInput) -> tuple[torch.Tensor, torch.Tensor]:
     """One clean pass: per-layer input RMS over the generated span, and the
     whole per-layer residual trajectory (used for the boundary-distance decay
     diagnostic and for the metric)."""
-    L = model.config.num_hidden_layers
+    L = be.n_layers
     caps: dict[int, torch.Tensor] = {}
 
     def make(l: int):
@@ -456,16 +546,16 @@ def clean_states(model, ids: torch.Tensor, plen: int) -> tuple[torch.Tensor, tor
             return None
         return hook
 
-    handles = [model.model.layers[l].register_forward_pre_hook(make(l))
+    handles = [be.layers[l].register_forward_pre_hook(make(l))
                for l in range(L)]
     try:
         with torch.no_grad(), sdpa_kernel([SDPBackend.MATH]):
-            model.model(ids)
+            be.run(inp)
     finally:
         for h in handles:
             h.remove()
     traj = torch.stack([caps[l] for l in range(L)], dim=0)  # [L, T, d]
-    rms = traj[:, plen:, :].float().pow(2).mean(dim=(1, 2)).sqrt()  # [L]
+    rms = traj[:, inp.plen:, :].float().pow(2).mean(dim=(1, 2)).sqrt()  # [L]
     return rms.clamp_min(1e-8), traj
 
 
@@ -493,12 +583,13 @@ def boundaries(plen: int, t_gen: int, k: int) -> tuple[list[int], int]:
 # ==============================================================================
 # Per-item measurement
 # ==============================================================================
-def run_item(model, tok, device: str, item: dict, sp_ids: np.ndarray, seed: int,
+def run_item(be: Backend, item: dict, sp_ids, seed: int,
              rendered_count: float | None, n_anchors: int, substacks: list[int],
-             do_fd_check: bool = False) -> tuple[list[dict], dict]:
-    full, plen = reconstruct_ids(tok, item, sp_ids)
-    full = full.to(device)
-    t_gen = int(len(sp_ids))
+             do_fd_check: bool = False,
+             max_tokens: int = MAX_TOKENS) -> tuple[list[dict], dict]:
+    device = be.device
+    full = be.build(item, sp_ids, seed)
+    plen, t_gen = full.plen, full.t_gen
     k = int(item["k"])
     b, tau_k = boundaries(plen, t_gen, k)
     diag: dict = dict(item_id=item["item_id"], seed=seed, family=item["family"],
@@ -508,7 +599,7 @@ def run_item(model, tok, device: str, item: dict, sp_ids: np.ndarray, seed: int,
         diag["skipped"] = "tau too small"
         return [], diag
 
-    rms, traj = clean_states(model, full, plen)
+    rms, traj = clean_states(be, full)
     diag["rms_by_layer"] = [float(v) for v in rms]
 
     # --- diagnostic: do boundary-state distances decay geometrically? --------
@@ -517,7 +608,7 @@ def run_item(model, tok, device: str, item: dict, sp_ids: np.ndarray, seed: int,
     S = []
     for m in range(k):
         lo, hi = b[m], b[m] + tau_k
-        if hi > full.shape[1]:
+        if hi > full.T:
             break
         S.append((traj[:, lo:hi, :].float() / rms.view(-1, 1, 1)))
     d_m = [float((S[m + 1] - S[m]).norm()) for m in range(len(S) - 1)]
@@ -531,7 +622,7 @@ def run_item(model, tok, device: str, item: dict, sp_ids: np.ndarray, seed: int,
         lags["tau_rendered"] = max(8, int(round(t_gen / rendered_count)))
     diag["lags"] = dict(lags)
 
-    L = model.config.num_hidden_layers
+    L = be.n_layers
     records: list[dict] = []
     fd_reports: list[dict] = []
 
@@ -547,16 +638,16 @@ def run_item(model, tok, device: str, item: dict, sp_ids: np.ndarray, seed: int,
             w_in = (a, a + lag)
             w_out = (a + lag, a + 2 * lag)
             t_eff = w_out[1]
-            if t_eff > MAX_TOKENS:
+            if t_eff > max_tokens:
                 records.append(dict(item_id=item["item_id"], seed=seed,
                                     family=item["family"], template=item["template"],
                                     k=k, lag_name=lag_name, lag=lag, anchor=a - plen,
                                     substack=None, sigma=None,
                                     skipped="exceeds MAX_TOKENS"))
                 continue
-            ids = full[:, :t_eff]
+            ids = full.truncate(t_eff)
             try:
-                wm = WindowMap(model, ids, w_in, w_out, rms)
+                wm = WindowMap(be, ids, w_in, w_out, rms)
                 op = JacobianOp(wm.y, wm.x)
                 for l0 in substacks:
                     mask = torch.zeros(L, 1, 1, device=device)
@@ -573,7 +664,7 @@ def run_item(model, tok, device: str, item: dict, sp_ids: np.ndarray, seed: int,
                         converged=got["converged"], iters=got["iters"],
                         t_eff=t_eff, skipped=None))
                 if do_fd_check and lag_name == "tau" and not fd_reports:
-                    fd_reports.append(finite_difference_check(model, ids, w_in,
+                    fd_reports.append(finite_difference_check(be, ids, w_in,
                                                               w_out, rms, op, wm))
                 del op, wm
             except (torch.cuda.OutOfMemoryError, RuntimeError) as e:
@@ -590,8 +681,8 @@ def run_item(model, tok, device: str, item: dict, sp_ids: np.ndarray, seed: int,
     return records, diag
 
 
-def finite_difference_check(model, ids, w_in, w_out, rms, op: JacobianOp,
-                            wm: WindowMap) -> dict:
+def finite_difference_check(be: Backend, ids: TFInput, w_in, w_out, rms,
+                            op: JacobianOp, wm: WindowMap) -> dict:
     """S3: the exact JVP against finite differences at a sweep of step sizes.
 
     The point is not that finite differences are a good estimator -- attempt 2
@@ -609,10 +700,10 @@ def finite_difference_check(model, ids, w_in, w_out, rms, op: JacobianOp,
     jn = float(jv.norm())
     sweep = []
     with torch.no_grad():
-        base = WindowMap(model, ids, w_in, w_out, rms, requires_grad=False,
+        base = WindowMap(be, ids, w_in, w_out, rms, requires_grad=False,
                          x_value=torch.zeros_like(v))
         for h in FD_STEPS:
-            pert = WindowMap(model, ids, w_in, w_out, rms, requires_grad=False,
+            pert = WindowMap(be, ids, w_in, w_out, rms, requires_grad=False,
                              x_value=(h * v))
             fd = (pert.y - base.y) / h
             fn = float(fd.norm())
@@ -629,26 +720,31 @@ def finite_difference_check(model, ids, w_in, w_out, rms, op: JacobianOp,
                      "reported, not judged")
 
 
-def causality_check(model, tok, device, item, sp_ids) -> dict:
-    """S2: run the same estimator backwards in time. Must be exactly zero."""
-    full, plen = reconstruct_ids(tok, item, sp_ids)
-    full = full.to(device)
-    t_gen = len(sp_ids)
+def causality_check(be: Backend, item, sp_ids, seed: int = 0,
+                    max_tokens: int = MAX_TOKENS) -> dict:
+    """S2: run the same estimator backwards in time. Must be exactly zero.
+
+    Re-run on every checkpoint, never inherited: this is the test that the
+    hooks are attached to the right tensors of an architecture we have not
+    hooked before, and a leak would look like a perfectly plausible number.
+    """
+    full = be.build(item, sp_ids, seed)
+    plen, t_gen = full.plen, full.t_gen
     b, tau = boundaries(plen, t_gen, int(item["k"]))
-    rms, _ = clean_states(model, full, plen)
+    rms, _ = clean_states(be, full)
     torch.cuda.empty_cache()
     a = b[1]
     lag = tau
     # forward map, for scale: W_in = [a, a+lag) -> W_out = [a+lag, a+2 lag)
-    ids = full[:, :min(a + 2 * lag, MAX_TOKENS)]
-    if a + 2 * lag > ids.shape[1]:
-        a = max(plen, ids.shape[1] - 2 * lag)
-    fwd = WindowMap(model, ids, (a, a + lag), (a + lag, a + 2 * lag), rms)
+    ids = full.truncate(min(a + 2 * lag, max_tokens))
+    if a + 2 * lag > ids.T:
+        a = max(plen, ids.T - 2 * lag)
+    fwd = WindowMap(be, ids, (a, a + lag), (a + lag, a + 2 * lag), rms)
     s_fwd = top_singular_value(JacobianOp(fwd.y, fwd.x), iters=6, seed=1)["sigma"]
     del fwd
     torch.cuda.empty_cache()
     # backward map: inject LATER, read EARLIER
-    bwd = WindowMap(model, ids, (a + lag, a + 2 * lag), (a, a + lag), rms)
+    bwd = WindowMap(be, ids, (a + lag, a + 2 * lag), (a, a + lag), rms)
     s_bwd = top_singular_value(JacobianOp(bwd.y, bwd.x), iters=6, seed=1)["sigma"]
     del bwd
     torch.cuda.empty_cache()
@@ -828,6 +924,53 @@ def summarize(records: list[dict], pairs: list[tuple], selftests: dict,
         paired=pr, contracting=contracting, repeated_below_control=sep,
         selftests_passed=st_pass, verdict=verdict, why=why)
 
+    # ------------------------------------------------------------------
+    # Per-arm status. A reviewer's point, and a correct one: if the
+    # length-matched control -- text the decoder counts correctly -- is ALSO
+    # expansive everywhere, then "the per-repetition state map contracts" was
+    # never a live description of this decoder for any input, and the finding
+    # is not that periodicity breaks contraction. That is a stronger and more
+    # deflationary claim than "falsified under repetition", so it has to be
+    # computed, not left to prose.
+    # ------------------------------------------------------------------
+    arms: dict = {}
+    for arm in ("repeated", "control"):
+        los, his, fracs, cells = [], [], [], 0
+        for name, cell in out["by_cell"].items():
+            v = cell.get(arm, {})
+            if not np.isfinite(v.get("median", np.nan)):
+                continue
+            cells += 1
+            los.append(v["ci_lo"])
+            his.append(v["ci_hi"])
+            fracs.append(v["frac_below_1"])
+        arms[arm] = dict(
+            n_cells=cells,
+            min_ci_lo=float(np.min(los)) if los else np.nan,
+            max_ci_hi=float(np.max(his)) if his else np.nan,
+            max_frac_items_below_1=float(np.max(fracs)) if fracs else np.nan,
+            expansive_in_every_cell=bool(los and np.min(los) > 1.0),
+            contracting_in_some_cell=bool(his and np.min(his) < 1.0))
+    both = arms["repeated"]["expansive_in_every_cell"] and \
+        arms["control"]["expansive_in_every_cell"]
+    if both:
+        arm_stmt = ("the premise fails on BOTH arms: the length-matched control, "
+                    "which this decoder counts correctly, is also expansive in "
+                    "every cell. Contraction was never a live description of "
+                    "this decoder for any input -- periodicity does not break it, "
+                    "it was never there to break")
+    elif arms["repeated"]["expansive_in_every_cell"]:
+        arm_stmt = ("the premise fails on the repeated arm in every cell while "
+                    "the control contracts somewhere: the failure is specific to "
+                    "repetition")
+    elif arms["control"]["expansive_in_every_cell"]:
+        arm_stmt = ("the control is expansive everywhere while the repeated arm "
+                    "is not -- the opposite of the theorem's story")
+    else:
+        arm_stmt = "neither arm is expansive in every cell; read the table"
+    out["premise_by_arm"] = dict(arms=arms, both_arms_expansive=bool(both),
+                                 statement=arm_stmt)
+
     # least favourable reading: the largest q we measured anywhere on the
     # repeated arm across the lag grid at the whole-stack level.
     worst = -np.inf
@@ -939,11 +1082,20 @@ def main() -> None:
     ap.add_argument("--model", default="llasa1b")
     ap.add_argument("--gpu", type=int, default=DEFAULT_GPU)
     ap.add_argument("--stimuli", default=str(REPO / "data/stimuli/stimuli.jsonl"))
-    ap.add_argument("--out", default=str(REPO / "data/results/jacobian_q.json"))
+    ap.add_argument("--out", default="",
+                    help="default: data/results/jacobian_q.json for llasa1b "
+                         "(the file Section 4 already cites), "
+                         "data/results/jacobian_q_<model>.json otherwise")
     ap.add_argument("--seeds", type=int, nargs="+", default=[0, 1, 2])
     ap.add_argument("--ks", type=int, nargs="+", default=list(KS))
     ap.add_argument("--max-pairs", type=int, default=0)
     ap.add_argument("--n-anchors", type=int, default=N_ANCHORS)
+    ap.add_argument("--max-tokens", type=int, default=MAX_TOKENS,
+                    help="truncation guard. Truncating at the read window is "
+                         "EXACT on a causal model, so lowering this for a bigger "
+                         "checkpoint does not change what is measured -- it only "
+                         "restricts which anchors are affordable, which the "
+                         "results file records per skipped anchor.")
     ap.add_argument("--selftest", action="store_true",
                     help="run gate 0 (the three self-tests) and exit")
     ap.add_argument("--resummarize", default="",
@@ -952,6 +1104,9 @@ def main() -> None:
                          "no GPU. Use after changing an aggregation, so the "
                          "results file always matches the current script.")
     args = ap.parse_args()
+    if not args.out:
+        args.out = str(REPO / ("data/results/jacobian_q.json" if args.model == "llasa1b"
+                               else f"data/results/jacobian_q_{args.model}.json"))
 
     if args.resummarize:
         path = Path(args.resummarize)
@@ -980,17 +1135,11 @@ def main() -> None:
     torch.cuda.set_device(args.gpu)
     spec = BY_KEY[args.model]
 
-    from transformers import AutoModelForCausalLM, AutoTokenizer
-    print(f"[{spec.key}] loading {spec.hf_id} float32 on {device}", flush=True)
-    tok = AutoTokenizer.from_pretrained(spec.hf_id)
-    model = AutoModelForCausalLM.from_pretrained(
-        spec.hf_id, dtype=torch.float32, attn_implementation="sdpa").to(device).eval()
-    for p in model.parameters():
-        p.requires_grad_(False)
-    L = model.config.num_hidden_layers
+    be = BACKENDS[spec.family](spec, device).load()
+    L = be.n_layers
     substacks = sorted({int(round(f * L)) for f in SUBSTACK_FRACS})
-    print(f"[{spec.key}] L={L} d={model.config.hidden_size} substacks={substacks}",
-          flush=True)
+    print(f"[{spec.key}] family={spec.family} L={L} d={be.hidden} "
+          f"substacks={substacks} max_tokens={args.max_tokens}", flush=True)
 
     stim = {json.loads(l)["item_id"]: json.loads(l) for l in open(args.stimuli)}
     meta = load_meta(args.model)
@@ -1002,7 +1151,6 @@ def main() -> None:
     if not pairs:
         raise SystemExit("no eligible pairs")
 
-    tok_dir = Path(DATA_ROOT) / "tokens" / args.model
     counts = rendered_counts(args.model)
 
     # ---------------- gate 0: the self-tests --------------------------------
@@ -1014,8 +1162,10 @@ def main() -> None:
           f"rel={s1['rel_error']:.2e} -> {'PASS' if s1['passed'] else 'FAIL'}", flush=True)
 
     wr0, ct0, s0 = pairs[0]
-    sp0 = np.load(tok_dir / f"{wr0}_s{s0}.npy")
-    s2 = causality_check(model, tok, device, stim[wr0], sp0)
+    sp0 = be.tokens_for(wr0, s0)
+    if sp0 is None:
+        raise SystemExit(f"no stored generation for {wr0} seed {s0}")
+    s2 = causality_check(be, stim[wr0], sp0, s0, max_tokens=args.max_tokens)
     selftests["S2"] = s2
     print(f"  S2 causality: forward={s2['sigma_forward']:.6e} "
           f"backward={s2['sigma_backward']:.6e} -> "
@@ -1023,8 +1173,9 @@ def main() -> None:
 
     if args.selftest:
         # S3 needs one real item's graph; run it on the first pair only.
-        recs, diag = run_item(model, tok, device, stim[wr0], sp0, s0,
-                              counts.get((wr0, s0)), 1, [0], do_fd_check=True)
+        recs, diag = run_item(be, stim[wr0], sp0, s0, counts.get((wr0, s0)),
+                              1, [0], do_fd_check=True,
+                              max_tokens=args.max_tokens)
         s3 = diag.get("fd_check")
         if s3:
             selftests["S3"] = s3
@@ -1049,15 +1200,15 @@ def main() -> None:
     diags: list[dict] = []
     t0 = time.time()
     for n, (iid, s) in enumerate(items):
-        f = tok_dir / f"{iid}_s{s}.npy"
-        if not f.exists():
-            print(f"  [{iid}/s{s}] tokens missing", flush=True)
+        sp = be.tokens_for(iid, s)
+        if sp is None:
+            print(f"  [{iid}/s{s}] no stored generation", flush=True)
             continue
-        sp = np.load(f)
         try:
-            recs, diag = run_item(model, tok, device, stim[iid], sp, s,
-                                  counts.get((iid, s)), args.n_anchors, substacks,
-                                  do_fd_check=("S3" not in selftests))
+            recs, diag = run_item(be, stim[iid], sp, s, counts.get((iid, s)),
+                                  args.n_anchors, substacks,
+                                  do_fd_check=("S3" not in selftests),
+                                  max_tokens=args.max_tokens)
         except Exception as e:  # noqa: BLE001
             print(f"  [{iid}/s{s}] FAILED: {type(e).__name__}: {e}", flush=True)
             torch.cuda.empty_cache()
@@ -1102,19 +1253,27 @@ def main() -> None:
           f"q_control = {h['q_control']:.4f}")
     print(f"least favourable reading anywhere on the lag grid: "
           f"{summary['least_favourable']}")
+    pa = summary["premise_by_arm"]
+    print("\nper-arm status (the 'was contraction ever live here?' question):")
+    for arm, v in pa["arms"].items():
+        print(f"  {arm:>9s}: q CI spans [{v['min_ci_lo']:.3f}, {v['max_ci_hi']:.3f}] "
+              f"over {v['n_cells']} cells; expansive in every cell: "
+              f"{v['expansive_in_every_cell']}; max frac of items with q<1: "
+              f"{v['max_frac_items_below_1']:.3f}")
+    print(f"  -> {pa['statement']}")
     print(f"\nVERDICT: {h['verdict']} -- {h['why']}")
     print(f"implied N* (rho=1): {summary['implied_nstar']['rho=1.0']}")
     print(f"observed N*_rep: {summary['observed_nstar_repeated']}  "
           f"match={summary['nstar_matches_observed']}")
 
     result = dict(
-        config=dict(model=args.model, hf_id=spec.hf_id, dtype="float32",
-                    gpu=args.gpu, n_layers=L, hidden=model.config.hidden_size,
+        config=dict(model=args.model, hf_id=spec.hf_id, family=spec.family,
+                    dtype="float32", gpu=args.gpu, n_layers=L, hidden=be.hidden,
                     ks=args.ks, seeds=args.seeds, n_pairs=len(pairs),
                     pairs=[list(p) for p in pairs],
                     n_items=len(items), substacks=substacks,
                     power_iters=POWER_ITERS, power_tol=POWER_TOL,
-                    max_tokens=MAX_TOKENS, n_anchors=args.n_anchors,
+                    max_tokens=args.max_tokens, n_anchors=args.n_anchors,
                     metric="per-layer RMS-normalised residual stack",
                     lag_grid=list(LAG_NAMES)),
         selftests=selftests, summary=summary, diagnostics=diags,

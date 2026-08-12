@@ -177,6 +177,12 @@ JUDGE_DIRS = {
     "ctc": "asr_ctc",       # wav2vec2-large-960h-lv60-self, the paper's judge
     "hubert": "asr_hubert",  # hubert-large-ls960-ft, the independent judge
     "robust": "asr_robust",  # wav2vec2-large-robust-ft-libri-960h, third judge
+    # The Spanish judge for the cross-lingual arm:
+    # jonatasgrosman/wav2vec2-large-xlsr-53-spanish, decoded greedily with no
+    # language model. Same architecture and same decode path as the English
+    # judge, so the counting rules below apply to it unchanged -- which is the
+    # only reason a Spanish number can be set beside an English one.
+    "ctc_es": "asr_ctc_es",
 }
 
 

@@ -56,6 +56,12 @@ def main() -> None:
     ap.add_argument("--whisper", default="openai/whisper-large-v3")
     ap.add_argument("--stimuli", default=str(REPO / "data/stimuli/stimuli.jsonl"))
     ap.add_argument("--out", default=str(REPO / "data/results/ctc_validation.json"))
+    # Both judges have to be told which language they are hearing. For the CTC
+    # judge that is baked into the checkpoint (`--ctc`); for Whisper it is a
+    # decode-time flag, and leaving it at `en` over Spanish audio makes Whisper
+    # translate instead of transcribe, which would score zero occurrences of a
+    # Spanish target for a reason that has nothing to do with counting.
+    ap.add_argument("--language", default="en")
     args = ap.parse_args()
 
     from common.score_counts import count_occurrences, normalise
@@ -107,13 +113,14 @@ def main() -> None:
                     padding="longest", return_attention_mask=True)
         kw = {k: (v.to(dev, torch.float16) if k == "input_features" else v.to(dev))
               for k, v in inp.items()}
-        out = wmod.generate(**kw, language="en", task="transcribe",
+        out = wmod.generate(**kw, language=args.language, task="transcribe",
                             condition_on_prev_tokens=False, return_segments=True)
         seq = out["sequences"] if isinstance(out, dict) else out
         return wproc.batch_decode(seq, skip_special_tokens=True)[0]
 
     res: dict = {"source_model": args.source_model, "ctc": args.ctc,
-                 "whisper": args.whisper, "trials": []}
+                 "whisper": args.whisper, "language": args.language,
+                 "stimuli": args.stimuli, "trials": []}
     for kind, pool in (("periodic", atoms), ("distinct", ctl_atoms)):
         for _, unit, f in pool:
             wav, sr = sf.read(f, dtype="float32")

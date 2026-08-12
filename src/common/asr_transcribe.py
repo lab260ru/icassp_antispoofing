@@ -83,6 +83,12 @@ def main() -> None:
     ap.add_argument("--gpu", type=int, default=DEFAULT_GPU)
     ap.add_argument("--asr", default="openai/whisper-large-v3")
     ap.add_argument("--batch-size", type=int, default=8)
+    # Whisper decodes to whatever language it is told. The default is `en` so
+    # every existing English run reproduces byte-for-byte; the cross-lingual arm
+    # passes `es`. Left on `en` for Spanish audio, Whisper would *translate*
+    # rather than transcribe, and the resulting transcript would contain no
+    # Spanish target word at all -- a silent zero on every item.
+    ap.add_argument("--language", default="en")
     args = ap.parse_args()
     check_gpu(args.gpu)
 
@@ -125,7 +131,7 @@ def main() -> None:
               for k, v in inp.items()}
         with torch.no_grad():
             out = model.generate(
-                **kw, language="en", task="transcribe",
+                **kw, language=args.language, task="transcribe",
                 return_timestamps="word", condition_on_prev_tokens=False,
                 return_segments=True,
             )

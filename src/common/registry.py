@@ -56,6 +56,18 @@ PANEL = [
               25.0, 24000, "every3", True,
               "Qwen2.5-0.5B LM over 25 Hz FSQ speech tokens + flow-matching decoder; "
               "alignment-supervised AR"),
+    # Cross-lingual arm. Same XTTS-v2 weights, same speaker reference, same
+    # decoding config as `xtts2`; only the stimulus language and the judge
+    # change. It is NOT a panel member and is listed in
+    # `population.ABLATIONS` for the same reason `cosyvoice2` is: the pipeline
+    # scores every model with transcripts into a shared table, and folding a
+    # Spanish arm into an English panel would move every macro in the paper.
+    # `env` is `coqui_es`, a clone of `coqui` pinned to transformers 4.57.1 --
+    # the live `coqui` env has since been upgraded to transformers 5.x, which
+    # coqui-tts 0.27.5 cannot import at all.
+    ModelSpec("xtts2es", "coqui/XTTS-v2", "xtts", "0.4B", "coqui_es",
+              21.53, 24000, "every3", False,
+              "XTTS-v2 rendering Spanish stimuli; cross-lingual arm, non-panel"),
     # Ablation. XTTS-v2 ships repetition_penalty=5.0 on acoustic tokens, which
     # acts directly against the behaviour under study; run with it disabled to
     # show the dissociation is not an artefact of that decoding-time

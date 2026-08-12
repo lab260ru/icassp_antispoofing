@@ -50,17 +50,32 @@ ABLATIONS = {"xtts2norp", "xtts2rp2", "xtts2rp3", "xtts2rp8",
              # into the shared table, so without this line a routine rerun
              # would fold it into the panel and move every macro in the paper
              # -- silently, and in the direction that flatters us.
-             "cosyvoice2"}
+             "cosyvoice2",
+             # The Spanish arm, for exactly the same reason as cosyvoice2 and
+             # with a sharper edge: it is scored by a *different judge* against
+             # a *different stimulus file*, so a routine rerun that folded it in
+             # would not merely add rows, it would mix two recognisers' counts
+             # inside one macro. It is reported on its own in
+             # `analysis/crosslingual_es.py` and nowhere else.
+             "xtts2es"}
 DEGENERATE = {"empty", "degenerate"}
 AUDIT = REPO / "data/results/judge_vocab_audit.json"
 META_DIR = Path("/home/kirill/mnt/hdd_6tb_1/icassp_tts/tokens")
 
 
-def excluded_templates() -> list[str]:
-    """Templates whose scored vocabulary the judge cannot transcribe."""
-    if not AUDIT.exists():
+def excluded_templates(audit: Path | str | None = None) -> list[str]:
+    """Templates whose scored vocabulary the judge cannot transcribe.
+
+    `audit` selects the delivery audit to read. The default is the English
+    judge's. It is a parameter because the rule is a statement about *one
+    judge on one vocabulary*: the Spanish arm has a different recogniser and a
+    different word list, so applying the English exclusion list to it would
+    delete rows for a fact established about English orthography.
+    """
+    p = Path(audit) if audit is not None else AUDIT
+    if not p.exists():
         return []
-    return list(json.loads(AUDIT.read_text()).get("excluded_templates", []))
+    return list(json.loads(p.read_text()).get("excluded_templates", []))
 
 
 def cap_flags() -> dict[tuple[str, str, int], bool]:
@@ -80,7 +95,8 @@ def cap_flags() -> dict[tuple[str, str, int], bool]:
 
 
 def panel(d: pd.DataFrame, *, ablations: bool = False, degenerate: bool = False,
-          bad_templates: bool = True, cap_hits: bool = True) -> tuple[pd.DataFrame, dict]:
+          bad_templates: bool = True, cap_hits: bool = True,
+          audit: Path | str | None = None) -> tuple[pd.DataFrame, dict]:
     """Restrict `d` to the reportable population.
 
     Each flag *keeps* the corresponding rows when set True, so an analysis that
@@ -100,7 +116,7 @@ def panel(d: pd.DataFrame, *, ablations: bool = False, degenerate: bool = False,
         drop["degenerate"] = int((~keep).sum())
         d = d[keep]
     if bad_templates and "template" in d.columns:
-        bad = excluded_templates()
+        bad = excluded_templates(audit)
         drop["bad_templates"] = int(d.template.isin(bad).sum())
         drop["excluded_templates"] = bad
         d = d[~d.template.isin(bad)]

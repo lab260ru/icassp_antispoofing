@@ -7,26 +7,24 @@
 
 \noindent\textbf{The rival the evidence favours.}
 With contraction refuted, the live question is where the count fails: erased
-from the state, or surviving there while the policy that reads it
-fails~\cite{venkatesh2026repeated}. Our evidence points the second way: repetition costs probe retention against the
-control in all \ProbeNBelowCtl{} of \ProbeNCk{}, as contraction predicts, but
-the count is not erased --- it stays decodable late ($R^2$ \ProbeLateMed{}). Past the extension horizon the
-\PhNCk{} checkpoints reach \PhAllRatios{} of a mean-answering predictor:
-inconclusive at $n=\PhNCk{}$, and on the two Qwen checkpoints no evidence about
-the representation at all, since trajectory length alone beats the state probe
-there. Deciding between them needs a manipulation of
-the readout at fixed state, and we ran two. Splicing whole donor states is too disruptive
-to read (an \emph{unrelated} donor moves the count $1.3\times$ as much as one
-differing in $k$). A rank-1 patch transferring only
-the probe's count coordinate removes the damage (\CausalDegen{}\% degenerate,
-self-patch bitwise-identical \CausalNoop{}/\CausalNoop{}) and moves the count
-not at all ($\CausalShift{}$ log-count $[\CausalShiftLo{},\CausalShiftHi{}]$,
+from the state, or surviving there while the policy reading it fails.
+\cite{venkatesh2026repeated} established the representational half of that for
+repeated-token counting in text models by probing; we add the causal half, and
+the isolation of periodicity from length. The count is not erased: it stays decodable
+late ($R^2$ \ProbeLateMed{}), and a probe past the extension horizon is
+inconclusive at $n=\PhNCk{}$ (S12). Deciding needs a manipulation of
+the readout at fixed state, and we ran two. Splicing whole donor states is too disruptive to
+read, an \emph{unrelated} donor moving the count $1.3\times$ as much as one
+differing in $k$. A rank-1 patch transferring only the probe's count
+coordinate removes the damage (\CausalDegen{}\% degenerate, self-patch
+bitwise-identical \CausalNoop{}/\CausalNoop{}) and moves the count not at all
+($\CausalShift{}$ log-count $[\CausalShiftLo{},\CausalShiftHi{}]$,
 $n=\CausalN{}$); steering along it gives no dose-response. The count coordinate
 transplants cleanly and the decoder ignores it (S26).
 
 \noindent\textbf{Related work, and what the control decides.}
-Closest is representational collapse~\cite{barbero2024glasses}: distinct
-prefixes converge with length, which our control separates from periodicity.
+Closest is representational collapse~\cite{barbero2024glasses}, where distinct
+prefixes converge with length --- which our control separates from periodicity.
 Counting-specific expressivity results reach a compatible conclusion another way
 --- transformers count only under conditions on precision, depth and positional
 encoding~\cite{yehudai2024when,salzer2025counting,zhang2024counting}, with
@@ -37,19 +35,15 @@ model and survives at fixed periodicity, a contraction limit is a property of
 the \emph{conditioning}. Ours varies periodicity at fixed length, and the
 result is periodicity-specific.
 
-\noindent\textbf{What the design does not separate.}
+\noindent\textbf{What the design does not separate, and other limits.}
 Periodicity and \emph{verbatim token identity} vary together here, so
 ``periodicity'' is the pair; neither is separated from \emph{training-set
 frequency}, $k$-fold verbatim repetition being far rarer in speech corpora than
-a matched sentence of distinct words, so an out-of-distribution account predicts
-the same dissociation. Inside the repeated arm the requested count and
-the amount of text are one variable, so a probe decoding $k$ cannot be said to
-decode a \emph{count} rather than a length; only the control separates those,
-behaviourally. The VITS/F5-TTS duration story rests on one model per strategy.
-Exclusions are rule-based, applied without reference to arm or score.
-
-\noindent\textbf{Limitations.}
-The panel is \NFamilies{} families and English the only language tested. The
-judge is validated against concatenative ground truth, not human listeners, and
-we ran no listening study. A control arm with its twin's deficit at matched
-length would refute the claim; none did.
+a matched distinct-word sentence, so an out-of-distribution account predicts the
+same dissociation. Inside the repeated arm count and text length are one
+variable, so a probe decoding $k$ may be decoding length. The VITS/F5-TTS duration story rests on one model
+per strategy, and $q$ on one checkpoint. The panel is \NFamilies{} families and
+English the only language; exclusions are rule-based, applied without reference
+to arm or score; and the judge is validated against concatenative ground
+truth, not human listeners, no listening study having been run. A control carrying its twin's deficit
+would refute the claim; none did.

@@ -4707,6 +4707,39 @@ checkpoint --- launched with the 1-of-3 split already written down, not after
 seeing which way they would land --- and the split weakened again, to 1 of 5
 (S12). XTTS-v2 still cannot be run.
 
+\noindent\textbf{The out-of-sample prediction, with its timestamps.} The main
+text reports a predicted gap for an architecture outside the panel and then an
+observed gap for CosyVoice~2, and a reader is entitled to check that the
+prediction really did precede the observation rather than being fitted to it.
+The filesystem and the commit log agree on the order:
+
+\begin{center}\small
+\begin{tabular}{llr}
+\toprule
+Time (UTC) & Event & Value \\
+\midrule
+17{:}15 & \texttt{hierarchical.json} written & $+65.3$ $[5.9, 93.3]$ \\
+17{:}28 & committed as \texttt{6f34945} & --- \\
+17{:}50 & \emph{first} CosyVoice~2 audio file exists & --- \\
+18{:}47 & CosyVoice~2 generation completes & --- \\
+18{:}58 & CosyVoice~2 scored & $+64.4$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent All on 2026-08-12. The predictive interval was written thirty-five
+minutes and committed twenty-two minutes before the first CosyVoice~2 waveform
+existed, so no CosyVoice~2 measurement could have informed it. Generation was
+already \emph{queued} when the fit was committed, which is why this is recorded
+as a held-out prediction and not as a pre-registration: the architecture had
+been chosen, and only its result was unknown. The prediction is also a point
+estimate carrying an interval $[5.9, 93.3]$ nearly ninety points wide, and under
+the widest prior on the group-level scales that interval includes zero
+(S11). Landing within $0.9$ points of the posterior mean is therefore a good
+deal more precise than the model was entitled to promise, and should be read as
+one architecture falling comfortably inside a wide predictive interval rather
+than as a sharp quantitative hit.
+
 \noindent\textbf{The extension ladder is the exception, and we flag it as such.}
 It was run because the pre-specified range failed to show the theorem's
 signature, and it is the one result whose framing benefited from being sought.
