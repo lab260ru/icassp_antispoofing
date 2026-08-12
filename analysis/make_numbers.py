@@ -836,11 +836,24 @@ def main() -> None:
         # Control items over the identical k range. If the probe reads the count
         # off these while failing on the repeated ones, "the range is too narrow"
         # is dead as an explanation -- the range is the same.
-        ctl_key = next((k for k in ph if k.startswith("control:")), None)
+        ctl_order = [m for m in ORDER if f"control:{m}" in ph]
+        ctl_key = f"control:{ctl_order[0]}" if ctl_order else None
         if ctl_key:
             macros["PhCtlMae"] = fmt(ph[ctl_key]["mae"], 2)
             macros["PhCtlRTwo"] = fmt(ph[ctl_key]["r2"], 2)
             macros["PhCtlRatio"] = fmt(ph[ctl_key]["mae_ratio"], 2)
+            # One control arm excuses the range on one checkpoint. Listing them
+            # all is what lets the rebuttal be stated for the panel rather than
+            # for whichever checkpoint happened to have a control arm first.
+            macros["PhNCtl"] = str(len(ctl_order))
+            macros["PhCtlNames"] = ", ".join(LABEL.get(m, m) for m in ctl_order)
+            macros["PhCtlRatios"] = ", ".join(
+                fmt(ph[f"control:{m}"]["mae_ratio"], 2) for m in ctl_order)
+            worst = max(ctl_order, key=lambda m: ph[f"control:{m}"]["mae_ratio"])
+            macros["PhCtlRatioWorst"] = fmt(ph[f"control:{worst}"]["mae_ratio"], 2)
+            macros["PhCtlWorstName"] = LABEL.get(worst, worst)
+            macros["PhNCtlBeat"] = str(len(phj.get("controls_beating_constant")
+                                           or []))
 
     # ---- what the probe does and does not discriminate --------------------
     pd_path = Path("data/results/probe_discrimination.json")
@@ -1023,6 +1036,70 @@ def main() -> None:
         th = ij.get("thresholds", {})
         if th:
             macros["IndAsymThresh"] = fmt(th["artifact_asymmetry"], 1)
+
+    # ---- CosyVoice 2: a fourth family, and a held-out test of the model ----
+    # Reviewers called an alignment-supervised AR system "the single most
+    # informative missing experiment". It is also, by accident of timing, an
+    # out-of-sample check on the hierarchical fit: the posterior predictive for
+    # an architecture outside the panel was committed (6f34945, 17:28) ninety
+    # minutes before this checkpoint's data existed (18:58). Nothing here is
+    # pooled into the panel -- see the cosyvoice2 entry in population.py.
+    cosy_path = Path("data/results/behavioural_cosyvoice.csv")
+    if cosy_path.exists():
+        cz = pd.read_csv(cosy_path)
+        cz = cz[cz.family.isin(["word_rep", "control_word"])]
+        cz_pop, _ = restrict(cz.assign(model=cz.model.replace("cosyvoice2", "_cosy")))
+        cz_pop = cz_pop[cz_pop.k >= 6]
+        cz_pop = cz_pop.assign(err=(cz_pop.count_a - cz_pop.k) / cz_pop.k)
+        rep = cz_pop[cz_pop.family == "word_rep"]
+        ctl = cz_pop[cz_pop.family == "control_word"]
+        if len(rep) and len(ctl):
+            r_ex = 100 * (rep.err == 0).mean()
+            c_ex = 100 * (ctl.err == 0).mean()
+            macros["CosyRep"] = fmt(r_ex, 1)
+            macros["CosyCtl"] = fmt(c_ex, 1)
+            macros["CosyGap"] = fmt(c_ex - r_ex, 1)
+            macros["CosyN"] = str(len(rep))
+            # The direction is the new information: it over-produces rather
+            # than truncating, so it makes roughly the right amount of speech
+            # and still loses the count.
+            macros["CosyMedErr"] = fmt(100 * rep.err.median(), 1)
+            macros["CosyCapHit"] = fmt(100 * rep.hit_cap.mean(), 1)
+
+    # ---- the contraction premise, finally measured -------------------------
+    # Two earlier estimators failed and the paper had to say the premise was
+    # untested. This one passes its own gates -- a synthetic Jacobian recovered
+    # to 4e-4, a time-reversed control returning exactly zero, exact JVP against
+    # finite differences to 2e-5 -- so the paper can say something much stronger
+    # and much worse for the theorem: the premise is false in this decoder.
+    jq_path = Path("data/results/jacobian_q.json")
+    if jq_path.exists():
+        jq = json.loads(jq_path.read_text())
+        summ_j = jq.get("summary", {})
+        hl = summ_j.get("headline", {})
+        cell = summ_j.get("by_cell", {}).get("tau|substack0", {})
+        if hl and cell:
+            macros["JacQRep"] = fmt(hl["q_repeated"], 1)
+            macros["JacQCtl"] = fmt(hl["q_control"], 1)
+            macros["JacQRepLo"] = fmt(cell["repeated"]["ci_lo"], 1)
+            macros["JacQRepHi"] = fmt(cell["repeated"]["ci_hi"], 1)
+            macros["JacQN"] = str(cell["repeated"]["n_items"])
+            # Zero of 29, in every cell. The paper quotes the count, not the
+            # fraction: "q<1 in none of them" is the sentence that lands.
+            macros["JacQNBelow"] = str(int(round(
+                cell["repeated"]["frac_below_1"] * cell["repeated"]["n_items"])))
+            p = hl["paired"]
+            macros["JacQPairedP"] = fmt(p["wilcoxon_p"], 3)
+            macros["JacQNRepLower"] = str(int(round(
+                p["frac_repeated_lower"] * p["n_pairs"])))
+        lf = summ_j.get("least_favourable", {})
+        if lf:
+            macros["JacQWorst"] = fmt(lf["q_repeated_ci_hi"], 1)
+        band = summ_j.get("q_band_reproducing_observed_nstar", {})
+        if band:
+            # What q would have had to be for the theorem to explain the
+            # saturation we actually observe. Nothing measured is near it.
+            macros["JacQNeeded"] = fmt(band["q_for_nstar"]["point"], 2)
 
     # ---- write numbers.tex ----------------------------------------------
     lines = ["% AUTO-GENERATED by analysis/make_numbers.py -- do not edit.", ""]

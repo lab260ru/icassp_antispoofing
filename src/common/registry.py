@@ -45,6 +45,17 @@ PANEL = [
     ModelSpec("qwen17b", "Qwen/Qwen3-TTS-12Hz-1.7B-Base", "qwen", "1.7B", "qwen",
               12.5, 24000, "every3", True,
               "same family as 0.6B; mini scale ladder"),
+    # The alignment-supervised AR system. Every other AR member of the panel
+    # learns the text->speech alignment implicitly from the LM objective;
+    # CosyVoice 2's speech tokens come from a *supervised* ASR encoder and its
+    # flow-matching decoder is conditioned on that aligned stream. It is
+    # therefore the checkpoint that can separate "AR decoding fails to count"
+    # from "unsupervised alignment fails to count": a gap like the panel's says
+    # alignment supervision does not fix it, a gap near zero says it does.
+    ModelSpec("cosyvoice2", "FunAudioLLM/CosyVoice2-0.5B", "cosyvoice", "0.5B", "cosyvoice",
+              25.0, 24000, "every3", True,
+              "Qwen2.5-0.5B LM over 25 Hz FSQ speech tokens + flow-matching decoder; "
+              "alignment-supervised AR"),
     # Ablation. XTTS-v2 ships repetition_penalty=5.0 on acoustic tokens, which
     # acts directly against the behaviour under study; run with it disabled to
     # show the dissociation is not an artefact of that decoding-time

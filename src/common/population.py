@@ -42,7 +42,15 @@ REPO = Path(__file__).resolve().parent.parent.parent
 
 ABLATIONS = {"xtts2norp", "xtts2rp2", "xtts2rp3", "xtts2rp8",
              "qwen06brp10", "qwen06brp15", "qwen06brp30", "qwen06bgreedy",
-             "vits", "vitsdur", "vitsrate", "f5tts", "f5fix"}
+             "vits", "vitsdur", "vitsrate", "f5tts", "f5fix",
+             # CosyVoice 2 is not an ablation; it is a fourth architecture,
+             # added after the panel's numbers were fixed and reported
+             # separately as an out-of-sample test of them. It is listed here
+             # because `run_pipeline.sh` scores every model with transcripts
+             # into the shared table, so without this line a routine rerun
+             # would fold it into the panel and move every macro in the paper
+             # -- silently, and in the direction that flatters us.
+             "cosyvoice2"}
 DEGENERATE = {"empty", "degenerate"}
 AUDIT = REPO / "data/results/judge_vocab_audit.json"
 META_DIR = Path("/home/kirill/mnt/hdd_6tb_1/icassp_tts/tokens")

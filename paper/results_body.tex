@@ -35,9 +35,9 @@ every model is essentially exact; above it, repeated items are rendered with a
 median count error of \ErrRepCk{}\% per checkpoint against \ErrCtl{}\%
 $[\ErrCtlLo{},\ErrCtlHi{}]$ for controls ($n=\ErrCtlN{}$), at every $k$ to $32$
 and for every model. The contrast is sharpest in exactly-correct renderings:
-\ExactCtl{}\% for controls against \ExactRep{}\% for their twins. Controls are
-not perfect --- \CtlMissPct{}\% carry genuine truncations --- but they are exact
-where their twins are not.
+\ExactCtl{}\% for controls against \ExactRep{}\% for their twins. Controls are not
+perfect (\CtlMissPct{}\% carry genuine truncations) but they are exact where
+their twins are not.
 
 \emph{Our \NModels{} checkpoints are only \NFamilies{} architecture families},
 so we model the clustering rather than count checkpoints. By family the gap is
@@ -56,7 +56,13 @@ posterior predictive gap for an architecture \emph{outside} the panel is
 $P(\text{gap}>0)=\BayesNewFamP{}$ --- enough to place the effect, not enough to
 exclude a fourth architecture that does not show it, and under the widest prior
 on the group-level scales that interval does touch zero
-($\BayesWidePriorLo{}$, $P=\BayesWidePriorP{}$). Across \SpecN{} specifications
+($\BayesWidePriorLo{}$, $P=\BayesWidePriorP{}$). We then acquired a fourth
+architecture and can report the prediction's outcome. CosyVoice~2, whose
+alignment supervision makes it the design most likely to be immune, renders
+repeated text exactly \CosyRep{}\% of the time against \CosyCtl{}\% for its
+controls ($n=\CosyN{}$): a gap of \CosyGap{} points against the \BayesNewFam{}
+predicted, from a fit committed before the checkpoint had been run (S16 dates
+both). Across \SpecN{} specifications
 spanning every forking choice we made --- exclusion rules, $k$ threshold, cycled
 against never-cycled controls, seed subset, aggregation level and outcome
 definition --- the gap runs \SpecLo{}--\SpecHi{} points and none reverses its
@@ -65,63 +71,63 @@ sign (S11).
 Above $k\!=\!8$ the control's fillers cycle a pool of eight, making the contrast
 period-$1$ against period-$8$ rather than periodic against aperiodic.
 Re-generating $k=12\ldots32$ from a never-cycled $146$-word pool leaves the
-dissociation at \ApMidGap{} points (\ApMidRep{}\% against \ApMidCtl{}\%,
-$n=\ApMidN{}$) where cycled controls give \ApCycGap{}: residual periodicity in
-the control arm is worth \ApCost{} points, not the bulk of the gap.
+dissociation at \ApMidGap{} points against \ApCycGap{} for cycled controls over
+the same range ($n=\ApMidN{}$): the residual is worth \ApCost{} points, not the
+bulk of the gap.
 
 \subsection{Confirmatory: not the decoding rule, the judge, or our exclusions}
 
 The families ship repetition penalties differing by an order of magnitude, and a
 penalty suppresses repeated tokens directly. Swept on \PenNArch{} architectures
-(S15) the deficit stays put --- XTTS-v2 at \PenRepLo{}--\PenRepHi{}\% exact over
-a \PenFold{}-fold range, Qwen3-TTS-0.6B at \PenQRepLo{}--\PenQRepHi{}\% over
-\PenQFold{}-fold --- and the \PenNoneN{} Llasa checkpoints pass \emph{no}
+the deficit stays put (XTTS-v2 \PenRepLo{}--\PenRepHi{}\% exact over a
+\PenFold{}-fold range, Qwen3-TTS-0.6B \PenQRepLo{}--\PenQRepHi{}\% over
+\PenQFold{}-fold, S15), and the \PenNoneN{} Llasa checkpoints pass \emph{no}
 penalty and show it at full size, \PenNoneRep{}\% against \PenNoneCtl{}\%. Nor
-is it a sampling artifact: greedy decoding gives \GreedyGap{} points against
-\GreedySampGap{} sampled, at a $0$\% cap-hit rate in both arms (S22). Nor is it
-our exclusions: with every rule off the gap is \ExSensAll{} points against
-\ExSensPanel{} as reported (S18), and the budget rule --- the only one falling
-unevenly --- removes \ExclCapRep{}\% of repeated generations against
-\ExclCapCtl{}\% of controls, which works against the contrast, not for it.
+is it sampling: greedy decoding gives \GreedyGap{} points against
+\GreedySampGap{} sampled, at $0$\% cap-hit in both arms (S22). Nor our
+exclusions: with every rule off the gap is \ExSensAll{} points against
+\ExSensPanel{} (S18), and the budget rule --- the only one falling unevenly ---
+removes \ExclCapRep{}\% of repeated generations against \ExclCapCtl{}\% of
+controls, working against the contrast.
 
 Nor is it the recogniser, the objection this design most has to answer: CTC
-blank-collapse merges adjacent identical words, so it would depress repeated
-counts and not control counts --- a judge-side artifact with exactly the
-periodicity signature of the effect. Re-scoring the \emph{same} audio with
+blank-collapse merges adjacent identical words, depressing repeated counts and
+not control counts --- a judge-side artifact with the effect's own periodicity
+signature. Re-scoring the \emph{same} audio with
 \IndNJudges{} recognisers --- a second CTC model with different
 pretraining, a robust-finetuned one, and Whisper, whose autoregressive decoder
 has no blank-collapse mechanism at all --- leaves the gap at
 \IndGapLo{}--\IndGapHi{} points, positive in all \IndNCkPos{} of \IndNCk{}
 checkpoints and every family under every judge. Decisive is which arm moves:
-across the \IndNJudges{} judges the repeated arm's exact rate spans
-\IndRepSpread{} points (\IndRepLo{}--\IndRepHi{}\%) while the control arm's spans
-\IndCtlSpread{}. Changing the scorer moves the arm the models get \emph{right} --- that is word
-error rate --- and leaves the arm they get wrong fixed, where a judge-side
-collapse predicts the reverse. Where they disagree they disagree
-more on repeated items, but in the direction that \emph{under}-states the
-deficit ($\IndAsym{}$ counts against $\IndAsymThresh{}$ required for the
-confound; S14). VITS~\cite{kim2021vits}
+across them the repeated arm's exact rate spans \IndRepSpread{} points
+(\IndRepLo{}--\IndRepHi{}\%) against the control arm's \IndCtlSpread{}.
+Changing the scorer moves the arm the models get \emph{right} --- word error
+rate --- and leaves the arm they get wrong fixed, where a judge-side collapse
+predicts the reverse. Disagreements do concentrate on repeated items, but in the
+direction that \emph{under}-states the deficit ($\IndAsym{}$ against
+$\IndAsymThresh{}$ required for the confound; S14). VITS~\cite{kim2021vits}
 shows \emph{no} dissociation through the same recogniser on the same strings
-(\VitsRep{}\% of repeated items exact against \VitsCtl{}\%, $n=90$, a gap of
-\VitsGap{} against the panel's $+\ARPoolGap{}$), not for want of competence ---
-at $k\!=\!6\text{--}8$ it renders \NonARMidRep{}\% against \NonARMidCtl{}\%, the
-other way round --- nor for its defaults, the sign holding at \VitsCfgWord{}
-duration-predictor settings (S13). Blank-collapse would have depressed its
-repeated items too.
+(\VitsRep{}\% against \VitsCtl{}\%, $n=90$, a gap of \VitsGap{} against the
+panel's $+\ARPoolGap{}$), and not for want of competence: at
+$k\!=\!6\text{--}8$ it renders \NonARMidRep{}\% against \NonARMidCtl{}\%, the
+other way round (S13). Blank-collapse would have depressed its repeated items
+too.
 
-But F5-TTS~\cite{chen2024f5tts}, contemporary and flow-matching rather than
-recurrent, \emph{does} show it: \FivettsRep{}\% against \FivettsCtl{}\%,
-$+\FivettsGap{}$, growing with $k$ as the panel's does. Absence of an
-autoregressive decoder confers no immunity, and we withdraw the architectural
-claim an earlier draft made. What plausibly separates the two is where the count
-must live: VITS gives each input token its own duration, while F5-TTS estimates
+F5-TTS~\cite{chen2024f5tts}, flow-matching rather than recurrent, \emph{does}
+show it: \FivettsRep{}\% against \FivettsCtl{}\%, $+\FivettsGap{}$, growing
+with $k$ as the panel's does. Absence of an autoregressive decoder confers no
+immunity, and we withdraw the architectural claim an earlier draft made. What
+plausibly separates the two is where the count must live: VITS gives each input token its own duration, while F5-TTS estimates
 one total duration and so must represent how much speech to make. Supplying
 F5-TTS the duration a correct rendering takes splits the deficit: below
-$k\!=\!\DurSplit{}$ it lifts exact renderings from \DurLoFree{}\% to
+$k\!=\!\DurSplit{}$ it lifts exact renderings \DurLoFree{}\% to
 \DurLoFixed{}\% ($n=\DurLoN{}$), at or above it the gain is \DurHiGain{}
 ($n=\DurHiN{}$). Handed the right length the model still cannot place
-thirty-two repetitions inside it, so the severe end is not a duration failure
-(S13). S20 sets out three rivals we cannot exclude.
+thirty-two repetitions inside it (S13). CosyVoice~2 says the same from the other direction: it
+\emph{over}-produces (median $+\CosyMedErr{}$\% where the panel undershoots) at
+a \CosyCapHit{}\% cap-hit rate, making about the right amount of speech and
+still losing the count; its decoder's repetition-aware sampling rule does not
+prevent it. S20 sets out three rivals we cannot exclude.
 
 \begin{table}[t]
 \centering
@@ -135,21 +141,12 @@ capacity gain as a fraction of the control's, at deep layers.}
 
 \subsection{Exploratory: past the ladder, the count levels off}
 
-Both analyses here were decided on after seeing the results above; S16 dates
-every decision against the commit log, and we claim little from either.
-
-Within $k\le32$ the deficit is \emph{proportional}, not saturating (the panel
-median above $k\!=\!6$ is fitted far better by $\hat c=\ShapePropSlope{}k$ than
-by any constant, RSS \ShapePropSSE{} against \ShapeSatSSE{}), so no counting
-horizon lies inside this ladder. Extending it to $k\!\le\!128$ on the
-\HzNModels{} checkpoints that can utter that much, tracking does stop --- but so
-does the controls', these decoders having a general utterance-length ceiling, so
-the reportable quantity is the ratio of fitted saturation scales:
-\HzRatio{}-fold. The magnitude is form-dependent
-(\HzFormLo{}--\HzFormHi{}, S17), the panel is not unanimous (\HzRevNames{}
-inverts it), and a saturation scale read off counts is not a horizon on the
-count: this is consistent with any saturating process (S10). Internally,
-repetition slows state acquisition without halting it --- capacity gain a median
-factor \CapRatio{} of the control's, positive in all \CkCapN{} checkpoints
-(Fig.~\ref{fig:main}(c); S8) --- which is what a decoder below a horizon looks
-like and equally what a decoder with none looks like.
+Two analyses decided on after seeing the results above, from which we claim
+little; S16 dates both. Within $k\le32$ the deficit is \emph{proportional}, not
+saturating (RSS \ShapePropSSE{} against \ShapeSatSSE{}), so no counting horizon
+lies inside this ladder, and extending to $k\!\le\!128$ lowers the fitted
+saturation scale \HzRatio{}-fold for repeated text --- but form-dependently
+(\HzFormLo{}--\HzFormHi{}) and not unanimously (\HzRevNames{} inverts it).
+Neither this nor the capacity gain, a median factor \CapRatio{} of the
+control's, distinguishes a counting horizon from any other saturating process
+(Fig.~\ref{fig:main}(b,c); S8, S10, S17).

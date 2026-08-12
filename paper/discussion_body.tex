@@ -5,27 +5,19 @@
 % rival account the evidence currently favours. Kept tight: the page budget is
 % hard and main.tex ends with \vfill\pagebreak, so a spilled line costs a page.
 
-\noindent\textbf{Where the count lives, and the rival the evidence favours.}
-A linear probe tests the bound's one distinctive prediction --- a readout should
-fail \emph{beyond} $N^\ast$, not before. Against a predictor that ignores the
-states and answers the mean, the \PhNCk{} checkpoints we could run past the
-extension horizon (\PhAllNames{}) reach \PhAllRatios{} of its error: the
-prediction holds in \PhNLost{}, \PhClearName{} plainly \emph{keeps} the count
-past the horizon, which the bound forbids, and the third sits in a
-\PhTieBand{}\% band where neither reading holds. Range is not the explanation
-(controls read \PhCtlRatio{} over the same $k$), but at $n=\PhNCk{}$ this is
-inconclusive and reported for transparency.
-
-This bears on the live rival. On the state-contraction account the count is
-erased from the state; on the output-policy
+\noindent\textbf{The rival the evidence favours.}
+With contraction refuted, the live question is where the count fails. On the
+state-contraction account it is erased from the state; on the output-policy
 account~\cite{venkatesh2026repeated} it survives and only the policy reading it
-fails. Repetition does cost retention relative to the control in all
-\ProbeNBelowCtl{} of \ProbeNCk{}, as contraction predicts --- but the count is
-not erased: it stays decodable late ($R^2$ \ProbeLateMed{}) and
-repeated-item retention exceeds $1$ in \ProbeAboveOne{}, the probe reading it
-\emph{better} deeper in. Deciding between them needs a manipulation of the
-readout at fixed state, which we did not run; as things stand the
-output-policy account is better supported.
+fails. Our evidence points the second way: repetition does cost probe retention
+relative to the control in all \ProbeNBelowCtl{} of \ProbeNCk{} checkpoints, as
+contraction predicts, but the count is not erased --- it stays decodable late
+($R^2$ \ProbeLateMed{}) and retention exceeds $1$ outright in \ProbeAboveOne{},
+the probe reading it \emph{better} deeper in. Past the extension horizon the
+\PhNCk{} checkpoints we could run reach \PhAllRatios{} of a mean-answering
+predictor, which at $n=\PhNCk{}$ is inconclusive and reported for transparency.
+Deciding between them needs a manipulation of the readout at fixed state, which
+we did not run.
 
 \noindent\textbf{Related work, and what the control decides.}
 Closest is representational collapse~\cite{barbero2024glasses}: distinct
@@ -41,21 +33,18 @@ the \emph{conditioning}. Ours varies periodicity at fixed length, and the
 result is periodicity-specific.
 
 \noindent\textbf{What the design does not separate.}
-Our manipulation varies periodicity and \emph{verbatim token identity}
-together, so ``periodicity'' here is the pair; and neither is separated from
-\emph{training-set frequency}, since $k$-fold verbatim repetition is far rarer
-in speech corpora than a length-matched sentence of distinct words, so an
-out-of-distribution account predicts the same dissociation. Within the repeated arm the
-requested count and the amount of text are one variable, so a probe decoding $k$
-from decoder states cannot be said to decode a \emph{count} rather than a
-length; only the control separates those, and behaviourally. The VITS/F5-TTS duration story rests on one model per strategy
-and is a hypothesis, not a contrast. Exclusions are rule-based, applied by script
-without reference to arm or score.
+Periodicity and \emph{verbatim token identity} vary together here, so
+``periodicity'' is the pair; neither is separated from \emph{training-set
+frequency}, $k$-fold verbatim repetition being far rarer in speech corpora than
+a length-matched sentence of distinct words, so an out-of-distribution account
+predicts the same dissociation. Inside the repeated arm the requested count and
+the amount of text are one variable, so a probe decoding $k$ cannot be said to
+decode a \emph{count} rather than a length; only the control separates those,
+behaviourally. The VITS/F5-TTS duration story rests on one model per strategy.
+Exclusions are rule-based, applied without reference to arm or score.
 
 \noindent\textbf{Limitations.}
-The panel is \NFamilies{} families and English the only language tested. The
-judge is validated against concatenative ground truth, not against human
-listeners on generated audio, and we report no agreement statistic because we
-ran no listening study. What would refute the claim is a control arm carrying
-its twin's deficit at matched length, or a checkpoint whose gap runs the other
-way; neither appeared.
+The panel is \NFamilies{} families, a fourth tested out of
+sample; English is the only language. The judge is validated against concatenative ground truth,
+not human listeners, and we ran no listening study. A control arm carrying its twin's deficit at
+matched length would refute the claim; none appeared.

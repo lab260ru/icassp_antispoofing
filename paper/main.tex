@@ -58,21 +58,19 @@ $k\ge6$: a gap of \FamExact{} points $[\FamExactLo{},\FamExactHi{}]$ by
 architecture family ($n{=}\FamExactN{}$), favouring the control in all
 \CkExactN{} checkpoints, and \FullLadderGap{} points over the whole ladder from
 $k{=}1$. The limit tracks \emph{periodicity, not length}. It survives greedy decoding, an
-order-of-magnitude repetition-penalty sweep, checkpoints that pass no penalty at
-all, never-cycled controls, and every exclusion rule switched off
-(\ExSensAll{} points), and it replicates at \IndGapLo{}--\IndGapHi{} points
-across \IndNJudges{} recognisers, which rules out the judge-side artifact that
-would otherwise explain it. Measuring it needs care: the obvious judge, Whisper,
+order-of-magnitude penalty sweep, never-cycled controls and every exclusion rule
+switched off (\ExSensAll{} points), and replicates at
+\IndGapLo{}--\IndGapHi{} points across \IndNJudges{} recognisers, ruling out
+the judge-side artifact that would otherwise explain it. Measuring it needs care: the obvious judge, Whisper,
 is autoregressive and biased \emph{against} the phenomenon, scoring
 \WhisperValPer{} of the true count on periodic ground truth where a CTC
 recogniser scores \CtcValPer{}. Nor is the failure peculiar to autoregressive
 decoding --- of two non-autoregressive baselines one is immune, one is not.
-We also state and machine-check in Lean~4 a conditional bound: if the
-per-repetition state map contracts with factor $q<1$, no Lipschitz readout can
-separate counts past a computable horizon. We report it as a motivating
-conjecture and not an explanation: two attempts to measure $q$ failed, and the
-companion dilution lemma's one directional prediction came out sign-reversed.
-The empirical result stands independently of it.
+A Lean-4-verified bound says that if the per-repetition state map contracts, no
+Lipschitz readout can separate counts past a computable horizon. We measure that
+premise with a validated estimator and reject it: $q=\JacQRep{}$, and repetition
+makes the map \emph{more} expansive rather than less. The proposed mechanism is
+refuted; the phenomenon is not.
 \end{abstract}
 
 \begin{keywords}
@@ -108,16 +106,13 @@ failure it is meant to detect: a judge biased in the direction of the effect can
 manufacture it. That constrains the design rather than decorating it, and
 Section~\ref{sec:method} treats it as a result in its own right.
 
-We contribute, in order of what the evidence supports: a controlled
-manipulation that isolates periodicity from length across \NModels{}
-checkpoints and two non-autoregressive baselines, on which the deficit tracks
-periodicity and survives the field's standard mitigations; a judge methodology
-for repetitive speech, the obvious judge shown to be disqualified; and an
-account of \emph{where} the failure sits, separating what the decoder
-represents from what its output policy uses. A conditional impossibility result,
-machine-checked in Lean~4, motivated the study; we report it as a conjecture
-whose premise we could not measure and whose one directional prediction our data
-contradict. The work is a companion to a spectral study of hallucination in
+We contribute, in order of what the evidence supports: a controlled manipulation
+isolating periodicity from length across \NModels{} checkpoints and two
+non-autoregressive baselines, on which the deficit tracks periodicity and
+survives the field's standard mitigations; a judge methodology for repetitive
+speech, the obvious judge shown disqualified; and a measurement closing off the
+mechanism we proposed for it, the contraction premise of a Lean-verified bound
+being not merely untested but false in these decoders. The work is a companion to a spectral study of hallucination in
 encoder--decoder ASR~\cite{viakhirev2026dispersion}.
 
 \section{Method}
@@ -165,9 +160,9 @@ and $3$-of-$32$ alike. Of \MainNGen{} panel generations we exclude
 \noindent\textbf{State measurement.}
 For each instrumented generation we record per-step hidden states at probe
 layers and head-averaged attention onto the text span. \emph{Effective rank} is the
-exponentiated Shannon entropy of the trajectory's normalised singular-value
-spectrum; the count probe is ridge regression ($\alpha{=}1$ throughout) on
-mean-pooled states, the layer chosen by leave-one-template-out $R^2$ (S6).
+exponentiated entropy of the normalised singular-value spectrum; the count probe
+is ridge regression on mean-pooled states, the layer chosen by
+leave-one-template-out $R^2$ (S6).
 
 \noindent\textbf{Code, data, settings.}
 Lean development, stimuli, code, per-item tables, the full supplement and both
@@ -176,11 +171,9 @@ transcript sets are public at tag \texttt{v1.1-icassp} of
 study). \texttt{build.sh} regenerates every number here from pinned revisions
 (S19), and a stratified \SampleN{}-clip sample spanning every model, $k$ band
 and outcome ships with each clip's transcript and scoring decision, so a
-judgement can be checked by ear. Sampling uses shipped defaults (XTTS-v2
-$T{=}0.75$/$0.85$/$50$/penalty $5.0$; Llasa $T{=}0.8$, top-$p$ $1.0$; Qwen3-TTS
-$T{=}0.9$/$1.0$/$50$/$1.05$), making Qwen3-TTS the \emph{most} stochastic
-family, so its larger checkpoint's null is not an artifact of conservative
-decoding.
+judgement can be checked by ear. Sampling uses each system's shipped defaults,
+listed in S19; they make Qwen3-TTS the \emph{most} stochastic family, so its
+larger checkpoint's null is not an artifact of conservative decoding.
 
 \section{Results}
 \label{sec:results}
@@ -188,30 +181,49 @@ decoding.
 % ---- placeholder: filled by analysis/make_numbers.py ----
 \input{results_body}
 
-\section{A Candidate Mechanism, and the Evidence Against It}
+\section{The Candidate Mechanism, Measured and Refuted}
 \label{sec:theory}
 
-The mechanism that motivated this study can be stated exactly, and our own tests
-of it failed. Softmax attention over $k$ repeated spans whose logits differ by at
-most $\delta$ gives each weight in $[e^{-\delta}/k,e^{\delta}/k]$, so the profile
-flattens; a decoder that cannot tell the spans apart then meets the same
-conditioning at every \emph{repetition boundary}, making the map between
-consecutive boundary states autonomous, and if that map contracts, no Lipschitz
-readout --- the stop head included --- separates counts beyond a computable
-horizon. Both statements are machine-checked in Lean~4 over \texttt{mathlib},
-free of \texttt{sorry} and with an axiom audit (S1--S2). But the contraction
-premise is not measured: two independent estimators failed, one because it needs
-a monotone attention read-head these decoders lack --- the flatter the profile,
-the worse any attention-based localiser, so the dilution lemma undercuts it
-structurally --- and one because a finite-difference probe found no
-repeated-versus-control difference ($7/18$ pairs, $p=0.12$) while failing its own
-linearity control (S5). Worse for the account, the dilution lemma's one
-directional prediction is not merely untested but \emph{disconfirmed}: within a
-$(\text{model},k)$ cell, flatter attention goes with \emph{better} counting
-($r=\DilR{}$ $[\DilRLo{},\DilRHi{}]$; S12), the opposite of what
-dilution-driven collapse requires. We report the bound because it is what
-motivated the study, not because the data support it, and Section~\ref{sec:discussion}
-takes up the account the evidence does favour.
+The mechanism that motivated this study can be stated exactly, and we can now
+report that it is false for these decoders. Attention over $k$ repeated spans
+whose logits differ by at most $\delta$ gives each weight in
+$[e^{-\delta}/k,e^{\delta}/k]$, so the profile flattens and the decoder meets
+the same conditioning at every \emph{repetition boundary}, making the map $F$
+between consecutive boundary states autonomous; if $F$ contracts with factor
+$q<1$, no Lipschitz readout --- the stop head included --- separates counts
+beyond $N^\ast=\log(\mu/2LC)/\log q$. Both are machine-checked in Lean~4 over
+\texttt{mathlib}, free of \texttt{sorry} and with an axiom audit (S1--S2). The
+implication holds; its antecedent does not.
+
+\noindent\textbf{Measuring $q$.}
+We estimate the top singular value of the boundary-to-boundary Jacobian by power
+iteration with exact directional derivatives, teacher-forcing the generated
+tokens so the map is well defined. The estimator passes three gates before being
+pointed at the model: it recovers a synthetic Jacobian of known spectrum to
+$4\times10^{-4}$; run backwards in time it returns \emph{exactly} zero, as a
+causal transformer requires; and its Jacobian--vector products match finite
+differences to $2\times10^{-5}$ where the map is linear. On Llasa-1B, over
+\JacQN{} repeated items and their length-matched controls,
+$q=\JacQRep{}$ $[\JacQRepLo{},\JacQRepHi{}]$ against \JacQCtl{}. \emph{The map
+is not a contraction:} $q<1$ in \JacQNBelow{} of \JacQN{} items, in every lag
+and sub-stack measured. Teacher-forcing removes the token channel, so this is a
+\emph{lower} bound on the true Lipschitz constant, which makes $q\gg1$ decisive
+rather than marginal; for the theorem to place $N^\ast$ where counts actually
+saturate it would need $q\approx\JacQNeeded{}$.
+
+The sign is wrong as well as the magnitude: repetition makes the map \emph{more}
+expansive than its matched control, not less (paired $p=\JacQPairedP{}$,
+repeated lower in \JacQNRepLower{} of \JacQN{} pairs). So does the dilution
+lemma's dose-response --- within a $(\text{model},k)$ cell flatter attention
+goes with \emph{better} counting ($r=\DilR{}$ $[\DilRLo{},\DilRHi{}]$; S12).
+And one objection is structural: in a causal transformer a same-depth
+single-vector state map is exactly zero, information reaching a later position
+only by rising through depth, so the theorem's $s_m$ has no single-layer
+realisation and only a whole-stack formulation is well posed (S5).
+
+We keep the bound because it motivated the manipulation, and because a verified
+conditional whose antecedent is measured and rejected is a cleaner object than
+an untested one. It explains nothing in Section~\ref{sec:results}.
 
 \section{Discussion}
 \label{sec:discussion}

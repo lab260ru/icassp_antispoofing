@@ -265,10 +265,23 @@ def main() -> None:
                     axis=1,
                 )  # [T_gen, n_probes, d]
                 attn = {f"attn_l{l}": v[plen:, :] for l, v in recorder.buf.items()}
-                logits = fwd.logits[0, plen - 1: -1, :].float()
-                pr = torch.softmax(logits, dim=-1)
-                ent = (-(pr * torch.log(pr.clamp_min(1e-12))).sum(-1)).cpu().numpy()
-                top1 = pr.max(-1).values.cpu().numpy()
+                # Chunked over positions. Softmax is row-wise, so this is
+                # numerically identical to doing it in one shot -- but the one
+                # shot materialises two float32 [T, V] tensors at once (~2 GB
+                # each at T=2700 over Llasa's 193k vocabulary) for two scalars
+                # per position that the count probe never reads. That peak, not
+                # the model, is what OOMs the instrumented pass when a
+                # co-tenant job grows on the same card.
+                lg = fwd.logits[0, plen - 1: -1, :]
+                ent_c, top1_c = [], []
+                for i in range(0, lg.shape[0], 256):
+                    pr = torch.softmax(lg[i:i + 256].float(), dim=-1)
+                    ent_c.append((-(pr * torch.log(pr.clamp_min(1e-12))).sum(-1)).cpu())
+                    top1_c.append(pr.max(-1).values.cpu())
+                    del pr
+                ent = torch.cat(ent_c).numpy()
+                top1 = torch.cat(top1_c).numpy()
+                logits = lg
                 # Uncompressed: zlib on a 150 MB fp16 array costs more CPU and
                 # peak RSS than the disk it saves, and disk is not the scarce
                 # resource here.
@@ -279,7 +292,7 @@ def main() -> None:
                     **attn,
                 )
                 rec["instrumented"] = True
-                del fwd, hs, attn, logits, pr
+                del fwd, hs, attn, logits, ent_c, top1_c
             meta_f.write(json.dumps(rec) + "\n")
             meta_f.flush()
             n_done += 1

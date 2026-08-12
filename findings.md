@@ -768,3 +768,69 @@ and the model duly emits near-silence — which is what the first run produced.
 Limits: one non-AR checkpoint, one seed, 15 items per (k, arm) cell, and the
 hypothesis under test is still post-hoc. A null would have retired the
 hypothesis; a split does not confirm it.
+
+## 2026-08-12 — Assumption 2 is not unmeasured. It is false.
+
+Third attempt at the contraction premise, and the first with an estimator that
+passes its own gates. `analysis/jacobian_q.py`: top singular value of the
+boundary-to-boundary Jacobian by power iteration with **exact** directional
+derivatives, teacher-forcing the generated tokens so the map is well defined.
+
+**Self-tests, all passed before the model was touched.** A synthetic Jacobian of
+known spectrum recovered to 3.8e-4. The same estimator run backwards in time
+returns **exactly** 0.000000 against 43.89 forward — a causal transformer cannot
+move information back in time, so this proves the hooks do not leak. Exact JVPs
+match finite differences to 2e-5 over the step range where the map is linear.
+
+**Result (Llasa-1B, 29 repeated + 29 length-matched control items, k in
+{16,24,32}, seeds 0-2, 2724 usable measurements):**
+
+| cell | repeated | control | paired p |
+|---|---|---|---|
+| tau, whole stack | **38.09 [32.88, 51.39]** | 31.84 [27.28, 39.84] | 0.017 |
+| tau, depth>=12 | 5.46 [5.26, 6.52] | 4.63 [4.40, 4.96] | 0.0012 |
+| 2 tau, whole stack | 62.25 [48.55, 78.10] | 34.81 [30.57, 46.61] | 0.0003 |
+
+**q < 1 in 0 of 29 repeated items, in every cell, lag and sub-stack.** The
+smallest number anywhere in the table is 4.63.
+
+**And the sign is wrong too.** Repetition makes the map MORE expansive than its
+length-matched control, not less: median paired difference +3.25 [+0.52,
++11.62], repeated lower in only 8 of 29 pairs. The premise does not merely fail
+to hold; the data run against it.
+
+Two declared biases both point the same way. Teacher-forcing deletes the token
+channel, so the measured q is a **lower bound** on the true per-repetition
+Lipschitz constant — which makes q >> 1 decisive rather than marginal. Nothing
+plausible closes a factor of 38.
+
+**N\* is not computable** (Eq. 1 is undefined for q >= 1). For the theorem to
+place N\* at the observed saturation of 23 [16, 39] it would need q ~ 0.884
+[0.850, 0.921]. Nothing measured is near that band.
+
+**Independent corroboration of the old null.** The boundary-distance decay, with
+boundaries derived from a uniform partition rather than from attention, gives
+q-hat 0.981 [0.970, 0.989] repeated at **R^2 = 0.02** — i.e. q ~ 1 with no
+geometric decay, the same answer the abandoned attention-based estimator gave.
+The earlier null was not a localisation artifact.
+
+**Structural finding, worth more than the number.** In a causal transformer a
+same-depth single-vector state map is **exactly zero**, not small: information
+reaches a later position only by rising through depth via attention. So the
+theorem's `s_m` has no single-layer realisation at all, and only a whole-stack
+(per-layer KV cache) formulation is well posed. Any future `h_l(t_m) ->
+h_l(t_{m+1})` estimator measures nothing.
+
+**Traps.** (1) The self-test's finite-difference gate fails at h=1e-3 for pure
+float32 reasons — a unit vector spread over 2.5M coordinates moves each by 1e-6,
+i.e. roundoff divided by h. This is very likely the wall attempt 2's linearity
+control hit. Over h in [0.3, 10] the map is linear to 0.01%. (2) tol=1e-8 is
+unreachable in float32; the estimate was right to 1e-4 while flagged
+unconverged. (3) fp32 + math-SDPA + double backward peaks at 45 GB by 2100
+tokens on a 49 GB card. (4) The rendered count is not k on the repeated arm, so
+tau = T/k is a construction, not a measurement — hence the lag sweep, which
+changes nothing.
+
+**Status: the Track-A gate is closed.** The paper now reports the premise as
+measured and refuted rather than untested, which is a stronger claim and a
+worse one for the theorem.
