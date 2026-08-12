@@ -133,6 +133,25 @@ python analysis/figures.py
 bash paper/build.sh                               # regenerates numbers, compiles
 ```
 
+The robustness checks, each answering one reviewer objection with data rather
+than prose. Every one of them can come back the wrong way, and two did:
+
+```bash
+python analysis/exclusion_sensitivity.py   # do our own exclusions make the gap?
+python analysis/horizon_forms.py           # is the ratio a property of the curve?
+python analysis/probe_past_horizon.py      # the theorem's own prediction, 1 of 2
+python analysis/vits_config.py             # is VITS immune, or its defaults?
+python analysis/greedy_decoding.py         # does the deficit survive argmax?
+```
+
+Two of these weakened published claims and the paper says so: `horizon_forms.py`
+showed the 3.5-fold ratio is form-dependent (2.7--4.3 across three saturating
+families, though no family flips a checkpoint), and `probe_past_horizon.py`'s
+second checkpoint did not replicate the paper's one positive result. If you rerun
+them and get a different answer, the scripts pick their own verdict strings from
+the measured numbers, so read the stdout rather than assuming the paper's wording
+still applies.
+
 `paper/build.sh` regenerates `numbers.tex` from the CSVs before every compile, so
 a number in the PDF cannot drift from the data it came from. **Never hand-edit a
 number in the `.tex` files** — add a macro in `analysis/make_numbers.py`.

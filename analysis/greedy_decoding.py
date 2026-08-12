@@ -36,9 +36,13 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 
 import pandas as pd
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from src.common.population import cap_flags  # noqa: E402
 
 DEGENERATE = {"empty", "degenerate"}
 
@@ -67,8 +71,17 @@ def main() -> None:
 
     frames = [pd.read_csv(p) for p in (args.sampled, args.greedy) if Path(p).exists()]
     d = pd.concat(frames, ignore_index=True)
+    # Greedy decoding on repetitive text runs into the generation budget far
+    # more often than sampling does, and budget-truncated counts are censored
+    # downward -- exactly the direction that would manufacture a greedy deficit.
+    # The same cap-hit rule the panel uses is applied here, and the rate is
+    # reported per arm so the reader can see how unequal it was.
+    flags = cap_flags()
+    d["cap"] = [flags.get((r.model, r.item_id, r.seed), False) for r in d.itertuples()]
     d = d[(d.k >= args.kmin) & (~d.outcome.isin(DEGENERATE))
           & d.family.isin(["word_rep", "control_word"])]
+    cap_rate = {m: float(g.cap.mean()) for m, g in d.groupby("model")}
+    d = d[~d.cap]
 
     samp = d[d.model == args.model]
     arms = {
@@ -76,7 +89,10 @@ def main() -> None:
         "sampled_seed0": samp[samp.seed == 0],
         "greedy": d[d.model == args.greedy_model],
     }
-    res: dict = {"kmin": args.kmin, "model": args.model, "arms": {}}
+    res: dict = {"kmin": args.kmin, "model": args.model, "arms": {},
+                 "cap_hit_rate": cap_rate}
+    print("cap-hit rate before exclusion: "
+          + ", ".join(f"{m} {100*v:.1f}%" for m, v in sorted(cap_rate.items())))
     print(f"{'arm':>16s} {'n':>5s} {'exact rep':>10s} {'exact ctl':>10s} "
           f"{'gap':>7s} {'med rep':>8s}")
     for name, s in arms.items():
