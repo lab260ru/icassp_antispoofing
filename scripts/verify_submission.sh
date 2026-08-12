@@ -81,10 +81,17 @@ PY
 [ $? -ne 0 ] && FAIL=1
 
 note "Working tree is committed"
-if [ -z "$(git status --porcelain)" ]; then
-  ok "clean at $(git rev-parse --short HEAD)"
+# Build outputs are excluded: this script rebuilds both PDFs a few lines above,
+# so including them would make the check unpassable by construction. What must
+# be committed is the source that produced them.
+DIRTY=$(git status --porcelain -- . ':(exclude)paper/build' \
+        ':(exclude)paper/supplementary/build' | wc -l)
+if [ "$DIRTY" -eq 0 ]; then
+  ok "sources clean at $(git rev-parse --short HEAD)"
 else
-  bad "uncommitted changes: $(git status --porcelain | wc -l) files"
+  bad "uncommitted source changes: $DIRTY files"
+  git status --porcelain -- . ':(exclude)paper/build' \
+      ':(exclude)paper/supplementary/build' | sed 's/^/       /'
 fi
 
 printf '\n'
