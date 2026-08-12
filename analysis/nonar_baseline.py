@@ -57,14 +57,16 @@ def main() -> None:
     ap.add_argument("--out", default="data/results/nonar_baseline.json")
     args = ap.parse_args()
 
-    def load(path: str) -> pd.DataFrame:
+    def load(path: str, keep_ablations: bool = False) -> pd.DataFrame:
         d = pd.read_csv(path)
         d = d[d.family.isin(["word_rep", "control_word"])]
-        d, _ = panel(d)
+        d, _ = panel(d, ablations=keep_ablations)
         d = d[d.k >= args.kmin]
         return d.assign(err=(d.count_a - d.k) / d.k)
 
-    ar, nonar = load(args.ar), load(args.nonar)
+    # The baseline lives in ABLATIONS -- it is a contrast, not a panel member --
+    # so it has to be asked for explicitly here.
+    ar, nonar = load(args.ar), load(args.nonar, keep_ablations=True)
 
     res: dict = {"kmin": args.kmin}
     res["nonar"] = summarise(nonar)
@@ -103,6 +105,51 @@ def main() -> None:
         int(k): dict(exact_rep=float((g[g.family == "word_rep"].err == 0).mean()),
                      exact_ctl=float((g[g.family == "control_word"].err == 0).mean()))
         for k, g in nonar.groupby("k")}
+
+    # Is the null just a floor effect -- VITS too weak to show any structure?
+    # A reviewer raised it as the primary objection, and the band where the AR
+    # panel's gap is already large settles it: if VITS were pinned at the floor
+    # there, both its arms would be low. They are not, and they are ordered the
+    # other way.
+    def band(d, lo, hi):
+        g = d[(d.k >= lo) & (d.k <= hi)]
+        r, c = g[g.family == "word_rep"], g[g.family == "control_word"]
+        if not len(r) or not len(c):
+            return None
+        er, ec = float((r.err == 0).mean()), float((c.err == 0).mean())
+        return dict(exact_rep=er, exact_ctl=ec, gap=ec - er, n=int(len(g)))
+
+    def load_all(path: str, keep_ablations: bool) -> pd.DataFrame:
+        d = pd.read_csv(path)
+        d = d[d.family.isin(["word_rep", "control_word"])]
+        d, _ = panel(d, ablations=keep_ablations)
+        return d.assign(err=(d.count_a - d.k) / d.k)
+
+    ar_all = load_all(args.ar, False)
+    nonar_all = load_all(args.nonar, True)
+    res["bands"] = {}
+    print(f"\n{'k band':10s} {'VITS rep':>9s} {'VITS ctl':>9s} {'gap':>7s} | "
+          f"{'AR rep':>7s} {'AR ctl':>7s} {'gap':>7s}")
+    for lo, hi in [(2, 4), (6, 8), (12, 16), (24, 32)]:
+        nb, ab = band(nonar_all, lo, hi), band(ar_all, lo, hi)
+        if not nb or not ab:
+            continue
+        res["bands"][f"{lo}-{hi}"] = dict(nonar=nb, ar=ab)
+        print(f"k={lo}-{hi:<7d} {100*nb['exact_rep']:8.1f}% {100*nb['exact_ctl']:8.1f}% "
+              f"{100*nb['gap']:+6.1f} | {100*ab['exact_rep']:6.1f}% "
+              f"{100*ab['exact_ctl']:6.1f}% {100*ab['gap']:+6.1f}")
+    mid = res["bands"].get("6-8")
+    if mid:
+        res["floor_effect_ruled_out"] = bool(
+            mid["nonar"]["exact_rep"] > 0.5 and mid["nonar"]["exact_ctl"] > 0.5
+            and mid["ar"]["gap"] > 0.3)
+        if res["floor_effect_ruled_out"]:
+            print("\nAt k=6-8 the AR panel already shows a "
+                  f"{100*mid['ar']['gap']:.0f}-point gap while VITS renders "
+                  f"{100*mid['nonar']['exact_rep']:.1f}% of repeated and "
+                  f"{100*mid['nonar']['exact_ctl']:.1f}% of control items exactly.\n"
+                  "Both arms are far off the floor and ordered the other way, so\n"
+                  "the null is not VITS being too weak to show structure.")
 
     Path(args.out).write_text(json.dumps(res, indent=2))
     print(f"wrote {args.out}")

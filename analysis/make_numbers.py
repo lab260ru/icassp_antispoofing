@@ -447,6 +447,11 @@ def main() -> None:
             macros[f"{tag}Ctl"] = fmt(100 * v.get("exact_ctl", np.nan), 1)
             macros[f"{tag}Gap"] = fmt(100 * v.get("exact_gap", np.nan), 1)
         macros["NonARAbove"] = str(nb.get("n_ar_above_nonar", 0))
+        mid = nb.get("bands", {}).get("6-8")
+        if mid:
+            macros["NonARMidRep"] = fmt(100 * mid["nonar"]["exact_rep"], 1)
+            macros["NonARMidCtl"] = fmt(100 * mid["nonar"]["exact_ctl"], 1)
+            macros["ARMidGap"] = fmt(100 * mid["ar"]["gap"], 0)
         macros["NonARN"] = str(nb.get("n_ar", 0))
 
     # ---- is the deficit just the decoding-time repetition penalty? --------

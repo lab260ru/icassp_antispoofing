@@ -9,16 +9,18 @@ probe found no difference in local contraction between repeated and control item
 ($7$ of $18$ pairs, $p=0.12$), its linearity control failing too (S5).
 
 The theorem's distinctive prediction is a constant $N^\ast$, invisible where our
-ladder stopped. Extending to $k=128$ found saturation of the predicted kind but
-not one derived from a measured $q$, which locates these decoders below the
-collapse regime rather than confirming the bound. One test could have separated our account from the rival on which the count
-survives in the state and only the output policy
-fails~\cite{venkatesh2026repeated}. It does not. A linear
+ladder stopped. Extending to $k=128$ found saturation of the predicted kind, but
+not one derived from a measured $q$. One test could have separated our account from the rival on which the count
+survives and only the output policy fails~\cite{venkatesh2026repeated}. It does
+not. A linear
 probe retains less on repeated text than on its control in \ProbeNBelowCtl{} of
 \ProbeNCk{} checkpoints --- but the count stays decodable late (median $R^2$
 \ProbeLateMed{}), and retention exceeds one in \ProbeAboveOne{} of them. A state
 that had lost the count could not support that, and the rival predicts exactly
-such persistence. The relative effect is real; it discriminates nothing.
+such persistence. The relative effect is real; it discriminates nothing. Nor does
+it contradict Theorem~\ref{thm:collapse}(iv), whose prohibition concerns counts
+\emph{past} the horizon: the probe runs over $k\le32$, at or below the fitted
+$\hat K_{\mathrm{rep}}$, where a Lipschitz readout may succeed.
 
 A conditional account risks being unfalsifiable, so we say what would refute it:
 a control with its twin's deficit; a model whose capacity gain matches its
@@ -30,11 +32,10 @@ arbitrarily close representations, already implying counting errors. But
 collapse-by-length predicts that equally long control and repeated items fail
 alike, and they do not wherever the control carries no repetition of its own;
 \eqref{eq:horizon} also gives a rate in repetitions that a length-indexed bound
-does not. Dynamical treatments index convergence by depth or an
-abstract temperature~\cite{dong2021attention,geshkovski2023emergence,%
-gao2026clustered}, and expressivity bounds by circuit class or state
-tracking~\cite{strobl2024formal,merrill2024illusion} constrain one forward pass,
-where ours indexes generation steps.
+does not. Related dynamical and expressivity bounds index
+convergence within one forward pass~\cite{dong2021attention,%
+geshkovski2023emergence,gao2026clustered,strobl2024formal,merrill2024illusion};
+ours indexes generation steps.
 
 % Any further body text pushes the references onto a sixth page: main.tex ends
 % with \vfill\pagebreak, so the bibliography always starts on a fresh page and
