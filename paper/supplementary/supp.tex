@@ -3461,6 +3461,60 @@ can: it renders the same repeated words from the same stimulus file, transcribed
 by the same recogniser, and shows no gap. Whatever blank-collapse costs, it does
 not create the dissociation.
 
+\subsection{An intervention: supplying the duration}
+\label{sec:s13-dur}
+
+Everything else in this paper is observational --- vary the stimulus, watch the
+output. This is the one place we intervene on the mechanism we proposed, and it
+is worth reading for where it fails as much as for where it works.
+
+The proposal was that what separates the two non-AR baselines is whether the
+model must represent "how many" internally. F5-TTS exposes \texttt{fix\_duration}, which
+replaces its own total-duration estimate with a supplied one, so the proposal is
+testable. The duration supplied is the median of F5-TTS's own \emph{control}
+renderings at the same $k$ --- items it counts correctly --- so it is what $k$
+units of speech in this carrier take, obtained without looking at how the
+repeated item came out. A duration read off the repeated item's own output would
+have been circular.
+
+\begin{center}
+\begin{tabular}{rrrrr}
+\toprule
+$k$ & free exact (\%) & given exact (\%) & free median & given median \\
+\midrule
+6 & 46.7 & 80.0 & -0.167 & +0.000 \\
+8 & 40.0 & 73.3 & -0.125 & +0.000 \\
+12 & 33.3 & 40.0 & -0.083 & -0.083 \\
+16 & 20.0 & 26.7 & -0.062 & -0.062 \\
+24 & 6.7 & 0.0 & -0.167 & -0.125 \\
+32 & 6.7 & 0.0 & -0.094 & -0.125 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Below $k=12$ the intervention largely works: exact renderings rise from
+43.3\% to 76.7\% ($n=30$) and the median error goes to zero.
+At or above it the gain is 0.0 points ($n=60$) --- nothing. Handed
+the correct total length, the model still cannot place thirty-two repetitions
+inside it.
+
+That split is the result. The mild end of the deficit is substantially a
+duration-estimation failure, and the severe end is not: something other than
+"how much speech to make" is failing once $k$ is large, and it is the same range
+where the AR panel's own deficit is worst. We take the proposal as supported at
+low $k$ and refuted as a complete account.
+
+\noindent\textbf{One implementation note, because it cost us a run.}
+\texttt{fix\_duration} is the length of the reference \emph{plus} the generated speech,
+not of the generated speech alone. Passing the target directly asks for a total
+shorter than the six-second reference clip, and the model duly emits almost
+nothing --- thirty empty and fifteen degenerate outputs, which looked briefly
+like a dramatic negative result. The reference length is measured and added.
+
+\noindent\textbf{Limits.} One model, $n=15$ per cell, one seed triple, and the
+supplied duration is a median rather than an item-specific target. This
+establishes a direction, not an effect size.
+
 \section{The judge's noise floor}
 \label{sec:s14}
 

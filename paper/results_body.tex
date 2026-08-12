@@ -81,42 +81,44 @@ times in six render its non-adjacent twin right nineteen times in twenty. Contro
 truncations --- but they are exact where the repeated items are not.
 
 Above $k\!=\!8$ the control's fillers cycle a pool of eight, making that contrast
-period-$1$ against period-$8$. We re-generated the $k=12\ldots32$ controls from a
-never-cycled $146$-word pool, paired with the repeated items already scored so
-only the control changes: the dissociation survives at \ApMidGap{} points
-(\ApMidRep{}\% against \ApMidCtl{}\%, $n=\ApMidN{}$) where cycled controls give
-\ApCycGap{}, so the confound is worth \ApCost{} points, not the bulk of the
-effect.
+period-$1$ against period-$8$. Re-generating $k=12\ldots32$ from a never-cycled
+$146$-word pool leaves the dissociation at \ApMidGap{} points (\ApMidRep{}\%
+against \ApMidCtl{}\%, $n=\ApMidN{}$) where cycled controls give \ApCycGap{}: the
+confound is worth \ApCost{} points, not the bulk of it.
 
-A third rival is a decoding rule rather than a mechanism: the families ship
-repetition penalties differing by an order of magnitude, and a penalty suppresses
-repeated tokens by construction. Swept on \PenNArch{} architectures (S15) the
-deficit stays put --- XTTS-v2 over a \PenFold{}-fold range at
+A third rival is a decoding rule: the families ship repetition penalties
+differing by an order of magnitude, and a penalty suppresses repeated tokens by
+construction. Swept on \PenNArch{} architectures (S15) the deficit stays put --- XTTS-v2 over a \PenFold{}-fold range at
 \PenRepLo{}--\PenRepHi{}\% exact, Qwen3-TTS-0.6B over a \PenQFold{}-fold range at
 \PenQRepLo{}--\PenQRepHi{}\% --- and with Qwen's penalty off outright it renders
-\PenZeroRep{}\% of repeated items exactly against \PenZeroCtl{}\%. The
-\PenNoneN{} Llasa checkpoints pass \emph{no} penalty and show the effect at full
-size, \PenNoneRep{}\% against \PenNoneCtl{}\%.
+\PenZeroRep{}\% against \PenZeroCtl{}\%. The \PenNoneN{} Llasa checkpoints pass
+\emph{no} penalty and show the effect at full size, \PenNoneRep{}\% against
+\PenNoneCtl{}\%.
 
-The last rival is architectural, and it is the one we cannot exclude: two
-non-autoregressive systems on the same ladder disagree. VITS~\cite{kim2021vits}
-shows \emph{no} dissociation (\VitsRep{}\% of repeated items exact against
-\VitsCtl{}\% of controls, $n=90$ each at \NSeeds{} seeds, a gap of \VitsGap{}
-against the panel's $+\ARPoolGap{}$), and not for want of competence: at $k\!=\!6\text{--}8$, where the
-panel's gap already reaches \ARMidGap{} points, it renders \NonARMidRep{}\% and
+The last rival is architectural, the one we cannot exclude: two
+non-autoregressive systems disagree. VITS~\cite{kim2021vits} shows \emph{no}
+dissociation (\VitsRep{}\% of repeated items exact against \VitsCtl{}\% of
+controls, $n=90$ each at \NSeeds{} seeds, a gap of \VitsGap{} against the panel's
+$+\ARPoolGap{}$), and not for want of competence: at $k\!=\!6\text{--}8$, where
+the panel's gap reaches \ARMidGap{} points, it renders \NonARMidRep{}\% and
 \NonARMidCtl{}\% exactly, off the floor and ordered the other way. But
-F5-TTS~\cite{chen2024f5tts}, contemporary with the panel and flow-matching rather
-than recurrent, \emph{does} show it: \FivettsRep{}\% against \FivettsCtl{}\%,
+F5-TTS~\cite{chen2024f5tts}, contemporary and flow-matching rather than
+recurrent, \emph{does} show it: \FivettsRep{}\% against \FivettsCtl{}\%,
 $+\FivettsGap{}$, growing with $k$ as the panel's does. Absence of an
 autoregressive decoder confers no immunity, and we withdraw the architectural
 claim.
 
-What plausibly separates them is where the count must live --- a hypothesis
-formed after seeing them, not a result. VITS gives each input token its own
-duration, so the count rides the input sequence and is never represented; F5-TTS
-estimates one total duration and denoises in parallel, so it must represent how
-much speech to make. The VITS null still does the judge's work: blank-collapse
-would have depressed its repeated items too, same recogniser and strings (S13).
+What plausibly separates them is where the count must live: VITS gives each input
+token its own duration, while F5-TTS estimates one total duration and so must
+represent how much speech to make. F5-TTS lets that be tested rather than
+asserted --- supply the duration a correct rendering takes, read off its own
+controls --- and the answer splits: below $k\!=\!\DurSplit{}$ it lifts exact
+renderings from \DurLoFree{}\% to \DurLoFixed{}\% ($n=\DurLoN{}$), at or above
+it the gain is \DurHiGain{} ($n=\DurHiN{}$). Handed the right length the model
+still cannot place thirty-two repetitions inside it, so the severe end of the
+deficit is not a duration failure (S13). The
+VITS null meanwhile does the judge's work: blank-collapse would have depressed
+its repeated items too.
 
 \begin{table}[t]
 \centering
@@ -131,9 +133,8 @@ under the CTC judge; capacity gain is measured at deep layers.}
 Theorem~\ref{thm:collapse}(ii) says states visited under periodic conditioning
 stop being mutually distinguishable, so more repetitions should buy distinct
 internal states more slowly than non-repetitive text of the same length. Counting
-states by the trajectory's effective rank, the capacity gain
-$\mathrm{d}\mathcal{N}_{\mathrm{eff}}/\mathrm{d}\log k$ on repeated text is a
-factor \CapRatio{} of the control's (Figure~\ref{fig:main}(c)), positive in all
+states by the trajectory's effective rank, the capacity gain on repeated text is
+a factor \CapRatio{} of the control's (Figure~\ref{fig:main}(c)), positive in all
 \CkCapN{} checkpoints (mean \CkCap{} $[\CkCapLo{},\CkCapHi{}]$) but varying
 fourfold: general in direction, not magnitude. It is not merely the monotonous
 audio a correct rendering produces (S8), and staying positive it says repetition

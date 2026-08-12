@@ -658,6 +658,20 @@ def main() -> None:
         macros["MissMean"] = fmt(e["mean_missing"], 2)
         macros["EffectOverFloor"] = fmt(nf["effect_over_floor"], 1)
 
+    # ---- the duration intervention (the paper's only intervention) --------
+    di_path = Path("data/results/duration_intervention.json")
+    if di_path.exists():
+        di = json.loads(di_path.read_text())
+        macros["DurSplit"] = str(di["split"])
+        macros["DurLoFree"] = fmt(100 * di["low_k"]["free"]["exact"], 1)
+        macros["DurLoFixed"] = fmt(100 * di["low_k"]["fixed"]["exact"], 1)
+        macros["DurLoN"] = str(di["low_k"]["free"]["n"])
+        macros["DurHiFree"] = fmt(100 * di["high_k"]["free"]["exact"], 1)
+        macros["DurHiFixed"] = fmt(100 * di["high_k"]["fixed"]["exact"], 1)
+        macros["DurHiN"] = str(di["high_k"]["free"]["n"])
+        macros["DurLoGain"] = fmt(100 * di["low_k_gain"], 1)
+        macros["DurHiGain"] = fmt(100 * di["high_k_gain"], 1)
+
     # ---- the released audio sample ---------------------------------------
     smp = Path("data/audio_sample/manifest.csv")
     if smp.exists():

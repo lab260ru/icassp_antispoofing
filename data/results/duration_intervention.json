@@ -1,0 +1,117 @@
+{
+  "kmin": 6,
+  "split": 12,
+  "overall": {
+    "free": {
+      "n": 90,
+      "exact": 0.25555555555555554,
+      "median_err": -0.09375
+    },
+    "fixed": {
+      "n": 90,
+      "exact": 0.36666666666666664,
+      "median_err": -0.0625
+    }
+  },
+  "by_k": {
+    "6": {
+      "free": {
+        "n": 15,
+        "exact": 0.4666666666666667,
+        "median_err": -0.16666666666666666
+      },
+      "fixed": {
+        "n": 15,
+        "exact": 0.8,
+        "median_err": 0.0
+      }
+    },
+    "8": {
+      "free": {
+        "n": 15,
+        "exact": 0.4,
+        "median_err": -0.125
+      },
+      "fixed": {
+        "n": 15,
+        "exact": 0.7333333333333333,
+        "median_err": 0.0
+      }
+    },
+    "12": {
+      "free": {
+        "n": 15,
+        "exact": 0.3333333333333333,
+        "median_err": -0.08333333333333333
+      },
+      "fixed": {
+        "n": 15,
+        "exact": 0.4,
+        "median_err": -0.08333333333333333
+      }
+    },
+    "16": {
+      "free": {
+        "n": 15,
+        "exact": 0.2,
+        "median_err": -0.0625
+      },
+      "fixed": {
+        "n": 15,
+        "exact": 0.26666666666666666,
+        "median_err": -0.0625
+      }
+    },
+    "24": {
+      "free": {
+        "n": 15,
+        "exact": 0.06666666666666667,
+        "median_err": -0.16666666666666666
+      },
+      "fixed": {
+        "n": 15,
+        "exact": 0.0,
+        "median_err": -0.125
+      }
+    },
+    "32": {
+      "free": {
+        "n": 15,
+        "exact": 0.06666666666666667,
+        "median_err": -0.09375
+      },
+      "fixed": {
+        "n": 15,
+        "exact": 0.0,
+        "median_err": -0.125
+      }
+    }
+  },
+  "low_k": {
+    "free": {
+      "n": 30,
+      "exact": 0.43333333333333335,
+      "median_err": -0.125
+    },
+    "fixed": {
+      "n": 30,
+      "exact": 0.7666666666666667,
+      "median_err": 0.0
+    }
+  },
+  "high_k": {
+    "free": {
+      "n": 60,
+      "exact": 0.16666666666666666,
+      "median_err": -0.08333333333333333
+    },
+    "fixed": {
+      "n": 60,
+      "exact": 0.16666666666666666,
+      "median_err": -0.08333333333333333
+    }
+  },
+  "low_k_gain": 0.33333333333333337,
+  "high_k_gain": 0.0,
+  "verdict": "duration estimation accounts for much of the deficit at low k and none of it at high k"
+}
