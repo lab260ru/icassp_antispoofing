@@ -803,6 +803,12 @@ def main() -> None:
         if kept:
             m = kept[0]
             macros["PhKeptName"] = _join(kept)
+            # The checkpoint whose margin actually matches the control's. Named
+            # separately from PhKeptName, which lists everything that kept the
+            # count -- including one that only ties the trivial predictor.
+            clear = phj.get("clearly_kept") or []
+            if clear:
+                macros["PhClearName"] = _join(clear)
             macros["PhKeptMae"] = fmt(ph[f"past:{m}"]["mae"], 2)
             macros["PhKeptRTwo"] = fmt(ph[f"past:{m}"]["r2"], 2)
             # Ratios against the constant predictor, listed for every checkpoint
@@ -810,6 +816,17 @@ def main() -> None:
             # them beats the trivial baseline by less than one percent.
             macros["PhKeptRatios"] = " and ".join(
                 fmt(ph[f"past:{k}"]["mae_ratio"], 2) for k in kept)
+        # Every checkpoint's ratio against the constant predictor, in one
+        # macro, so the paper can report them symmetrically. Detailing the
+        # checkpoint that confirms and summarising the ones that do not is a
+        # presentation asymmetry a reviewer caught, and separate macros invite
+        # it back.
+        order = [m for m in ORDER if f"past:{m}" in ph]
+        macros["PhAllRatios"] = ", ".join(
+            fmt(ph[f"past:{m}"]["mae_ratio"], 2) for m in order)
+        macros["PhAllNames"] = ", ".join(LABEL.get(m, m) for m in order)
+        if lost:
+            macros["PhLostRatio"] = fmt(ph[f"past:{lost[0]}"]["mae_ratio"], 2)
         tied = phj.get("indistinguishable") or []
         if tied:
             macros["PhTieName"] = _join(tied)
@@ -819,10 +836,11 @@ def main() -> None:
         # Control items over the identical k range. If the probe reads the count
         # off these while failing on the repeated ones, "the range is too narrow"
         # is dead as an explanation -- the range is the same.
-        ctl = next((k for k in ph if k.startswith("control:")), None)
-        if ctl:
-            macros["PhCtlMae"] = fmt(ph[ctl]["mae"], 2)
-            macros["PhCtlRTwo"] = fmt(ph[ctl]["r2"], 2)
+        ctl_key = next((k for k in ph if k.startswith("control:")), None)
+        if ctl_key:
+            macros["PhCtlMae"] = fmt(ph[ctl_key]["mae"], 2)
+            macros["PhCtlRTwo"] = fmt(ph[ctl_key]["r2"], 2)
+            macros["PhCtlRatio"] = fmt(ph[ctl_key]["mae_ratio"], 2)
 
     # ---- what the probe does and does not discriminate --------------------
     pd_path = Path("data/results/probe_discrimination.json")
