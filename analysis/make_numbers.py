@@ -221,6 +221,25 @@ def main() -> None:
             macros["ErrBestModel"] = LABEL.get(best, best)
             macros["ErrBestVal"] = fmt(100 * panel[best]["rep"]["median"], 1)
 
+    # ---- main-ladder exclusion accounting ---------------------------------
+    # The extension ladder reports its exclusions in the main text and the main
+    # ladder did not, which a reviewer read as selective accounting. Same
+    # numbers, same place.
+    beh_all = Path("data/results/behavioural_ctc.csv")
+    if beh_all.exists():
+        import sys as _s
+        _s.path.insert(0, str(Path(__file__).resolve().parent.parent))
+        from src.common.population import panel as _panel
+        _raw = pd.read_csv(beh_all)
+        _raw = _raw[_raw.family.isin(["word_rep", "control_word"])]
+        _kept, _drop = _panel(_raw, degenerate=True)
+        _final, _ = _panel(_raw)
+        macros["MainNGen"] = str(_drop["n_input"] - _drop.get("ablations", 0))
+        macros["MainExclTmpl"] = str(_drop.get("bad_templates", 0))
+        macros["MainExclCap"] = str(_drop.get("cap_hits", 0))
+        macros["MainExclDegen"] = str(len(_kept) - len(_final))
+        macros["MainKept"] = str(len(_final))
+
     # ---- exactly-right rates ---------------------------------------------
     # The median relative error understates the contrast, because a control's
     # median of zero and a control that is *always* zero are different claims and

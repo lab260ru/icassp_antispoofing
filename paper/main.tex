@@ -188,10 +188,12 @@ against \WhisperValPer{} for Whisper. Both transcript sets are released.
 
 The reported quantity is the \emph{relative count error} $(\hat c - k)/k$, where
 $\hat c$ is how many of the $k$ requested units the transcript delivers;
-exact-match scores $30$-of-$32$ and $3$-of-$32$ alike and flips on $\pm1$ of slop.
-Audio-level degeneracy is detected separately and reported as its own rate.
-Generations stopped by our token budget rather than the model, and one template
-whose fillers the judge never transcribes, are excluded throughout (S10).
+exact-match scores $30$-of-$32$ and $3$-of-$32$ alike. Audio-level degeneracy is
+detected separately.
+Of \MainNGen{} panel generations we exclude \MainExclTmpl{} in one template
+whose fillers the judge never transcribes, \MainExclCap{} stopped by our token
+budget rather than by the model, and \MainExclDegen{} degenerate, leaving
+\MainKept{} (S10).
 
 \noindent\textbf{State measurement.}
 For each instrumented generation we record per-step hidden states at probe layers

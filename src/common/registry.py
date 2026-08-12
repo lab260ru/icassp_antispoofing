@@ -74,6 +74,15 @@ PANEL = [
               12.5, 24000, "every3", False, "Qwen3-TTS-0.6B, repetition_penalty=1.5"),
     ModelSpec("qwen06brp30", "Qwen/Qwen3-TTS-12Hz-0.6B-Base", "qwen", "0.6B", "qwen",
               12.5, 24000, "every3", False, "Qwen3-TTS-0.6B, repetition_penalty=3.0"),
+    # Non-autoregressive baselines and the duration intervention on one of them.
+    # Contrasts, never panel members.
+    ModelSpec("vits", "facebook/mms-tts-eng", "vits", "0.04B", "base",
+              0.0, 16000, "none", False, "non-AR baseline (2021)"),
+    ModelSpec("f5tts", "SWivid/F5-TTS", "f5", "0.34B", "coqui",
+              0.0, 24000, "none", False, "non-AR baseline (2024, flow matching)"),
+    ModelSpec("f5fix", "SWivid/F5-TTS", "f5", "0.34B", "coqui",
+              0.0, 24000, "none", False,
+              "F5-TTS with the total duration supplied rather than estimated"),
 ]
 
 BY_KEY = {m.key: m for m in PANEL}
