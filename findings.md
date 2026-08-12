@@ -425,3 +425,35 @@ hundreds of generations and in the control contrast.
 consumes), one per (model, family, k-band, outcome), all eight outcome classes.
 `manifest.csv` pairs each with stimulus text, transcript, counts and label. Built
 by `scripts/make_audio_sample.py`.
+
+## 2026-08-12 (late, cont.) — the architectural claim is dead
+
+A second non-AR baseline contradicts the first. **Do not restore the claim that
+this deficit is autoregressive.**
+
+    model              rep exact   ctl exact    gap
+    AR panel              18.2%       94.3%   +76.1
+    F5-TTS (2024)         25.6%       85.6%   +60.0   <- shows it
+    VITS (2021)           65.6%       58.9%    -6.7   <- does not
+
+F5-TTS gap by k band: +8.9, +43.3, +56.7, +80.0 — grows exactly as the panel's
+does. Durations scale with k (2.6 s at k=1, 11.6 s at k=32), controls hold above
+83%, so it is genuinely rendering and the effect is periodicity-specific there
+too. `analysis/nonar_baseline.py` reports the two baselines separately and must
+keep doing so: pooling them hides the only thing the experiment established.
+
+**The working hypothesis that replaces it** (post-hoc, untested, labelled as such
+everywhere it appears): the relevant property is not recurrence but whether the
+count must be held internally. VITS predicts a duration per input token, so "how
+many" rides the input sequence and is never represented. F5-TTS estimates one
+total duration and denoises in parallel, so it must represent how much speech to
+make — the burden an AR decoder carries in its state.
+
+**The experiment that would test it** and which we did not run: a duration
+ablation inside one architecture — force a per-token duration model into an
+otherwise unchanged parallel decoder. That is the first thing to run next.
+
+**What VITS is still good for:** it remains the judge's control. Blank-collapse
+would have depressed its repeated items too — same recogniser, same strings — and
+did not. No amount of auditing the recogniser against reference audio could show
+that, because that audio is not the audio in question.

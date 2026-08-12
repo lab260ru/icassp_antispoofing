@@ -121,9 +121,11 @@ rivals_excluded:
     count in 11/13 disagreements, so it under-states the deficit.
     analysis/nonar_baseline.py, analysis/noise_floor.py
   architecture: >
-    VITS shows no dissociation (-6.7 pts vs the panel's +76.1), and it is not a
-    floor effect: at k=6-8 it renders 76.7% rep / 66.7% ctl exactly while the
-    panel's gap is already +60. analysis/nonar_baseline.py
+    NOT EXCLUDED -- withdrawn 2026-08-12. Two non-AR baselines disagree: VITS
+    shows no dissociation (-6.7) but F5-TTS shows +60.0, growing with k as the
+    panel's does. Absence of an autoregressive decoder confers no immunity. The
+    replacement hypothesis (post-hoc, untested): what matters is whether the
+    count must be held internally, not recurrence. analysis/nonar_baseline.py
   improbability_and_acoustics: "ruled out by their own predictions; supplement S8"
 
 # ------------------------------------------------------------------- in flight

@@ -3383,16 +3383,13 @@ from a cause. Only an intervention on the attention profile could, and that is
 the experiment we would run next.
 
 
-\section{The non-autoregressive baseline}
+\section{The non-autoregressive baselines}
 \label{sec:s13}
 
 The paper's scope claim is about autoregressive decoders, and round-6 reviewers
-observed that we had never run one that was not. VITS
-(\texttt{facebook/mms-tts-eng}) supplies the contrast: a text encoder, a duration
-predictor and a normalising-flow decoder that emits the waveform in a single
-pass. There is no generation-step recurrence, so there is no per-repetition state
-map for Assumption~1 to describe and Theorem~1 makes no prediction about it. If
-the deficit appeared here too, the theorem would be the wrong account of it.
+observed that we had never run one that was not. Rounds 8--10 then observed that
+one 2021 model could not carry the claim alone. Both were right, and the second
+baseline is why this section no longer says what it used to.
 
 \begin{center}
 \begin{tabular}{lrrr}
@@ -3406,83 +3403,63 @@ Qwen3-TTS-0.6B & 7.8 & 100.0 & +92.2 \\
 Qwen3-TTS-1.7B & 38.9 & 98.9 & +60.0 \\
 XTTS-v2 & 16.7 & 87.8 & +71.1 \\
 \midrule
-AR pooled & 18.2 & 94.3 & +76.1 \\
-VITS (non-AR) & 65.6 & 58.9 & -6.7 \\
+\emph{F5-TTS (2024)} & 25.6 & 85.6 & +60.0 \\
+\emph{VITS (2021)} & 65.6 & 58.9 & -6.7 \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-VITS shows no periodicity-specific deficit: its repeated items come back
-\emph{more} often exact than its controls, a gap of -6.7 points against the
-panel's +76.1, and every one of the 6 AR checkpoints separates from it.
-It is not that VITS is immune to the stimuli --- it degrades with $k$ on both
-families alike:
+\noindent\textbf{The two disagree.} VITS shows no dissociation; F5-TTS shows one
+close to the panel's. Neither has a generation-step recurrence, so
+\emph{autoregressive} is not the property that separates them, and the
+architectural reading of the deficit does not survive. Per $k$ band, in points:
 
 \begin{center}
-\begin{tabular}{rrr}
+\begin{tabular}{lrrr}
 \toprule
-$k$ & repeated exact (\%) & control exact (\%) \\
+ & VITS & F5-TTS & AR panel \\
 \midrule
-6 & 73.3 & 86.7 \\
-8 & 80.0 & 46.7 \\
-12 & 73.3 & 60.0 \\
-16 & 80.0 & 66.7 \\
-24 & 40.0 & 46.7 \\
-32 & 46.7 & 46.7 \\
+$k=2-4$ & +6.7 & +8.9 & -1.0 \\
+$k=6-8$ & -10.0 & +43.3 & +60.0 \\
+$k=12-16$ & -13.3 & +56.7 & +85.7 \\
+$k=24-32$ & +3.3 & +80.0 & +83.4 \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\noindent\textbf{What this rules out, and what it does not.} It rules out the
-reading on which the deficit is a property of long repeated \emph{text} --- the
-same strings, through a decoder without recurrence, do not produce it. It does
-not identify \emph{which} feature of autoregressive decoding is responsible;
-VITS differs from the panel in more than its recurrence, having a duration
-predictor whose output length is a sum of per-phoneme durations rather than a
-learned stop decision, and being a smaller and older model. Absolute accuracy is
-therefore not comparable between them and we do not compare it. The comparison is
-the within-model dissociation, which is scale-free.
+F5-TTS's gap grows with $k$ as the panel's does. Its durations scale with $k$
+(median $2.6$\,s at $k\!=\!1$, $11.6$\,s at $k\!=\!32$), so it is rendering the
+repetitions rather than truncating, and its controls hold above $83\%$
+throughout: the effect is specific to periodicity there too.
 
-\noindent\textbf{A pacing check, which cuts our way.} One could object that VITS
-avoids the deficit by rendering repeated words so slowly that the recogniser
-cannot miss them. The opposite is true. Removing the carrier baseline, VITS
-spends $0.305$\,s per requested unit on repeated items against $0.384$\,s on
-controls --- it \emph{compresses} repetitions to $79\%$ of the control pace,
-which is exactly the acoustic condition that makes CTC blank-collapse most
-likely. Its repeated items are therefore the harder case for the judge, and they
-are still counted correctly more often than the panel's.
+\noindent\textbf{VITS's null is not a floor effect.} At $k=6\text{--}8$, where the
+AR panel's gap already reaches $60$ points, VITS renders $76.7\%$ of repeated and
+$66.7\%$ of control items exactly --- both far off the floor, and ordered the
+opposite way. A model pinned at its ceiling of competence would show two low arms,
+not one high arm and a reversal.
 
-\noindent\textbf{It is also the control the judge most needed.} Two rounds of
-reviewers noted that CTC blank-collapse depresses counts on same-word runs
-specifically (\S\ref{sec:s9-field}), which is the direction of our own effect,
-and asked whether the recogniser manufactures the gap. Auditing the recogniser
-against reference audio cannot settle this, because the audio it is audited on is
-not the audio in question. The non-AR baseline can: it renders the same repeated
-words, from the same stimulus file, transcribed by the same recogniser, and shows
-no gap. Whatever blank-collapse costs us, it does not create the dissociation.
+\noindent\textbf{What plausibly separates them.} VITS predicts a duration for
+each input token and expands the sequence accordingly, so ``how many'' is carried
+structurally by the input and never has to be represented. F5-TTS estimates one
+total duration and denoises the whole mel in parallel, so it must represent how
+much speech to produce --- the same burden an autoregressive decoder carries in
+its state. On that reading the relevant property is not recurrence but whether
+the count has to be held internally, and both baselines are consistent with it.
 
+We label this a hypothesis rather than a result. It was formed after seeing the
+two baselines, it rests on $n=2$ systems that differ in more than their duration
+mechanism, and we did not test it. The experiment that would is a duration
+ablation within one architecture --- forcing a per-token duration model into an
+otherwise unchanged parallel decoder --- and it is the first thing we would run
+next.
 
-\subsection{Why the probe does not contradict Theorem~1(iv)}
-
-A reviewer observed that a linear probe is exactly the $L$-Lipschitz readout
-Theorem~1(iv) forbids past the horizon, so our recovering the count at
-$R^2\approx0.48$ looks like a refutation of our own theorem. It is not, and the
-reason is a scope limit worth stating rather than a defence.
-
-The theorem forbids a Lipschitz readout from separating counts \emph{past}
-$N^\ast$; below it, nothing is claimed. Our probe is fitted on states from the
-main ladder, $k\le32$, and the fitted saturation scale for repeated items is
-about $30$. The probe therefore operates entirely at or below the point where
-tracking stops, in the regime where the theorem permits a readout to succeed.
-
-This cuts both ways, which is why it belongs in the same paragraph as the
-retraction above. The probe cannot refute the theorem, and it equally cannot
-support it: the prohibition applies to a range we never probed. Probing states
-from the extension ladder ($k=48\ldots128$), where the count has demonstrably
-stopped tracking, is the experiment that would test it, and we did not run it ---
-the extension was generated without the hidden-state instrumentation, which is a
-straightforward thing for a follow-up to fix.
-
+\noindent\textbf{The VITS null still does the judge's work.} Two review rounds
+asked whether CTC blank-collapse manufactures the repeated-versus-control gap by
+merging adjacent copies of a word. Auditing the recogniser against reference
+audio cannot settle it, because that audio is not the audio in question. VITS
+can: it renders the same repeated words from the same stimulus file, transcribed
+by the same recogniser, and shows no gap. Whatever blank-collapse costs, it does
+not create the dissociation.
 
 \section{The judge's noise floor}
 \label{sec:s14}
