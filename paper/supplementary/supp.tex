@@ -3466,10 +3466,10 @@ uninterpretable; \texttt{analysis/probe\_past\_horizon.py} decides which of the
 two sentences to print from the measured MAEs rather than leaving the choice to
 us after the fact.
 
-\noindent\textbf{The second checkpoint does not replicate.} Everything above is
-Llasa-1B. We ran the identical pipeline on Llasa-8B --- same items, same $k$,
-same probe, same folds --- because one checkpoint and twelve items is not a
-result. It keeps the count:
+\noindent\textbf{The other checkpoints do not replicate.} Everything above is
+Llasa-1B. We ran the identical pipeline on Llasa-8B and then Llasa-3B --- same
+items, same $k$, same probe, same folds --- because one checkpoint and twelve
+items is not a result. Neither loses the count:
 
 \begin{center}
 \begin{tabular}{llrrr}
@@ -3477,39 +3477,66 @@ result. It keeps the count:
 checkpoint & arm & probe MAE & constant MAE & $R^2$ \\
 \midrule
 Llasa-1B & repeated $k=2\ldots32$   & 0.63 & 1.12 & +0.62 \\
+Llasa-3B & repeated $k=2\ldots32$   & 0.86 & 1.12 & +0.41 \\
 Llasa-8B & repeated $k=2\ldots32$   & 0.75 & 1.12 & +0.52 \\
 Llasa-1B & repeated $k=48\ldots128$ & 0.50 & 0.50 & -0.02 \\
+Llasa-3B & repeated $k=48\ldots128$ & 0.49 & 0.50 & -0.02 \\
 Llasa-8B & repeated $k=48\ldots128$ & 0.43 & 0.50 & +0.19 \\
 Llasa-1B & control $k=48\ldots128$  & 0.43 & 0.50 & +0.26 \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\noindent Both checkpoints decode the count below the horizon, and only Llasa-1B
-loses it past. Llasa-8B's repeated-side probe beats the constant predictor by
-0.86 of its MAE --- which is, to two decimals, exactly the margin the
-\emph{control} arm achieves. On that checkpoint, periodic conditioning past the
-horizon does nothing to the probe at all.
+\noindent All three decode the count below the horizon. Past it, Llasa-8B's
+probe beats the constant predictor by 0.86 of its MAE --- to two decimals exactly
+the margin the \emph{control} arm achieves, so on that checkpoint periodic
+conditioning past the horizon does nothing to the probe at all.
 
-So the theorem's conclusion holds in one of the two checkpoints we could test it
-on. We report it that way rather than quoting Llasa-1B and calling the 8B run
-future work: a prediction that survives half the cases it was tested in is an
-open question with one encouraging instance, not support. The range control
+\noindent\textbf{A threshold should not decide this, so we report both sides of
+it.} Llasa-3B's ratio against the constant predictor is $0.99$: on the ``keeps
+the count'' side of the threshold by six thousandths of a $\log_2$ unit over
+twelve items, which is not a margin. Reading that as recovery would be as
+misleading as rounding it the other way, so \texttt{probe\_past\_horizon.py}
+calls anything within $2\%$ of the constant predictor indistinguishable and says
+which checkpoints those are.
+
+\begin{center}
+\begin{tabular}{lrl}
+\toprule
+checkpoint & MAE ratio & reading \\
+\midrule
+Llasa-1B & 1.01 & indistinguishable from the constant predictor \\
+Llasa-3B & 0.99 & indistinguishable from the constant predictor \\
+Llasa-8B & 0.86 & recovers the count \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent By the strict threshold the theorem's prediction holds in 1 of 3; by
+effect size, 2 of 3 checkpoints show nothing recoverable past the horizon and one
+clearly does. \emph{We quote 1 of 3}, the less favourable of the two, and record
+the other here so a reader can weigh it rather than discover it.
+
+So the theorem's conclusion holds in one of the three checkpoints we could test
+it on. We report it that way rather than quoting Llasa-1B and calling the others
+future work: a prediction that survives one case in three is an open question
+with one encouraging instance, not support. The range control
 still does its job --- it says that \emph{where} the count is lost, narrowness is
-not why --- but it cannot make a one-of-two result into a panel one.
+not why --- but it cannot make a one-of-three result into a panel one.
 
-\noindent\textbf{The two checkpoints favour opposite accounts.} This is worth
+\noindent\textbf{The checkpoints favour opposite accounts.} This is worth
 stating more sharply than ``a failure to replicate''. The rival to Theorem~1 is
 the dissociation account~\cite{venkatesh2026repeated}, on which the count
 survives in the states and only the output policy fails. That account predicts a
 probe \emph{can} still read the count past the horizon; Theorem~1(iv) predicts it
-cannot. Llasa-1B's result is what Theorem~1 predicts and the dissociation account
-does not; Llasa-8B's is what the dissociation account predicts and Theorem~1 does
-not. So the experiment is diagnostic --- it is the one measurement in this paper
+cannot. Llasa-1B's result is what Theorem~1 predicts and the dissociation account does
+not; Llasa-8B's is what the dissociation account predicts and Theorem~1 does not;
+Llasa-3B's sits between them, close enough to the constant predictor to favour
+neither. So the experiment is diagnostic --- it is the one measurement in this paper
 that could have chosen between the two --- and it split. We report it as a split
 rather than as support for either.
 
-Two further readings we cannot separate with two checkpoints. Llasa-8B may have a
+Two further readings we cannot separate with three checkpoints. Llasa-8B may have a
 horizon past $k=128$, which would make this a range problem again and not a
 failure; or the 1B null may be the accident. Distinguishing them needs the ladder pushed
 further on 8B, which its token budget does not currently allow.
@@ -3528,9 +3555,9 @@ the larger models. We say that plainly rather than implying a capability limit
 where there is none: the Qwen3-TTS checkpoints are absent because we did not get
 to them, and one of the Llasa runs was added late for exactly that reason.
 
-\noindent\textbf{Limits.} Two checkpoints, 12 repeated items each plus 12
-controls, one seed, three cross-validation folds --- and the two checkpoints
-disagree, as above. Two engineering
+\noindent\textbf{Limits.} Three checkpoints, 12 repeated items each plus 12
+controls, one seed, three cross-validation folds --- and they disagree, as
+above. Two engineering
 notes for anyone repeating it: the instrumented pass uses eager attention to
 capture attention weights, which materialises a $T\times T$ matrix per layer and
 runs out of memory at these sequence lengths --- the count probe needs hidden
@@ -3868,6 +3895,8 @@ before data & \emph{pre-specified} & $k$ ladder to $32$; matched length controls
 14:32 d2 & post hoc & greedy decoding arm \\
 14:50 d2 & \emph{pre-committed} & third probe checkpoint launched, its result
   reported whichever way it came out \\
+15:08 d2 & \emph{failure} & it came out against the theorem too; the split is
+  now 1 of 3 \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -3893,7 +3922,7 @@ selected after seeing which way they came out. They were not, and the log shows
 the shape of it: the second was run because one is not a result, and it
 contradicted the first; the third was launched with the 1-of-2 split already
 written into the paper, so its result could only confirm or further weaken a
-claim already reported at its weakest. XTTS-v2 cannot be run at all (S12) and the
+claim already reported at its weakest. It weakened it, to 1 of 3. XTTS-v2 cannot be run at all (S12) and the
 Qwen checkpoints were not reached.
 
 \noindent\textbf{The extension ladder is the exception, and we flag it as such.}

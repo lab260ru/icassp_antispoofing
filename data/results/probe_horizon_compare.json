@@ -35,6 +35,41 @@
       "beats_constant": true,
       "mae_ratio": 0.5658473042687585
     },
+    "past:llasa3b": {
+      "ks": [
+        48,
+        64,
+        96,
+        128
+      ],
+      "reps": 3,
+      "mae": 0.493500165534301,
+      "r2": -0.018795636857002807,
+      "n": 12,
+      "const_mae": 0.5,
+      "beats_constant": true,
+      "mae_ratio": 0.987000331068602
+    },
+    "below:llasa3b": {
+      "ks": [
+        2,
+        3,
+        4,
+        6,
+        8,
+        12,
+        16,
+        24,
+        32
+      ],
+      "reps": 6,
+      "mae": 0.8609641491038436,
+      "r2": 0.41063739464959426,
+      "n": 54,
+      "const_mae": 1.1153067901590692,
+      "beats_constant": true,
+      "mae_ratio": 0.7719527547940864
+    },
     "past:llasa8b": {
       "ks": [
         48,
@@ -86,14 +121,23 @@
       "mae_ratio": 0.8626052042668807
     }
   },
-  "n_checkpoints": 2,
+  "n_checkpoints": 3,
   "lost_past_horizon": [
     "llasa1b"
   ],
   "kept_past_horizon": [
+    "llasa3b",
+    "llasa8b"
+  ],
+  "tie_band": 0.02,
+  "indistinguishable": [
+    "llasa1b",
+    "llasa3b"
+  ],
+  "clearly_kept": [
     "llasa8b"
   ],
   "replicates": false,
   "range_confound_ruled_out": true,
-  "verdict": "the prediction holds in 1 of 2 checkpoints: llasa1b lose the count past the horizon, llasa8b do not"
+  "verdict": "the prediction holds in 1 of 3 checkpoints: llasa1b lose the count past the horizon, llasa3b, llasa8b do not"
 }

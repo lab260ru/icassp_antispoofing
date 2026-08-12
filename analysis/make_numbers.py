@@ -805,6 +805,17 @@ def main() -> None:
             macros["PhKeptName"] = _join(kept)
             macros["PhKeptMae"] = fmt(ph[f"past:{m}"]["mae"], 2)
             macros["PhKeptRTwo"] = fmt(ph[f"past:{m}"]["r2"], 2)
+            # Ratios against the constant predictor, listed for every checkpoint
+            # that kept the count. A single "kept" number would hide that one of
+            # them beats the trivial baseline by less than one percent.
+            macros["PhKeptRatios"] = " and ".join(
+                fmt(ph[f"past:{k}"]["mae_ratio"], 2) for k in kept)
+        tied = phj.get("indistinguishable") or []
+        if tied:
+            macros["PhTieName"] = _join(tied)
+            macros["PhTieRatio"] = fmt(ph[f"past:{tied[0]}"]["mae_ratio"], 2)
+            macros["PhTieBand"] = fmt(100 * phj.get("tie_band", 0), 0)
+            macros["PhNNull"] = str(len(set(lost) | set(tied)))
         # Control items over the identical k range. If the probe reads the count
         # off these while failing on the repeated ones, "the range is too narrow"
         # is dead as an explanation -- the range is the same.

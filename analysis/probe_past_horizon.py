@@ -122,10 +122,21 @@ def main() -> None:
     past_keys = [k for k in rows if k.startswith("past:")]
     lost = [k.split(":")[1] for k in past_keys if not rows[k]["beats_constant"]]
     kept = [k.split(":")[1] for k in past_keys if rows[k]["beats_constant"]]
+    # "Beats the constant predictor" is a threshold, and a threshold decides
+    # borderline cases by fiat. A checkpoint whose MAE ratio is 0.99 has beaten
+    # it by six thousandths of a log2 unit on twelve items, which is not a
+    # margin -- reporting that as "recovers the count" would be as misleading as
+    # rounding it the other way. Anything within TIE of 1.0 is called
+    # indistinguishable and named as such, whichever side of 1.0 it falls.
+    TIE = 0.02
+    tied = [k.split(":")[1] for k in past_keys
+            if abs(rows[k]["mae_ratio"] - 1.0) <= TIE]
     ctl_key = next((k for k in rows if k.startswith("control:")), None)
 
     res = dict(rows=rows, n_checkpoints=len(past_keys),
-               lost_past_horizon=sorted(lost), kept_past_horizon=sorted(kept))
+               lost_past_horizon=sorted(lost), kept_past_horizon=sorted(kept),
+               tie_band=TIE, indistinguishable=sorted(tied),
+               clearly_kept=sorted(k for k in kept if k not in tied))
     res["replicates"] = bool(past_keys and not kept)
     if ctl_key:
         # Narrowness is ruled out only for the checkpoints that actually lost
@@ -144,6 +155,15 @@ def main() -> None:
         res["verdict"] = ("no checkpoint loses the count past the horizon; the "
                           "theorem's conclusion is not supported here")
     print(f"\n{res['verdict']}.")
+    if tied:
+        names = ", ".join(tied)
+        print(f"\nBut {names} sit within {100*TIE:.0f}% of the constant "
+              f"predictor, so the\nstrict threshold is deciding them by fiat. "
+              f"By effect size {len(tied) + len(lost) - len(set(tied) & set(lost))}"
+              f" of {len(past_keys)} checkpoints show no\nrecoverable count past "
+              "the horizon and "
+              f"{len(res['clearly_kept'])} clearly does. We quote the strict "
+              "number,\nwhich is the less favourable one.")
 
     if lost and kept:
         print(f"\nThe checkpoints disagree, so this is not a panel result. "
