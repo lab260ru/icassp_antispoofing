@@ -8,13 +8,12 @@ transformer contracts, and our attempt to measure that premise directly failed
 \emph{consequence}, not its antecedent.
 
 A conditional account risks being unfalsifiable, so we state what would refute
-it: a control showing the same deficit as its repeated twin; a model with the
-deficit whose capacity gain matches its control; or a probe recovering the count
-from late states as well as early ones. Our data could have shown any of the
-three. \ErrBestModel{} is instructive: no count deficit yet still a capacity gap,
-so capacity loss is necessary but not sufficient --- consistent with
-\eqref{eq:horizon}, where a large readout margin buys horizon even under
-contraction.
+it: a control with the same deficit as its repeated twin; a model with the
+deficit whose capacity gain matches its control; or a probe reading the count as
+well late as early. Our data could have shown any of the three.
+\ErrBestModel{} is instructive --- no deficit yet still a capacity gap, so
+capacity loss is necessary but not sufficient, as \eqref{eq:horizon} allows when
+the readout margin is large.
 
 The closest prior result is representational
 collapse~\cite{barbero2024glasses}: as a sequence grows, distinct prefixes map to
@@ -26,7 +25,11 @@ sufficient, and~\eqref{eq:horizon} supplies a rate in repetitions that a
 length-indexed bound does not. Related dynamical treatments index convergence by
 depth or an abstract
 temperature~\cite{dong2021attention,geshkovski2023emergence,gao2026clustered};
-ours indexes it by generation step. A competing account holds that in text LMs
+ours indexes it by generation step. A larger literature bounds transformer
+expressivity by circuit class, formal language and state tracking, periodic
+languages included~\cite{strobl2024formal,merrill2024illusion}; those bound
+architecture against worst case in one forward pass, where ours bounds a decoder
+against its measured contraction over generation. A competing account holds that in text LMs
 the count survives in the residual stream and only the output policy
 fails~\cite{venkatesh2026repeated}; our probes favour representational
 degradation, but the two are not exclusive.
@@ -43,9 +46,6 @@ span across a fourfold change in the penalty, sloping \MitSlope{} points per uni
 ($\!=\!\MitBrokenPen{}$) breaks the control too, so no setting both preserves
 general quality and removes the deficit: this lever does not act on the quantity
 that sets the horizon.
-Limits: the panel is English-only and all six checkpoints are
-codec-language models with softmax attention over text, so the claim concerns
-that architecture class, not AR TTS in general; capacity ratio and count error
-correlate in the predicted direction (Spearman $+0.49$) but $n{=}6$ cannot
-establish it; and the theorem's bound is about the idealised periodic map, since
-Lemma~\ref{lem:dilution}'s residual term is not propagated through it.
+Limits: the panel is English-only, and all six checkpoints are codec-language
+models with softmax attention over text, so the claim concerns that class
+rather than AR TTS at large.

@@ -54,7 +54,7 @@ def fig_main(beh: pd.DataFrame, state: pd.DataFrame, cap: dict, out: Path) -> No
     page is 4 pages and two figure environments cost roughly a third of one.
     """
     models = ordered(beh.model.unique())
-    fig, axes = plt.subplots(1, 4, figsize=(7.0, 1.26))
+    fig, axes = plt.subplots(1, 4, figsize=(7.0, 1.20))
 
     # Relative count error rather than exact-match accuracy: signed, so
     # premature stopping separates from looping, and scale-free, so k=4 and
