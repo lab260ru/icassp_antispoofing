@@ -40,10 +40,11 @@ and are exact in \ExactRep{}\% of generations, against \ExactCtl{}\% for
 length-matched \emph{distinct}-word controls: the limit tracks periodicity, not
 length. States visited grow with $k$ at \CapRatio{} of the control rate, disjoint
 in \CapSepPhrase{} checkpoints. Up to $k=32$ the count stays proportional rather
-than saturating, so the horizon is not inside that range; extending to $k=128$
-locates it, at $N^\ast_{\mathrm{rep}}=\HzNRep{}$ repetitions against \HzNCtl{}
-for length-matched controls --- repetition lowers the counting horizon
-\HzRatio{}-fold.
+than saturating, so no horizon is visible there; a post-hoc extension to $k=128$
+on \HzNModels{} checkpoints finds one, with repetition lowering the fitted
+saturation scale \HzRatio{}-fold against length-matched controls
+($\HzNRep{}$ against $\HzNCtl{}$ units, \HzNCellLo{}--\HzNCellHi{} items per
+cell).
 \end{abstract}
 
 \begin{keywords}
@@ -88,9 +89,7 @@ the attention-dilution lemma, in Lean~4 over \texttt{mathlib} with a reproducibl
 axiom audit --- to our knowledge the first hallucination result in speech
 synthesis carried out as a formal artifact; and a parametric repetition-ladder
 benchmark with a measurement protocol that reads the theorem's own consequence
-off a model's activations. That protocol also bounds what it settles: the deficit
-is proportional to $k$, not saturating, placing these decoders short of the
-horizon rather than at it. The work is the autoregressive-decoder companion to a
+off a model's activations. The work is the autoregressive-decoder companion to a
 spectral study of hallucination in encoder--decoder
 ASR~\cite{viakhirev2026dispersion}, which identified an attractor regime
 descriptively; here the attractor is what the theorem is about.
@@ -118,9 +117,6 @@ $|\mathrm{softmax}(z)_i - \mathrm{softmax}(z)_j| \le (e^\delta-e^{-\delta})/k$,
 and the profile entropy satisfies $H \ge \log k - \delta$.
 \end{lemma}
 
-The profile is within $O(1/k)$ of uniform: attention weight carries vanishing
-information about \emph{which} occurrence is being rendered.
-
 \begin{assumption}[Contraction]\label{ass:contraction}
 $F$ is $q$-Lipschitz with $q < 1$.
 \end{assumption}
@@ -141,10 +137,10 @@ counts $m \le n$ with decision margin $\mu>0$, then $\mu \le 2LCq^m$ and
 \end{equation}
 \end{theorem}
 
-Part~(iv) is the operative statement: how many repetitions an AR decoder can
-count is bounded by how fast its per-repetition map contracts, how large its
-orbit is, and how much separation its readout needs. No property of the decoding
-rule enters, so the bound covers greedy, sampled and beam decoding alike.
+Part~(iv) is the operative statement: how many repetitions a decoder can count is
+bounded by how fast its per-repetition map contracts, how large its orbit is, and
+how much separation its readout needs. No property of the decoding rule enters,
+so the bound covers greedy, sampled and beam decoding alike.
 
 \noindent\textbf{Formal verification.}
 Both results are formalised in Lean~4 against \texttt{mathlib}: part~(i)
@@ -181,13 +177,12 @@ demonstrably the wrong one: its decoder is autoregressive with a language-model
 prior, so it is subject to the very dynamics under study. Audited against
 concatenative audio with known ground truth, its counted/true ratio falls to
 $0.27$--$0.65$ for $k\ge4$ while \emph{same-voice distinct-word} sequences of
-identical length score $1.00$ at every $k$ --- a bias specific to periodicity,
-pointing the same way as the effect we want to measure. We score instead with a
-CTC recogniser (\texttt{wav2vec2-large-960h-lv60-self}): no decoder, no language
-model, output length governed by the acoustics. Worse in absolute WER, right for
-this purpose --- and put through the same audit, counting at ratio \CtcValPer{}
-on periodic ground truth for $k\ge4$ against \WhisperValPer{} for Whisper. Both
-transcript sets are released.
+identical length score $1.00$ --- a bias specific to periodicity, pointing the
+same way as the effect we want to measure. We score instead with a CTC recogniser
+(\texttt{wav2vec2-large-960h-lv60-self}): no decoder, no language model, output
+length governed by the acoustics. Worse in absolute WER, right for this purpose,
+and put through the same audit: ratio \CtcValPer{} on periodic ground truth
+against \WhisperValPer{} for Whisper. Both transcript sets are released.
 
 The reported quantity is the \emph{relative count error} $(\hat c - k)/k$, where
 $\hat c$ is how many of the $k$ requested units the transcript delivers;

@@ -28,7 +28,7 @@ gain matches its control; a probe reading the count as well late as early; or
 counts that kept tracking $k$ past the ladder. The last was a live possibility
 until we ran it; the others remain available to anyone with the released code.
 \ErrBestModel{} is instructive: no deficit yet a capacity gap, so capacity loss
-is necessary but not sufficient.
+is necessary, not sufficient.
 
 The closest prior result is representational
 collapse~\cite{barbero2024glasses}: as a sequence grows, distinct prefixes map to
@@ -38,25 +38,20 @@ fail alike, so Figure~\ref{fig:main}(b) is evidence against length alone, and
 \eqref{eq:horizon} supplies a rate in repetitions that a length-indexed bound
 does not. Related dynamical treatments index convergence by depth or an abstract
 temperature~\cite{dong2021attention,geshkovski2023emergence,gao2026clustered};
-ours indexes it by generation step. A larger literature bounds transformer
-expressivity by circuit class and state
-tracking~\cite{strobl2024formal,merrill2024illusion}, but against a worst case in
-one forward pass where ours bounds a decoder over generation. A competing account
-holds that in text LMs the count survives in the residual stream and only the
-output policy fails~\cite{venkatesh2026repeated}; our probes favour
-representational degradation, though the two are not exclusive.
+ours indexes it by generation step. Expressivity bounds by circuit class and
+state tracking~\cite{strobl2024formal,merrill2024illusion} constrain a worst case
+in one forward pass, where ours constrains a decoder over generation. A competing
+account holds that in text LMs the count survives in the residual stream and only
+the output policy fails~\cite{venkatesh2026repeated}; our probes favour
+representational degradation, though the two are compatible.
 
 \noindent\textbf{Implications and limits.}
 Existing mitigations act late~\cite{wang2025eliminating,xin2024ralle}, helping
 under this account only insofar as they raise $q$ or enlarge the readout margin.
-We tested that, sweeping XTTS-v2's repetition penalty --- the most widely
-deployed such fix --- over $\{\MitPenLo{},3,5,\MitPenHi{}\}$, the arms whose
-controls stay exact. The deficit moves only from \MitErrBest{}\% to
-\MitErrWorst{}\% across a fourfold change, sloping \MitSlope{} points per unit,
-slightly the \emph{wrong} way; disabling it ($\!=\!\MitBrokenPen{}$) breaks the
-control. No setting both preserves quality and removes the deficit.
+Sweeping XTTS-v2's repetition penalty over $\{\MitPenLo{},3,5,\MitPenHi{}\}$ moves
+the deficit only from \MitErrBest{}\% to \MitErrWorst{}\%, slightly the
+\emph{wrong} way, and disabling it breaks the control (one architecture, so
+suggestive only).
 Limits: the panel is English-only codec-language models with softmax attention
-over text, so the claim concerns that class. The
-judge has a limit that runs in our favour: CTC blank-collapse can merge adjacent
-copies of a word, depressing repeated but not control counts; high-$k$
-magnitudes are approximate (S9).
+over text; and CTC blank-collapse merges adjacent copies of a word, depressing
+repeated but not control counts, so high-$k$ magnitudes err our way (S9).

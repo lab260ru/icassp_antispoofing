@@ -133,6 +133,24 @@ def main() -> None:
     pooled["ratio"] = float(pooled["ctl"]["n_star"] / pooled["rep"]["n_star"])
     res["pooled"] = pooled
     res["n_models"] = len(models)
+    res["model_names"] = models
+    # Reviewers asked for the sample sizes and the exclusion counts, at the k
+    # values where the claim lives, rather than "few items per cell". They were
+    # right that a reader cannot weigh the fit without them.
+    ext = d[d.k >= 48]
+    res["n_per_cell"] = {
+        tag: {int(k): int(len(g))
+              for k, g in ext[ext.family == fam].groupby("k")}
+        for fam, tag in (("word_rep", "rep"), ("control_word", "ctl"))}
+    raw = pd.concat(frames, ignore_index=True)
+    raw = raw[(raw.k >= 48) & raw.template.isin(args.templates)
+              & raw.model.isin(models)]
+    raw_cap = pd.Series([flags.get((r.model, r.item_id, r.seed), False)
+                         for r in raw.itertuples()], index=raw.index)
+    res["excluded"] = dict(
+        cap_hits=int(raw_cap.sum()),
+        degenerate=int(raw.outcome.isin(DEGENERATE).sum()),
+        n_generated=int(len(raw)))
 
     # Medians by k, both families: the raw evidence the fit summarises.
     res["median_by_k"] = {

@@ -53,6 +53,29 @@
     "ratio": 4.131974611702431
   },
   "n_models": 2,
+  "model_names": [
+    "llasa1b",
+    "llasa8b"
+  ],
+  "n_per_cell": {
+    "rep": {
+      "48": 3,
+      "64": 6,
+      "96": 5,
+      "128": 4
+    },
+    "ctl": {
+      "48": 6,
+      "64": 6,
+      "96": 6,
+      "128": 6
+    }
+  },
+  "excluded": {
+    "cap_hits": 5,
+    "degenerate": 3,
+    "n_generated": 48
+  },
   "median_by_k": {
     "rep": {
       "4": 4.0,

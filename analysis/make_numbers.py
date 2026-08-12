@@ -279,6 +279,17 @@ def main() -> None:
             macros[f"HzN{tag}Lo"] = fmt(v.get("lo"), 0)
             macros[f"HzN{tag}Hi"] = fmt(v.get("hi"), 0)
         macros["HzRatio"] = fmt(p_.get("ratio"), 1)
+        names = he.get("model_names", [])
+        macros["HzModelNames"] = " and ".join(LABEL.get(m, m) for m in names)
+        npc = he.get("n_per_cell", {}).get("rep", {})
+        if npc:
+            vals = [int(v) for v in npc.values()]
+            macros["HzNCellLo"] = str(min(vals))
+            macros["HzNCellHi"] = str(max(vals))
+        ex = he.get("excluded", {})
+        macros["HzExclCap"] = str(ex.get("cap_hits", 0))
+        macros["HzExclDegen"] = str(ex.get("degenerate", 0))
+        macros["HzNGen"] = str(ex.get("n_generated", 0))
         macros["HzNModels"] = str(he.get("n_models", 0))
         sep = sum(1 for v in he.get("models", {}).values()
                   if np.isfinite(v["rep"].get("hi", np.nan))
