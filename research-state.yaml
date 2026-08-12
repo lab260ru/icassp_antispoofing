@@ -102,6 +102,30 @@ instrumentation_notes:
   xtts: "full; note shipped repetition_penalty=5.0 -> conservative panel member"
   llasa: "full; SDPA for sampling, eager only for the instrumented pass"
 
+# ---------------------------------------------------- what has been excluded
+# Six rival explanations for the periodicity-specific deficit, each with the
+# analysis that killed it. A new agent should not re-litigate these.
+rivals_excluded:
+  length: "matched controls at the same word count come back exact; analysis/count_error.py"
+  control_periodicity: >
+    main-ladder controls cycle an 8-word pool above k=8. Re-generated k=12..32
+    from a never-cycled 146-word pool: gap +71.2 vs +84.6 pts, so the confound is
+    worth 13.4 points. analysis/aperiodic_controls.py
+  repetition_penalty: >
+    Llasa passes NO penalty and shows the effect at full size (14.0 vs 92.9);
+    XTTS-v2 across a 4x penalty range holds at 15.6-21.1%.
+    analysis/penalty_confound.py
+  asr_judge: >
+    A non-AR model through the SAME judge on the SAME strings shows no gap.
+    Also: two recognisers disagree by 0.47 counts and ours reports the HIGHER
+    count in 11/13 disagreements, so it under-states the deficit.
+    analysis/nonar_baseline.py, analysis/noise_floor.py
+  architecture: >
+    VITS shows no dissociation (-6.7 pts vs the panel's +76.1), and it is not a
+    floor effect: at k=6-8 it renders 76.7% rep / 66.7% ctl exactly while the
+    panel's gap is already +60. analysis/nonar_baseline.py
+  improbability_and_acoustics: "ruled out by their own predictions; supplement S8"
+
 # ------------------------------------------------------------------- in flight
 active_background_jobs:
   - "llasa1b/llasa8b extension ladder seeds 1,2 (GPU 0,1) -> experiments/exp08_ext_ladder/logs/seeds12.log"
@@ -110,6 +134,9 @@ active_background_jobs:
 # --------------------------------------------------------------- what is next
 next_actions:
   - "extension ladder COMPLETE: 4 checkpoints, 2 families, 21-26 items/cell"
+  - "MECHANISM IS UNSUPPORTED: contraction unmeasured (2 attempts), dilution
+     dose-response sign-reversed, probe non-discriminating. Do not write a
+     mechanistic claim without reading findings.md first."
   - "title was rescoped after round 6; do not restore the attractor-theory framing"
   - "paper is at 5 pages (4 content + 1 refs) and must stay there -- check every build"
   - "final: check_lean.sh, build both PDFs, tag v1.0-submission"
