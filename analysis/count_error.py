@@ -35,7 +35,9 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-ABLATIONS = {"xtts2norp"}
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from src.common.population import ABLATIONS, panel, describe  # noqa: E402
 
 
 def boot_ci(x: np.ndarray, n_boot: int = 4000, seed: int = 0) -> tuple[float, float]:
@@ -53,10 +55,12 @@ def main() -> None:
     ap.add_argument("--kmin", type=int, default=6)
     args = ap.parse_args()
 
-    d = pd.read_csv(args.behavioural)
-    d = d[d.family.isin(["word_rep", "control_word"]) & (d.k >= 2)].copy()
-    # Degenerate audio has no meaningful count; it is reported as its own rate
-    # rather than folded in as a huge negative error.
+    raw = pd.read_csv(args.behavioural)
+    raw = raw[raw.family.isin(["word_rep", "control_word"]) & (raw.k >= 2)].copy()
+    # Keep degenerate rows through the shared filter so their rate stays
+    # reportable, then mask them out of the error statistics below.
+    d, drop = panel(raw, degenerate=True)
+    print(describe(drop))
     degen = d.outcome.isin(["empty", "degenerate"])
     d["rel_err"] = (d.count_a - d.k) / d.k
 
@@ -84,16 +88,16 @@ def main() -> None:
               f"n={row['ctl']['n']:4d}  {100*row['degen_rate']:6.1f}"
               f"{'  *' if row['separated'] else ''}")
 
-    panel = {k: v for k, v in res["models"].items() if k not in ABLATIONS}
-    pd_ = d[~d.model.isin(ABLATIONS) & (d.k >= args.kmin) & ~degen]
+    panel_models = {k: v for k, v in res["models"].items() if k not in ABLATIONS}
+    pd_ = d[(d.k >= args.kmin) & ~degen]
     for fam, key in (("word_rep", "rep"), ("control_word", "ctl")):
         v = pd_[pd_.family == fam].rel_err.to_numpy(dtype=float)
         lo, hi = boot_ci(v)
         res[f"pooled_{key}"] = dict(median=float(np.median(v)), lo=lo, hi=hi, n=int(v.size))
-    res["n_models"] = len(panel)
-    res["n_separated"] = sum(1 for v in panel.values() if v["separated"])
+    res["n_models"] = len(panel_models)
+    res["n_separated"] = sum(1 for v in panel_models.values() if v["separated"])
     res["n_rep_below_ctl"] = sum(
-        1 for v in panel.values()
+        1 for v in panel_models.values()
         if np.isfinite(v["rep"]["median"]) and np.isfinite(v["ctl"]["median"])
         and v["rep"]["median"] < v["ctl"]["median"])
 

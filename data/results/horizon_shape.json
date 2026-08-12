@@ -1,0 +1,127 @@
+{
+  "kmin": 6,
+  "models": {
+    "llasa1b": {
+      "saturating": {
+        "param": 13.5,
+        "sse": 477.5
+      },
+      "proportional": {
+        "param": 0.8552380952380952,
+        "sse": 34.99238095238095
+      },
+      "soft_horizon": {
+        "n_star": 85.43759398496239,
+        "sse": 39.1529126684526,
+        "saturated_within_range": false
+      },
+      "winner": "proportional"
+    },
+    "llasa3b": {
+      "saturating": {
+        "param": 15.083333333333334,
+        "sse": 464.20833333333337
+      },
+      "proportional": {
+        "param": 0.9128571428571428,
+        "sse": 79.30285714285714
+      },
+      "soft_horizon": {
+        "n_star": 118.61654135338344,
+        "sse": 72.57121219094054,
+        "saturated_within_range": false
+      },
+      "winner": "soft_horizon"
+    },
+    "llasa8b": {
+      "saturating": {
+        "param": 13.5,
+        "sse": 353.5
+      },
+      "proportional": {
+        "param": 0.8295238095238096,
+        "sse": 1.96952380952381
+      },
+      "soft_horizon": {
+        "n_star": 71.21804511278195,
+        "sse": 9.045100276144115,
+        "saturated_within_range": false
+      },
+      "winner": "proportional"
+    },
+    "qwen06b": {
+      "saturating": {
+        "param": 15.333333333333334,
+        "sse": 499.3333333333333
+      },
+      "proportional": {
+        "param": 0.9533333333333334,
+        "sse": 1.4266666666666679
+      },
+      "soft_horizon": {
+        "n_star": 338.2295739348371,
+        "sse": 2.9818043972816675,
+        "saturated_within_range": false
+      },
+      "winner": "proportional"
+    },
+    "qwen17b": {
+      "saturating": {
+        "param": 17.833333333333332,
+        "sse": 668.8333333333333
+      },
+      "proportional": {
+        "param": 1.1066666666666667,
+        "sse": 5.106666666666664
+      },
+      "soft_horizon": {
+        "n_star": 640.0,
+        "sse": 38.941508224789246,
+        "saturated_within_range": false
+      },
+      "winner": "proportional"
+    },
+    "xtts2": {
+      "saturating": {
+        "param": 14.0,
+        "sse": 378.0
+      },
+      "proportional": {
+        "param": 0.86,
+        "sse": 0.8400000000000014
+      },
+      "soft_horizon": {
+        "n_star": 90.17744360902255,
+        "sse": 5.317121630817239,
+        "saturated_within_range": false
+      },
+      "winner": "proportional"
+    }
+  },
+  "pooled": {
+    "saturating": {
+      "param": 15.333333333333334,
+      "sse": 485.3333333333333
+    },
+    "proportional": {
+      "param": 0.9495238095238095,
+      "sse": 2.6495238095238083
+    },
+    "soft_horizon": {
+      "n_star": 278.19147869674185,
+      "sse": 3.58084144103602,
+      "saturated_within_range": false
+    },
+    "winner": "proportional"
+  },
+  "n_proportional": 5,
+  "n_models": 6,
+  "ratio_by_k": {
+    "6": 0.8333333333333334,
+    "8": 0.875,
+    "12": 0.9166666666666666,
+    "16": 0.9375,
+    "24": 1.0,
+    "32": 0.9375
+  }
+}

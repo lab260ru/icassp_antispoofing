@@ -3,102 +3,107 @@
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=\textwidth]{figs/fig_main.pdf}
+\includegraphics[width=0.76\textwidth]{figs/fig_main.pdf}
 \caption{(a) Relative count error $(\hat c-k)/k$ against requested repetitions
-$k$, CTC judge: exact below $k\!=\!6$, then a one-directional deficit. (b) The
-same repeated items (solid) against their length-matched controls (dashed), in
-which the repeated word is replaced by $k$ distinct fillers --- controls sit at
-zero error throughout. (c) Effective rank of the generation trajectory: under
-repetition it saturates. (d) Fitted capacity gain, 95\% bootstrap intervals over
-stimulus templates.}
+$k$, CTC judge: exact below $k\!=\!6$, then a one-directional deficit that stays
+roughly proportional rather than saturating. (b) The same repeated items (solid)
+against their length-matched controls (dashed), in which the repeated word is
+replaced by $k$ distinct fillers --- control medians sit at zero throughout.
+(c) Effective rank of the generation trajectory: it grows more slowly under
+repetition. (d) Fitted capacity gain, 95\% bootstrap intervals over stimulus
+templates.}
 \label{fig:main}
 \end{figure*}
 
-\subsection{Models undercount repetitions, by a fixed fraction}
+\subsection{Models undercount repetitions, proportionally}
 
 Figure~\ref{fig:main}(a) shows the relative count error against $k$. Below
-$k\!=\!6$ every model is essentially exact. From $k\!=\!6$ the panel splits.
-Pooled over the panel at $k\ge6$, repeated items are rendered with a median error
-of \ErrRep{}\% $[\ErrRepLo{}, \ErrRepHi{}]$ ($n=\ErrRepN{}$), and the error is
-one-directional: models produce \emph{fewer} repetitions than requested, never
-systematically more. The deficit is roughly constant in relative terms rather
-than growing --- \ErrWorstModel{} sits at \ErrWorstVal{}\% across the whole upper
-ladder --- so a model asked for $32$ repetitions does not stop at $6$; it stops
-at about $27$.
+$k\!=\!6$ every model is essentially exact; from $k\!=\!6$ the panel splits.
+Pooled at $k\ge6$, repeated items are rendered with a median error of
+\ErrRep{}\% $[\ErrRepLo{}, \ErrRepHi{}]$ ($n=\ErrRepN{}$), one-directional:
+models produce \emph{fewer} repetitions than requested, never systematically
+more.
 
-The split matters. \ErrBestModel{}, the largest checkpoint in the panel, shows a
-median error of \ErrBestVal{}\% at $k\ge6$: it counts to $32$ without deficit.
-The theorem is silent about such a model --- if its per-repetition map does not
-contract, no horizon follows --- and we report it as a distinct regime rather
-than as a failed prediction. The effect is present in the other
-\ErrNSep{} of \ErrNModels{} panel checkpoints with intervals disjoint from their
-own controls.
+Its \emph{shape}, however, is not the one Theorem~\ref{thm:collapse}(iv)
+predicts, and that is this paper's main negative result. A finite $N^\ast$ implies
+saturation: past it no Lipschitz readout separates counts, so a decoder asked for
+ever more should keep emitting about $N^\ast$. Fitting the panel's median count
+above $k\!=\!6$ against a constant gives residual sum of squares \ShapeSatSSE{},
+against $\hat c=bk$ only \ShapePropSSE{} with $b=\ShapePropSlope{}$ --- the count
+tracks the request at \ShapePropPct{}\% of it, in \ShapePropModels{} of
+\ErrNModels{} checkpoints individually. The interpolating form $\hat
+c(k)=N^\ast(1-e^{-k/N^\ast})$, free to find a horizon if one is there, puts
+$N^\ast$ at \ShapeNStarMin{}--\ShapeNStarMax{}, at or beyond our ladder's top.
+Within $k\le32$ there is no counting horizon, and we report the theorem's
+consequence as \emph{not observed} rather than confirmed.
 
-The repeated unit can be a word, a sentence, or a place-value pattern; all three
-behave the same way.
+What degrades with $k$ is reliability, not proportion: the share rendered
+\emph{exactly} right falls from \ExactRepKLo{}\% at $k\!=\!\ExactRepKLoVal{}$ to
+\ExactRepKHi{}\% at $k\!=\!\ExactRepKHiVal{}$ while the median error holds near a
+tenth. \ErrBestModel{} shows no deficit at all; the theorem is silent about such
+a model, since without contraction no horizon follows. The effect separates from
+its own control in \ErrNSep{} of \ErrNModels{} checkpoints, and holds whether the
+repeated unit is a word, a sentence or a place-value pattern.
 
 \subsection{The limit is periodicity, not length}
 
-Figure~\ref{fig:main}(b) is the paper's sharpest test. Each control item has the
-same carrier sentence and the same word count as its repeated twin, and differs
-only in that the $k$ copies of one word are replaced by $k$ distinct words. If
-the failure were about sequence length, attention span, or accumulated exposure
-bias, the two curves would coincide. They do not, and the control result is
-categorical: at $k\ge6$ the median control error is \ErrCtl{}\%
-$[\ErrCtlLo{}, \ErrCtlHi{}]$ over $n=\ErrCtlN{}$ generations --- \emph{exactly}
-the requested number of distinct words, at every $k$ up to $32$, for every model
-in the panel. The same decoders that drop one word in six from a repeated
-sequence render thirty-two \emph{different} words without a single miscount.
+Figure~\ref{fig:main}(b) is the paper's sharpest test. Each control has its
+twin's carrier and word count, differing only in that the $k$ copies of one word
+become $k$ distinct words. Were the failure about sequence length, attention span
+or exposure bias, the curves would coincide. They do not: at $k\ge6$ the median
+control error is \ErrCtl{}\% $[\ErrCtlLo{}, \ErrCtlHi{}]$ over $n=\ErrCtlN{}$
+generations, at every $k$ up to $32$, for every model. The contrast is sharpest
+in exactly-correct renderings --- \ExactCtl{}\% for controls against
+\ExactRep{}\% for their twins: the same decoders that miscount a repeated
+sequence five times in six get thirty-two \emph{different} words right nineteen
+times in twenty. Controls are not perfect --- the residual \CtlMissPct{}\% carry
+genuine truncations --- but they are exact where the repeated items are not.
 
-Two rival explanations --- that repeated text simply being improbable is the
-cause, and that the attractor is acoustic rather than text-side --- are ruled out
-by their own predictions in the supplement (S8).
+Two rival explanations --- that repeated text is simply improbable, and that the
+attractor is acoustic rather than text-side --- are ruled out by their own
+predictions (S8).
 
 \begin{table}[t]
 \centering
 \caption{Panel summary. Count error is the median $(\hat c-k)/k$ over $k\ge6$
 under the CTC judge; capacity gain is
-$\mathrm{d}\mathcal{N}_{\mathrm{eff}}/\mathrm{d}\log k$ at deep probe layers.}
+$\mathrm{d}\mathcal{N}_{\mathrm{eff}}/\mathrm{d}\log k$ at deep layers.}
 \label{tab:models}
 {\footnotesize\setlength{\tabcolsep}{3.2pt}\input{table1}}
 \end{table}
 
-\subsection{The states the decoder visits stop multiplying}
+\subsection{The decoder buys states more slowly under repetition}
 
-Theorem~\ref{thm:collapse}(ii) says the states a decoder visits under periodic
-conditioning stop being mutually distinguishable, so asking for more repetitions
-should stop buying it distinct internal states while the same amount of
-non-repetitive text keeps buying them. We count distinguishable states by the
-effective rank $\mathcal{N}_{\mathrm{eff}} = \exp(-\sum_i p_i \log p_i)$ of the
-generation trajectory over normalised singular values; the statistic is the
-\emph{capacity gain} $\mathrm{d}\mathcal{N}_{\mathrm{eff}}/\mathrm{d}\log k$,
-with intervals bootstrapped over stimulus templates.
+Theorem~\ref{thm:collapse}(ii) says states visited under periodic conditioning
+stop being mutually distinguishable, so more repetitions should buy distinct
+internal states more slowly than the same amount of non-repetitive text does. We
+count states by the effective rank $\mathcal{N}_{\mathrm{eff}} = \exp(-\sum_i p_i
+\log p_i)$ of the trajectory over normalised singular values; the statistic is
+the \emph{capacity gain}
+$\mathrm{d}\mathcal{N}_{\mathrm{eff}}/\mathrm{d}\log k$, bootstrapped over
+templates.
 
 Figure~\ref{fig:main}(c,d) shows the result. On repeated text the capacity gain
 is a factor \CapRatio{} of the control gain, with disjoint 95\% intervals for
 \CapSepPhrase{} panel checkpoints; the matched-pair form of
 the comparison gives a positive gap in \CapFracPos{}\% of pairs.
 
-An obvious objection is that this is circular: correctly rendering \emph{very}
-sixteen times really does produce monotonous audio, so a low-rank trajectory
-might follow from the stimulus rather than from lost capacity. It does not.
-Adding realised output diversity (type/token ratio over emitted acoustic tokens,
-adjacent-repeat rate, length) as covariates leaves the ratio at \CapAdjRatio{};
-restricting to items each model rendered \emph{correctly}, where the audio is by
-construction what was asked for, leaves it at \CapCorrRatio{}. The decoder does
-not merely err on repeated text --- it stops acquiring internal states at the rate
-non-repetitive text buys them. \emph{Stops acquiring}, not \emph{loses}: a
-stalled state budget need not drive the surviving signal to zero, and a probe on
-those states finds the count degraded rather than erased (Section~5).
+An obvious objection is circularity: correctly rendering \emph{very} sixteen
+times really does produce monotonous audio, so a low-rank trajectory might follow
+from the stimulus rather than from lost capacity. It does not. Adding realised
+output diversity (type/token ratio over emitted tokens, adjacent-repeat rate,
+length) as covariates leaves the ratio at \CapAdjRatio{}; restricting to items
+rendered \emph{correctly} leaves it at \CapCorrRatio{}. The gain stays
+\emph{positive} in \CapPosModels{} of \ErrNModels{} checkpoints: repetition
+slows state acquisition rather than halting it, where a decoder at the fixed
+point would gain none --- the count curve's message again, approach rather than
+arrival. A probe accordingly finds the count degraded, not erased (Section~5).
 
-Lemma~\ref{lem:dilution} concerns the softmax \emph{restricted to the $k$ repeated
-keys}: raw attention weight is normalised over the whole sequence, whose length
-grows with $k$, confounding dilution with sequence growth. Renormalised over the
-occurrence columns, the profile entropy grows with $\log k$ at slope
-\BlockEntropySlope{}, the implied spread is $\delta \le 0.06$ nats across the
-ladder, and no occurrence --- not even the most attended --- captures more than
-$1.9/k$ of the block's mass: attention over the repeated spans is within a few
-percent of uniform, which is what Assumption~\ref{ass:periodic} needs. This
-covers the \LemBModels{} checkpoints with separable text attention; Qwen3-TTS
-sums text and acoustic embeddings per position, so no attention column belongs to
-the text and the lemma cannot be checked there.
+Lemma~\ref{lem:dilution} concerns the softmax \emph{restricted to the $k$
+repeated keys}. Renormalised over those columns, profile entropy grows with
+$\log k$ at slope \BlockEntropySlope{} and the most-attended occurrence holds
+$\ShareMedK{}/k$ of the block's mass typically, $\ShareMaxK{}/k$ at worst: the
+extreme spread Assumption~\ref{ass:periodic} needs is $\delta\le\DeltaMax{}$
+nats, so attention is near-uniform typically but not uniformly so (S6).
+Qwen3-TTS sums text and acoustic embeddings per position, so the lemma cannot be
+checked there.

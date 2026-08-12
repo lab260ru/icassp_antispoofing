@@ -138,6 +138,17 @@ def count_units(tokens: list[str], units: list[str]) -> int:
     "how many of the k requested units came out?" is computed the same way, and
     matching never rewinds, so a model that repeats one filler cannot score for
     the others.
+
+    A unit the transcript never delivers is *skipped*, not treated as the end of
+    the item. The distinction is invisible for repeated items --- every unit is
+    the same word, so failing to find one from position `i` means failing to find
+    all the rest --- but it decides the control result. An earlier version
+    stopped at the first miss, which let one systematically mis-transcribed
+    filler void credit for every correctly rendered filler after it: template t2
+    carries `okay`, which our CTC judge renders as "o k" in 181 of 181
+    occurrences, and that single word was driving most of the apparent control
+    error. Skipping keeps the scan monotone, so a model that repeats one filler
+    still cannot score for the others.
     """
     if not units:
         return 0
@@ -147,14 +158,13 @@ def count_units(tokens: list[str], units: list[str]) -> int:
         if not parts:
             continue
         n = len(parts)
-        while i + n <= len(tokens):
-            if tokens[i:i + n] == parts:
+        j = i
+        while j + n <= len(tokens):
+            if tokens[j:j + n] == parts:
                 c += 1
-                i += n
+                i = j + n
                 break
-            i += 1
-        else:
-            break
+            j += 1
     return c
 
 

@@ -41,7 +41,9 @@ FAMILIES = {"repeated": "word_rep", "control": "control_word"}
 # setting, not additional checkpoints. They are reported individually but must
 # never enter panel-level aggregates, or the panel size and every pooled
 # statistic are inflated by a non-independent copy.
-ABLATIONS = {"xtts2norp"}
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from src.common.population import ABLATIONS, panel as restrict, describe  # noqa: E402
 
 
 def gain(df: pd.DataFrame, col: str = "n_eff", n_boot: int = 2000,
@@ -110,6 +112,12 @@ def main() -> None:
 
     st = pd.read_csv(args.state)
     st = st[st.layer_frac > args.deep_frac]
+    # Ablation arms stay in (they are printed for the mitigation table and
+    # excluded from panel statistics below), but the judge-unmeasurable template
+    # goes, so the capacity comparison runs on the same items as the
+    # behavioural one.
+    st, drop = restrict(st, ablations=True, degenerate=True, cap_hits=False)
+    print(describe(drop))
 
     result: dict = {"metric": args.metric, "models": {}}
     print(f"{'model':10s} {'gain_rep':>18s} {'gain_ctl':>18s} {'ratio':>6s} "
@@ -131,17 +139,17 @@ def main() -> None:
               f"{ratio:6.2f} {pg['gap']:7.1f} [{pg['lo']:5.1f},{pg['hi']:5.1f}] "
               f"{pg['frac_pos']:5.2f}{'  *' if sep else ''}")
 
-    panel = {k: v for k, v in result["models"].items() if k not in ABLATIONS}
-    n_sep = sum(1 for v in panel.values() if v["ci_separated"])
-    result["n_models"] = len(panel)
+    panel_models = {k: v for k, v in result["models"].items() if k not in ABLATIONS}
+    n_sep = sum(1 for v in panel_models.values() if v["ci_separated"])
+    result["n_models"] = len(panel_models)
     result["n_separated"] = n_sep
     result["ablations"] = sorted(set(result["models"]) & ABLATIONS)
-    ratios = [v["ratio"] for v in panel.values() if np.isfinite(v["ratio"])]
+    ratios = [v["ratio"] for v in panel_models.values() if np.isfinite(v["ratio"])]
     result["ratio_median"] = float(np.median(ratios)) if ratios else np.nan
-    print(f"\npanel ({len(panel)} checkpoints; ablations excluded: "
+    print(f"\npanel ({len(panel_models)} checkpoints; ablations excluded: "
           f"{result['ablations'] or 'none'}): capacity gain on repeated text is a "
           f"factor {result['ratio_median']:.2f} of control; "
-          f"{n_sep}/{len(panel)} with disjoint 95% CIs")
+          f"{n_sep}/{len(panel_models)} with disjoint 95% CIs")
 
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)

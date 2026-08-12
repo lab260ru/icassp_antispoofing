@@ -134,6 +134,12 @@ def main() -> None:
     if cap_path.exists():
         cap = json.loads(cap_path.read_text())
         macros["CapRatio"] = fmt(cap.get("ratio_median"), 2)
+        # How many checkpoints still gain states under repetition. A decoder at
+        # the theorem's fixed point would gain none, so this is the number the
+        # "slows, does not halt" sentence rests on.
+        macros["CapPosModels"] = str(sum(
+            1 for m, v in cap.get("models", {}).items()
+            if m not in ABLATIONS and v.get("repeated", {}).get("lo", -1) > 0))
         macros["CapRatioPct"] = fmt(100 * cap.get("ratio_median", np.nan), 0)
         macros["NCapSep"] = str(cap.get("n_separated", 0))
         macros["NCapModels"] = str(cap.get("n_models", 0))
@@ -204,6 +210,81 @@ def main() -> None:
             macros["ErrWorstVal"] = fmt(100 * panel[worst]["rep"]["median"], 1)
             macros["ErrBestModel"] = LABEL.get(best, best)
             macros["ErrBestVal"] = fmt(100 * panel[best]["rep"]["median"], 1)
+
+    # ---- exactly-right rates ---------------------------------------------
+    # The median relative error understates the contrast, because a control's
+    # median of zero and a control that is *always* zero are different claims and
+    # the paper previously ran them together ("not a single miscount", which was
+    # false: 22% of control generations carried a nonzero error before the
+    # judge-vocabulary exclusion, 5.7% after). The fraction of generations that
+    # come back exactly right states it without room for that.
+    beh_path = Path("data/results/behavioural_ctc.csv")
+    if beh_path.exists():
+        import sys
+        sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+        from src.common.population import panel as restrict
+        raw = pd.read_csv(beh_path)
+        raw = raw[raw.family.isin(["word_rep", "control_word"])]
+        pop, _ = restrict(raw)
+        pop = pop[pop.k >= 6]
+        pop = pop.assign(err=(pop.count_a - pop.k) / pop.k)
+        for fam, tag in (("word_rep", "Rep"), ("control_word", "Ctl")):
+            g = pop[pop.family == fam]
+            if len(g):
+                macros[f"Exact{tag}"] = fmt(100 * (g.err == 0).mean(), 1)
+                macros[f"Exact{tag}N"] = str(len(g))
+        # exact-rate at the ends of the ladder: the count stays proportional to k
+        # while the chance of being exactly right collapses, and those are the
+        # two halves of the result.
+        g = pop[pop.family == "word_rep"]
+        for kk, tag in ((6, "KLo"), (32, "KHi")):
+            s = g[g.k == kk]
+            if len(s):
+                macros[f"ExactRep{tag}"] = fmt(100 * (s.err == 0).mean(), 1)
+        cm = pop[pop.family == "control_word"]
+        if len(cm):
+            macros["CtlMissPct"] = fmt(100 * (cm.err != 0).mean(), 1)
+        macros["ExactRepKLoVal"] = "6"
+        macros["ExactRepKHiVal"] = "32"
+
+    # ---- shape of the deficit: horizon or proportional? -------------------
+    hs_path = Path("data/results/horizon_shape.json")
+    if hs_path.exists():
+        hs = json.loads(hs_path.read_text())
+        p = hs.get("pooled", {})
+        macros["ShapeSatSSE"] = fmt(p.get("saturating", {}).get("sse"), 1)
+        macros["ShapePropSSE"] = fmt(p.get("proportional", {}).get("sse"), 1)
+        macros["ShapePropSlope"] = fmt(p.get("proportional", {}).get("param"), 3)
+        macros["ShapePropPct"] = fmt(100 * p.get("proportional", {}).get("param", np.nan), 0)
+        macros["ShapeNStar"] = fmt(p.get("soft_horizon", {}).get("n_star"), 0)
+        macros["ShapeKMax"] = str(hs.get("kmin", 6))
+        macros["ShapePropModels"] = str(hs.get("n_proportional", 0))
+        ns = [v.get("soft_horizon", {}).get("n_star", np.nan)
+              for v in hs.get("models", {}).values()]
+        ns = [x for x in ns if np.isfinite(x)]
+        if ns:
+            macros["ShapeNStarMin"] = fmt(min(ns), 0)
+            macros["ShapeNStarMax"] = fmt(max(ns), 0)
+    hse_path = Path("data/results/horizon_shape_ext.json")
+    if hse_path.exists():
+        hse = json.loads(hse_path.read_text())
+        p = hse.get("pooled", {})
+        macros["ExtWinner"] = str(p.get("winner", "--")).replace("_", " ")
+        macros["ExtSatSSE"] = fmt(p.get("saturating", {}).get("sse"), 1)
+        macros["ExtPropSSE"] = fmt(p.get("proportional", {}).get("sse"), 1)
+        macros["ExtPropSlope"] = fmt(p.get("proportional", {}).get("param"), 3)
+        macros["ExtNStar"] = fmt(p.get("soft_horizon", {}).get("n_star"), 0)
+        macros["ExtRatios"] = ", ".join(
+            f"{int(k)}: {v:.2f}" for k, v in sorted(
+                (int(a), b) for a, b in hse.get("ratio_by_k", {}).items()))
+
+    # ---- CTC judge on real generated audio (field validation) ------------
+    fv_path = Path("data/results/ctc_field_validation.json")
+    if fv_path.exists():
+        fv = json.loads(fv_path.read_text())
+        sec = fv.get("check4_second_recogniser", {}).get("overall", {})
+        macros["HubertDiff"] = fmt(sec.get("mean_abs_diff"), 2)
+        macros["HubertExact"] = fmt(100 * sec.get("exact_match_rate", np.nan), 1)
 
     # ---- CTC judge validation --------------------------------------------
     cv_path = Path("data/results/ctc_validation.json")
@@ -367,6 +448,27 @@ def main() -> None:
         macros["AttnDevSlope"] = fmt(loglog_slope("attn_unif_dev"), 2)
         macros["BlockEntropySlope"] = fmt(lin_slope("attn_block_entropy"), 2)
         macros["TextEntropySlope"] = fmt(lin_slope("attn_text_entropy"), 2)
+        # The entropy gap and the most-attended share bound different halves of
+        # the logit spread: log k - H constrains the average, while the largest
+        # single share constrains the extreme. Reporting both under one symbol
+        # made them look inconsistent (0.06 against 0.64 nats), so each is
+        # emitted separately and the results text says which the lemma uses.
+        if {"attn_block_entropy", "attn_share_max"} <= set(base.columns):
+            g = base[(base.k >= 6) & base.attn_block_entropy.notna()]
+            if len(g):
+                macros["DeltaEntropy"] = fmt(
+                    float((np.log(g.k.astype(float)) - g.attn_block_entropy).max()), 2)
+            g2 = base[(base.k >= 6) & base.attn_share_max.notna()]
+            if len(g2):
+                # worst case, not typical: the lemma needs an upper bound
+                macros["DeltaMax"] = fmt(
+                    float(np.log((g2.attn_share_max * g2.k.astype(float)).max())), 2)
+                macros["ShareMaxK"] = fmt(
+                    float((g2.attn_share_max * g2.k.astype(float)).max()), 1)
+                macros["ShareMedK"] = fmt(
+                    float((g2.attn_share_max * g2.k.astype(float)).median()), 1)
+                macros["DeltaMedian"] = fmt(
+                    float(np.log((g2.attn_share_max * g2.k.astype(float)).median())), 2)
         if "attn_block_entropy" in base.columns:
             hi = base[(base.k >= 16) & base.attn_block_entropy.notna()]
             if len(hi):
