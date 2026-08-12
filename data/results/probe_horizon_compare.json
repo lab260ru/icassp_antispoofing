@@ -105,6 +105,76 @@
       "beats_constant": true,
       "mae_ratio": 0.668960973487609
     },
+    "past:qwen06b": {
+      "ks": [
+        48,
+        64,
+        96,
+        128
+      ],
+      "reps": 3,
+      "mae": 0.37012158234010467,
+      "r2": 0.3363361504040081,
+      "n": 12,
+      "const_mae": 0.5,
+      "beats_constant": true,
+      "mae_ratio": 0.7402431646802093
+    },
+    "below:qwen06b": {
+      "ks": [
+        2,
+        3,
+        4,
+        6,
+        8,
+        12,
+        16,
+        24,
+        32
+      ],
+      "reps": 6,
+      "mae": 0.7868481289401964,
+      "r2": 0.4686667825879447,
+      "n": 54,
+      "const_mae": 1.1153067901590692,
+      "beats_constant": true,
+      "mae_ratio": 0.7054992723822413
+    },
+    "past:qwen17b": {
+      "ks": [
+        48,
+        64,
+        96,
+        128
+      ],
+      "reps": 3,
+      "mae": 0.4479512416297536,
+      "r2": 0.15427672768910672,
+      "n": 12,
+      "const_mae": 0.5,
+      "beats_constant": true,
+      "mae_ratio": 0.8959024832595072
+    },
+    "below:qwen17b": {
+      "ks": [
+        2,
+        3,
+        4,
+        6,
+        8,
+        12,
+        16,
+        24,
+        32
+      ],
+      "reps": 6,
+      "mae": 0.7902172127009963,
+      "r2": 0.47423137818840333,
+      "n": 54,
+      "const_mae": 1.1153067901590692,
+      "beats_constant": true,
+      "mae_ratio": 0.7085200410088892
+    },
     "control:llasa1b": {
       "ks": [
         48,
@@ -119,15 +189,77 @@
       "const_mae": 0.5,
       "beats_constant": true,
       "mae_ratio": 0.8626052042668807
+    },
+    "control:llasa3b": {
+      "ks": [
+        48,
+        64,
+        96,
+        128
+      ],
+      "reps": 3,
+      "mae": 0.41303212250610105,
+      "r2": 0.3313428088613132,
+      "n": 12,
+      "const_mae": 0.5,
+      "beats_constant": true,
+      "mae_ratio": 0.8260642450122021
+    },
+    "control:llasa8b": {
+      "ks": [
+        48,
+        64,
+        96,
+        128
+      ],
+      "reps": 3,
+      "mae": 0.2927793645184836,
+      "r2": 0.561888331806567,
+      "n": 12,
+      "const_mae": 0.5,
+      "beats_constant": true,
+      "mae_ratio": 0.5855587290369672
+    },
+    "control:qwen06b": {
+      "ks": [
+        48,
+        64,
+        96,
+        128
+      ],
+      "reps": 3,
+      "mae": 0.4736853017142997,
+      "r2": 0.10243639219975298,
+      "n": 12,
+      "const_mae": 0.5,
+      "beats_constant": true,
+      "mae_ratio": 0.9473706034285994
+    },
+    "control:qwen17b": {
+      "ks": [
+        48,
+        64,
+        96,
+        128
+      ],
+      "reps": 3,
+      "mae": 0.4439067044350671,
+      "r2": 0.201940214870709,
+      "n": 12,
+      "const_mae": 0.5,
+      "beats_constant": true,
+      "mae_ratio": 0.8878134088701342
     }
   },
-  "n_checkpoints": 3,
+  "n_checkpoints": 5,
   "lost_past_horizon": [
     "llasa1b"
   ],
   "kept_past_horizon": [
     "llasa3b",
-    "llasa8b"
+    "llasa8b",
+    "qwen06b",
+    "qwen17b"
   ],
   "tie_band": 0.02,
   "indistinguishable": [
@@ -135,9 +267,41 @@
     "llasa3b"
   ],
   "clearly_kept": [
-    "llasa8b"
+    "llasa8b",
+    "qwen06b",
+    "qwen17b"
   ],
   "replicates": false,
+  "controls": [
+    "llasa1b",
+    "llasa3b",
+    "llasa8b",
+    "qwen06b",
+    "qwen17b"
+  ],
+  "control_ratios": {
+    "llasa1b": 0.8626052042668807,
+    "llasa3b": 0.8260642450122021,
+    "llasa8b": 0.5855587290369672,
+    "qwen06b": 0.9473706034285994,
+    "qwen17b": 0.8878134088701342
+  },
+  "controls_beating_constant": [
+    "llasa1b",
+    "llasa3b",
+    "llasa8b",
+    "qwen06b",
+    "qwen17b"
+  ],
+  "range_confound_checked_on": [
+    "llasa1b"
+  ],
+  "range_confound_unchecked": [],
   "range_confound_ruled_out": true,
-  "verdict": "the prediction holds in 1 of 3 checkpoints: llasa1b lose the count past the horizon, llasa3b, llasa8b do not"
+  "range_confound_null_side": [
+    "llasa1b",
+    "llasa3b"
+  ],
+  "range_confound_null_side_unchecked": [],
+  "verdict": "the prediction holds in 1 of 5 checkpoints: llasa1b lose the count past the horizon, llasa3b, llasa8b, qwen06b, qwen17b do not"
 }

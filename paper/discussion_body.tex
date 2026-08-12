@@ -6,18 +6,20 @@
 % hard and main.tex ends with \vfill\pagebreak, so a spilled line costs a page.
 
 \noindent\textbf{The rival the evidence favours.}
-With contraction refuted, the live question is where the count fails. On the
-state-contraction account it is erased from the state; on the output-policy
+With contraction refuted, the live question is where the count fails: on the
+state-contraction account it is erased from the state, on the output-policy
 account~\cite{venkatesh2026repeated} it survives and only the policy reading it
-fails. Our evidence points the second way: repetition does cost probe retention
-relative to the control in all \ProbeNBelowCtl{} of \ProbeNCk{} checkpoints, as
-contraction predicts, but the count is not erased --- it stays decodable late
-($R^2$ \ProbeLateMed{}) and retention exceeds $1$ outright in \ProbeAboveOne{},
-the probe reading it \emph{better} deeper in. Past the extension horizon the
+fails. Our evidence points the second way: repetition costs probe retention relative to
+the control in all \ProbeNBelowCtl{} of \ProbeNCk{} checkpoints, as contraction
+predicts, but the count is not erased --- it stays decodable late ($R^2$
+\ProbeLateMed{}) and retention exceeds $1$ in \ProbeAboveOne{}, the probe
+reading it \emph{better} deeper in. Past the extension horizon the
 \PhNCk{} checkpoints we could run reach \PhAllRatios{} of a mean-answering
-predictor, which at $n=\PhNCk{}$ is inconclusive and reported for transparency.
-Deciding between them needs a manipulation of the readout at fixed state, which
-we did not run.
+predictor: inconclusive at $n=\PhNCk{}$, and on the two Qwen checkpoints no
+evidence about the representation at all, a predictor given only the generated
+trajectory's length beating the state probe there outright --- the count/length
+confound above is not hypothetical. Deciding between the accounts needs a
+manipulation of the readout at fixed state, which we did not run.
 
 \noindent\textbf{Related work, and what the control decides.}
 Closest is representational collapse~\cite{barbero2024glasses}: distinct
@@ -36,8 +38,8 @@ result is periodicity-specific.
 Periodicity and \emph{verbatim token identity} vary together here, so
 ``periodicity'' is the pair; neither is separated from \emph{training-set
 frequency}, $k$-fold verbatim repetition being far rarer in speech corpora than
-a length-matched sentence of distinct words, so an out-of-distribution account
-predicts the same dissociation. Inside the repeated arm the requested count and
+a matched sentence of distinct words, so an out-of-distribution account predicts
+the same dissociation. Inside the repeated arm the requested count and
 the amount of text are one variable, so a probe decoding $k$ cannot be said to
 decode a \emph{count} rather than a length; only the control separates those,
 behaviourally. The VITS/F5-TTS duration story rests on one model per strategy.

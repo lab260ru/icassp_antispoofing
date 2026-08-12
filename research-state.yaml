@@ -192,18 +192,34 @@ review_round_1:
 
 final_day_results:
   probe_past_horizon:
-    status: "1 of 3 checkpoints; llasa1b loses the count, llasa3b and llasa8b do not"
+    status: >
+      1 of 5 checkpoints; llasa1b loses the count, llasa3b llasa8b qwen06b
+      qwen17b do not. 12 repeated + 12 control items each, seed 0.
     caution: >
       MAE ratios against the constant predictor: llasa1b 1.01, llasa3b 0.99,
-      llasa8b 0.86. llasa3b is on the 'keeps the count' side of the threshold by
-      0.006 over 12 items, which is not a margin, so probe_past_horizon.py
-      applies a TIE = 0.02 band: llasa1b and llasa3b are called INDISTINGUISHABLE
-      from a constant predictor and only llasa8b clearly keeps the count. By
-      effect size 2 of 3 show nothing recoverable. The paper quotes 1 of 3, the
-      less favourable reading; S12 records both. Anything in the repo still
-      saying '1 of 2' predates the llasa3b run.
+      llasa8b 0.86, qwen06b 0.74, qwen17b 0.90. llasa3b is on the 'keeps the
+      count' side of the threshold by 0.006 over 12 items, which is not a margin,
+      so probe_past_horizon.py applies a TIE = 0.02 band: llasa1b and llasa3b are
+      called INDISTINGUISHABLE from a constant predictor and llasa8b, qwen06b,
+      qwen17b clearly keep the count. By effect size 2 of 5 show nothing
+      recoverable. The paper quotes 1 of 5, the less favourable reading; S12
+      records both. Anything in the repo still saying '1 of 2' or '1 of 3'
+      predates the qwen runs.
+    scale_contrast: >
+      DEAD. 'Scale buys a persistent counter' held within Llasa (1.01 -> 0.99 ->
+      0.86 as size rises) and INVERTS within Qwen (0.6B 0.74 -> 1.7B 0.90). Two
+      families, opposite directions, three points each. Do not write it.
+    length_confound: >
+      READ BEFORE QUOTING THE QWEN RATIOS. A predictor given only log(trajectory
+      length) beats the state probe on both Qwen checkpoints (0.30 vs 0.37 at
+      0.6B, 0.36 vs 0.45 at 1.7B) and loses on all three Llasa ones. 6 of
+      qwen06b's 12 repeated items run to the 8192-token budget and they are the
+      high-k ones, so length carries k on its own. Against that baseline the Qwen
+      'keeps the count' readings are not evidence about the representation.
     file: data/results/probe_horizon_compare.json
-    range_confound: "ruled out by a matched control arm over the same k"
+    range_confound: >
+      ruled out on every checkpoint, not just llasa1b: all five control arms beat
+      the constant predictor over the identical k (0.86, 0.83, 0.59, 0.95, 0.89).
     script: analysis/probe_past_horizon.py
   greedy_decoding:
     status: "deficit survives argmax: gap 72.2 vs 75.0 sampled, cap-hit 0% both arms"

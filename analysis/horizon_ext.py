@@ -84,8 +84,18 @@ def boot_horizon(df: pd.DataFrame, n_boot: int, seed: int) -> tuple[float, float
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--main", default="data/results/behavioural_ctc.csv")
+    # BOTH extension CSVs, always. This default used to list only the Llasa
+    # file while the reported numbers were produced by passing both, so a rerun
+    # with no arguments silently refitted two checkpoints instead of four and
+    # returned 4.1 where the paper says 3.5. That is the discrepancy recorded in
+    # implementation-notes.md ("suspect the population first"); it is a
+    # population difference wearing the costume of a numerical one, and the fix
+    # belongs in the default rather than in the memory of whoever runs it.
+    # analysis/horizon_forms.py already defaults to both, which is what let the
+    # two scripts disagree with each other in the first place.
     ap.add_argument("--ext", nargs="+",
-                    default=["data/results/behavioural_ext_llasa.csv"])
+                    default=["data/results/behavioural_ext.csv",
+                             "data/results/behavioural_ext_llasa.csv"])
     ap.add_argument("--templates", nargs="+", default=["t1", "t3", "t4"],
                     help="carriers common to both ladders")
     ap.add_argument("--kmin", type=int, default=4)

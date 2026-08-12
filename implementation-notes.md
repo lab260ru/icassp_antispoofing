@@ -386,3 +386,100 @@ The traps it surfaced matter beyond that one analysis.
 * I/O, not GPU, is the cost: ~10 GB per family off a shared spinning disk,
   2-8 MB/s under sibling load, ~75 min for the first build. A cache lives at
   `/home/kirill/mnt/hdd_6tb_1/icassp_tts/stop_head_cache/` and reruns take ~1 min.
+
+## CosyVoice 2: the alignment-supervised arm, and its four traps (added 2026-08-12)
+
+`FunAudioLLM/CosyVoice2-0.5B` was added because reviewers were right that the
+panel contained no AR system whose text/speech alignment is *supervised*. It is
+run through the standard chain (`src/models/cosyvoice_gen.py` -> CTC judge ->
+`score_counts.py`), 180 items x 3 seeds, results in
+`data/results/behavioural_cosyvoice.csv`. Env `cosyvoice` (py3.10, torch
+2.13.0+cu130); the CosyVoice source tree is a checkout at
+`/home/kirill/mnt/hdd_6tb_1/icassp_tts/third_party/CosyVoice`, not a pip package.
+
+**The sentence splitter is the experiment-killer.** `inference_zero_shot()` --
+the entry point in every example -- runs `text_normalize(text, split=True)`,
+which sends English through `split_paragraph(..., token_max_n=80)`. A
+`sentence_rep` item at k=16 would have been chopped into several utterances and
+synthesised independently, i.e. the harness would have removed the periodic
+conditioning before the decoder ever saw it, and the model would have "counted"
+perfectly for reasons that have nothing to do with counting. The generator
+therefore calls `frontend_zero_shot` -> `llm.inference` -> `token2wav` directly
+with the whole stimulus, exactly as `xtts_gen.py` avoids XTTS's own splitter.
+Any future model that ships a chunker needs the same treatment: check for one
+*before* trusting a good result.
+
+**The generation ceiling is proportional, not absolute.** Unlike XTTS-v2's fixed
+~602 mel tokens, `Qwen2LM.inference` sets `max_len = 20 * n_text_tokens` and
+`min_len = 2 * n_text_tokens` (EOS masked below the floor). Because the cap grows
+with the text, it never binds on this ladder: 0.0% cap hits on both arms, worst
+item at 98% of its own ceiling. Both bounds are recorded per item (`max_len`,
+`min_len`, `hit_cap`, `hit_floor`) so this stays a measured fact rather than an
+assumption.
+
+**It hardcodes cuda:0 and takes no device argument.** `CosyVoice2Model.__init__`
+and `CosyVoiceFrontEnd.__init__` both do
+`torch.device('cuda' if torch.cuda.is_available() else 'cpu')`. `--gpu` is
+therefore implemented as `CUDA_VISIBLE_DEVICES`, set before torch is imported;
+`check_gpu` still runs first. Nothing else would have kept it off card 0.
+
+**`torchaudio.load` no longer works.** 2.11+ dispatches to TorchCodec, which does
+not load against this host's FFmpeg -- the same trap that forced the Whisper
+judge off `pipeline` (§7). `cosyvoice_gen.py` patches `load_wav` in both
+`cosyvoice.utils.file_utils` and `cosyvoice.cli.frontend` to a soundfile
+implementation with identical semantics.
+
+Two smaller notes. The decode loop is copied verbatim from
+`Qwen2LM.inference_wrapper` rather than called, because that loop already asks
+for `output_hidden_states=True` and throws all but the last layer away -- the
+full trajectory is free, and no teacher-forced second pass is needed. And
+CosyVoice 2 samples with `ras_sampling` (a repetition-aware rule that bans a
+token repeated within the last 10 steps and resamples), which is a decoding-time
+intervention in the same family as XTTS-v2's `repetition_penalty=5.0`; it acts on
+25 Hz acoustic tokens rather than words, and it did not prevent the deficit, but
+a penalty-style ablation on this model is the obvious next arm.
+
+**Do not let it into `behavioural.csv`.** `scripts/run_pipeline.sh` scores every
+model that has transcripts into the shared table, and `population.py` does not
+list `cosyvoice2` as an ablation, so a plain rerun of the pipeline would fold this
+checkpoint into the paper's panel and move every macro. Its results live in their
+own CSV on purpose; decide deliberately whether it joins the panel.
+
+## Widening the probe panel (added 2026-08-12) — two code changes and why
+
+Filling in the missing arms (Qwen 0.6B/1.7B both arms, Llasa-3B/8B controls)
+needed two changes beyond running the existing scripts.
+
+**`probe_past_horizon.py` takes a list of control arms, not one.** It was written
+when exactly one checkpoint had control activations, so `--past-control` was a
+single `model=path` string and `range_confound_ruled_out` was one boolean read
+off it. That made the paper's range rebuttal a statement about Llasa-1B wearing
+a panel's clothes. It is now per checkpoint: a control arm excuses the range on
+*its own* checkpoint and nowhere else, and the script reports which lost
+checkpoints have one (`range_confound_checked_on`) and which do not
+(`range_confound_unchecked`) rather than collapsing that into a yes. Re-running
+it on the old three-checkpoint inputs reproduces the previous output exactly,
+which is the check that the generalisation did not move anything.
+
+**`llasa_gen.py` computes the instrumentation entropy in chunks.** The old line
+did `softmax` over the whole `[T, V]` logit block in float32 — two ~2 GB tensors
+alive at once at T=2700 over a 193k vocabulary — for two scalars per position
+that the count probe never reads. That peak, not the model, is what OOMed
+Llasa-3B's control run when a co-tenant job grew on the same card. Softmax is
+row-wise, so chunking is numerically identical. *If you copy this pattern:* the
+first version left `pr` scoped inside the loop while the cleanup line below still
+said `del ... pr`, which crashed the item **after** its `.npz` was written and
+before its meta row was — so the retry regenerated a file that already existed
+and the meta was self-consistent by luck, not design.
+
+**Do not run two generation drivers over the same stimulus file.** A driver whose
+wrapper PID was killed but whose real bash survived resumed its loop and started
+a second `qwen17b` process on the other card, generating the same item ids
+concurrently. Nothing was corrupted (checked: no duplicate meta rows, every
+`.npz` reloads), but two processes writing one `.npz` is a real way to lose data.
+`kill $!` on a `nohup bash script.sh &` may be killing a wrapper; verify with
+`pgrep -af` afterwards rather than trusting `ps -p`.
+
+**Cost note.** The HF cache is on the spinning disk, and three model loads at
+once saturate it at ~75 MB/s: Llasa-8B took ~10 minutes to reach the GPU and
+19 minutes to do the actual 12 items. Stagger loads rather than launching a fleet.

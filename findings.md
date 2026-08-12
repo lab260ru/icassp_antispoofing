@@ -834,3 +834,56 @@ changes nothing.
 **Status: the Track-A gate is closed.** The paper now reports the premise as
 measured and refuted rather than untested, which is a stronger claim and a
 worse one for the theorem.
+
+## 2026-08-12 (final) — the probe panel doubles: 1 of 5, and the second family inverts
+
+`analysis/probe_past_horizon.py`, now over five checkpoints and with a matched
+control arm on **every** one of them, not just Llasa-1B.
+
+    checkpoint       repeated k=48..128        control k=48..128
+                     MAE   const  ratio  R²    MAE   const  ratio  R²
+    Llasa-1B        0.505  0.500  1.01  −0.02  0.431  0.500  0.86  +0.26
+    Llasa-3B        0.494  0.500  0.99  −0.02  0.413  0.500  0.83  +0.33
+    Llasa-8B        0.432  0.500  0.86  +0.19  0.293  0.500  0.59  +0.56
+    Qwen3-TTS-0.6B  0.370  0.500  0.74  +0.34  0.474  0.500  0.95  +0.10
+    Qwen3-TTS-1.7B  0.448  0.500  0.90  +0.15  0.444  0.500  0.89  +0.20
+
+Llasa-1B and Llasa-3B remain inside the `TIE = 0.02` band. The prediction now
+holds in **1 of 5**, down from 1 of 3; three checkpoints clearly keep the count
+where one did before. Widening the panel made the result worse, again.
+
+**"Scale buys a persistent counter" does not survive the second family.** Within
+Llasa the ratio falls with size (1.01 → 0.99 → 0.86), which is what the slogan
+described. Within Qwen it *rises* with size (0.6B 0.74 → 1.7B 0.90): the smaller
+checkpoint is the one whose states the probe reads best. Two families, two
+directions, three points each. Do not write the scale story.
+
+**The range rebuttal now generalises.** All five control arms beat the constant
+predictor (0.86, 0.83, 0.59, 0.95, 0.89), so on every checkpoint that lost or
+tied the count, narrowness is excluded on that checkpoint's own data rather than
+by analogy with Llasa-1B's. That is the one thing here that came back stronger.
+
+**But do not read the two Qwen ratios as "the count survives in Qwen states."**
+A predictor given *only* the log length of the generated trajectory — no hidden
+states at all — beats the state probe on both:
+
+    length-only MAE vs state-probe MAE (repeated arm)
+    Llasa-1B  0.61 / 0.51    Llasa-3B  0.56 / 0.49    Llasa-8B  0.45 / 0.43
+    Qwen-0.6B 0.30 / 0.37    Qwen-1.7B 0.36 / 0.45
+
+The reason is visible in the generations: 6 of Qwen-0.6B's 12 repeated items run
+to the 8192-token budget, and they are the high-k ones (0/1/3/2 at k=48/64/96/128),
+so "how long did it babble" carries k by itself. The constant predictor is the
+wrong yardstick for those two checkpoints; against a length-only baseline they
+have learned nothing either. The Llasa checkpoints are not exposed this way —
+their probe beats length on all three.
+
+**A budget bug underneath it (`src/models/qwen_gen.py`).** `hit_cap` is computed
+as `n_steps >= max_new_tokens` where `n_steps = len(hidden_states) - 1`, which is
+one short, so it is **False on all 1282 Qwen rows ever generated** while 9
+qwen06b and 5 qwen17b rows sit exactly at the budget (`n_speech_tokens` 8191 or
+2047). Population rule 4 has therefore never excluded a single Qwen item. Six of
+those rows are original extension-ladder items and feed `behavioural_ext.csv`,
+so the qwen06b (15.0) and qwen17b (0.27) horizon ratios are computed over items
+that rule 4 was supposed to drop. Not fixed here — recomputing `hit_cap` for
+existing rows changes published numbers and is a decision, not a patch.

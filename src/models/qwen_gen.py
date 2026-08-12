@@ -138,8 +138,20 @@ class TalkerGenerateCapture:
 
 
 def decode_step_count(result) -> int:
-    """Number of AR decode forward-calls (excludes the prefill call)."""
-    return len(result.hidden_states) - 1
+    """Number of AR decode forward-calls.
+
+    `result.hidden_states` carries one entry per generated token, the first
+    being the prefill call that also produces token 1. Subtracting one for the
+    prefill therefore undercounts the generated tokens by exactly one, and
+    `n_steps >= max_new_tokens` never fired: `hit_cap` was False on all 1320
+    Qwen rows ever written, including twenty-one that had saturated the budget
+    outright (8191 tokens against 8192, 2047 against 2048). Population rule 4
+    consequently never excluded a Qwen generation, and budget-truncated items --
+    whose counts are censored downward -- sat inside the extension-ladder
+    horizon fits. The ledgers were repaired in place from `n_speech_tokens`,
+    which was always recorded correctly.
+    """
+    return len(result.hidden_states)
 
 
 def eos_trim_length(result, eos_id: int) -> int:
