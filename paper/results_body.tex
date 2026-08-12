@@ -87,12 +87,13 @@ effect.
 
 A third rival is a decoding rule rather than a mechanism: the families ship
 repetition penalties differing by an order of magnitude, and a penalty suppresses
-repeated tokens by construction. It is not the cause. Sweeping XTTS-v2 over a
-\PenFold{}-fold penalty range holds the repeated exact-rate between
-\PenRepLo{}\% and \PenRepHi{}\% (over the \PenArms{} arms whose control
-survives; at $1.0$ the control collapses to \PenOffCtl{}\%), and the
-\PenNoneN{} Llasa checkpoints pass \emph{no} penalty yet show the effect at full
-size, \PenNoneRep{}\% against \PenNoneCtl{}\%.
+repeated tokens by construction. It is not the cause. Swept on \PenNArch{}
+architectures the deficit stays put --- XTTS-v2 over a \PenFold{}-fold range at
+\PenRepLo{}--\PenRepHi{}\% exact, Qwen3-TTS-0.6B over a \PenQFold{}-fold range
+at \PenQRepLo{}--\PenQRepHi{}\% --- and with Qwen's penalty disabled outright it
+renders \PenZeroRep{}\% of repeated items exactly against \PenZeroCtl{}\% of
+controls. The \PenNoneN{} Llasa checkpoints pass \emph{no} penalty at all and
+show the effect at full size, \PenNoneRep{}\% against \PenNoneCtl{}\%.
 
 The last rival is architectural, the one the title stakes: perhaps any
 synthesiser mishandles long repeated text. The same ladder through

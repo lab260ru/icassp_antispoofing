@@ -468,6 +468,18 @@ def main() -> None:
             macros["PenArms"] = str(x["n_usable"])
             macros["PenFold"] = fmt(x["fold_change"], 0)
             macros["PenSlope"] = fmt(100 * x["slope_per_unit"], 2)
+        q = pc.get("by_arch", {}).get("Qwen3-TTS-0.6B", {})
+        if q:
+            macros["PenQRepLo"] = fmt(100 * q["exact_rep_lo"], 1)
+            macros["PenQRepHi"] = fmt(100 * q["exact_rep_hi"], 1)
+            macros["PenQFold"] = fmt(q["fold_change"], 0)
+        # The cleanest arm in the whole argument: a model that ships a penalty,
+        # run with it disabled, still shows the gap at full size.
+        z = pc.get("arms", {}).get("qwen06brp10", {})
+        if z:
+            macros["PenZeroRep"] = fmt(100 * z["exact_rep"], 1)
+            macros["PenZeroCtl"] = fmt(100 * z["exact_ctl"], 1)
+        macros["PenNArch"] = str(len(pc.get("by_arch", {})))
         np_ = pc.get("no_penalty_summary", {})
         if np_:
             macros["PenNoneN"] = WORDS.get(np_["n_models"], str(np_["n_models"]))

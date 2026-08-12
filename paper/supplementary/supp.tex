@@ -3536,6 +3536,61 @@ evidence is in the rate across hundreds of generations and in the contrast with
 the control, not in any single transcript. The released audio sample (\S3) is
 there so that a reader can form their own view of a few of them.
 
+
+\section{Is the deficit the decoding-time repetition penalty?}
+\label{sec:s15}
+
+The strongest decoding-level rival to the whole account, raised in round 8. The
+three families ship repetition penalties differing by an order of magnitude ---
+XTTS-v2 $5.0$, Qwen3-TTS $1.05$, Llasa none --- and a repetition penalty is by
+construction a mechanism that suppresses repeated tokens. If it produced the
+periodicity-specific deficit, the theorem would be explaining something the
+sampler already explains. We had the data to answer this and had not reported it.
+
+\begin{center}
+\begin{tabular}{llrrrl}
+\toprule
+arm & architecture & penalty & rep.\ exact (\%) & ctl.\ exact (\%) & control \\
+\midrule
+\texttt{xtts2norp} & XTTS-v2 & 1.00 & 15.3 & 30.9 & collapsed \\
+\texttt{xtts2rp2} & XTTS-v2 & 2.00 & 15.6 & 92.2 & intact \\
+\texttt{xtts2rp3} & XTTS-v2 & 3.00 & 21.1 & 91.1 & intact \\
+\texttt{xtts2} & XTTS-v2 & 5.00 & 16.7 & 87.8 & intact \\
+\texttt{xtts2rp8} & XTTS-v2 & 8.00 & 15.6 & 84.4 & intact \\
+\texttt{qwen06brp10} & Qwen3-TTS-0.6B & 1.00 & 10.0 & 100.0 & intact \\
+\texttt{qwen06b} & Qwen3-TTS-0.6B & 1.05 & 7.8 & 100.0 & intact \\
+\texttt{qwen06brp15} & Qwen3-TTS-0.6B & 1.50 & 10.0 & 80.0 & intact \\
+\texttt{qwen06brp30} & Qwen3-TTS-0.6B & 3.00 & 16.7 & 83.3 & intact \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent\textbf{Sweeping it changes nothing that matters.} On XTTS-v2 the
+repeated exact-rate holds between 15.6\% and 21.1\% across a fourfold
+change in the penalty; on Qwen3-TTS-0.6B, between 7.8\% and 16.7\% across
+a threefold change. The two architectures even disagree on the sign of the slope,
+which is what a lever that is not acting on the relevant quantity looks like.
+
+\noindent\textbf{Turning it off changes nothing either.} Qwen3-TTS-0.6B with the
+penalty disabled outright renders 10.0\% of repeated items exactly against
+100.0\% of controls --- a 90-point gap with no repetition penalty
+anywhere in the decoder. This is the cleanest single arm in the argument: a model
+that normally ships a penalty, run without one, still shows the effect at full
+size.
+
+\noindent\textbf{And three checkpoints never had one.} Llasa passes no
+repetition penalty at all, so its decoding rule cannot be suppressing anything.
+Across the three: 14.0\% of repeated items exact against 92.9\%, a gap of
+78.9 points.
+
+\noindent\textbf{The asymmetry that makes the sweep readable.} Disabling
+XTTS-v2's penalty collapses its \emph{control} to 30.9\% --- without it the
+model cannot render thirty-two distinct words either. That arm is therefore
+uninformative about repetition rather than evidence about it, and slopes are
+fitted only over arms whose control survives. Qwen3-TTS is the useful contrast
+precisely because its control is unharmed at zero penalty, so the zero-penalty
+comparison can be made at all.
+
 \bibliographystyle{IEEEtran}
 \bibliography{../refs}
 

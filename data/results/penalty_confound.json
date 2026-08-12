@@ -56,6 +56,17 @@
       "penalty": 8.0,
       "control_intact": true
     },
+    "qwen06brp10": {
+      "n_rep": 30,
+      "n_ctl": 30,
+      "exact_rep": 0.1,
+      "exact_ctl": 1.0,
+      "median_rep": -0.10416666666666666,
+      "median_ctl": 0.0,
+      "arch": "Qwen3-TTS-0.6B",
+      "penalty": 1.0,
+      "control_intact": true
+    },
     "qwen06b": {
       "n_rep": 90,
       "n_ctl": 90,
@@ -65,6 +76,28 @@
       "median_ctl": 0.0,
       "arch": "Qwen3-TTS-0.6B",
       "penalty": 1.05,
+      "control_intact": true
+    },
+    "qwen06brp15": {
+      "n_rep": 30,
+      "n_ctl": 30,
+      "exact_rep": 0.1,
+      "exact_ctl": 0.8,
+      "median_rep": -0.10416666666666666,
+      "median_ctl": 0.0,
+      "arch": "Qwen3-TTS-0.6B",
+      "penalty": 1.5,
+      "control_intact": true
+    },
+    "qwen06brp30": {
+      "n_rep": 30,
+      "n_ctl": 30,
+      "exact_rep": 0.16666666666666666,
+      "exact_ctl": 0.8333333333333334,
+      "median_rep": -0.09375,
+      "median_ctl": 0.0,
+      "arch": "Qwen3-TTS-0.6B",
+      "penalty": 3.0,
       "control_intact": true
     }
   },
@@ -101,6 +134,19 @@
     "exact_gap": 0.7890522937224297
   },
   "by_arch": {
+    "Qwen3-TTS-0.6B": {
+      "n_usable": 4,
+      "penalties": [
+        1.0,
+        1.05,
+        1.5,
+        3.0
+      ],
+      "exact_rep_lo": 0.07777777777777778,
+      "exact_rep_hi": 0.16666666666666666,
+      "slope_per_unit": 0.039548470669098786,
+      "fold_change": 3.0
+    },
     "XTTS-v2": {
       "n_usable": 4,
       "penalties": [
