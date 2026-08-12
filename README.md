@@ -1,12 +1,28 @@
 # Counting Collapse in Autoregressive TTS
 
 ICASSP 2026 submission. Autoregressive TTS models loop, truncate, and lose count
-on text that repeats a phrase many times. We give a theorem saying they *must*,
-machine-check it in Lean 4, and measure its premise and its consequence in six
-real checkpoints.
+on text that repeats a phrase many times. We prove a theorem saying that a
+contracting decoder *must*, machine-check it in Lean 4, and measure what six real
+checkpoints actually do.
 
 **Start here if you are a new agent:** read `findings.md` (what we know),
 then `research-state.yaml` (where we are), then this file (how to run things).
+
+> ### Read this before writing any mechanistic claim
+>
+> **The phenomenon is solid; the mechanism is not established.** Six rival
+> explanations have been excluded with data (length, the control's own
+> periodicity, the repetition penalty, the ASR judge, architecture, and
+> improbability/acoustics — see `rivals_excluded` in `research-state.yaml`).
+>
+> But *nothing* directly supports the causal story. Two independent attempts to
+> measure the contraction factor `q` failed. The dilution lemma's dose-response
+> prediction came out **sign-reversed**. The linear probe we once cited as
+> evidence was **retracted** — it does not discriminate our account from the
+> rival in which the count survives and only the output policy fails.
+>
+> The paper's title says exactly this: *"a horizon it does not yet explain."*
+> Do not restore a stronger framing without new evidence.
 
 ---
 
@@ -36,7 +52,11 @@ data/stimuli/make_stimuli.py           the repetition-ladder benchmark
 src/common/                            measurement library (see below)
 src/models/{llasa,xtts,qwen}_gen.py    per-family generation + instrumentation
 src/models/xcodec2_decode.py           offline vocoding for Llasa token ids
+src/models/vits_gen.py                 the non-autoregressive baseline
+src/common/gpus.py                     GPUs 2 and 3 only -- enforced, not advised
+src/common/population.py               THE definition of which rows may be reported
 analysis/                              the analyses that produce the paper
+data/audio_sample/                     165 clips + manifest, to check the judge by ear
 paper/                                 main.tex + generated numbers/tables/figs
 scripts/                               setup, pipeline driver, verification gates
 literature/                            survey.md, gaps.md (40 verified refs)
@@ -66,6 +86,17 @@ unsatisfiable; `env/setup_envs.sh` documents each pin and why it exists.
 ```bash
 bash scripts/check_lean.sh
 ```
+
+### 1b. Two constraints that will bite you
+
+**GPUs 2 and 3 only.** Cards 0 and 1 belong to someone else. `src/common/gpus.py`
+holds the allocation and every entry point refuses 0 or 1 with an explanation.
+
+**The paper is at its page limit.** `main.tex` ends with `\vfill\pagebreak`, so a
+single spilled body line pushes the references onto a sixth page and breaks
+compliance. Every addition must be paid for by a cut; `paper/build.sh` reports
+the count and `scripts/check_numbers.py` fails the build on a hand-typed
+experimental number.
 
 Builds the project, scans for `sorry`, and prints `#print axioms` for all eleven
 exported theorems. Passing means every theorem depends only on `propext`,
