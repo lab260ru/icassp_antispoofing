@@ -3314,6 +3314,18 @@ reads as a weaker version of the same evidence when it is in fact a different an
 less favourable result. The exact-rate contrast, which the paper now leads with,
 is the one holding in all six.
 
+\noindent\textbf{No multiplicity correction can rescue these $p$-values, and we
+do not ask them to.} Three contrasts on the same panel invite a Holm correction,
+which puts all three at $0.094$. That is not a fact about our effects: the exact
+floor at $n=6$ is $0.031$, so the smallest attainable Holm-adjusted $p$ across
+three contrasts is $3\times0.031=0.094$, and \emph{no} six-checkpoint panel can
+produce a corrected value below $0.05$ on this test however large the effect. A
+panel this size cannot carry significance testing, so the paper rests on effect
+sizes and their consistency --- a $77$-point exact-rate gap, present in every
+checkpoint, with a bootstrap interval nowhere near zero --- rather than on
+thresholds it is structurally unable to clear. Enlarging the panel, not
+re-analysing it, is what would change this.
+
 \noindent\textbf{Direction generalises; magnitude does not.} The
 between-checkpoint SD of the capacity gap is 16.0 against a mean of
 24.7 --- a fourfold spread. ``Holds in all six'' and ``holds in all six by
