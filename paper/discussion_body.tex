@@ -6,30 +6,33 @@ contraction implies a finite counting horizon. It does not prove any transformer
 contracts, and two attempts to measure $q$ failed --- a boundary-distance
 estimator needs a monotone read-head these decoders lack, and a perturbation
 probe found no difference in local contraction between repeated and control items
-($7$ of $18$ pairs, $p=0.12$), its linearity control failing too (S5).
+($7$ of $18$ pairs, $p=0.12$), its own linearity control failing (S5).
 
 The theorem's distinctive prediction is a constant $N^\ast$, invisible where our
-ladder stopped. Extending to $k=128$ found saturation of the predicted kind, but
-not one derived from a measured $q$. One test could have separated our account from the rival on which the count
-survives and only the output policy fails~\cite{venkatesh2026repeated}. It does
-not. A linear
-probe retains less on repeated text than on its control in \ProbeNBelowCtl{} of
-\ProbeNCk{} checkpoints --- but the count stays decodable late (median $R^2$
-\ProbeLateMed{}), and retention exceeds one in \ProbeAboveOne{} of them. A state
-that had lost the count could not support that, and the rival predicts exactly
-such persistence. The relative effect is real; it discriminates nothing. It does not contradict Theorem~\ref{thm:collapse}(iv) either (S12).
+ladder stopped; extending to $k=128$ found saturation of the predicted kind,
+though not one derived from a measured $q$. A linear probe does not separate this
+from the rival on which the count survives and only the output policy
+fails~\cite{venkatesh2026repeated}: it retains less on repeated text in
+\ProbeNBelowCtl{} of \ProbeNCk{} checkpoints, but the count stays decodable late
+($R^2$ \ProbeLateMed{}), as that rival predicts.
 
+Run past the horizon, the same probe does test the theorem, which forbids a
+Lipschitz readout only \emph{beyond} $N^\ast$. On states from $k=48\ldots128$ it
+reaches mean absolute error \PhPastMae{} in $\log_2 k$ against \PhPastConst{}
+for a predictor that ignores the states and answers the mean --- learning nothing
+--- where below the horizon it reaches \PhBelowMae{} against \PhBelowConst{}. We use that baseline because $R^2$ falls when the target varies
+less, and the extension spans a third of the range. The theorem's
+prediction, tested where it applies, on \PhPastN{} items and one checkpoint: one
+clean observation, not a panel result (S12).
 A conditional account risks being unfalsifiable, so we say what would refute it:
 a control with its twin's deficit, a model whose capacity gain matches its
-control, or an AR decoder behaving like the non-AR baseline.
+control, or a probe that recovers the count past the horizon.
 
 The closest prior result is representational
-collapse~\cite{barbero2024glasses}: distinct prefixes map to arbitrarily close
-representations as sequences grow, already implying counting errors. But
-collapse-by-length predicts equally long control and repeated items fail alike,
-and they do not wherever the control is repetition-free, where related
+collapse~\cite{barbero2024glasses}, where distinct prefixes converge as sequences
+grow; our control separates that from periodicity. Related
 bounds~\cite{dong2021attention,geshkovski2023emergence,gao2026clustered,%
-strobl2024formal,merrill2024illusion} constrain a single forward pass.
+strobl2024formal,merrill2024illusion} constrain one forward pass.
 
 % Any further body text pushes the references onto a sixth page: main.tex ends
 % with \vfill\pagebreak, so the bibliography always starts on a fresh page and

@@ -3413,6 +3413,52 @@ from a cause. Only an intervention on the attention profile could, and that is
 the experiment we would run next.
 
 
+\subsection{Probing past the horizon}
+
+The retraction above says the probe discriminates nothing. That is true of the
+probe as we ran it, and the reason is a scope error worth separating from the
+result: Theorem~1(iv) forbids an $L$-Lipschitz readout from separating counts
+\emph{past} $N^\ast$ and says nothing below it, while every probe in this paper
+was fitted on the main ladder, $k\le32$, at or below the fitted saturation scale
+of about $30$. It was operating where the theorem permits success.
+
+So we ran the missing experiment. The $k=48\ldots128$ items were regenerated with
+hidden-state capture and the same ridge probe applied, leave-one-template-out,
+changing only the range.
+
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+states from & probe MAE & constant-predictor MAE & $R^2$ \\
+\midrule
+$k=2\ldots32$ (below $N^\ast$)   & 0.63 & 1.12 & +0.62 \\
+$k=48\ldots128$ (past $N^\ast$)  & 0.50 & 0.50 & -0.02 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent\textbf{Why the constant predictor is the yardstick.} $R^2$ falls when
+the target varies less, and $k\in\{48,\ldots,128\}$ spans about a third of the
+$\log_2$ range that $k\in\{2,\ldots,32\}$ does, so a low $R^2$ past the horizon
+would prove nothing on its own. A predictor that ignores the states entirely and
+always answers the mean achieves 0.50; the trained probe achieves 0.50. It
+has learned nothing about the count. Below the horizon the same probe beats its
+own trivial baseline by a wide margin.
+
+This is the first positive evidence in the paper for the theorem's own
+conclusion, and it is the only place any of our measurements test that
+conclusion rather than its consequences. It does not establish the premise ---
+nothing here measures $q$ --- and it does not make the account causal.
+
+\noindent\textbf{Limits.} One checkpoint (Llasa-1B), 12 items, one seed,
+three cross-validation folds. It is a single clean observation. Two engineering
+notes for anyone repeating it: the instrumented pass uses eager attention to
+capture attention weights, which materialises a $T\times T$ matrix per layer and
+runs out of memory at these sequence lengths --- the count probe needs hidden
+states only, so SDPA suffices and the run completes; and the extension items must
+be regenerated rather than reused, since the original extension sweep was run
+without instrumentation.
+
 \section{The non-autoregressive baselines}
 \label{sec:s13}
 

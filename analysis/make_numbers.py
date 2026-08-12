@@ -701,6 +701,18 @@ def main() -> None:
     if smp.exists():
         macros["SampleN"] = str(len(pd.read_csv(smp)))
 
+    # ---- the probe past the horizon: the theorem's own prediction ---------
+    ph_path = Path("data/results/probe_horizon_compare.json")
+    if ph_path.exists():
+        ph = json.loads(ph_path.read_text())["rows"]
+        macros["PhBelowMae"] = fmt(ph["below"]["mae"], 2)
+        macros["PhBelowConst"] = fmt(ph["below"]["const_mae"], 2)
+        macros["PhBelowRTwo"] = fmt(ph["below"]["r2"], 2)
+        macros["PhPastMae"] = fmt(ph["past"]["mae"], 2)
+        macros["PhPastConst"] = fmt(ph["past"]["const_mae"], 2)
+        macros["PhPastRTwo"] = fmt(ph["past"]["r2"], 2)
+        macros["PhPastN"] = str(ph["past"]["n"])
+
     # ---- what the probe does and does not discriminate --------------------
     pd_path = Path("data/results/probe_discrimination.json")
     if pd_path.exists():
