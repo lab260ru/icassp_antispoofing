@@ -3518,15 +3518,15 @@ This remains the only place any of our measurements test the theorem's conclusio
 rather than its consequences. It does not establish the premise --- nothing here
 measures $q$ --- and it does not make the account causal.
 
-\noindent\textbf{Why only two checkpoints.} The probe needs states from items
-past the horizon, and only the checkpoints that can emit an utterance that long
-have them: XTTS-v2's $602$-mel-token ceiling censors every $k\ge48$ item
-outright, and the extension ladder exists for four checkpoints, not six. Of those
-four, the instrumented pass must be re-run from scratch --- the original
-extension sweep captured no hidden states --- at roughly a minute per item for
-the larger models. Llasa-1B and Llasa-8B are what that budget bought. The other
-two are the obvious next experiment, and with $n=2$ neither outcome here can be
-called a panel result.
+\noindent\textbf{Which checkpoints, and why not the rest.} Two limits apply, and
+they are different in kind. XTTS-v2 cannot be run at all: its $602$-mel-token
+ceiling censors every $k\ge48$ item outright, so there are no post-horizon states
+to probe. Every other checkpoint could be, and the constraint there is only
+time --- the instrumented pass captures hidden states the original extension
+sweep did not, so it must be re-run from scratch at roughly a minute per item for
+the larger models. We say that plainly rather than implying a capability limit
+where there is none: the Qwen3-TTS checkpoints are absent because we did not get
+to them, and one of the Llasa runs was added late for exactly that reason.
 
 \noindent\textbf{Limits.} Two checkpoints, 12 repeated items each plus 12
 controls, one seed, three cross-validation folds --- and the two checkpoints

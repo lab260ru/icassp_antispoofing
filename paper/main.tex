@@ -50,13 +50,13 @@ attempts to measure the contraction factor failed and the dilution lemma's dose-
 out sign-reversed. Across
 \NModels{} checkpoints from \NFamilies{} architectures, judged by a CTC recogniser, the
 obvious autoregressive judge being biased against repetition,
-models render repeated text with a median count error of \ErrRep{}\% at $k\ge6$
+models render repeated text with a median count error of \ErrRepCk{}\% per
+checkpoint at $k\ge6$
 and are exact in \ExactRep{}\% of generations, against \ExactCtl{}\% for
 length-matched \emph{distinct}-word controls: the limit tracks periodicity, not
-length, in every checkpoint and family ($n{=}6$, too small to test) --- though
-perhaps not peculiar to
-autoregressive decoding: of two non-autoregressive baselines, one is immune and
-one is not. Up to $k=32$ the count stays proportional rather than saturating, so
+length, in every checkpoint and family ($n{=}6$, too small to test). It may not
+be peculiar to autoregressive decoding: of two non-autoregressive baselines, one
+is immune and one is not. Up to $k=32$ the count stays proportional rather than saturating, so
 no horizon is visible there; a post-hoc and exploratory extension to $k=128$ finds
 one, repetition lowering the fitted saturation scale \HzFormLo{}--\HzFormHi{}-fold
 by fitted family, though not in
