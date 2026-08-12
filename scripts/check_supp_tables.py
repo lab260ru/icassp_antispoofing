@@ -90,6 +90,26 @@ def main() -> int:
             want(f"S12 {k} MAE", v["mae"], 2)
             want(f"S12 {k} R2", v["r2"], 2)
 
+    # S14's judge replication. This is the objection five review rounds kept
+    # returning to, so its numbers are the ones a stale supplement would be
+    # most damaging about -- and the per-judge gaps in particular, since the
+    # paper quotes their range and a reader checking the weakest judge should
+    # find the same figure in both places.
+    ij = load("independent_judge.json")
+    if ij:
+        for name, v in ij.get("all_judges", {}).items():
+            short = name.split("/")[-1]
+            want(f"S14 {short} gap", 100 * v["mean"])
+        sp = ij.get("arm_spread_across_judges", {})
+        if sp:
+            # The arm-spread contrast is the decisive argument, not decoration:
+            # if these two drift apart from the JSON the argument silently dies.
+            want("S14 repeated-arm spread", 100 * sp["repeated_spread"])
+            want("S14 control-arm spread", 100 * sp["control_spread"])
+        vd = ij.get("verdict", {})
+        if vd:
+            want("S14 asymmetry A", vd["A"], 2)
+
     if missing:
         print(f"  FAIL {len(missing)} supplement numbers are not in supp.tex:")
         for m in missing:

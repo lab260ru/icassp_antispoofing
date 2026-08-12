@@ -324,3 +324,30 @@ main paper is all macros and cannot hold a stale number; the supplement's tables
 are hand-typed and could. It fails on any result-JSON number missing from
 `supp.tex` — including numbers the supplement legitimately does not quote, which
 is a decision worth making on purpose rather than by omission.
+
+## The judge replication, and one inconsistency inside it
+
+`analysis/independent_judge.py` answers the objection five review rounds kept
+returning to. Three things to know before rerunning it.
+
+* **`verdict.A` is the raw asymmetry; the printed `confound_signature` flag uses
+  the trimmed one.** They agree for HuBERT (both clear the -1.0 threshold by a
+  wide margin) so nothing downstream is wrong, but the two are not the same
+  quantity and a future judge could land between them. The paper quotes the raw
+  HuBERT value and S14 reports both. Fix the script before adding a judge.
+* **Whisper's raw asymmetry of -53.7 is not a confound signature.** Its median
+  signed difference is exactly zero; 152 runaway-loop items -- one judge reading
+  441 repetitions where the other reads 5 -- set the mean. Both judges score
+  those wrong, so no exact-rate gap depends on them. Trimmed it is -0.27. This
+  was a post-hoc addition and the script's docstring says so.
+* **`panel()` drops "degenerate" partly on an empty transcript, which is
+  judge-dependent.** Comparing two judges on their own surviving rows therefore
+  confounds scorer with population. Every paired statistic runs on the
+  intersection; own-panel and paired-panel differ by 0.1 point and both are
+  reported. Do not compare judges on unequal populations.
+
+Superseded by this run: `noise_floor.py`'s "our judge reports the higher count
+in 11 of 13 disagreements" was n=60. At full n it is 65.9% over all k and 72.2%
+at k>=6 (61.2% and 67.1% on the repeated arm alone). Still net in our disfavour,
+i.e. our judge still under-states the deficit, but the 85% figure was optimistic
+and must not be quoted.

@@ -3145,7 +3145,7 @@ to this project, either. Whisper is, at the time of writing, one of the most
 widely used off-the-shelf recognisers for evaluating text-to-speech output
 in general, including in work on the AR-TTS stability and hallucination
 failures this paper's own introduction cites as
-motivation~\cite{wang2025eliminating,song2024ellav,xin2024ralle,du2024cosyvoice2}:
+motivation~\cite{song2024ellav,xin2024ralle,du2024cosyvoice2}:
 transcribe-then-score against a reference is standard practice for measuring
 word error rate, and wherever an evaluation extends that same pipeline to
 counting or flagging repetition-type failures specifically, it inherits the
@@ -3224,10 +3224,16 @@ is not noise-fragile.
 \paragraph{A second, architecturally independent recogniser.}
 HuBERT-large-ls960-ft shares the CTC output structure but not the pretraining
 objective (masked cluster prediction rather than contrastive), so its errors are
-not expected to correlate with the primary judge's. It agrees exactly on
-78.3\% of $60$ items, mean absolute difference 0.47 counts. Where the two
-disagree the asymmetry is informative: in $11$ of $13$ cases the primary judge
-reports the \emph{higher} count.
+not expected to correlate with the primary judge's. An early $n{=}60$
+stratified check reported 78.3\% exact agreement, mean absolute difference
+0.47 counts, and the primary judge higher in $11$ of $13$ disagreements.
+\textbf{That $n{=}60$ figure is superseded}: \S\ref{sec:s14-judges} re-runs the
+same comparison, plus two further recognisers, over the full panel population
+($n{=}1559$ paired items rather than $60$) and finds a narrower margin --- the
+primary judge is still the more generous of the two, but in roughly
+two-thirds rather than $11$ of $13$ ($85\%$) of disagreements. See
+\S\ref{sec:s14-judges} for the full numbers and for why the narrower margin
+does not change the paper's conclusion.
 
 \paragraph{The limitation this surfaced, which the synthetic audit could not.}
 Two of those disagreements expose a real mechanism. HuBERT rendered
@@ -4222,8 +4228,10 @@ repetitions, which is the unit the recogniser errs in:
 \toprule
 source of variation & mean $|\Delta|$ (repetitions) \\
 \midrule
-two recognisers on the same audio & 0.47 \\
-\quad restricted to $k\ge12$ & 0.79 \\
+two recognisers, $n{=}60$ stratified subsample (\textbf{superseded, see below}) & 0.47 \\
+two recognisers, full population, all $k$ ($n{=}1559$) & 0.43 \\
+\quad restricted to $k\ge6$ ($n{=}982$) & 0.61 \\
+\quad restricted to $k\ge12$ ($n{=}649$) & 0.86 \\
 30\,dB additive noise & 0.12 \\
 resampling round trip & 0.03 \\
 \midrule
@@ -4232,9 +4240,21 @@ resampling round trip & 0.03 \\
 \end{tabular}
 \end{center}
 
-The honest reading is that the per-item effect is thin: 1.9 times the
-disagreement between two independent CTC recognisers. We state it rather than
-leave it to be discovered, because it bounds what any single item can show.
+The first row is the $n{=}60$ estimate this section originally reported; it is
+kept in the table, struck through in spirit rather than deleted, because the
+project reports its own corrections rather than quietly editing them. The full
+population (\S\ref{sec:s14-judges}, \texttt{data/results/independent\_judge.json})
+gives a comparable floor at $k\ge6$ (0.61, against the $n{=}60$ estimate of 0.47
+and 0.79 at the more restrictive $k\ge12$ the original table used) and a lower
+one when every $k$ is pooled (0.43), because low-$k$ items --- where the two
+recognisers agree almost perfectly --- now dominate the mean.
+
+The honest reading, on the apples-to-apples comparison at $k\ge6$, is that the
+per-item effect is thin: $0.87/0.61 = 1.4$ times the disagreement between two
+independent CTC recognisers (2.0 times if the noise floor is pooled over every
+$k$ instead, which is the more flattering reading and not the one we lead
+with). We state it rather than leave it to be discovered, because it bounds
+what any single item can show.
 
 Two things keep the claim standing, and both are properties of the design rather
 than assurances.
@@ -4245,11 +4265,22 @@ exact in 94.3\% of generations. A recogniser with indiscriminate
 half-count noise could not produce that. The claim is a difference between two
 arms measured by one instrument, not an absolute count.
 
-\noindent\textbf{The disagreements run in our disfavour.} Where the two
-recognisers differ on the same audio, ours reports the \emph{higher} count in
-11 of 13 cases. Our judge is the more generous of the two, so
-it under-states the deficit rather than manufacturing it --- and a more accurate
-recogniser would, on this evidence, report a larger effect, not a smaller one.
+\noindent\textbf{The disagreements run in our disfavour, though by a narrower
+margin than first reported.} Where the two recognisers differ on the same
+audio, the $n{=}60$ check found ours reporting the \emph{higher} count in 11 of
+13 cases (85\%); \textbf{that figure is superseded}. Over the full paired
+population the primary judge reports the higher count in 65.9\% of all-$k$
+disagreements (114/173) and 72.2\% of $k\ge6$ disagreements (83/115), breaking
+out by arm as 61.2\% on the repeated arm (63/103) versus 72.9\% on the control
+arm (51/70) over all $k$, and 67.1\% repeated (53/79) versus 83.3\% control
+(30/36) at $k\ge6$. Every one of these is still on the side of the primary
+judge under-, not over-, stating the deficit, so the qualitative conclusion is
+unchanged: a more accurate recogniser would, on this evidence, report a larger
+effect, not a smaller one. But the margin is a majority, not a near-consensus,
+and \S\ref{sec:s14-judges} is where the full four-judge replication --- of
+which this two-judge, $n{=}60$ comparison was the pilot --- is reported in
+full, including the argument that actually carries the weight of the
+objection's rebuttal.
 
 What this does not do is rescue any individual item. An item missing one
 repetition is not, on its own, distinguishable from recogniser noise; the
@@ -4257,6 +4288,193 @@ evidence is in the rate across hundreds of generations and in the contrast with
 the control, not in any single transcript. The released audio sample (\S3) is
 there so that a reader can form their own view of a few of them.
 
+\subsection{Four independent judges, the full replication}
+\label{sec:s14-judges}
+
+Every round-9--13 objection to \S\ref{sec:s9} and the paragraphs above reduces
+to one sentence: the CTC judge was validated on spliced concatenative audio
+with known ground truth, never on real generated failure audio, and CTC's
+blank/repeat-collapse rule --- which merges adjacent identical tokens --- is
+exactly the confound this paper's headline dissociation would produce if the
+judge, not the model, were doing the counting. \texttt{analysis/independent\_judge.py}
+answers this directly: it re-scores the \emph{same} generated audio, run
+through the paper's own scoring code (\texttt{src/common/score\_counts.py})
+and population rules (\texttt{src/common/population.py}'s \texttt{panel()}),
+with three further recognisers, over the full panel population rather than
+the $n{=}60$ subsample above. Two are CTC judges of comparable capacity and
+word-error rate to the primary judge but different pretraining, so a
+disagreement cannot be waved off as ``the weak judge is noisy''; the third,
+Whisper large-v3, is autoregressive and has \emph{no} blank-collapse rule of
+any kind, so it addresses the confound mechanism as a class rather than one
+recogniser's idiosyncrasy. The verdict, threshold, and analysis were all
+pre-committed in the script's docstring before any number existed (reproduced
+there in full); it resolves to \textbf{primary judge confirmed}, retaining
+$94\%$ of the published gap under the decisive HuBERT arm. Full output:
+\texttt{data/results/independent\_judge.json}.
+
+\paragraph{The four judges and the checkpoint-level headline.} All four are
+pinned to a specific Hugging Face revision, recorded in
+\texttt{independent\_judge.json}'s \texttt{revisions} field rather than typed
+by hand:
+
+\begin{center}
+\small
+\begin{tabular}{llrrr}
+\toprule
+Judge & Revision & Control exact & Repeated exact & Gap \\
+\midrule
+wav2vec2-large-960h-lv60-self (primary) & \texttt{bdb1442} & 94.3\% & 18.2\% & $+76.7$ \\
+hubert-large-ls960-ft (decisive arm) & \texttt{ece5fab} & 89.5\% & 17.9\% & $+72.3$ \\
+wav2vec2-large-robust-ft-libri-960h & \texttt{5d28473} & 82.1\% & 17.5\% & $+65.1$ \\
+whisper-large-v3 (no blank-collapse) & \texttt{06f233f} & 92.9\% & 17.1\% & $+75.5$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent Every judge's exact-rate gap (control exact rate minus repeated
+exact rate, $k\ge6$, paired panel) is \textbf{positive in 6 of 6 checkpoints
+and 3 of 3 families} --- the same pre-registered criterion the paper's own
+headline number is judged by. All four gaps clear the pre-committed
+confirmation floor of $+50$ points by a wide margin; the weakest, robust-ft,
+still retains $85\%$ of the published gap.
+
+Own-panel and paired-panel (the intersection of rows both judges keep after
+\texttt{panel()}) figures differ by only about $0.1$ point (e.g.\ HuBERT: own
+panel $72.16\%$, paired panel $72.28\%$); both are computed and reported in
+the JSON because \texttt{panel()} drops ``degenerate'' output partly on an
+empty transcript, which is a property of \emph{which recogniser} scored the
+clip, not only of the audio. Comparing each judge on its own surviving rows
+would silently confound a change of scorer with a change of population, so
+every paired statistic below runs on the intersection, and the small own/paired
+gap is the price of that discipline, not evidence against it.
+
+\paragraph{XTTS-v2 is the one real casualty.} Broken out by checkpoint and
+family (paired panel, points):
+
+\begin{center}
+\small
+\begin{tabular}{lrrrr}
+\toprule
+Checkpoint & primary & HuBERT & robust-ft & Whisper \\
+\midrule
+Llasa-1B & 78.1 & 78.6 & 65.2 & 69.9 \\
+Llasa-3B & 77.2 & 74.8 & 65.9 & 76.0 \\
+Llasa-8B & 81.4 & 80.3 & 69.7 & 71.7 \\
+Qwen3-TTS-0.6B & 92.2 & 87.8 & 82.2 & 92.2 \\
+Qwen3-TTS-1.7B & 60.0 & 57.8 & 50.0 & 71.1 \\
+XTTS-v2 & 71.1 & \textbf{54.4} & 57.8 & 72.2 \\
+\midrule
+family: Llasa & 78.9 & 77.9 & 66.9 & 72.5 \\
+family: Qwen3-TTS & 76.1 & 72.8 & 66.1 & 81.7 \\
+family: XTTS & 71.1 & \textbf{54.4} & 57.8 & 72.2 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent XTTS-v2 under HuBERT is the least favourable single cell in the
+entire replication: $71.1\to54.4$, a \textbf{16.7-point drop}, and the only
+cell of 24 (4 judges $\times$ 6 checkpoints) that moves by more than 14
+points. It is reported here prominently rather than folded into a mean. Two
+things keep it from being read as the confound surfacing: it does not
+reproduce under the third CTC judge (robust-ft: $71.1\to57.8$, a smaller
+13.3-point move) or under Whisper (which has no blank-collapse rule at all
+and actually finds XTTS-v2 marginally \emph{more} consistent, $71.1\to72.2$),
+and even at $54.4\%$ the checkpoint's gap is still positive and the family
+mean stays positive across every judge. One checkpoint moving under one
+judge, in the direction a shared-encoder artifact rather than a shared
+counting mechanism would produce, is a limitation to state, not a result to
+explain away, and it is why the pre-committed criterion asks for 6/6 and 3/3
+rather than a mean.
+
+\paragraph{The arm-spread argument, which is the decisive one.} A judge-side
+collapse is a claim specifically about the \emph{repeated} arm: the scorer is
+supposed to be losing repetitions that are really there, while controls are
+comparatively unaffected. That makes a sharp, falsifiable prediction about
+what happens when the scorer is changed. Across all four judges the
+repeated-arm exact rate spans only $17.1$--$18.2\%$, a spread of $1.0$ point;
+the control-arm exact rate spans $82.1$--$94.3\%$, a spread of $12.2$
+points --- roughly twelve times as wide. Changing the scorer moves the arm the models
+get \emph{right} and leaves the arm they get \emph{wrong} essentially fixed.
+A judge-side collapse of repeated material predicts exactly the reverse: the
+repeated arm should be the one that moves as the scorer changes, and the
+control arm should be stable. The data show the opposite pattern from the one
+the objection requires, and this is true independent of any single
+checkpoint's behaviour, including XTTS-v2's above.
+
+\paragraph{The disagreement asymmetry, reported honestly.} The judges do not
+merely differ in overall accuracy; they disagree with each other $3.3\times$
+more on repeated items than on controls (mean $|\Delta|$ 0.65 vs 0.20
+repetitions, primary vs.\ HuBERT), and that disagreement grows with $k$ the
+same way the reported effect does: repeated-arm exact agreement between the
+two CTC judges runs $94$--$97\%$ for $k\in\{4,6,8\}$ ($97.4\%$, $94.6\%$,
+$94.0\%$ respectively) and falls to $64.4\%$ by $k{=}32$, the single
+worst-agreeing cell in the study. Taken alone this pattern has the effect's
+own periodicity and could be mistaken for its signature. It is not: the
+disagreement asymmetry statistic is $A = +0.27$ counts (mean signed
+primary-minus-independent difference on the repeated arm minus the same on
+the control arm, pooled over items; the per-checkpoint-averaged version is
+$+0.33$, bootstrap 95\% interval $[-0.09, +0.73]$), and the confound
+mechanism the objection describes requires $A\le-1.0$. The sign is positive,
+not merely non-negative, meaning that where the two CTC judges disagree at
+high $k$ the primary judge is, if anything, the more generous one there too.
+Disagreement growing with $k$ and the disagreement's \emph{sign} arguing
+against a collapse are both true at once, and reporting only one of them
+would be reporting the convenient half.
+
+\paragraph{The least favourable readings.} Three further cuts of the data,
+each chosen to give the objection its best chance rather than the paper's:
+scoring an item exact whenever \emph{either} judge certifies it (the
+strongest version of ``both judges miss different repetitions'') retains
+$+76.2$ points; restoring template t2, which is dropped from the panel
+because the primary judge cannot render its vocabulary and whose exclusion
+was accordingly derived from the primary judge's own blind spot, gives the
+independent judge's gap as $+59.4$ (primary's own template-restored gap is
+$+63.3$, reported alongside per house style); and the single weakest of the
+four judges, wav2vec2-large-robust-ft-libri-960h, still reports $+65.1$. All
+three clear the pre-committed confirmation floor of $+50$. (The intersection
+rule --- exact only if \emph{both} judges agree --- gives $+72.7$; it
+brackets the union figure from the other side but is not the one quoted,
+since it is not the least favourable reading.)
+
+\paragraph{Two traps, recorded rather than discovered by a reviewer.} First:
+\texttt{data/results/behavioural\_ctc.csv} (the primary judge's transcripts)
+was generated at 08:19:49 on the day it was last regenerated, and the commit
+that fixed \texttt{count\_units} to \emph{skip} an undeliverable unit rather
+than stop scoring at it landed 22 minutes later, at 08:41:33. Re-scoring all
+5400 rows with the current, fixed code changes zero rows --- so there is no
+drift in any number reported from that file --- but this was ordering luck,
+not a guarantee, and the script now calls \texttt{check\_count\_units\_skips()}
+before reporting anything so the behaviour is asserted rather than assumed.
+Second, and added \emph{after} the first run of the script rather than
+pre-committed, which its docstring says explicitly: the Whisper arm's raw
+signed asymmetry is $-53.7$, which by the pre-committed rule alone would read
+as a screaming confound signature. It is not one. Its median signed
+difference is exactly $0$, and the mean is set by 152 runaway-loop items
+overall (147 of the 745 repeated-arm items) where the two judges' transcripts
+diverge wildly on a looping generation (one judge reading 441 repetitions on
+an item where the other reads 5); both
+judges score every one of those items wrong, so no exact-rate gap depends on
+them, and the trimmed asymmetry (excluding differences above 10 counts) is
+$-0.27$ --- above the $-1.0$ artifact threshold, unlike the raw figure. The
+pre-committed criterion is evaluated on the trimmed figure for exactly this
+reason, and the raw figure is reported alongside it rather than silently
+dropped, because the pre-registered rule says the raw one governs whenever
+raw and trimmed disagree on which side of the threshold they fall; on the
+Whisper arm they do disagree (raw trips it, trimmed does not), but on the
+decisive HuBERT arm both raw ($+0.27$) and trimmed ($-0.03$) agree that no
+confound signature is present, so nothing about the verdict turns on which
+figure is used.
+
+\paragraph{Verdict.} Gate, thresholds, and criteria are those in
+\texttt{analysis/independent\_judge.py}'s docstring, fixed before any
+independent-judge number existed: confirm at $G\ge+50$ points positive in
+6/6 checkpoints and 3/3 families with $A>-1.0$; flag a judge-side artifact at
+$G<+40$, fewer than 5/6 positive checkpoints, or $A\le-1.0$. On the decisive
+HuBERT arm, $G=+72.3$, positive in 6/6 checkpoints and all 3 families,
+$A=+0.27$: \textbf{primary judge confirmed}, retaining $94\%$ of the
+published $+76.7$-point gap. Quoted at the single least favourable judge
+available (robust-ft), the gap is still $+65.1$ points --- the number to
+report if only one may be quoted.
 
 \section{Is the deficit the decoding-time repetition penalty?}
 \label{sec:s15}
