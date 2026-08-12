@@ -217,10 +217,10 @@ effective rank against $k$.
 Lean development, stimuli, code, per-item tables and both transcript sets are on
 branch \texttt{research/ar-tts-counting-collapse} of
 \url{https://github.com/lab260ru/icassp_antispoofing} (name predates this study).
-\texttt{build.sh} regenerates every number here, and a stratified
-\SampleN{}-clip audio sample spanning every model, $k$ band and outcome ships
-alongside, each clip paired with its transcript and scoring decision so a
-judgement can be checked by ear. Full audio and activations regenerate from the
+\texttt{build.sh} regenerates every number here from pinned revisions (S19), and
+a stratified
+\SampleN{}-clip sample spanning every model, $k$ band and outcome ships with each
+clip's transcript and scoring decision, so a judgement can be checked by ear. Full audio and activations regenerate from the
 released seeds. Sampling uses shipped defaults
 (XTTS-v2 $T{=}0.75$/$0.85$/$50$/penalty $5.0$; Llasa $T{=}0.8$, top-$p$ $1.0$;
 Qwen3-TTS $T{=}0.9$/$1.0$/$50$/$1.05$), making Qwen3-TTS the \emph{most}

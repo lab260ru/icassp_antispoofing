@@ -1,0 +1,12 @@
+{
+  "HKUSTAudio/Llasa-1B": "cef8ce6a6eea3b593c5b28868d2391ec15eb9058",
+  "HKUSTAudio/Llasa-3B": "740b08c956fdde4a5a33f2caffbf004ff76e2748",
+  "HKUSTAudio/Llasa-8B": "2a8339e387348a5cad5160b978a6f364fa06ad74",
+  "HKUSTAudio/xcodec2": "e412427ed30f0cf9d5e3c95562113deb10a32d03",
+  "Qwen/Qwen3-TTS-12Hz-0.6B-Base": "5d83992436eae1d760afd27aff78a71d676296fc",
+  "Qwen/Qwen3-TTS-12Hz-1.7B-Base": "fd4b254389122332181a7c3db7f27e918eec64e3",
+  "SWivid/F5-TTS": "84e5a410d9cead4de2f847e7c9369a6440bdfaca",
+  "coqui/XTTS-v2": "6c2b0d75eae4b7047358e3b6bd9325f857d43f77",
+  "facebook/mms-tts-eng": "c71de0fe7204c83f1c10820a7d696d0b450048ba",
+  "facebook/wav2vec2-large-960h-lv60-self": "bdb144224e9bb4a242a52f223186f120f6589a6b"
+}

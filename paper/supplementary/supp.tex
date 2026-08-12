@@ -3971,6 +3971,39 @@ number; zero is the harshest reading available and the only one that cannot be
 accused of flattering the repeated side.
 
 
+\section{Exact model revisions}
+
+Checkpoint names alone do not pin a model: repositories are updated in place, and
+a reader who downloads \texttt{coqui/XTTS-v2} next year may not get the weights
+these numbers came from. These are the commit hashes actually resolved by the
+runs, read back from the download cache rather than typed, and they cover the
+judge and the vocoder as well as the synthesisers --- the judge decides every
+count in this paper, so a change to it changes every number.
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+repository & role & revision \\
+\midrule
+\texttt{HKUSTAudio/Llasa-1B} & panel & \texttt{cef8ce6a6eea} \\
+\texttt{HKUSTAudio/Llasa-3B} & panel & \texttt{740b08c956fd} \\
+\texttt{HKUSTAudio/Llasa-8B} & panel & \texttt{2a8339e38734} \\
+\texttt{Qwen/Qwen3-TTS-12Hz-0.6B-Base} & panel & \texttt{5d83992436ea} \\
+\texttt{Qwen/Qwen3-TTS-12Hz-1.7B-Base} & panel & \texttt{fd4b25438912} \\
+\texttt{coqui/XTTS-v2} & panel & \texttt{6c2b0d75eae4} \\
+\texttt{HKUSTAudio/xcodec2} & Llasa vocoder & \texttt{e412427ed30f} \\
+\texttt{facebook/mms-tts-eng} & VITS baseline & \texttt{c71de0fe7204} \\
+\texttt{SWivid/F5-TTS} & F5-TTS baseline & \texttt{84e5a410d9ce} \\
+\texttt{facebook/wav2vec2-large-960h-lv60-self} & CTC judge & \texttt{bdb144224e9b} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent Hashes are truncated to twelve characters here; the full values are in
+\texttt{data/results/model\_revisions.json}, regenerated from the cache rather
+than maintained by hand so that they cannot drift from what was run.
+
+
 \bibliographystyle{IEEEtran}
 \bibliography{../refs}
 
