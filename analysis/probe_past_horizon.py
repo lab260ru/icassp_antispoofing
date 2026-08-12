@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""The theorem's own prediction, tested where it applies --- on two checkpoints.
+"""The theorem's own prediction, tested where it applies, on every checkpoint we
+could run it on.
 
 Theorem 1(iv) forbids an $L$-Lipschitz readout from separating counts *past* the
 horizon. It says nothing below it. Our linear probe ran on the main ladder,
@@ -24,15 +25,16 @@ Two arms exist because either could have been the artifact:
                           from". The theorem says nothing about aperiodic
                           carriers, so the probe should succeed on them --- and
                           it does.
-  a second checkpoint     rules out "one model, one seed, twelve items". This is
+  more checkpoints        rules out "one model, one seed, twelve items". This is
                           the arm that did not come back the way we hoped.
 
-Llasa-1B loses the count past the horizon. Llasa-8B does not: its repeated-side
-probe beats the constant predictor by exactly the margin the control arm does.
-So the theorem's conclusion holds in one of the two checkpoints we could test it
-on, and the paper says one of two rather than quoting the checkpoint that
-worked. A prediction that survives in half the cases it was tested in is not
-support; it is an open question with one encouraging instance.
+The comparison is diagnostic, which is why the split matters rather than merely
+disappointing. The rival account has the count surviving in the states while only
+the output policy fails, so it predicts the probe *can* still read the count past
+the horizon; Theorem 1(iv) predicts it cannot. A checkpoint that loses the count
+is evidence for the theorem and against the rival, and one that keeps it is the
+reverse. Every count printed below is therefore a vote, and the script reports
+the tally rather than the checkpoints that voted the way we hoped.
 
 Usage:  python analysis/probe_past_horizon.py
 """
@@ -67,6 +69,7 @@ def main() -> None:
     ap.add_argument("--below", default="data/results/probe.json")
     ap.add_argument("--past", nargs="+",
                     default=["llasa1b=data/results/probe_past_horizon.json",
+                             "llasa3b=data/results/probe_past_horizon_3b.json",
                              "llasa8b=data/results/probe_past_horizon_8b.json"],
                     help="model=path pairs, one per checkpoint probed past N*")
     ap.add_argument("--past-control",
@@ -143,9 +146,10 @@ def main() -> None:
     print(f"\n{res['verdict']}.")
 
     if lost and kept:
-        print("\nThis is a failure to replicate, not a panel result. Quoting the\n"
-              "checkpoint that lost the count without the one that did not would\n"
-              "be cherry-picking; the paper reports one of two.")
+        print(f"\nThe checkpoints disagree, so this is not a panel result. "
+              f"Quoting the\n{len(lost)} that lost the count without the "
+              f"{len(kept)} that did not would be\ncherry-picking; the paper "
+              f"reports {len(lost)} of {len(past_keys)}.")
     if ctl_key and res.get("range_confound_ruled_out"):
         v = rows[ctl_key]
         print(f"\nOver the SAME k range the probe does recover the count from\n"

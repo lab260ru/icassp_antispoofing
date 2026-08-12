@@ -783,9 +783,15 @@ def main() -> None:
         kept = phj.get("kept_past_horizon") or []
         macros["PhNLost"] = str(len(lost))
         macros["PhNCk"] = str(phj.get("n_checkpoints", 0))
+        def _join(ms):
+            names = [LABEL.get(m, m) for m in ms]
+            return (names[0] if len(names) == 1
+                    else " and ".join([", ".join(names[:-1]), names[-1]]))
         if lost:
             m = lost[0]
-            macros["PhLostName"] = LABEL.get(m, m)
+            # With more than one checkpoint on a side the sentence must name them
+            # all; picking the first would quietly drop a result.
+            macros["PhLostName"] = _join(lost)
             macros["PhPastMae"] = fmt(ph[f"past:{m}"]["mae"], 2)
             macros["PhPastConst"] = fmt(ph[f"past:{m}"]["const_mae"], 2)
             macros["PhPastRTwo"] = fmt(ph[f"past:{m}"]["r2"], 2)
@@ -796,7 +802,7 @@ def main() -> None:
                 macros["PhBelowRTwo"] = fmt(ph[f"below:{m}"]["r2"], 2)
         if kept:
             m = kept[0]
-            macros["PhKeptName"] = LABEL.get(m, m)
+            macros["PhKeptName"] = _join(kept)
             macros["PhKeptMae"] = fmt(ph[f"past:{m}"]["mae"], 2)
             macros["PhKeptRTwo"] = fmt(ph[f"past:{m}"]["r2"], 2)
         # Control items over the identical k range. If the probe reads the count
