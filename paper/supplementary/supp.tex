@@ -2720,6 +2720,24 @@ duration matching a single occurrence) were concatenated $k\in\{2,4,8,16,32\}$
 times with a short ($0.25\,$s) silence between copies. Because the sequence
 is built by concatenation of a verified atom, the true occurrence count is
 exact by construction -- there is no annotation step to get wrong.
+
+That construction is also this audit's limitation, and it is worth stating
+plainly rather than leaving for a reader to notice. Concatenated audio is not
+the audio under study: it has clean boundaries and inserted silences where
+generated repeated speech has co-articulation, drifting prosody and copies that
+run together. A judge calibrated on the spliced version may be more accurate
+there than on the real thing, which would make the numbers here an optimistic
+bound on judge reliability rather than a measurement of it. Exact ground truth
+and realistic audio cannot both be had without human annotation, and we chose
+exactness.
+
+What covers the other side is S14's noise floor, which needs no ground truth: it
+measures how far two independent recognisers disagree on the \emph{generated}
+audio, and finds the deficit larger than that disagreement by a factor of
+$1.86$, with our judge reporting the \emph{higher} count in $11$ of $13$
+disagreements --- the direction that makes the deficit harder to see, not
+easier. Neither audit alone settles the judge; the pair bracket it, exact
+ground truth on unrealistic audio and a floor on realistic audio.
 Table~\ref{tab:asraudit-b} gives the mean counted/true ratio at every $k$,
 alongside the identical construction run with $k$ \emph{distinct} words from
 the same voice and carrier family instead of one word repeated (three cyclic
