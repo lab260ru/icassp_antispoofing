@@ -25,12 +25,12 @@ families, dotted line $y\!=\!x$. Both level off, the repeated far lower.
 \label{fig:main}
 \end{figure}
 
-\subsection{Confirmatory: the limit tracks periodicity, not length}
+\subsection{Pre-specified: the limit tracks periodicity, not length}
 
 Figure~\ref{fig:main}(a) is the paper's sharpest test. Each control carries its
 twin's carrier and word count, the $k$ copies of one word becoming non-adjacent
-distinct ones. Were the failure about length, attention span, exposure bias or a
-duration budget, the two curves would coincide. They do not. Below $k\!=\!6$
+distinct ones; were the failure about length, attention span, exposure bias or a
+duration budget the two curves would coincide. They do not. Below $k\!=\!6$
 every model is essentially exact; above it, repeated items are rendered with a
 median count error of \ErrRepCk{}\% per checkpoint against \ErrCtl{}\%
 $[\ErrCtlLo{},\ErrCtlHi{}]$ for controls ($n=\ErrCtlN{}$), at every $k$ to $32$
@@ -76,7 +76,7 @@ dissociation at \ApMidGap{} points against \ApCycGap{} for cycled controls over
 the same range ($n=\ApMidN{}$): the residual is worth \ApCost{} points, not the
 bulk of the gap.
 
-\subsection{Confirmatory: not the decoding rule, the judge, or our exclusions}
+\subsection{Pre-specified: not the decoding rule, judge, or exclusions}
 
 The families ship repetition penalties differing by an order of magnitude, and a
 penalty suppresses repeated tokens directly. Swept on \PenNArch{} architectures
@@ -92,9 +92,8 @@ removes \ExclCapRep{}\% of repeated generations against \ExclCapCtl{}\% of
 controls, working against the contrast.
 
 Nor is it the recogniser, the objection this design most has to answer: CTC
-blank-collapse merges adjacent identical words, depressing repeated counts and
-not control counts --- a judge-side artifact with the effect's own periodicity
-signature. Re-scoring the \emph{same} audio with
+blank-collapse merges adjacent identical words, depressing repeated but not
+control counts --- an artifact with the effect's own periodicity signature. Re-scoring the \emph{same} audio with
 \IndNJudges{} recognisers --- a second CTC model with different
 pretraining, a robust-finetuned one, and Whisper, whose autoregressive decoder
 has no blank-collapse mechanism at all --- leaves the gap at
@@ -126,10 +125,10 @@ $k\!=\!\DurSplit{}$ it lifts exact renderings \DurLoFree{}\% to
 \DurLoFixed{}\% ($n=\DurLoN{}$), at or above it the gain is \DurHiGain{}
 ($n=\DurHiN{}$). Handed the right length the model still cannot place
 thirty-two repetitions inside it (S13). CosyVoice~2 says the same from the other direction: it
-\emph{over}-produces (median $+\CosyMedErr{}$\% where the panel undershoots) at
-a \CosyCapHit{}\% cap-hit rate, making about the right amount of speech and
-still losing the count; its repetition-aware sampling rule does not prevent it.
-S20 sets out three rivals we cannot exclude.
+\emph{over}-produces (median $+\CosyMedErr{}$\%) at a \CosyCapHit{}\% cap-hit
+rate, making about the right amount of speech and still losing the count, and
+its repetition-aware sampling rule does not prevent that. S20 sets out three
+further rivals.
 
 \begin{table}[t]
 \centering
@@ -143,13 +142,12 @@ capacity gain as a fraction of the control's, at deep layers.}
 
 \subsection{Exploratory: past the ladder, the count levels off}
 
-Two analyses decided on after the results above, from which we claim little;
-S16 dates both. Within $k\le32$ the deficit is \emph{proportional}, not
+Both were decided on after the results above and we claim little from either;
+S16 dates every decision, the ladder's pre-specification included. Within $k\le32$ the deficit is \emph{proportional}, not
 saturating (RSS \ShapePropSSE{} against \ShapeSatSSE{}), so no counting horizon
 lies inside this ladder; extending to $k\!\le\!128$ lowers the fitted saturation
 scale \HzRatio{}-fold for repeated text, but form-dependently
 (\HzFormLo{}--\HzFormHi{}) and not unanimously (\HzRevNames{} inverts it).
-Repetition also slows state acquisition without halting it (capacity gain a
-median factor \CapRatio{} of the control's). Neither result distinguishes a
-counting horizon from any saturating process (Fig.~\ref{fig:main}(b,c); S8,
-S10, S17).
+Repetition also slows state acquisition without halting it, and neither result
+distinguishes a counting horizon from any saturating process
+(Fig.~\ref{fig:main}(b,c); S8, S10, S17).

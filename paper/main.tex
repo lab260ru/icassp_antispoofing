@@ -68,9 +68,9 @@ recogniser scores \CtcValPer{}. Nor is the failure peculiar to autoregressive
 decoding --- of two non-autoregressive baselines one is immune, one is not.
 A Lean-4-verified bound says that if the per-repetition state map contracts, no
 Lipschitz readout can separate counts past a computable horizon. We measure that
-premise with a validated estimator and reject it: $q=\JacQRep{}$, expansive on
-repeated and control text alike, so it never described this decoder. The
-mechanism is refuted; the phenomenon is not.
+premise on one checkpoint with a validated estimator and reject it there:
+$q=\JacQRep{}$, expansive on repeated and control text alike, so it never
+described that decoder at all.
 \end{abstract}
 
 \begin{keywords}
@@ -184,7 +184,7 @@ larger checkpoint's null is not an artifact of conservative decoding.
 \label{sec:theory}
 
 The mechanism that motivated this study can be stated exactly, and we can now
-report that it is false for these decoders. Attention over $k$ repeated spans
+report that it is false for the one decoder we could measure it on. Attention over $k$ repeated spans
 whose logits differ by at most $\delta$ gives each weight in
 $[e^{-\delta}/k,e^{\delta}/k]$, so the profile flattens and the decoder meets
 the same conditioning at every \emph{repetition boundary}; the map $F$ between
@@ -209,22 +209,21 @@ and sub-stack measured. The \emph{control} arm is expansive too, so this
 is not something periodicity breaks: the premise never described this decoder,
 repeated text or not. Teacher-forcing removes the token channel, so this is a
 \emph{lower} bound on the true Lipschitz constant, which makes $q\gg1$ decisive
-rather than marginal; for the theorem to place $N^\ast$ where counts actually
-saturate it would need $q\approx\JacQNeeded{}$.
+rather than marginal.
 
 The sign is wrong as well as the magnitude: repetition makes the map \emph{more}
-expansive than its matched control, not less (paired $p=\JacQPairedP{}$,
-repeated lower in \JacQNRepLower{} of \JacQN{} pairs). So does the dilution
-lemma's dose-response --- within a $(\text{model},k)$ cell flatter attention
-goes with \emph{better} counting ($r=\DilR{}$ $[\DilRLo{},\DilRHi{}]$; S12).
-And one objection is structural: in a causal transformer a same-depth
+expansive than its matched control (paired $p=\JacQPairedP{}$, repeated lower in
+\JacQNRepLower{} of \JacQN{} pairs), as does the dilution lemma's dose-response
+--- within a $(\text{model},k)$ cell flatter attention goes with \emph{better}
+counting ($r=\DilR{}$ $[\DilRLo{},\DilRHi{}]$; S12).
+One objection is also structural: in a causal transformer a same-depth
 single-vector state map is exactly zero, information reaching a later position
 only by rising through depth, so the theorem's $s_m$ has no single-layer
-realisation and only a whole-stack formulation is well posed (S5).
+realisation (S5).
 
 We keep the bound because it motivated the manipulation, and because a verified
 conditional whose antecedent is measured and rejected is a cleaner object than
-an untested one. It explains nothing in Section~\ref{sec:results}.
+an untested one --- but it explains nothing in Section~\ref{sec:results}.
 
 \section{Discussion}
 \label{sec:discussion}
