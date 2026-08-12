@@ -23,6 +23,9 @@ fi
 note "Every reported number is generated, not typed"
 if python3 scripts/check_numbers.py; then :; else bad "check_numbers.py failed"; fi
 
+note "Supplement tables have not gone stale against their result JSONs"
+python3 scripts/check_supp_tables.py || FAIL=1
+
 note "Main paper builds and fits ICASSP's 4+1 pages"
 ( cd paper && bash build.sh >/tmp/build_main.$$ 2>&1 )
 PAGES=$(python3 -c "import pypdf;print(len(pypdf.PdfReader('paper/build/main.pdf').pages))" 2>/dev/null || echo "?")

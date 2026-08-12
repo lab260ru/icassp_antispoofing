@@ -3476,6 +3476,8 @@ result. It keeps the count:
 \toprule
 checkpoint & arm & probe MAE & constant MAE & $R^2$ \\
 \midrule
+Llasa-1B & repeated $k=2\ldots32$   & 0.63 & 1.12 & +0.62 \\
+Llasa-8B & repeated $k=2\ldots32$   & 0.75 & 1.12 & +0.52 \\
 Llasa-1B & repeated $k=48\ldots128$ & 0.50 & 0.50 & -0.02 \\
 Llasa-8B & repeated $k=48\ldots128$ & 0.43 & 0.50 & +0.19 \\
 Llasa-1B & control $k=48\ldots128$  & 0.43 & 0.50 & +0.26 \\
@@ -3483,10 +3485,11 @@ Llasa-1B & control $k=48\ldots128$  & 0.43 & 0.50 & +0.26 \\
 \end{tabular}
 \end{center}
 
-\noindent Llasa-8B's repeated-side probe beats the constant predictor by 0.86 of
-its MAE --- which is, to two decimals, exactly the margin the \emph{control} arm
-achieves. On that checkpoint, periodic conditioning past the horizon does nothing
-to the probe at all.
+\noindent Both checkpoints decode the count below the horizon, and only Llasa-1B
+loses it past. Llasa-8B's repeated-side probe beats the constant predictor by
+0.86 of its MAE --- which is, to two decimals, exactly the margin the
+\emph{control} arm achieves. On that checkpoint, periodic conditioning past the
+horizon does nothing to the probe at all.
 
 So the theorem's conclusion holds in one of the two checkpoints we could test it
 on. We report it that way rather than quoting Llasa-1B and calling the 8B run
