@@ -38,7 +38,9 @@ because the obvious autoregressive judge is itself biased against repetition,
 models render repeated text with a median count error of \ErrRep{}\% at $k\ge6$
 and are exact in \ExactRep{}\% of generations, against \ExactCtl{}\% for
 length-matched \emph{distinct}-word controls: the limit tracks periodicity, not
-length, in every checkpoint and every family. Up to $k=32$ the count stays
+length, in every checkpoint and every family, and vanishes in a
+non-autoregressive synthesiser run on the same ladder. Up to $k=32$ the count
+stays
 proportional rather than saturating, so no horizon is visible there; a post-hoc
 extension to $k=128$ on \HzNModels{} of them finds one, repetition lowering the
 fitted saturation scale \HzRatio{}-fold --- though not in the one checkpoint that

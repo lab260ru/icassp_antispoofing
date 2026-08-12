@@ -248,3 +248,76 @@ and the paper says so. Do not present either q-hat as validated.
   the original audit found: at k>=24 it emits 10.7-12.3 words/sec, which is not
   physically speech. It hallucinates fluent text over garbled audio. The decision
   to drop it is better supported than when it was made.
+
+## 2026-08-12 (later) — the non-autoregressive baseline, and two review rounds
+
+### The result that most strengthens the paper
+
+Reviewers kept asking the obvious question the title invites: the paper claims
+something about *autoregressive* TTS but had never run a decoder that was not.
+`src/models/vits_gen.py` runs VITS (`facebook/mms-tts-eng`) on the same ladder --
+text encoder, duration predictor, flow vocoder, one shot, no recurrence.
+
+    exact-rate, repeated vs its own length-matched control, k>=6
+    llasa1b 13.3/91.5 (+78.1)   qwen06b  7.8/100.0 (+92.2)
+    llasa3b 16.9/94.1 (+77.2)   qwen17b 38.9/ 98.9 (+60.0)
+    llasa8b 11.8/93.2 (+81.4)   xtts2   16.7/ 87.8 (+71.1)
+    VITS    65.6/58.9 ( -6.7)   <- no dissociation at all
+
+**Two things follow, and the second was a bonus.** The deficit is not a property
+of long repeated *text*. And it clears the judge: reviewers twice worried that
+CTC blank-collapse manufactures the gap by merging adjacent identical words. If
+it did, VITS's repeated items would have been depressed too -- same judge, same
+stimuli, same words. They were not. Auditing the recogniser in isolation could
+never have shown this, because the audio it gets audited on is not the audio in
+question.
+
+If you extend this work: **run the non-AR baseline before trusting any judge
+result on repeated speech.** It is cheap (VITS renders the whole ladder in
+minutes on one GPU) and it is the only control that tests the judge on the actual
+distribution.
+
+### The extension ladder, finished
+
+Four checkpoints, two families, 21-26 items per cell (was 2 checkpoints, 3-6).
+The repeated median is FLAT at 25-30 from k=48 to 128 while controls climb 46 to
+66. The "declines rather than plateaus" caveat from the morning was a small-n
+artifact and is gone. Pooled ratio 3.5 (was 4.1).
+
+**Not unanimous, and the exception is the useful part.** Disjoint intervals for
+Llasa-1B and Llasa-8B; Qwen3-TTS-1.7B shows *no* repeated-side saturation within
+k<=128 and inverts the ratio -- and it is the same checkpoint with no deficit at
+k<=32. A conditional theorem behaving conditionally.
+
+### The title changed, because it was overclaiming
+
+Three of four round-6 reviewers said the same thing: "A Formally Verified
+Attractor Theory of Repetition Hallucination" asserts a mechanism the paper
+concedes it never established. It is now **"Counting Collapse in Autoregressive
+Text-to-Speech: A Lean-Verified Bound and a Measured Counting Horizon"**, and the
+abstract states both failures itself. Do not quietly restore the old framing.
+
+### Statistics, done properly and honestly
+
+* `analysis/checkpoint_level.py` -- checkpoint, not generation, as the unit.
+  Exact-rate gap +76.7 pts [68.4, 84.4] in 6/6; capacity +24.7 in 6/6;
+  median-error 5/6, p=0.062, which misses even the exact n=6 floor. Say so.
+* `analysis/family_level.py` -- checkpoints cluster in 3 families (Llasa 3,
+  Qwen 2), so the effective replicate count is 3. Exact-rate gap 75.4 pts,
+  range [71.1, 78.9], positive in all three. Quote this weaker claim.
+* **No six-checkpoint panel can survive multiplicity correction on this test.**
+  The exact signed-rank floor at n=6 is 0.031, so the smallest Holm-adjusted p
+  across three contrasts is 0.094. The paper rests on effect sizes, not
+  thresholds. Enlarging the panel is the only fix.
+
+### Two more things that went against us
+
+* `analysis/dilution_sufficiency.py` -- Lemma 1's dose-response prediction is
+  REVERSED. Within a (model,k) cell, flatter attention counts *better*
+  (r=+0.59 [0.35,0.75], all three flatness measures, controls at zero). Recorded
+  as disconfirming. Dilution is not what selects which generations fail.
+* `analysis/aperiodic_controls.py` -- reviewers caught that main-ladder controls
+  cycle an 8-word pool, so above k=8 the contrast is period-1 vs period-8, not
+  vs aperiodic. Checked the two genuinely aperiodic regions: k<=8 (54.2% vs
+  77.9% exact) and the extension ladder's never-cycled 146-word pool (median
+  error -0.62 vs -0.12). It survives both.

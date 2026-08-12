@@ -72,6 +72,14 @@ findings_headline:
     its own linearity control failing. Assumption 2 (contraction) is therefore
     UNESTABLISHED after two independent attempts. Say so; do not present either
     q-hat as validated.
+  nonar_baseline: >
+    VITS (facebook/mms-tts-eng), src/models/vits_gen.py, run on the same ladder
+    shows NO dissociation: 65.6% of repeated items exact against 58.9% of
+    controls, gap -6.7 pts where the AR panel's is +76.1, and all 6 AR
+    checkpoints separate from it. It degrades with length on both families
+    alike. This rules out "long repeated text is just hard" AND clears the CTC
+    judge -- blank-collapse would have depressed VITS's repeated items too.
+    Run this before trusting any judge result on repeated speech.
   judge: >
     CTC (wav2vec2-large-960h-lv60-self), never Whisper. On real generated audio
     Whisper emits 10.7-12.3 words/sec at k>=24, which is not physically speech.
@@ -101,8 +109,8 @@ active_background_jobs:
 
 # --------------------------------------------------------------- what is next
 next_actions:
-  - "when qwen ext lands: rerun analysis/horizon_ext.py, make_numbers.py, build.sh"
-  - "the horizon ratio is currently 2 checkpoints; qwen makes it 4 and covers a second family"
+  - "extension ladder COMPLETE: 4 checkpoints, 2 families, 21-26 items/cell"
+  - "title was rescoped after round 6; do not restore the attractor-theory framing"
   - "paper is at 5 pages (4 content + 1 refs) and must stay there -- check every build"
   - "final: check_lean.sh, build both PDFs, tag v1.0-submission"
 

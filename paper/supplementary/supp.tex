@@ -3382,6 +3382,76 @@ profile as a \emph{consequence}, and a correlational design cannot separate that
 from a cause. Only an intervention on the attention profile could, and that is
 the experiment we would run next.
 
+
+\section{The non-autoregressive baseline}
+\label{sec:s13}
+
+The paper's scope claim is about autoregressive decoders, and round-6 reviewers
+observed that we had never run one that was not. VITS
+(\texttt{facebook/mms-tts-eng}) supplies the contrast: a text encoder, a duration
+predictor and a normalising-flow decoder that emits the waveform in a single
+pass. There is no generation-step recurrence, so there is no per-repetition state
+map for Assumption~1 to describe and Theorem~1 makes no prediction about it. If
+the deficit appeared here too, the theorem would be the wrong account of it.
+
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+model & repeated exact (\%) & control exact (\%) & gap (pts) \\
+\midrule
+Llasa-1B & 13.3 & 91.5 & +78.1 \\
+Llasa-3B & 16.9 & 94.1 & +77.2 \\
+Llasa-8B & 11.8 & 93.2 & +81.4 \\
+Qwen3-TTS-0.6B & 7.8 & 100.0 & +92.2 \\
+Qwen3-TTS-1.7B & 38.9 & 98.9 & +60.0 \\
+XTTS-v2 & 16.7 & 87.8 & +71.1 \\
+\midrule
+AR pooled & 18.2 & 94.3 & +76.1 \\
+VITS (non-AR) & 65.6 & 58.9 & -6.7 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+VITS shows no periodicity-specific deficit: its repeated items come back
+\emph{more} often exact than its controls, a gap of -6.7 points against the
+panel's +76.1, and every one of the 6 AR checkpoints separates from it.
+It is not that VITS is immune to the stimuli --- it degrades with $k$ on both
+families alike:
+
+\begin{center}
+\begin{tabular}{rrr}
+\toprule
+$k$ & repeated exact (\%) & control exact (\%) \\
+\midrule
+6 & 73.3 & 86.7 \\
+8 & 80.0 & 46.7 \\
+12 & 73.3 & 60.0 \\
+16 & 80.0 & 66.7 \\
+24 & 40.0 & 46.7 \\
+32 & 46.7 & 46.7 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent\textbf{What this rules out, and what it does not.} It rules out the
+reading on which the deficit is a property of long repeated \emph{text} --- the
+same strings, through a decoder without recurrence, do not produce it. It does
+not identify \emph{which} feature of autoregressive decoding is responsible;
+VITS differs from the panel in more than its recurrence, having a duration
+predictor whose output length is a sum of per-phoneme durations rather than a
+learned stop decision, and being a smaller and older model. Absolute accuracy is
+therefore not comparable between them and we do not compare it. The comparison is
+the within-model dissociation, which is scale-free.
+
+\noindent\textbf{It is also the control the judge most needed.} Two rounds of
+reviewers noted that CTC blank-collapse depresses counts on same-word runs
+specifically (\S\ref{sec:s9-field}), which is the direction of our own effect,
+and asked whether the recogniser manufactures the gap. Auditing the recogniser
+against reference audio cannot settle this, because the audio it is audited on is
+not the audio in question. The non-AR baseline can: it renders the same repeated
+words, from the same stimulus file, transcribed by the same recogniser, and shows
+no gap. Whatever blank-collapse costs us, it does not create the dissociation.
+
 \bibliographystyle{IEEEtran}
 \bibliography{../refs}
 
