@@ -593,6 +593,11 @@ def main() -> None:
                                  else f"{n_below} of {len(pr)}")
 
 
+    # ---- the released audio sample ---------------------------------------
+    smp = Path("data/audio_sample/manifest.csv")
+    if smp.exists():
+        macros["SampleN"] = str(len(pd.read_csv(smp)))
+
     # ---- what the probe does and does not discriminate --------------------
     pd_path = Path("data/results/probe_discrimination.json")
     if pd_path.exists():

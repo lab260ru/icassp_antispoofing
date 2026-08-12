@@ -1,0 +1,166 @@
+clip,model,item_id,seed,family,k,outcome,counted,requested,rel_error,duration_s,text,transcript
+clips/llasa1b__ct_blue_t4_k02__s0.opus,llasa1b,ct_blue_t4_k02,0,control_word,2,degenerate,0,2,-1.0,40.96,,nan
+clips/llasa1b__ct_blue_t4_k02__s1.opus,llasa1b,ct_blue_t4_k02,1,control_word,2,empty,0,2,-1.0,40.96,,nan
+clips/llasa1b__ct_blue_t4_k02__s2.opus,llasa1b,ct_blue_t4_k02,2,control_word,2,loop,0,2,-1.0,5.54,,THE NIGHT WAS GRAY BY THE QIES FELL AWAY
+clips/llasa1b__ct_blue_t4_k03__s0.opus,llasa1b,ct_blue_t4_k03,0,control_word,3,correct,3,3,0.0,3.8,,THE LIGHT WAS GREEN BRIGHT PALE THE FAR TA LIT
+clips/llasa1b__ct_blue_t4_k03__s2.opus,llasa1b,ct_blue_t4_k03,2,control_word,3,undercount,2,3,-0.3333,4.84,,THE LIGHT WAS GREEN BAK PALE BEFORE THE STOHE AT
+clips/llasa1b__ct_blue_t4_k06__s0.opus,llasa1b,ct_blue_t4_k06,0,control_word,6,loop,0,6,-1.0,40.96,,THEM WA WA A HA H HA HA HA H HA HAHAH HA HA HA
+clips/llasa1b__ct_blue_t4_k06__s2.opus,llasa1b,ct_blue_t4_k06,2,control_word,6,correct,6,6,0.0,6.98,,THE LIGHT WAS GREEN BRIGHT PALE DIM WARM COLD BEFORE THE STORM ARRIVED
+clips/llasa1b__ct_blue_t4_k08__s1.opus,llasa1b,ct_blue_t4_k08,1,control_word,8,empty,0,8,-1.0,37.04,,nan
+clips/llasa1b__ct_blue_t4_k16__s0.opus,llasa1b,ct_blue_t4_k16,0,control_word,16,truncation,16,16,0.0,13.1,,THE LIGHT WAS GREEN BRIGHT PALE DIM WARM COLD SHARP SOFT GREEN BRIGHT PALE DIM WARM COLD SHARP SOFT BEFORE THE STORM ARRIVED
+clips/llasa1b__ct_blue_t4_k16__s1.opus,llasa1b,ct_blue_t4_k16,1,control_word,16,loop,8,16,-0.5,40.96,,THE LIGHT WAS GREEN BRIGHT PALE DIM WARM COLD SHARP SOFT GREAN
+clips/llasa1b__ct_blue_t4_k16__s2.opus,llasa1b,ct_blue_t4_k16,2,control_word,16,correct,16,16,0.0,15.14,,THE LIGHT WAS GREEN BRIGHT PALE DIM WARM COLD SHARP SOFT GREEN BRIGHT PALE DIM WARM COLD SHARP SOFT BEFORE THE STORM ARRIVED
+clips/llasa1b__ct_far_t3_k06__s0.opus,llasa1b,ct_far_t3_k06,0,control_word,6,truncation,6,6,0.0,8.7,,HE WALKED DEEP FAST LONG WIDE HIGH LOW INTO THE FOREST BEFORE TURNING BACK
+clips/llasa1b__ct_no_t2_k08__s1.opus,llasa1b,ct_no_t2_k08,1,control_word,8,undercount,2,8,-0.75,9.02,,SHE SENT YES AN ANY SHAD FINER CA WILE RIGHT  TO THE OTHER AND THEN LEFT THE ROOM
+clips/llasa1b__ct_no_t2_k08__s2.opus,llasa1b,ct_no_t2_k08,2,control_word,8,degenerate,0,8,-1.0,40.96,,nan
+clips/llasa1b__ct_no_t2_k16__s0.opus,llasa1b,ct_no_t2_k16,0,control_word,16,undercount,10,16,-0.375,18.24,,SHE SAID YES MAYBE SURE FINE O K WELL RIGHT HUM YES MAYBE SURE FINE O K
+clips/llasa1b__ct_very_t1_k24__s1.opus,llasa1b,ct_very_t1_k24,1,control_word,24,empty,0,24,-1.0,40.96,,nan
+clips/llasa1b__wr_blue_t4_k01__s0.opus,llasa1b,wr_blue_t4_k01,0,word_rep,1,truncation,0,1,-1.0,3.08,,THE NIGHT WAS BARE BEFORE THE STONE
+clips/llasa1b__wr_blue_t4_k01__s1.opus,llasa1b,wr_blue_t4_k01,1,word_rep,1,undercount,0,1,-1.0,4.48,,THE LIGHTLE WORLD BEFORE THE SCORA
+clips/llasa1b__wr_blue_t4_k02__s1.opus,llasa1b,wr_blue_t4_k02,1,word_rep,2,loop,0,2,-1.0,40.96,,A
+clips/llasa1b__wr_blue_t4_k03__s1.opus,llasa1b,wr_blue_t4_k03,1,word_rep,3,empty,0,3,-1.0,40.96,,nan
+clips/llasa1b__wr_blue_t4_k04__s2.opus,llasa1b,wr_blue_t4_k04,2,word_rep,4,degenerate,0,4,-1.0,9.64,,nan
+clips/llasa1b__wr_blue_t4_k06__s0.opus,llasa1b,wr_blue_t4_k06,0,word_rep,6,truncation,1,6,-0.8333,6.68,,THE LIGHT WAS BLUE EN TEN E EN BEFORE THE STAR
+clips/llasa1b__wr_blue_t4_k06__s1.opus,llasa1b,wr_blue_t4_k06,1,word_rep,6,loop,0,6,-1.0,40.96,,THE NIGHT WAS PON
+clips/llasa1b__wr_blue_t4_k06__s2.opus,llasa1b,wr_blue_t4_k06,2,word_rep,6,degenerate,0,6,-1.0,40.96,,nan
+clips/llasa1b__wr_blue_t4_k08__s0.opus,llasa1b,wr_blue_t4_k08,0,word_rep,8,undercount,0,8,-1.0,13.44,,THE RIGHT WAS GO ON O UN UNG UNG O  FY WAS FI
+clips/llasa1b__wr_blue_t4_k16__s0.opus,llasa1b,wr_blue_t4_k16,0,word_rep,16,overcount,29,16,0.8125,29.46,,THE LIGHT WAS BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BEFORE THE STORM ARRIVED
+clips/llasa1b__wr_blue_t4_k16__s1.opus,llasa1b,wr_blue_t4_k16,1,word_rep,16,undercount,0,16,-1.0,25.0,,LET IT BE E  A  A A   A  BEFORE THE STAR HO
+clips/llasa1b__wr_blue_t4_k16__s2.opus,llasa1b,wr_blue_t4_k16,2,word_rep,16,loop,7,16,-0.5625,40.96,,THE LIGHT WAS BLUE BLUE BLUE BLUE BLUE BLUE BLUE BE B BUE BU BU BU BU BU BU BU BU BU B BU BU BU BO B B B B B B BB B B B
+clips/llasa1b__wr_blue_t4_k24__s1.opus,llasa1b,wr_blue_t4_k24,1,word_rep,24,truncation,21,24,-0.125,10.66,,THE LIGHT WAS BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLU BEFORE THE STORM ARRIVED
+clips/llasa1b__wr_far_t3_k01__s0.opus,llasa1b,wr_far_t3_k01,0,word_rep,1,correct,1,1,0.0,3.56,,HE WALKED FAR INTO THE FOREST TEFOT TUNING ADACK
+clips/llasa1b__wr_far_t3_k06__s1.opus,llasa1b,wr_far_t3_k06,1,word_rep,6,empty,0,6,-1.0,23.36,,nan
+clips/llasa1b__wr_far_t3_k08__s2.opus,llasa1b,wr_far_t3_k08,2,word_rep,8,correct,8,8,0.0,12.94,,HE WALKED FAR FAR FAR FAR FAR FAR FAR FAR INTO THE FOREST BEFORE TURNING BACK
+clips/llasa1b__wr_far_t3_k24__s2.opus,llasa1b,wr_far_t3_k24,2,word_rep,24,correct,24,24,0.0,24.16,,HE WALKED FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR AR FAR FAR
+clips/llasa1b__wr_quick_t5_k08__s1.opus,llasa1b,wr_quick_t5_k08,1,word_rep,8,overcount,10,8,0.25,8.36,,THE RUNNER MOVED QUICK QUICK QUICK QUICK QUICK QUICK QUICK QUICK QUICK QUICK ALONG THE NARROW PATH
+clips/llasa1b__wr_really_t6_k16__s1.opus,llasa1b,wr_really_t6_k16,1,word_rep,16,degenerate,0,16,-1.0,40.96,,nan
+clips/llasa1b__wr_really_t6_k24__s1.opus,llasa1b,wr_really_t6_k24,1,word_rep,24,empty,0,24,-1.0,30.08,,nan
+clips/llasa3b__ct_blue_t4_k02__s0.opus,llasa3b,ct_blue_t4_k02,0,control_word,2,undercount,1,2,-0.5,3.48,,THE LIGT WAS GREEN RED AT A SPAN
+clips/llasa3b__ct_blue_t4_k02__s1.opus,llasa3b,ct_blue_t4_k02,1,control_word,2,loop,0,2,-1.0,6.24,,THE LIGHT WAS PLAING RIHT WITHOUT A STARI
+clips/llasa3b__ct_blue_t4_k03__s0.opus,llasa3b,ct_blue_t4_k03,0,control_word,3,correct,3,3,0.0,3.72,,THE LIGHT WAS GREEN BRIGHT PALE EN FRONT OF THE STONG T
+clips/llasa3b__ct_blue_t4_k03__s1.opus,llasa3b,ct_blue_t4_k03,1,control_word,3,empty,0,3,-1.0,40.96,,nan
+clips/llasa3b__ct_blue_t4_k06__s0.opus,llasa3b,ct_blue_t4_k06,0,control_word,6,empty,0,6,-1.0,40.96,,nan
+clips/llasa3b__ct_blue_t4_k06__s1.opus,llasa3b,ct_blue_t4_k06,1,control_word,6,undercount,0,6,-1.0,8.02,,THE GARD WAS AMUCH PIDIN ONE COT BEFORE THE STON OF
+clips/llasa3b__ct_blue_t4_k06__s2.opus,llasa3b,ct_blue_t4_k06,2,control_word,6,degenerate,0,6,-1.0,11.86,,nan
+clips/llasa3b__ct_blue_t4_k08__s0.opus,llasa3b,ct_blue_t4_k08,0,control_word,8,correct,8,8,0.0,8.28,,THE LIGHT WAS GREEN BRIGHT PALE DIM WARM COLD SHARP SOFT BEFORE THE STORM ARRIVED
+clips/llasa3b__ct_blue_t4_k12__s0.opus,llasa3b,ct_blue_t4_k12,0,control_word,12,truncation,12,12,0.0,9.5,,THE LIGHT WAS GREEN BRIGHT PALE DIM WARM COLD SHARP SOFT GREEN BRIGHT PALE DIM BEFORE THE STORM ARRIVED
+clips/llasa3b__ct_blue_t4_k16__s0.opus,llasa3b,ct_blue_t4_k16,0,control_word,16,correct,16,16,0.0,13.94,,THE LIGHT WAS GREEN BRIGHT PALE DIM WARM COLD SHARP SOFT GREEN BRIGHT PALE DIM WARM COLD SHARP SOFT BEFORE THE STORM ARRIVED
+clips/llasa3b__ct_blue_t4_k16__s1.opus,llasa3b,ct_blue_t4_k16,1,control_word,16,truncation,16,16,0.0,11.68,,THE LIGHT WAS GREEN BRIGHT PALE DIM WARM COLD SHARP SOFT GREEN BRIGHT PALE DIM WARM COLD SHARP SOFT BEFORE THE STORM ARRIVED
+clips/llasa3b__ct_far_t3_k03__s2.opus,llasa3b,ct_far_t3_k03,2,control_word,3,degenerate,0,3,-1.0,12.14,,nan
+clips/llasa3b__ct_no_t2_k04__s0.opus,llasa3b,ct_no_t2_k04,0,control_word,4,truncation,3,4,-0.25,5.54,,SHE SAID YES MAYBE SURE FIND TO THE OFFER AND THEN LEFT THE ROOM
+clips/llasa3b__ct_no_t2_k12__s1.opus,llasa3b,ct_no_t2_k12,1,control_word,12,loop,6,12,-0.5,40.96,,SHE SAID YES MAYBE SURE FINE O K WELL RIGHT
+clips/llasa3b__ct_no_t2_k16__s0.opus,llasa3b,ct_no_t2_k16,0,control_word,16,loop,6,16,-0.625,40.96,,SHE SAID YES MAYBE SURE FINE DO K WIL YES MAYBE SURE FINE O K WELL RIGHT TO THE OFFER AND THEN LEFT THE ROO
+clips/llasa3b__ct_really_t6_k12__s1.opus,llasa3b,ct_really_t6_k12,1,control_word,12,miscount,12,12,0.0,12.7,,THEY WERE TRULY QUITE VERY RATHER DEEPLY CLEARLY PLAINLY SURELY TRULY QUITE VERY RATHER TIRED AFTER THE LONG JOURNEY
+clips/llasa3b__ct_really_t6_k24__s1.opus,llasa3b,ct_really_t6_k24,1,control_word,24,miscount,24,24,0.0,21.48,,THEY WERE TRULY QUITE VERY RATHER DEEPLY CLEARLY PLAINLY SURELY TRULY QUITE VERY RATHER DEEPLY CLEARLY PLAINLY SURELY TRULY QUITE VERY RATHER DEEPLY CLEARLY PLAINLY SURELY TIRED AFTER THE LONG JOURNEY
+clips/llasa3b__ct_very_t1_k32__s2.opus,llasa3b,ct_very_t1_k32,2,control_word,32,degenerate,0,32,-1.0,40.96,,nan
+clips/llasa3b__wr_blue_t4_k01__s0.opus,llasa3b,wr_blue_t4_k01,0,word_rep,1,undercount,0,1,-1.0,2.68,,THE LIGHT WAS BLU
+clips/llasa3b__wr_blue_t4_k01__s1.opus,llasa3b,wr_blue_t4_k01,1,word_rep,1,correct,1,1,0.0,3.64,,THE LIGHT WAS BLUE BEFANSTAN ARIVED
+clips/llasa3b__wr_blue_t4_k02__s0.opus,llasa3b,wr_blue_t4_k02,0,word_rep,2,truncation,0,2,-1.0,4.0,,THE LIGHT WAS NEMAN M ANSTINAN
+clips/llasa3b__wr_blue_t4_k06__s0.opus,llasa3b,wr_blue_t4_k06,0,word_rep,6,truncation,1,6,-0.8333,7.28,,THE LIGHT WAS BLUE BLANK BLANK BLANK BLANK BLANK BEFORE THE STARLIGHT
+clips/llasa3b__wr_blue_t4_k06__s1.opus,llasa3b,wr_blue_t4_k06,1,word_rep,6,loop,0,6,-1.0,40.96,,THE WODWAS OEOOTHESTORIT
+clips/llasa3b__wr_blue_t4_k08__s1.opus,llasa3b,wr_blue_t4_k08,1,word_rep,8,undercount,0,8,-1.0,21.6,,THE LIGHT WAS TOO O O OOOO OO  O O  O O O O O O OO TO TO O O  O O
+clips/llasa3b__wr_blue_t4_k16__s0.opus,llasa3b,wr_blue_t4_k16,0,word_rep,16,empty,0,16,-1.0,40.96,,nan
+clips/llasa3b__wr_blue_t4_k16__s1.opus,llasa3b,wr_blue_t4_k16,1,word_rep,16,truncation,15,16,-0.0625,7.56,,THE LIGHT WAS BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BEFORE THE STORM ARRIVED
+clips/llasa3b__wr_blue_t4_k16__s2.opus,llasa3b,wr_blue_t4_k16,2,word_rep,16,loop,82,16,4.125,40.96,,THE LATE WAS BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLU BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLU BLUE BLUE BLUE BLUE BLUE BLUE BLU BLUE BLUE BLUE BLUE BLUE BLUE BLU BLU
+clips/llasa3b__wr_blue_t4_k24__s1.opus,llasa3b,wr_blue_t4_k24,1,word_rep,24,overcount,44,24,0.8333,26.66,,THE LIGHT WAS BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BEFORE THE STORM ARRIVED E DAY
+clips/llasa3b__wr_blue_t4_k32__s0.opus,llasa3b,wr_blue_t4_k32,0,word_rep,32,degenerate,0,32,-1.0,40.96,,nan
+clips/llasa3b__wr_far_t3_k01__s2.opus,llasa3b,wr_far_t3_k01,2,word_rep,1,degenerate,0,1,-1.0,40.96,,nan
+clips/llasa3b__wr_far_t3_k03__s2.opus,llasa3b,wr_far_t3_k03,2,word_rep,3,loop,0,3,-1.0,11.24,,THERI MA B BO
+clips/llasa3b__wr_far_t3_k06__s0.opus,llasa3b,wr_far_t3_k06,0,word_rep,6,correct,6,6,0.0,11.36,,HE WALKED FAR FAR FAR FAR FAR FAR INTO THE FOREST BEFORE TURNING BACK
+clips/llasa3b__wr_far_t3_k16__s2.opus,llasa3b,wr_far_t3_k16,2,word_rep,16,undercount,12,16,-0.25,19.24,,HE WALKED FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR INTO THE FOREST BEFORE TURNING BACK
+clips/llasa3b__wr_no_t2_k06__s0.opus,llasa3b,wr_no_t2_k06,0,word_rep,6,empty,0,6,-1.0,40.96,,nan
+clips/llasa3b__wr_no_t2_k08__s1.opus,llasa3b,wr_no_t2_k08,1,word_rep,8,overcount,15,8,0.875,10.62,,II SO NO NO NO NO NO NO NO NO NO NO NO NO NO NO NO
+clips/llasa3b__wr_really_t6_k04__s0.opus,llasa3b,wr_really_t6_k04,0,word_rep,4,empty,0,4,-1.0,40.96,,nan
+clips/llasa3b__wr_really_t6_k04__s2.opus,llasa3b,wr_really_t6_k04,2,word_rep,4,miscount,4,4,0.0,6.76,,THEY WERE REALLY REALLY REALLY REALLY TIRED AFTER THE LONG JOURNEY
+clips/llasa8b__ct_blue_t4_k02__s0.opus,llasa8b,ct_blue_t4_k02,0,control_word,2,undercount,0,2,-1.0,6.42,,AKES THING TOT IN POLA
+clips/llasa8b__ct_blue_t4_k03__s1.opus,llasa8b,ct_blue_t4_k03,1,control_word,3,truncation,1,3,-0.6667,4.68,,THE LAKE WAS GREEN THAT PAT BEFORE DEEPIN AT
+clips/llasa8b__ct_blue_t4_k06__s0.opus,llasa8b,ct_blue_t4_k06,0,control_word,6,truncation,3,6,-0.5,7.7,,THE LIGHT WAS GREEN BRIGHT PALE DOWN WON PALLED BEFORE THE STONG LIVE
+clips/llasa8b__ct_blue_t4_k06__s1.opus,llasa8b,ct_blue_t4_k06,1,control_word,6,undercount,0,6,-1.0,9.36,,GLIP WAS ALL BA TEE TE WA CAUGT BECAUSE A STOR AD
+clips/llasa8b__ct_blue_t4_k08__s0.opus,llasa8b,ct_blue_t4_k08,0,control_word,8,correct,8,8,0.0,9.92,,THE LIGHT WAS GREEN BRIGHT PALE DIM WARM COLD SHARP SOFT BEFORE THE STORM ARRIVED
+clips/llasa8b__ct_blue_t4_k16__s0.opus,llasa8b,ct_blue_t4_k16,0,control_word,16,correct,16,16,0.0,20.92,,THE LIGHT WAS GREEN BRIGHT PALE DIM WARM COLD SHARP SOFT GREEN BRIGHT PALE DIM WARM COLD SHARP SOFT BEFORE THE STORM ARRIVED
+clips/llasa8b__ct_blue_t4_k16__s1.opus,llasa8b,ct_blue_t4_k16,1,control_word,16,truncation,16,16,0.0,15.88,,THE LIGHT WAS GREEN BRIGHT PALE DIM WARM COLD SHARP SOFT GREEN BRIGHT PALE DIM WARM COLD SHARP SOFT BEFORE THE STORM ARRIVED
+clips/llasa8b__ct_far_t3_k02__s0.opus,llasa8b,ct_far_t3_k02,0,control_word,2,correct,2,2,0.0,4.62,,HE WALKED DEEP FAST INTO THE FAIRS A FANTENI BACK
+clips/llasa8b__ct_far_t3_k03__s2.opus,llasa8b,ct_far_t3_k03,2,control_word,3,loop,0,3,-1.0,40.96,,E
+clips/llasa8b__ct_far_t3_k32__s1.opus,llasa8b,ct_far_t3_k32,1,control_word,32,empty,0,32,-1.0,40.96,,nan
+clips/llasa8b__ct_no_t2_k03__s2.opus,llasa8b,ct_no_t2_k03,2,control_word,3,degenerate,0,3,-1.0,40.96,,nan
+clips/llasa8b__ct_no_t2_k16__s0.opus,llasa8b,ct_no_t2_k16,0,control_word,16,undercount,12,16,-0.25,31.72,,SHE SAID YES MAYBE SURE FINE O K WELL RIGHT  YES MAYBE SURE FINE O K WELL RIGHT TO THE OFFER AND THEN LEFT THE ROOM
+clips/llasa8b__ct_no_t2_k32__s1.opus,llasa8b,ct_no_t2_k32,1,control_word,32,loop,7,32,-0.7812,40.96,,SHE SAID YES MAYBE SURE FINE O K WELL RIGT YES MAYBE
+clips/llasa8b__ct_quick_t5_k32__s0.opus,llasa8b,ct_quick_t5_k32,0,control_word,32,degenerate,0,32,-1.0,40.96,,nan
+clips/llasa8b__wr_blue_t4_k01__s0.opus,llasa8b,wr_blue_t4_k01,0,word_rep,1,truncation,0,1,-1.0,3.26,,THE LIGHT WAS BURNING BEFORE THE STARIVED
+clips/llasa8b__wr_blue_t4_k01__s1.opus,llasa8b,wr_blue_t4_k01,1,word_rep,1,undercount,0,1,-1.0,5.58,,HE LIGHT WAS BLOWN BEFORE THE STORM ARRIVED
+clips/llasa8b__wr_blue_t4_k01__s2.opus,llasa8b,wr_blue_t4_k01,2,word_rep,1,correct,1,1,0.0,4.68,,THE LIGHT WAS BLUE BEFORE THE STAR ARRIVED
+clips/llasa8b__wr_blue_t4_k06__s0.opus,llasa8b,wr_blue_t4_k06,0,word_rep,6,truncation,6,6,0.0,4.54,,THE LIGHT WAS BLUE BLUE BLUE BLUE BLUE BLUE BEFORE THE STORM ARRIVED
+clips/llasa8b__wr_blue_t4_k06__s1.opus,llasa8b,wr_blue_t4_k06,1,word_rep,6,empty,0,6,-1.0,40.96,,nan
+clips/llasa8b__wr_blue_t4_k08__s0.opus,llasa8b,wr_blue_t4_k08,0,word_rep,8,overcount,9,8,0.125,6.42,,THE LIGHT WAS BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BEFORE THE STORM ARRIVED
+clips/llasa8b__wr_blue_t4_k16__s0.opus,llasa8b,wr_blue_t4_k16,0,word_rep,16,truncation,1,16,-0.9375,10.24,,THE LIGHT WAS BLUE BLU BLU BLU BLU BLU BLU BLU BLU LU BLU BLU BLU BLU BLU BLU BLU BLU BEFORE THE STORM ARRIVED
+clips/llasa8b__wr_blue_t4_k24__s0.opus,llasa8b,wr_blue_t4_k24,0,word_rep,24,empty,0,24,-1.0,40.96,,nan
+clips/llasa8b__wr_blue_t4_k24__s1.opus,llasa8b,wr_blue_t4_k24,1,word_rep,24,loop,0,24,-1.0,40.96,,THE LIT WES B BLU BEFORE THE STOE
+clips/llasa8b__wr_far_t3_k03__s1.opus,llasa8b,wr_far_t3_k03,1,word_rep,3,empty,0,3,-1.0,40.96,,nan
+clips/llasa8b__wr_far_t3_k06__s2.opus,llasa8b,wr_far_t3_k06,2,word_rep,6,correct,6,6,0.0,15.0,,HE WALKED FAR FAR FAR FAR FAR FAR INTO THE FOREST BEFORE TURNING BACK
+clips/llasa8b__wr_far_t3_k08__s0.opus,llasa8b,wr_far_t3_k08,0,word_rep,8,undercount,2,8,-0.75,14.58,,HE WALKED FAR FAR FA INTO THE FOREST BEFORE TURNING BACK
+clips/llasa8b__wr_far_t3_k12__s1.opus,llasa8b,wr_far_t3_k12,1,word_rep,12,loop,40,12,2.3333,40.96,,HE WALKED FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR
+clips/llasa8b__wr_far_t3_k24__s0.opus,llasa8b,wr_far_t3_k24,0,word_rep,24,overcount,27,24,0.125,16.84,,HE WALKED FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR
+clips/llasa8b__wr_no_t2_k01__s2.opus,llasa8b,wr_no_t2_k01,2,word_rep,1,loop,0,1,-1.0,7.94,,SHE SET LOTO AAA
+clips/llasa8b__wr_no_t2_k16__s0.opus,llasa8b,wr_no_t2_k16,0,word_rep,16,undercount,2,16,-0.875,14.64,,SHE SAID NO NO NININININININININANA NA NA NA NA NA NANA TO GOTER AND THEN LIVE THERE
+clips/llasa8b__wr_really_t6_k03__s0.opus,llasa8b,wr_really_t6_k03,0,word_rep,3,degenerate,0,3,-1.0,40.96,,nan
+clips/llasa8b__wr_really_t6_k04__s1.opus,llasa8b,wr_really_t6_k04,1,word_rep,4,miscount,4,4,0.0,6.44,,THEY WERE REALLY REALLY REALLY REALLY TIRED AFTER THE LONG JOURNEY
+clips/qwen06b__ct_blue_t4_k02__s0.opus,qwen06b,ct_blue_t4_k02,0,control_word,2,correct,2,2,0.0,3.28,,THE LIGHT WAS GREEN BRIGHT BEFORE THE STORM ARRIVED
+clips/qwen06b__ct_blue_t4_k06__s0.opus,qwen06b,ct_blue_t4_k06,0,control_word,6,correct,6,6,0.0,5.12,,THE LIGHT WAS GREEN BRIGHT PALE DIM WARM COLD BEFORE THE STORM ARRIVED
+clips/qwen06b__ct_blue_t4_k08__s0.opus,qwen06b,ct_blue_t4_k08,0,control_word,8,truncation,8,8,0.0,6.08,,THE LIGHT WAS GREEN BRIGHT PALE DIM WARM COLD SHARP SOFT BEFORE THE STORM ARRIVED
+clips/qwen06b__ct_blue_t4_k16__s0.opus,qwen06b,ct_blue_t4_k16,0,control_word,16,truncation,16,16,0.0,9.36,,THE LIGHT WAS GREEN BRIGHT PALE DIM WARM COLD SHARP SOFT GREEN BRIGHT PALE DIM WARM COLD SHARP SOFT BEFORE THE STORM ARRIVED
+clips/qwen06b__ct_far_t3_k03__s1.opus,qwen06b,ct_far_t3_k03,1,control_word,3,undercount,2,3,-0.3333,3.92,,HE WALKED DEEP FAST ALONG INTO THE FOREST BEFORE TURNING BACK
+clips/qwen06b__ct_far_t3_k16__s0.opus,qwen06b,ct_far_t3_k16,0,control_word,16,correct,16,16,0.0,9.92,,HE WALKED DEEP FAST LONG WIDE HIGH LOW NEAR PAST DEEP FAST LONG WIDE HIGH LOW NEAR PAST INTO THE FOREST BEFORE TURNING BACK
+clips/qwen06b__ct_no_t2_k06__s1.opus,qwen06b,ct_no_t2_k06,1,control_word,6,undercount,5,6,-0.1667,5.84,,SHE SAID YES MAYBE SURE FINE O K WELL TO THE OFFER AND THEN LEFT THE ROOM
+clips/qwen06b__wr_blue_t4_k01__s0.opus,qwen06b,wr_blue_t4_k01,0,word_rep,1,correct,1,1,0.0,2.48,,THE LIGHT WAS BLUE BEFORE THE STORM ARRIVED
+clips/qwen06b__wr_blue_t4_k06__s0.opus,qwen06b,wr_blue_t4_k06,0,word_rep,6,undercount,5,6,-0.1667,4.0,,THE LIGHT WAS BLUE BLUE BLUE BLUE BLUE BEFORE THE STORM ARRIVED
+clips/qwen06b__wr_blue_t4_k16__s0.opus,qwen06b,wr_blue_t4_k16,0,word_rep,16,undercount,13,16,-0.1875,6.08,,THE LIGHT WAS BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BEFORE THE STORM ARRIVED
+clips/qwen06b__wr_far_t3_k06__s0.opus,qwen06b,wr_far_t3_k06,0,word_rep,6,correct,6,6,0.0,5.68,,HE WALKED FAR FAR FAR FAR FAR FAR INTO THE FOREST BEFORE TURNING BACK
+clips/qwen06b__wr_far_t3_k12__s1.opus,qwen06b,wr_far_t3_k12,1,word_rep,12,loop,29,12,1.4167,14.08,,HE WALKED FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FARI FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR
+clips/qwen06b__wr_far_t3_k16__s0.opus,qwen06b,wr_far_t3_k16,0,word_rep,16,overcount,18,16,0.125,10.0,,HE WALKED FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR AR FAR FAR FAR INTO THE FOREST BEFORE TURNING BACK
+clips/qwen06b__wr_quick_t5_k04__s1.opus,qwen06b,wr_quick_t5_k04,1,word_rep,4,undercount,3,4,-0.25,4.08,,THE RUNNER MOVED QUICK QUICK QUICK ALONG THE NARROW PATH
+clips/qwen06b__wr_quick_t5_k12__s0.opus,qwen06b,wr_quick_t5_k12,0,word_rep,12,truncation,9,12,-0.25,4.8,,THE RUNNER MOVED QUICK QUICK QUICK QUICK QUICK QUICK QUICK QUICK QUICK ALONG THE NARROW PATH
+clips/qwen06b__wr_quick_t5_k16__s1.opus,qwen06b,wr_quick_t5_k16,1,word_rep,16,truncation,13,16,-0.1875,6.08,,THE RUNNER MOVED QUICK QUICK QUICK QUICK QUICK QUICK QUICK QUICK QUICK QUICK QUICK QUICK QUICK ALONG THE NARROW PATH
+clips/qwen06b__wr_really_t6_k08__s0.opus,qwen06b,wr_really_t6_k08,0,word_rep,8,overcount,11,8,0.375,8.72,,THEY WERE REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY TIRED AFTER THE LONG JOURNEY
+clips/qwen06b__wr_really_t6_k24__s2.opus,qwen06b,wr_really_t6_k24,2,word_rep,24,loop,241,24,9.0417,163.76,,THEY WERE REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLAREALLYREALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY RALLY REALLY REALLY REALLY REALLY REALLY RALLY REALLY REALLY REALLY RALLY REALLY REALLY REALLY REALLY REALLY RALLY REALLY REALLY REALLY REALLY RALLY RALLY REALLY REALLY REALLY REALLY REALLY RALLY REALLY REALLY REALLY REALY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY RALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY RELLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALY REALLY REALLY REALLY REALL REALY REALY REALY RALY ELY AY REALLY REALLY REALLY REALLY REALLY A SATISFACTOR SFACTOR REALLY REALLY REALLY OVEALLY OR REALLY THIS  REALLY ITS ITS POSITION TION OF THE POSITION OF THE PAGES OF THE POSITION OF THE POSITION OF THE POSITION OF THE POSITION OF THE POSITION OF THE POSITION OF THE POSITION OF THE PAGE ON THE POSITION OF THE PAGE OF THE POSITION OF THE PAGE ON THE POSITION OF THE PAGE ON THE POSITION OF THE PAGE ON THE PAGE ON THE PAPER SHOULD THE PAGE ON THE PAGE ON THE PAPER SHOULD BE THE POSITION OF THE PAGE ON THE PAPER SHOULD BE CONSIDERED IF PAPER SHOULD BE CONSIDERED IF PAPER SHOULD BE CONSIDERED IFTE PAPER SHOULD BE CONSIDERED RE REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY RALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY RALLY REALLY REALLY REALLY REALLY RALLY REALLY BREALY BERREALLY BRREALLY BRALTY BRANLY BRANLY BERANTLY BERANL BIRIANLY BRANTY BIRANTY IRANTLY BIRANTLY BIRIANTLY BIRANTLY BIRIANTLY BIRAY BIRNL BIRNLY BIRNLY BIRIANLY BIREANTY BIRIANY BRANY BIIANTY BIRIANTL BRANY BIRIANTLY BIRIANTLY BIRIANTLY BIRIANY BERANLY BIREANTY BIRNL BERIANTLY BERAN
+clips/qwen06b__wr_very_t1_k12__s1.opus,qwen06b,wr_very_t1_k12,1,word_rep,12,miscount,12,12,0.0,8.88,,THE DOG WAS VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY BIG AND IT RAN ACROSS THE FIELD
+clips/qwen06b__wr_very_t1_k24__s1.opus,qwen06b,wr_very_t1_k24,1,word_rep,24,correct,24,24,0.0,10.48,,THE DOG WAS VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY BIG AND IT RAN ACROSS THE FIELD
+clips/qwen17b__ct_blue_t4_k02__s0.opus,qwen17b,ct_blue_t4_k02,0,control_word,2,correct,2,2,0.0,3.36,,THE LIGHT WAS GREEN BRIGHT BEFORE THE STORM ARRIVED
+clips/qwen17b__ct_blue_t4_k06__s0.opus,qwen17b,ct_blue_t4_k06,0,control_word,6,correct,6,6,0.0,5.44,,THE LIGHT WAS GREEN BRIGHT PALE DIM WARM COLD BEFORE THE STORM ARRIVED
+clips/qwen17b__ct_blue_t4_k12__s0.opus,qwen17b,ct_blue_t4_k12,0,control_word,12,truncation,12,12,0.0,7.76,,THE LIGHT WAS GREEN BRIGHT PALE DIM WARM COLD SHARP SOFT GREEN BRIGHT PALE DIM BEFORE THE STORM ARRIVED
+clips/qwen17b__ct_blue_t4_k16__s0.opus,qwen17b,ct_blue_t4_k16,0,control_word,16,correct,16,16,0.0,11.52,,THE LIGHT WAS GREEN BRIGHT PALE DIM WARM COLD SHARP SOFT GREEN BRIGHT PALE DIM WARM COLD SHARP SOFT BEFORE THE STORM ARRIVED
+clips/qwen17b__ct_blue_t4_k16__s1.opus,qwen17b,ct_blue_t4_k16,1,control_word,16,truncation,16,16,0.0,10.8,,THE LIGHT WAS GREEN BRIGHT PALE DIM WARM COLD SHARP SOFT GREEN BRIGHT PALE DIM WARM COLD SHARP SOFT BEFORE THE STORM ARRIVED
+clips/qwen17b__ct_no_t2_k04__s2.opus,qwen17b,ct_no_t2_k04,2,control_word,4,undercount,3,4,-0.25,4.32,,SHE SAID YES MAY BE SURE FINE TO THE OFFER AND THEN LEFT THE ROOM
+clips/qwen17b__ct_no_t2_k06__s0.opus,qwen17b,ct_no_t2_k06,0,control_word,6,undercount,5,6,-0.1667,6.16,,SHE SAID YES MAYBE SURE FINE O K WELL TO THE OFFER AND THEN LEFT THE ROOM
+clips/qwen17b__ct_no_t2_k16__s0.opus,qwen17b,ct_no_t2_k16,0,control_word,16,undercount,12,16,-0.25,10.96,,SHE SAID YES MAYBE SURE FINE O K WELL RIGHT HUM YES MAYBE SURE FINE O K WELL RIGHT HUM TO THE OFFER AND THEN LEFT THE ROOM
+clips/qwen17b__wr_blue_t4_k01__s0.opus,qwen17b,wr_blue_t4_k01,0,word_rep,1,correct,1,1,0.0,2.64,,THE LIGHT WAS BLUE BEFORE THE STORM ARRIVED
+clips/qwen17b__wr_blue_t4_k06__s0.opus,qwen17b,wr_blue_t4_k06,0,word_rep,6,correct,6,6,0.0,4.4,,THE LIGHT WAS BLUE BLUE BLUE BLUE BLUE BLUE BEFORE THE STORM ARRIVED
+clips/qwen17b__wr_blue_t4_k06__s1.opus,qwen17b,wr_blue_t4_k06,1,word_rep,6,undercount,5,6,-0.1667,4.72,,THE LIGHT WAS BLUE BLUE BLUE BLUE BLUE BEFORE THE STORM ARRIVED
+clips/qwen17b__wr_blue_t4_k08__s2.opus,qwen17b,wr_blue_t4_k08,2,word_rep,8,truncation,7,8,-0.125,4.56,,THE LIGHT WAS BLUE BLUE BLUE BLUE BLUE BLUE BLUE BEFORE THE STORM ARRIVED
+clips/qwen17b__wr_blue_t4_k16__s0.opus,qwen17b,wr_blue_t4_k16,0,word_rep,16,overcount,19,16,0.1875,8.08,,THE LIGHT WAS BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BEFORE THE STORM ARRIVED
+clips/qwen17b__wr_far_t3_k16__s0.opus,qwen17b,wr_far_t3_k16,0,word_rep,16,correct,16,16,0.0,10.16,,HE WALKED FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR INTO THE FOREST BEFORE TURNING BACK
+clips/qwen17b__wr_far_t3_k32__s2.opus,qwen17b,wr_far_t3_k32,2,word_rep,32,undercount,31,32,-0.0312,16.96,,HE WALKED FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR FAR INTO THE FOREST BEFORE TURNING BACK
+clips/qwen17b__wr_quick_t5_k12__s0.opus,qwen17b,wr_quick_t5_k12,0,word_rep,12,overcount,14,12,0.1667,11.92,,THE RUNNER MOVED QUICK QUICK QUICK QUICK QUICK QUICK QUICK QUICK QUICK QUICK QUICK QUICK QUICK QUICK ALONG THE NARROW PATH
+clips/qwen17b__wr_very_t1_k24__s2.opus,qwen17b,wr_very_t1_k24,2,word_rep,24,loop,33,24,0.375,20.8,,THE DOG WAS VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY BIG AND IT RAN ACROSS THE FIELD
+clips/xtts2__ct_blue_t4_k02__s0.opus,xtts2,ct_blue_t4_k02,0,control_word,2,correct,2,2,0.0,2.78,,THE LIGHT WAS GREEN BRIGHT BEFORE THE STORM ARRIVED
+clips/xtts2__ct_blue_t4_k06__s0.opus,xtts2,ct_blue_t4_k06,0,control_word,6,correct,6,6,0.0,4.87,,HELIGHT WAS GREEN BRIGHT PALE DIM WARM COLD BEFORE THE STORM ARRIVED
+clips/xtts2__ct_blue_t4_k08__s2.opus,xtts2,ct_blue_t4_k08,2,control_word,8,truncation,8,8,0.0,5.24,,THELIGHT WAS GREEN BRIGHT PALE DIM WARM COLD SHARP SOFT BEFORE THE STORM ARRIVED
+clips/xtts2__ct_blue_t4_k16__s0.opus,xtts2,ct_blue_t4_k16,0,control_word,16,correct,16,16,0.0,10.63,,HELIGHT WAS GREEN BRIGHT PALE DIM WARM COLD SHARP SOFT GREEN BRIGHT PALE DIM WARM COLD SHARP SOFT BEFORE THE STORM ARRIVED
+clips/xtts2__ct_blue_t4_k16__s1.opus,xtts2,ct_blue_t4_k16,1,control_word,16,truncation,16,16,0.0,8.77,,THE LIGHT WAS GREEN BRIGHT PALE DIM WARM COLD SHARP SOFT GREEN BRIGHT PALE DIM WARM COLD SHARP SOFT BEFORE THE STORM ARRIVED
+clips/xtts2__ct_far_t3_k12__s1.opus,xtts2,ct_far_t3_k12,1,control_word,12,undercount,11,12,-0.0833,6.08,,HE WALKED DEEP FAST LONG WIDE HIGH LOW NEAR PASS DEEP FAST LONG WIDE INTO THE FOREST BEFORE TURNING BACK
+clips/xtts2__ct_far_t3_k12__s2.opus,xtts2,ct_far_t3_k12,2,control_word,12,miscount,12,12,0.0,7.89,,HE WALKED DEEP FAST LONG WIDE HIGH LOW NEAR PAST DEEP FAST LONG WIDE INTO THE FOREST BEFORE TURNING BACK
+clips/xtts2__ct_far_t3_k16__s0.opus,xtts2,ct_far_t3_k16,0,control_word,16,miscount,16,16,0.0,9.61,,HE WALKED DEEP FAST LONG WIDE HIGH LOW NEAR PAST DEEP FAST LONG WIDE HIGH LOW NEAR PAST INTO THE FOREST BEFORE TURNING BACK
+clips/xtts2__ct_far_t3_k24__s1.opus,xtts2,ct_far_t3_k24,1,control_word,24,loop,24,24,0.0,15.04,,HE WALKED DEEP FAST LONG WIDE HIGH LOW NEAR PAST DEEP FAST LONG WIDE HIGH LOW NEAR PAST DEEP FAST LONG WIDE HIGH LOW NEAR PAST INTO THE FOREST BEFORE TURNING BACK
+clips/xtts2__ct_no_t2_k04__s0.opus,xtts2,ct_no_t2_k04,0,control_word,4,undercount,3,4,-0.25,4.03,,SHE SAID YES MAYBE SURE FIND TO THE OFFER AND THEN LEFT THE ROOM
+clips/xtts2__ct_no_t2_k16__s0.opus,xtts2,ct_no_t2_k16,0,control_word,16,undercount,12,16,-0.25,10.49,,SHE SAID YES MAYBE SURE FINE O K WELL RIGHT HM YES MAYBE SURE FINE O K WELL RIGHT HIM TO THE OFFER AND THEN LEFT THE ROOM
+clips/xtts2__wr_blue_t4_k01__s0.opus,xtts2,wr_blue_t4_k01,0,word_rep,1,correct,1,1,0.0,2.13,,THE LIGHT WAS BLUE BEFORE THE STORM ARRIVED
+clips/xtts2__wr_blue_t4_k04__s0.opus,xtts2,wr_blue_t4_k04,0,word_rep,4,undercount,3,4,-0.25,2.87,,THE LIGHT WAS BLUE BLUE BLUE BEFORE THE STORM ARRIVED
+clips/xtts2__wr_blue_t4_k06__s0.opus,xtts2,wr_blue_t4_k06,0,word_rep,6,undercount,5,6,-0.1667,3.89,,THELIGHT WAS BLUE BLUE BLUE BLUE BLUE BEFORE THE STORM ARRIVED
+clips/xtts2__wr_blue_t4_k08__s2.opus,xtts2,wr_blue_t4_k08,2,word_rep,8,truncation,6,8,-0.25,3.62,,THELIGHT WAS BLUE BLUE BLUE BLUE BLUE BLUE BEFORE THE STORM ARRIVED
+clips/xtts2__wr_blue_t4_k16__s0.opus,xtts2,wr_blue_t4_k16,0,word_rep,16,truncation,13,16,-0.1875,5.75,,THE LIGHT WAS BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BEFORE THE STORM ARRIVED
+clips/xtts2__wr_blue_t4_k16__s1.opus,xtts2,wr_blue_t4_k16,1,word_rep,16,undercount,12,16,-0.25,9.75,,THE LIGHT WAS BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BLUE BL BLUE BLUE BEFORE THE STORM ARRIVED
+clips/xtts2__wr_far_t3_k06__s2.opus,xtts2,wr_far_t3_k06,2,word_rep,6,correct,6,6,0.0,5.15,,HE WALKED FAR FAR FAR FAR FAR FAR INTO THE FOREST BEFORE TURNING BACK
+clips/xtts2__wr_no_t2_k04__s1.opus,xtts2,wr_no_t2_k04,1,word_rep,4,miscount,4,4,0.0,5.75,,SHE SAID NO NO NO NO TO THE OFFER AND THEN LEFT THE ROOM
+clips/xtts2__wr_really_t6_k03__s0.opus,xtts2,wr_really_t6_k03,0,word_rep,3,overcount,4,3,0.3333,4.22,,THEY WERE REALLY REALLY REALLY REALLY TIRED AFTER THE LONG JOURNEY
+clips/xtts2__wr_really_t6_k16__s0.opus,xtts2,wr_really_t6_k16,0,word_rep,16,correct,16,16,0.0,8.96,,THEY WERE REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY TIRED AFTER THE LONG JOURNEY
+clips/xtts2__wr_really_t6_k24__s0.opus,xtts2,wr_really_t6_k24,0,word_rep,24,overcount,26,24,0.0833,11.79,,THEY WERE REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY RETIRED AFTER THE LONG JOURNEY
+clips/xtts2__wr_very_t1_k24__s2.opus,xtts2,wr_very_t1_k24,2,word_rep,24,loop,29,24,0.2083,27.02,,THE DOG WAS VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY VERY AND I RAN ACROSS THE FIELD OR

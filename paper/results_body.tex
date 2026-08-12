@@ -23,10 +23,10 @@ checkpoints by surviving item count, so we quote both. Either way it is
 one-directional: models produce \emph{fewer} repetitions than requested.
 
 Within $k\le32$ that deficit is \emph{proportional}, not saturating --- not what
-Theorem~\ref{thm:collapse}(iv) predicts. A constant fits the panel's median count
-above $k\!=\!6$ with residual sum of squares \ShapeSatSSE{} against
-\ShapePropSSE{} for $\hat c=\ShapePropSlope{}k$ (S10), so no horizon lies inside
-this ladder.
+Theorem~\ref{thm:collapse}(iv) predicts. The panel's median count above
+$k\!=\!6$ is fitted far better by $\hat c=\ShapePropSlope{}k$ than by any
+constant (residual sums of squares \ShapePropSSE{} against \ShapeSatSSE{}, S10),
+so no horizon lies inside this ladder.
 
 \subsection{Past the ladder, the count does level off}
 
@@ -54,9 +54,7 @@ disjoint for \HzSepNames{}, while \HzRevNames{} shows \emph{no} repeated-side
 saturation within $k\le128$ and inverts the ratio --- the same checkpoint with no
 deficit at $k\le32$, a conditional theorem behaving conditionally.
 
-What degrades with $k$ is reliability, not proportion: the exactly-right share
-falls from \ExactRepKLo{}\% to \ExactRepKHi{}\% between
-$k\!=\!\ExactRepKLoVal{}$ and $\ExactRepKHiVal{}$. Because the claim concerns models rather than our corpus, the checkpoint is the
+Because the claim concerns models rather than our corpus, the checkpoint is the
 unit of replication. The exactly-correct rate favours the control in all \CkExactN{} (mean
 \CkExact{} points $[\CkExactLo{},\CkExactHi{}]$); the median-error gap is
 positive in \CkErrNPos{} of \CkErrN{}, zero in \ErrBestModel{}. Those six
