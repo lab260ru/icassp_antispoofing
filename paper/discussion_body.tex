@@ -27,14 +27,12 @@ The closest prior result is representational
 collapse~\cite{barbero2024glasses}: distinct prefixes map to arbitrarily close
 representations as sequences grow, already implying counting errors. But
 collapse-by-length predicts equally long control and repeated items fail alike,
-and they do not wherever the control is itself repetition-free;
-\eqref{eq:horizon} also gives a rate in repetitions that a length-indexed bound
-does not, and related dynamical and expressivity bounds constrain one forward
-pass~\cite{dong2021attention,geshkovski2023emergence,gao2026clustered,%
-strobl2024formal,merrill2024illusion} where ours indexes generation steps. The per-item effect is thin against the
-instrument --- two recognisers disagree by \FloorTwoRec{} repetitions where the
-mean item is missing \MissMean{} --- but ours gives the higher count in
-\FloorOursHigher{} of \FloorNDisagree{} disagreements (S14).
+and they do not wherever the control is itself repetition-free.
+Related dynamical and expressivity
+bounds~\cite{dong2021attention,geshkovski2023emergence,gao2026clustered,%
+strobl2024formal,merrill2024illusion} constrain one forward pass;
+\eqref{eq:horizon} gives a rate in repetitions instead. Measurement error under-states rather
+than inflates it (S14).
 
 % Any further body text pushes the references onto a sixth page: main.tex ends
 % with \vfill\pagebreak, so the bibliography always starts on a fresh page and

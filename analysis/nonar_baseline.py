@@ -1,24 +1,40 @@
 #!/usr/bin/env python3
-r"""Is the deficit autoregressive, or is it just what happens to long repeated text?
+r"""Is the deficit autoregressive? On two baselines, the answer is no.
 
-The paper claims something about autoregressive decoders, and until now it
-had never run one that was not autoregressive. Round-6 reviewers said so. VITS
-(`facebook/mms-tts-eng`) is the contrast: a text encoder, a duration predictor
-and a normalising-flow decoder that emits the whole waveform at once. There is no
-generation-step recurrence for a per-repetition state map to act on, so
-Assumption 1 has nothing to apply to and Theorem 1 predicts nothing about it.
+The paper claims something about autoregressive decoders, and for a long time it
+had never run one that was not. Round-6 reviewers said so; rounds 8-10 then said
+one 2021 model could not carry the claim alone. Both were right, and running the
+second baseline cost us the claim.
 
-The comparison is the \emph{within-model} dissociation, not the absolute score.
-VITS is smaller and older than the panel, so its overall accuracy is not
-comparable and we do not compare it. What is comparable is whether a model treats
-repeated text differently from its own length-matched control, which is the
-paper's actual claim and is scale-free.
+Two non-AR systems, and they disagree:
 
-This doubles as the control the judge most needed. If CTC blank-collapse were
+* **VITS** (`facebook/mms-tts-eng`, 2021): text encoder, per-phoneme duration
+  predictor, normalising-flow decoder. Shows *no* dissociation.
+* **F5-TTS** (2024): flow matching over a diffusion transformer, a total-duration
+  estimate, the whole mel denoised in parallel. Shows the dissociation at roughly
+  the panel's size, growing with `k` as the AR models' does.
+
+Neither has a generation-step recurrence, so "autoregressive" cannot be what
+separates them. What does differ is where the count has to live. VITS expands
+each input token to its own predicted duration, so "how many" is carried
+structurally by the input sequence and never has to be represented. F5-TTS
+estimates one total duration and denoises globally, so "how many" must be
+represented somewhere internal --- the same burden an AR decoder carries in its
+state. That is a better hypothesis than AR-versus-not, and these two baselines
+are evidence for it, but it was formed after seeing them and is labelled as such
+wherever it appears.
+
+The comparison is the \emph{within-model} dissociation, not the absolute score:
+whether a model treats repeated text differently from its own length-matched
+control. That is scale-free, which matters because VITS is much the smaller
+model. F5-TTS removes that objection --- it is contemporary with the panel and
+comparably invested, so its result cannot be dismissed as vintage.
+
+The VITS null still does the judge's work. If CTC blank-collapse were
 manufacturing the dissociation by merging adjacent copies of a word (S9), it
 would do so on VITS audio too --- same judge, same stimuli, same repeated words.
-A null here is therefore evidence that the AR panel's gap is not an artifact of
-the recogniser, which no amount of re-auditing the recogniser alone could show.
+It does not, and no amount of re-auditing the recogniser in isolation could have
+shown that.
 
 Usage:  python analysis/nonar_baseline.py
 """
@@ -137,29 +153,44 @@ def main() -> None:
 
     ar_all = load_all(args.ar, False)
     nonar_all = load_all(args.nonar, True)
+    # Per baseline, never pooled: the two disagree, and averaging them would
+    # hide exactly the fact that matters.
     res["bands"] = {}
-    print(f"\n{'k band':10s} {'VITS rep':>9s} {'VITS ctl':>9s} {'gap':>7s} | "
-          f"{'AR rep':>7s} {'AR ctl':>7s} {'gap':>7s}")
+    names = sorted(nonar_all.model.unique())
+    hdr = " | ".join(f"{n[:9]:>16s}" for n in names + ["AR panel"])
+    print(f"\n{'k band':9s} {hdr}")
     for lo, hi in [(2, 4), (6, 8), (12, 16), (24, 32)]:
-        nb, ab = band(nonar_all, lo, hi), band(ar_all, lo, hi)
-        if not nb or not ab:
-            continue
-        res["bands"][f"{lo}-{hi}"] = dict(nonar=nb, ar=ab)
-        print(f"k={lo}-{hi:<7d} {100*nb['exact_rep']:8.1f}% {100*nb['exact_ctl']:8.1f}% "
-              f"{100*nb['gap']:+6.1f} | {100*ab['exact_rep']:6.1f}% "
-              f"{100*ab['exact_ctl']:6.1f}% {100*ab['gap']:+6.1f}")
-    mid = res["bands"].get("6-8")
-    if mid:
-        res["floor_effect_ruled_out"] = bool(
-            mid["nonar"]["exact_rep"] > 0.5 and mid["nonar"]["exact_ctl"] > 0.5
-            and mid["ar"]["gap"] > 0.3)
-        if res["floor_effect_ruled_out"]:
-            print("\nAt k=6-8 the AR panel already shows a "
-                  f"{100*mid['ar']['gap']:.0f}-point gap while VITS renders "
-                  f"{100*mid['nonar']['exact_rep']:.1f}% of repeated and "
-                  f"{100*mid['nonar']['exact_ctl']:.1f}% of control items exactly.\n"
-                  "Both arms are far off the floor and ordered the other way, so\n"
-                  "the null is not VITS being too weak to show structure.")
+        cells, row = [], {}
+        for n in names:
+            b = band(nonar_all[nonar_all.model == n], lo, hi)
+            row[n] = b
+            cells.append(f"{100*b['exact_rep']:6.1f}/{100*b['exact_ctl']:5.1f}"
+                         f"{100*b['gap']:+5.1f}" if b else " " * 16)
+        ab = band(ar_all, lo, hi)
+        row["ar"] = ab
+        cells.append(f"{100*ab['exact_rep']:6.1f}/{100*ab['exact_ctl']:5.1f}"
+                     f"{100*ab['gap']:+5.1f}" if ab else " " * 16)
+        res["bands"][f"{lo}-{hi}"] = row
+        print(f"k={lo}-{hi:<5d} " + " | ".join(cells))
+    print("  (repeated exact / control exact, gap in points)")
+
+    # The floor-effect rebuttal belongs to whichever baseline shows the null.
+    nulls = [n for n in names
+             if res["nonar_per_model"][n]["exact_gap"] < 0.05]
+    res["baselines_without_dissociation"] = nulls
+    res["baselines_with_dissociation"] = [n for n in names if n not in nulls]
+    for n in nulls:
+        mid = res["bands"]["6-8"][n]
+        if mid and mid["exact_rep"] > 0.5 and mid["exact_ctl"] > 0.5:
+            print(f"\n{n} shows no dissociation and it is not a floor effect: at "
+                  f"k=6-8 it renders\n{100*mid['exact_rep']:.1f}% of repeated and "
+                  f"{100*mid['exact_ctl']:.1f}% of control items exactly, off the "
+                  f"floor and ordered\nthe other way, where the AR panel's gap is "
+                  f"already {100*res['bands']['6-8']['ar']['gap']:.0f} points.")
+    if res["baselines_with_dissociation"]:
+        print(f"\nBut {', '.join(res['baselines_with_dissociation'])} does show it, "
+              f"so 'autoregressive' is not what\nseparates these systems. See the "
+              f"module docstring for what plausibly does.")
 
     Path(args.out).write_text(json.dumps(res, indent=2))
     print(f"wrote {args.out}")

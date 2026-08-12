@@ -446,12 +446,27 @@ def main() -> None:
             macros[f"{tag}Rep"] = fmt(100 * v.get("exact_rep", np.nan), 1)
             macros[f"{tag}Ctl"] = fmt(100 * v.get("exact_ctl", np.nan), 1)
             macros[f"{tag}Gap"] = fmt(100 * v.get("exact_gap", np.nan), 1)
+        # The two baselines disagree, so each is reported by name; pooling them
+        # would hide the only thing this experiment established.
+        for m, tag in (("vits", "Vits"), ("f5tts", "Fivetts")):
+            v = nb.get("nonar_per_model", {}).get(m, {})
+            if v:
+                macros[f"{tag}Rep"] = fmt(100 * v["exact_rep"], 1)
+                macros[f"{tag}Ctl"] = fmt(100 * v["exact_ctl"], 1)
+                macros[f"{tag}Gap"] = fmt(100 * v["exact_gap"], 1)
         macros["NonARAbove"] = str(nb.get("n_ar_above_nonar", 0))
-        mid = nb.get("bands", {}).get("6-8")
-        if mid:
-            macros["NonARMidRep"] = fmt(100 * mid["nonar"]["exact_rep"], 1)
-            macros["NonARMidCtl"] = fmt(100 * mid["nonar"]["exact_ctl"], 1)
+        # The mid band is quoted for the baseline that shows NO dissociation,
+        # where the floor-effect question actually arises.
+        mid = nb.get("bands", {}).get("6-8", {})
+        nulls = nb.get("baselines_without_dissociation", [])
+        if mid and nulls and mid.get(nulls[0]):
+            m0 = mid[nulls[0]]
+            macros["NonARMidRep"] = fmt(100 * m0["exact_rep"], 1)
+            macros["NonARMidCtl"] = fmt(100 * m0["exact_ctl"], 1)
+        if mid.get("ar"):
             macros["ARMidGap"] = fmt(100 * mid["ar"]["gap"], 0)
+        macros["NonARNull"] = ", ".join(nulls) if nulls else "none"
+        macros["NonARShows"] = ", ".join(nb.get("baselines_with_dissociation", []))
         macros["NonARN"] = str(nb.get("n_ar", 0))
 
     # ---- is the deficit just the decoding-time repetition penalty? --------
