@@ -3591,6 +3591,76 @@ fitted only over arms whose control survives. Qwen3-TTS is the useful contrast
 precisely because its control is unharmed at zero penalty, so the zero-penalty
 comparison can be made at all.
 
+
+\section{Chronology: what was decided when}
+\label{sec:s16}
+
+Reviewers observed, correctly, that this study contains many analysis decisions
+taken after seeing data --- an extension of the $k$ ladder, a second control
+regeneration, a template exclusion, a change of judge, a retracted probe claim.
+Individually each is disclosed where it appears. Collectively they are a garden
+of forking paths, and a reader is entitled to ask which choices preceded the data
+and which followed it.
+
+The honest answer is that only the original ladder and the matched-control design
+were fixed in advance. Everything below followed from something the data showed,
+and the order is recoverable from the repository's commit history rather than
+from our recollection --- each row corresponds to a commit, timestamped, in a
+public log. We report it as a chronology rather than claim a pre-registration we
+do not have.
+
+\begin{center}
+\begin{tabular}{llp{4.6cm}}
+\toprule
+when & status & decision \\
+\midrule
+before data & \emph{pre-specified} & $k$ ladder to $32$; matched length controls;
+  CTC-vs-AR judge comparison planned \\
+\midrule
+17:09 d1 & pre-specified & theorem and Lean development frozen \\
+18:49 d1 & \emph{forced} & control scoring rewritten (the first version scored
+  every control as a loop) \\
+20:44 d1 & \emph{forced} & judge changed from Whisper to CTC: the AR judge
+  undercounts exactly the material under study \\
+20:49 d1 & \emph{forced} & metric changed from exact match to relative count
+  error, which the new judge made meaningful \\
+22:23 d1 & post hoc & repetition-penalty sweep on XTTS-v2 \\
+08:41 d2 & \emph{forced} & horizon shape tested after a reviewer noted the
+  reported deficit was proportional, not saturating \\
+08:53 d2 & post hoc & $k$ ladder extended to $128$ \emph{because} $k\le32$ showed
+  no saturation \\
+09:21 d2 & post hoc & checkpoint-level inference replaces vote counts \\
+09:27 d2 & post hoc & dilution dose-response tested; came out sign-reversed \\
+10:08 d2 & post hoc & non-autoregressive baseline added \\
+11:00 d2 & post hoc & controls re-generated aperiodic at $k=12\ldots32$ \\
+11:07 d2 & \emph{retraction} & probe no longer cited as mechanistic support \\
+12:03 d2 & post hoc & penalty sweep extended to a second architecture \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Three observations a reader should weigh.
+
+\noindent\textbf{The forced changes went against us.} Replacing the judge cost
+the paper its original metric and every number computed before it. The horizon
+test was run because a reviewer said our headline did not match our theorem, and
+it confirmed the mismatch. The probe retraction removed the only evidence we had
+offered for the causal claim. A garden of forking paths that systematically
+favours the author does not look like this.
+
+\noindent\textbf{The post-hoc additions are adversarial, not confirmatory.} The
+non-AR baseline, the aperiodic controls, the second penalty architecture and the
+noise floor were each run to give a rival explanation its best chance. Three of
+the four could have ended the paper and did not; the fourth (the dilution
+dose-response) did damage and is reported.
+
+\noindent\textbf{The extension ladder is the exception, and we flag it as such.}
+It was run because the pre-specified range failed to show the theorem's
+signature, and it is the one result whose framing benefited from being sought.
+The main text labels it post hoc at the point of introduction, reports the
+checkpoint that contradicts it, and does not claim the fitted $\hat K$ is the
+theorem's $N^\ast$.
+
 \bibliographystyle{IEEEtran}
 \bibliography{../refs}
 
