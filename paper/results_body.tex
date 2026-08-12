@@ -9,9 +9,9 @@ $k$, CTC judge: exact below $k\!=\!6$, then a one-directional deficit that stays
 roughly proportional rather than saturating. (b) The same repeated items (solid)
 against their length-matched controls (dashed), in which the repeated word is
 replaced by non-adjacent fillers --- control medians sit at zero throughout.
-(c) Effective rank of the generation trajectory: it grows more slowly under
-repetition. (d) Fitted capacity gain, 95\% bootstrap intervals over stimulus
-templates.}
+(c) The extension ladder: rendered against requested count, both families,
+dotted line $y\!=\!x$. Both level off; the repeated curve does so far lower.
+(d) Fitted capacity gain, 95\% bootstrap intervals over stimulus templates.}
 \label{fig:main}
 \end{figure*}
 
@@ -37,23 +37,21 @@ So we extended it to $k\in\{48,64,96,128\}$ on the carriers common to both
 (S10). Tracking stops: the repeated median \emph{falls} from \HzMedRepKLo{} at
 $k\!=\!48$ to \HzMedRepKHi{} at $k\!=\!128$ as the request grows threefold.
 
-The controls are what make this interpretable, and they stop us reading it as
-counting collapse alone: they saturate too, near \HzMedCtlKHi{} units. These
-decoders have a general utterance-length ceiling, so the reportable quantity is
-not either horizon but their ratio, which divides that ceiling out. Fitting
-$\hat c(k)=N^\ast(1-e^{-k/N^\ast})$ over the combined ladder gives
+The controls stop us reading this as counting collapse alone: they saturate too,
+near \HzMedCtlKHi{} units, so these decoders have a general utterance-length
+ceiling and the reportable quantity is the \emph{ratio}, which divides it out.
+Fitting $\hat c(k)=N^\ast(1-e^{-k/N^\ast})$ over the combined ladder gives
 $N^\ast_{\mathrm{rep}}=\HzNRep{}$ $[\HzNRepLo{},\HzNRepHi{}]$ against
 $N^\ast_{\mathrm{ctl}}=\HzNCtl{}$ $[\HzNCtlLo{},\HzNCtlHi{}]$, disjoint in
-\HzNSep{} of \HzNModels{} checkpoints: repetition lowers the counting horizon by
-a factor \HzRatio{}. That is the theorem's consequence, located just past where
-our original ladder stopped --- which is why $k\le32$ looked proportional.
+\HzNSep{} of \HzNModels{} checkpoints: repetition lowers the counting horizon
+\HzRatio{}-fold. That is the theorem's consequence, just past where our original
+ladder stopped --- which is why $k\le32$ looked proportional.
 
 Two things keep this short of clean confirmation: the extension covers
 \HzNModels{} checkpoints with few items per cell, and a pure horizon predicts a
 plateau whereas the repeated median \emph{declines}
-(\HzDeclinePeak{}$\rightarrow$\HzDeclineLast{}), so something beyond the theorem
-acts here. The judge's bias points the same way (S9), making \HzRatio{} an upper
-bound.
+(\HzDeclinePeak{}$\rightarrow$\HzDeclineLast{}). The judge's bias points the same
+way (S9), making \HzRatio{} an upper bound.
 
 What degrades with $k$ is reliability rather than proportion: the share rendered
 \emph{exactly} right falls from \ExactRepKLo{}\% at $k\!=\!\ExactRepKLoVal{}$ to

@@ -46,7 +46,8 @@ def ordered(models, drop_ablations: bool = True) -> list[str]:
     return [m for m in ORDER if m in ms] + sorted(ms - set(ORDER))
 
 
-def fig_main(beh: pd.DataFrame, state: pd.DataFrame, cap: dict, out: Path) -> None:
+def fig_main(beh: pd.DataFrame, state: pd.DataFrame, cap: dict, out: Path,
+             beh_ext: pd.DataFrame | None = None) -> None:
     """The paper's single figure: behaviour, the control contrast, and the
     capacity mechanism, in one full-width row.
 
@@ -95,19 +96,34 @@ def fig_main(beh: pd.DataFrame, state: pd.DataFrame, cap: dict, out: Path) -> No
     ax.set_title("(b) periodicity, not length")
     ax.legend(fontsize=5, loc="lower left", handlelength=1.4)
 
-    st = state[state.layer_frac > 0.6]
+    # Panel (c) used to show raw effective rank against k under the title
+    # "states saturate", which the data do not support -- the gain stays
+    # positive everywhere (panel d). The extension ladder is the better use of
+    # the space: it is where the count actually stops tracking the request, and
+    # the control curve is what stops that being read as counting collapse when
+    # it is partly a general utterance-length ceiling.
     ax = axes[2]
-    for m in ordered(st.model.unique()):
-        for fam, ls, mk, al in (("word_rep", "-", "o", 1.0),
-                                ("control_word", "--", "s", 0.55)):
-            g = st[(st.model == m) & (st.family == fam)].groupby("k")["n_eff"].median()
+    if beh_ext is not None and len(beh_ext):
+        e = beh_ext.copy()
+        e["rel_err"] = (e.count_a - e.k) / e.k
+        eok = ~e.outcome.isin(["empty", "degenerate"])
+        ks = np.array(sorted(e.k.unique()), dtype=float)
+        ax.plot(ks, ks, ":", color="0.45", lw=0.8, label="requested")
+        for fam, ls, mk, col, lab in (
+                ("word_rep", "-", "o", "#C44E52", "repeated"),
+                ("control_word", "--", "s", "#4C72B0", "control")):
+            g = e[(e.family == fam) & eok].groupby("k")["count_a"].median().sort_index()
             if g.empty:
                 continue
-            ax.plot(g.index, g.values, ls, marker=mk, color=COLOR.get(m), alpha=al)
-    ax.set_xscale("log", base=2)
-    ax.set_xlabel(r"$k$")
-    ax.set_ylabel(r"$\mathcal{N}_{\mathrm{eff}}$")
-    ax.set_title("(c) states saturate")
+            ax.plot(g.index, g.values, ls, marker=mk, color=col, label=lab, ms=2.4)
+        ax.set_xscale("log", base=2)
+        ax.set_yscale("log", base=2)
+        ax.set_xlabel(r"$k$")
+        ax.set_ylabel("rendered count")
+        ax.set_title("(c) the horizon")
+        ax.legend(fontsize=4.6, loc="upper left", handlelength=1.2)
+    else:
+        ax.set_axis_off()
 
     ax = axes[3]
     cm = ordered(list(cap["models"].keys()))  # ablations dropped
@@ -317,6 +333,10 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--behavioural", default="data/results/behavioural_ctc.csv")
     ap.add_argument("--state", default="data/results/state.csv")
+    ap.add_argument("--behavioural-ext", nargs="+",
+                    default=["data/results/behavioural_ext_llasa.csv",
+                             "data/results/behavioural_ext.csv"],
+                    help="extension-ladder tables; missing ones are skipped")
     ap.add_argument("--summary", default="data/results/summary.json")
     ap.add_argument("--outdir", default="paper/figs")
     args = ap.parse_args()
@@ -330,8 +350,20 @@ def main() -> None:
     cap_path = Path("data/results/capacity.json")
     cap = json.loads(cap_path.read_text()) if cap_path.exists() else None
 
+    ext_frames = [pd.read_csv(p) for p in args.behavioural_ext if Path(p).exists()]
+    beh_ext = pd.concat(ext_frames, ignore_index=True) if ext_frames else None
+    if beh_ext is not None:
+        # Same exclusions as every other analysis: budget truncations are ours,
+        # not the model's, and would read as a counting failure.
+        import sys
+        sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+        from src.common.population import cap_flags
+        flags = cap_flags()
+        beh_ext = beh_ext[[not flags.get((r.model, r.item_id, r.seed), False)
+                           for r in beh_ext.itertuples()]]
+
     if beh is not None and state is not None and cap is not None:
-        fig_main(beh, state, cap, outdir / "fig_main.pdf")
+        fig_main(beh, state, cap, outdir / "fig_main.pdf", beh_ext=beh_ext)
     # supplementary figures
     if beh is not None:
         fig_dissociation(beh, outdir / "fig1_dissociation.pdf")
