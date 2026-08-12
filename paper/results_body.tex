@@ -85,8 +85,8 @@ in exactly-correct renderings --- \ExactCtl{}\% for controls against
 times in six render its non-adjacent twin correctly nineteen times in twenty. Controls are not perfect --- the residual \CtlMissPct{}\% carry
 genuine truncations --- but they are exact where the repeated items are not.
 
-Two rival explanations --- that repeated text is simply improbable, and that the
-attractor is acoustic --- are ruled out by their own predictions (S8).
+Two rivals --- that repeated text is simply improbable, and that the attractor is
+acoustic --- fail their own predictions (S8).
 
 \begin{table}[t]
 \centering
@@ -116,14 +116,21 @@ An obvious objection is circularity: rendering \emph{very} sixteen times really
 does produce monotonous audio, so a low-rank trajectory might follow from the
 stimulus rather than lost capacity. It does not. Adding realised output diversity
 (type/token ratio, adjacent-repeat rate, length) as covariates leaves the ratio
-at \CapAdjRatio{}; restricting to correctly rendered items leaves it at
-\CapCorrRatio{}, though that filter keeps \ExactCtl{}\% of controls against
-\ExactRep{}\% of repeated items and so is not like-for-like. The gain stays
-\emph{positive} in \CapPosModels{} of \ErrNModels{} checkpoints: at $k\le32$
-repetition slows state acquisition without halting it.
+at \CapAdjRatio{}, and restricting to correctly rendered items leaves it at
+\CapCorrRatio{} --- though that filter keeps \ExactCtl{}\% of controls against
+\ExactRep{}\% of repeated items, so it is not like-for-like. The gain stays
+\emph{positive} in \CapPosModels{} of \ErrNModels{}: at $k\le32$ repetition
+slows state acquisition without halting it.
 
 Lemma~\ref{lem:dilution}'s premise holds only approximately: renormalised over
-the $k$ repeated key columns, the most-attended occurrence holds
-$\ShareMedK{}/k$ of the block's mass typically and $\ShareMaxK{}/k$ at worst, so
-the extreme spread it needs is $\delta\le\DeltaMax{}$ nats (S4). Qwen3-TTS fuses
-text and acoustic embeddings per position and cannot be checked.
+the $k$ repeated key columns, the most-attended occurrence takes
+$\ShareMaxK{}/k$ of the block's mass at worst, so $\delta\le\DeltaMax{}$ nats
+(S4). It holds in
+aggregate only, and we should not claim more: \emph{within} a $(\text{model},k)$
+cell, where $k$ is fixed, items with flatter attention are counted
+\emph{better}, not worse ($r=\DilR{}$ $[\DilRLo{},\DilRHi{}]$ over \DilCells{}
+cells, all \DilNAgainst{} measures agreeing; controls give $\DilCtlR{}$
+$[\DilCtlLo{},\DilCtlHi{}]$). That reverses the lemma's direction, so dilution
+does not select which generations fail --- peaked attention plausibly marks a
+decoder already stalled, which this design cannot separate from a cause. Qwen3-TTS fuses text and
+acoustic embeddings per position and cannot be checked at all.

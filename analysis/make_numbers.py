@@ -347,6 +347,24 @@ def main() -> None:
             macros[tag + "N"] = str(v["n"])
             macros[tag + "SD"] = fmt(scale * v["sd"], 1)
 
+    # ---- does dilution explain item-level failure? (it does not) ----------
+    ds_path = Path("data/results/dilution_sufficiency.json")
+    if ds_path.exists():
+        ds = json.loads(ds_path.read_text())
+        rep = ds.get("measures", {}).get("word_rep", {})
+        ctl = ds.get("measures", {}).get("control_word", {})
+        v = rep.get("attn_share_max", {})
+        macros["DilR"] = fmt(v.get("r"), 2)
+        macros["DilRLo"] = fmt(v.get("lo"), 2)
+        macros["DilRHi"] = fmt(v.get("hi"), 2)
+        macros["DilCells"] = str(v.get("n_cells", 0))
+        macros["DilItems"] = str(v.get("n_items", 0))
+        macros["DilNAgainst"] = str(ds.get("n_against", 0))
+        c = ctl.get("attn_share_max", {})
+        macros["DilCtlR"] = fmt(c.get("r"), 2)
+        macros["DilCtlLo"] = fmt(c.get("lo"), 2)
+        macros["DilCtlHi"] = fmt(c.get("hi"), 2)
+
     # ---- CTC judge on real generated audio (field validation) ------------
     fv_path = Path("data/results/ctc_field_validation.json")
     if fv_path.exists():

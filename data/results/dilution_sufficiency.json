@@ -1,0 +1,61 @@
+{
+  "kmin": 6,
+  "n_items": 234,
+  "models": [
+    "llasa1b",
+    "llasa3b",
+    "llasa8b",
+    "xtts2"
+  ],
+  "measures": {
+    "word_rep": {
+      "attn_share_max": {
+        "r": 0.5868860315757364,
+        "lo": 0.3544011152918081,
+        "hi": 0.7510403473186377,
+        "n_cells": 23,
+        "n_items": 111
+      },
+      "attn_block_entropy": {
+        "r": 0.43416169610287914,
+        "lo": 0.16116169828540786,
+        "hi": 0.6454432173907553,
+        "n_cells": 23,
+        "n_items": 111
+      },
+      "attn_unif_dev": {
+        "r": 0.5452854513887436,
+        "lo": 0.2997204831348288,
+        "hi": 0.7230855339122413,
+        "n_cells": 23,
+        "n_items": 111
+      }
+    },
+    "control_word": {
+      "attn_share_max": {
+        "r": 0.013062022480904507,
+        "lo": -0.3428710195011469,
+        "hi": 0.3657153890270626,
+        "n_cells": 14,
+        "n_items": 70
+      },
+      "attn_block_entropy": {
+        "r": 0.16754416597623525,
+        "lo": -0.19859204039095937,
+        "hi": 0.49264272054420877,
+        "n_cells": 14,
+        "n_items": 70
+      },
+      "attn_unif_dev": {
+        "r": 0.04713002497994322,
+        "lo": -0.31243379698496915,
+        "hi": 0.39488144252030116,
+        "n_cells": 14,
+        "n_items": 70
+      }
+    }
+  },
+  "verdict": "item-level association runs AGAINST Lemma 1: within a cell, flatter attention goes with better counting",
+  "n_against": 3,
+  "n_supporting": 0
+}

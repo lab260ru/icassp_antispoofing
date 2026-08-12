@@ -3,30 +3,26 @@
 \noindent\textbf{What is proved, and what the measurements do not show.}
 The Lean artifact certifies an implication: periodic conditioning plus
 contraction implies a finite counting horizon. It does not prove that any
-transformer contracts, and two attempts to measure $q$ failed. A
-boundary-distance estimator needs a monotone text read-head, which these
-decoders do not provide --- their attention centroid advances on barely half of
-generation steps. A finite-difference perturbation probe then found no
-difference in local contraction between repeated items and their controls
-($7$ of $18$ pairs in the predicted direction, $p=0.12$), with its own linearity
-control failing (S5). The premise remains unestablished.
+transformer contracts, and two attempts to measure $q$ failed --- a
+boundary-distance estimator needs a monotone read-head these decoders lack, and
+a perturbation probe found no difference in local contraction between repeated
+items and their controls ($7$ of $18$ pairs, $p=0.12$), its own linearity control
+failing (S5). The premise remains unestablished.
 
 The theorem's distinctive prediction is a constant $N^\ast$, and where our
 original ladder stopped we could not see one --- the count still tracked $k$.
-Extending to $k=128$ found it, at $N^\ast_{\mathrm{rep}}=\HzNRep{}$ against
-$\HzNCtl{}$ for length-matched controls. We read this as locating these decoders
-just below the collapse regime at $k\le32$ rather than as confirming the bound:
-the extension covers \HzNModels{} checkpoints, and the theorem's premise is still
-unestablished, so what is shown is a horizon of the predicted kind, not one
-derived from a measured $q$. Consistent with that, the state budget grows at
-\CapRatio{} of the control rate while staying positive, and a probe finds the
-count degraded rather than erased (\ProbeRetRep{} against \ProbeRetCtl{}).
+Extending to $k=128$ found a saturation of the predicted kind, but not one
+derived from a measured $q$: the premise is unestablished and the extension
+covers \HzNModels{} checkpoints, so this locates these decoders just below the
+collapse regime rather than confirming the bound. Consistent with that, the state
+budget grows at \CapRatio{} of the control rate while staying positive, and a
+probe finds the count degraded rather than erased (\ProbeRetRep{} against
+\ProbeRetCtl{}).
 
 A conditional account risks being unfalsifiable, so we state what would refute
 it: a control with its twin's deficit; a model with the deficit whose capacity
 gain matches its control; a probe reading the count as well late as early; or
-counts still tracking $k$ past the ladder. The last was live until we ran it; the
-others remain open to anyone with the released code.
+counts still tracking $k$ past the ladder. The last was live until we ran it.
 \ErrBestModel{} is instructive: no deficit yet a capacity gap, so capacity loss
 is necessary, not sufficient.
 
@@ -46,11 +42,11 @@ policy fails~\cite{venkatesh2026repeated}; our probes favour representational
 degradation, though the two are compatible.
 
 \noindent\textbf{Implications and limits.}
-Existing mitigations act late~\cite{wang2025eliminating,xin2024ralle} and, under
-this account, help only insofar as they raise $q$ or enlarge the readout margin.
-Sweeping XTTS-v2's repetition penalty fourfold moves the deficit from
-\MitErrBest{}\% to \MitErrWorst{}\%, the \emph{wrong} way, and disabling it
-breaks the control (S7).
-Limits: the panel is English-only codec-language models with softmax attention
-over text, and CTC blank-collapse merges adjacent word copies, so high-$k$
-magnitudes err our way on repeated items only.
+Mitigations act late~\cite{wang2025eliminating,xin2024ralle} and help only if
+they raise $q$ or enlarge the margin; sweeping XTTS-v2's repetition penalty
+fourfold moves the deficit the \emph{wrong} way (S7). Limits: an English-only
+panel of codec-language models with softmax text attention, and a judge whose
+blank-collapse merges adjacent word copies, so high-$k$ magnitudes err our way.
+% Any further body text pushes the references onto a sixth page: main.tex ends
+% with \vfill\pagebreak, so the bibliography always starts on a fresh page and
+% a single spilled line costs a whole one. Check with build.sh before adding.
