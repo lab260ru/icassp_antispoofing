@@ -1,32 +1,32 @@
 % Discussion body. Hand-written; numbers come from numbers.tex.
 
 \noindent\textbf{What is proved, and what the measurements do not show.}
-The Lean artifact certifies an implication: periodicity plus contraction imply a finite counting horizon. It does not prove any transformer
+The Lean artifact certifies an implication: periodicity plus contraction imply a horizon. It does not prove any transformer
 contracts, and two attempts to measure $q$ failed --- one estimator
 needs a monotone read-head these decoders lack, and a perturbation
 probe found no difference between repeated and control items ($7/18$,
 $p=0.12$), its linearity control failing (S5).
 
 The theorem's distinctive prediction is a constant $N^\ast$, invisible where our
-ladder stopped; extending to $k=128$ found saturation of that kind,
-though not from a measured $q$. A linear probe does not separate this
+ladder stopped; $k=128$ found saturation of that kind, though not from a
+measured $q$. A linear probe does not separate this
 from the rival on which the count survives and only the output policy
 fails~\cite{venkatesh2026repeated}: it retains less on repeated text in
-\ProbeNBelowCtl{} of \ProbeNCk{} checkpoints, but the count stays decodable late
+\ProbeNBelowCtl{} of \ProbeNCk{}, but the count stays decodable late
 ($R^2$ \ProbeLateMed{}).
 
-Past the horizon the probe does test the theorem, which forbids a Lipschitz
-readout only \emph{beyond} $N^\ast$. On \PhLostName{} it reaches MAE
+Past the horizon the probe does test the theorem, which forbids a readout only
+\emph{beyond} $N^\ast$. On \PhLostName{} it reaches MAE
 \PhPastMae{} in $\log_2 k$ against \PhPastConst{} for a predictor that ignores
 the states and answers the mean, where below the horizon it reaches
 \PhBelowMae{} against \PhBelowConst{}. Range is not why: over the \emph{same}
 $k$ it still reads the count off control states (\PhCtlMae{}). But \PhKeptName{}
 keeps it (\PhKeptMae{}, the control's own margin): the prediction holds in
-\PhNLost{} of \PhNCk{}, a failure to replicate (S12).
+\PhNLost{} of \PhNCk{} --- \PhLostName{} is what the theorem predicts and the
+rival does not, \PhKeptName{} the reverse (S12).
 What would refute it: a
 control with its twin's deficit, a model whose capacity gain matches its control,
-or a probe recovering the count past the horizon --- and the third has now
-happened once.
+or a probe recovering the count past the horizon, as one just did.
 
 Closest is representational collapse~\cite{barbero2024glasses}: distinct prefixes
 converge with length, which our control separates from periodicity. Related
