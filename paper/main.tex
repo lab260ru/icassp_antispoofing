@@ -137,17 +137,17 @@ pooled into the panel. Every arm renders every item at \NSeeds{} seeds.
 \noindent\textbf{Behavioural measurement, and why the obvious judge is wrong.}
 The natural instrument, Whisper large-v3~\cite{radford2023whisper}, is
 demonstrably the wrong one: its decoder is autoregressive with a language-model
-prior, so it is subject to the very dynamics under study. Audited against concatenative
-audio with known ground truth it transcribes the repeated word \emph{exactly
-once} in every trial that returns anything (\WhisperValPer{} of the true count,
+prior, so it is subject to the very dynamics under study. Audited against concatenative audio with
+known ground truth it transcribes the repeated word \emph{exactly once} in every
+trial that returns anything (\WhisperValPer{} of the true count,
 $n{=}\AuditWhisperN{}$ over \AuditDonors{} donors), and at the two highest $k$
-returns no transcript at all --- at the top of the ladder there is no
-measurement rather than a poor one. We score instead with a CTC recogniser
+returns nothing at all --- no measurement rather than a poor one. We score instead with a CTC recogniser
 (\texttt{wav2vec2-large-960h-lv60-self}, greedy best-path, no language model),
 put through the same audit on the identical audio: ratio \CtcValPer{}
-($n{=}\AuditCtcN{}$, mean \AuditCtcMean{}). Worse in absolute WER, right here. Nor is
-the contrast an English artefact: the same audit in Spanish gives \EsCtcPer{}
-against \EsWhisperPer{} (S9, S27).
+($n{=}\AuditCtcN{}$, mean \AuditCtcMean{}). Worse in absolute WER, right here. Nor is the contrast
+an English artefact: in Spanish Whisper again returns nothing at the
+\EsWhisperNoReturn{} highest $k$, scoring \EsWhisperPer{} where it does against
+a CTC median of \EsCtcPer{} (mean \EsCtcMean{}, S9, S27).
 
 $\hat c$ is obtained by matching the target unit against the transcript's word
 sequence, counting non-overlapping occurrences in order and skipping

@@ -2922,7 +2922,19 @@ construction -- a verified $k{=}1$ rendering concatenated $N$ times with a
 short silence, exact ground truth by construction, no splicing inside a word
 -- on \emph{both} recognisers side by side, on identical audio, at
 $k\in\{2,4,8,16,32\}$, for the same six word templates plus a matched set of
-six distinct-word controls built the same way.
+six control items built the same way: each is a single verified
+\texttt{control\_word} utterance (already containing two distinct filler
+words, no repetition within it) concatenated $N$ times, exactly as the
+periodic arm concatenates a single verified word rendering $N$ times. That
+construction repeats a \emph{sentence}, not a word -- the resulting audio is
+periodic at the utterance grain, only at a coarser grain than the periodic
+arm above it -- so it is labelled below for what it is
+(\emph{repeated-sentence}) rather than as a distinct-word condition. It is
+consistent with the periodicity account, not a counterexample to it, but it
+does not supply the genuinely aperiodic comparison a reader might expect
+from a ``distinct'' label; that comparison, for Whisper specifically, is
+Table~\ref{tab:asraudit-b} above, built by cycling real distinct donor words
+together rather than repeating one utterance.
 
 The replacement is \texttt{facebook/wav2vec2-large-960h-lv60-self}: a
 connectionist temporal classification (CTC) recogniser. It has no
@@ -2947,28 +2959,40 @@ its errors are not correlated with repetition.
 \centering
 \caption{Head-to-head validation on identical synthetic ground truth
 (\texttt{data/results/ctc\_validation.json}). Median counted/true ratio,
-$k\ge4$ pooled (\texttt{\_kge4} in the committed summary).}
+$k\ge4$ pooled (\texttt{\_kge4} in the committed summary). The
+``repeated-sentence'' arm is a single verified control utterance
+concatenated $N$ times -- periodic at the sentence grain, not a genuinely
+aperiodic control (see text).}
 \label{tab:ctcval}
 \small
 \begin{tabular}{@{}llrl@{}}
 \toprule
 Recogniser & Material & $k\ge4$ ratio & Notes \\
 \midrule
-CTC & periodic (repeated word) & 1.00 & exact at every $k$ up to 32 \\
-CTC & distinct words & 1.00 & exact at every $k$ up to 32 \\
+CTC & periodic (repeated word) & 1.00 & 22/24 exact; 2 off by 1 ($k{=}16,32$) \\
+CTC & repeated sentence (control) & 1.00 & 23/24 exact; 1 off by 1 ($k{=}32$) \\
 Whisper large-v3 & periodic (repeated word) & 0.19 & no transcript at $k{=}16,32$ \\
-Whisper large-v3 & distinct words & 0.25 & no transcript at $k{=}16,32$ \\
+Whisper large-v3 & repeated sentence (control) & 0.25 & no transcript at $k{=}16,32$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The CTC recogniser counts at ratio $1.00$ at every $k$ from $2$ to $32$, on
-both periodic and distinct-word material -- no bias, in either direction, at
-any point on the ladder tested. Whisper reproduces the same undercount
+The CTC recogniser's \emph{median} ratio is $1.00$ at every $k$ from $2$ to
+$32$, on both arms, but the median is not every trial: of the 24
+$k\ge4$ periodic trials, 2 fall short (ratio $0.938$ at one $k{=}16$ donor,
+$0.969$ at one $k{=}32$ donor, each off by exactly one occurrence), and of
+the 24 repeated-sentence trials, 1 falls short (ratio $0.969$ at one
+$k{=}32$ donor). The mean tells the same story more bluntly: $0.996$ on the
+periodic arm (95\% donor-level CI $[0.988, 1.000]$,
+\texttt{data/results/judge\_audit\_ci.json}) and $0.999$ on the
+repeated-sentence arm. ``Exact at every $k$'' therefore overstates what the
+data show; the accurate claim is that the CTC judge is correct on all but 3
+of these 48 trials, and every miss is off by a single occurrence, never a
+collapsed or fabricated count. Whisper reproduces the same undercount
 pattern this validation exists to check for ($0.25$ at $k{=}4$, $0.125$ at
-$k{=}8$ on both conditions), and surfaces something the shorter sequences of
+$k{=}8$ on both arms), and surfaces something the shorter sequences of
 the earlier audit did not: every one of its transcription calls at $k{=}16$
-and $k{=}32$ -- both conditions, all twelve word templates -- raised a
+and $k{=}32$ -- both arms, all twelve word templates -- raised a
 \texttt{ValueError} and returned no transcript at all, on audio between
 roughly $40$ and $100$ seconds long. The $k\ge4$ ratios in
 Table~\ref{tab:ctcval} for Whisper are therefore computed from only the
@@ -2977,11 +3001,11 @@ $k\ge16$ is not ``low ratio,'' it is \emph{no measurement}, an operational
 fragility layered on top of the counting bias itself.
 
 This is the same test that disqualified Whisper, applied without exception
-to its replacement. The asymmetry in the result -- one recogniser exact
-throughout, the other biased and, at the top of the ladder, unable to
-produce output at all -- is the paper's warrant for treating the CTC judge as
-right for this purpose, not merely as a different choice made for
-convenience.
+to its replacement. The asymmetry in the result -- one recogniser correct on
+all but a handful of trials, each off by a single occurrence, the other
+biased and, at the top of the ladder, unable to produce output at all -- is
+the paper's warrant for treating the CTC judge as right for this purpose,
+not merely as a different choice made for convenience.
 
 \subsection{The metric: from exact match to relative count error}
 \label{sec:s9-metric}
@@ -5501,15 +5525,16 @@ Whisper (es)  & 1.00 & 0.25 & 0.125 & error & error & \textbf{0.19} \\
 \noindent Whisper-es returns no transcript at all (a hard decoder error) on
 every $k{\ge}16$ periodic trial -- at the top of the ladder there is no
 measurement rather than a poor one, exactly as S9 found for English Whisper.
-The distinct-material rows, built from six carrier/unit pairs (\emph{tan},
-\emph{claro}, \emph{hondo}, \emph{verde}, \emph{firme}, \emph{muy}) rather than
-one repeated word, confirm the CTC judge is not merely under-counting
-uniformly:
+The rows below, built from six carrier/unit pairs (\emph{tan},
+\emph{claro}, \emph{hondo}, \emph{verde}, \emph{firme}, \emph{muy}), are the
+same repeated-sentence construction as S9's English arm, not a genuinely
+aperiodic control -- each is a single verified control utterance concatenated
+$N$ times -- and are labelled accordingly:
 
 \begin{center}
 \begin{tabular}{@{}lrrrrrr@{}}
 \toprule
- & \multicolumn{5}{c}{distinct-material ground truth} & \\
+ & \multicolumn{5}{c}{repeated-sentence ground truth} & \\
 judge & $k{=}2$ & $k{=}4$ & $k{=}8$ & $k{=}16$ & $k{=}32$ & $k{\ge}4$ pooled \\
 \midrule
 CTC (es)      & 1.00 & 1.00 & 1.00  & 0.969 & 0.984 & \textbf{1.00} \\
@@ -5519,13 +5544,22 @@ Whisper (es)  & 1.00 & 0.25 & 0.125 & error & error & \textbf{0.25} \\
 \end{center}
 
 \noindent Pooled over $k{\ge}4$: CTC $1.00$ against Whisper $0.1875$ on
-periodic material, $1.00$ against $0.25$ on distinct material -- the same
-qualitative pattern as the English audit (S9), in a language with different
-orthography and a judge fine-tuned on an entirely different corpus (Common
-Voice, not LibriSpeech). Gate 1 passes on both bounds (the pre-committed band
-was $[0.90,1.10]$): the Spanish judge is not merely undercounting less than
-Whisper, it is unbiased on ground truth where truth is known. This is the
-result now in the main paper as $1.00$ against $0.19$ (S9, S27).
+periodic material, $1.00$ against $0.25$ on repeated-sentence material -- the
+same qualitative pattern as the English audit (S9), in a language with
+different orthography and a judge fine-tuned on an entirely different corpus
+(Common Voice, not LibriSpeech). As in S9, these pooled figures are medians
+and understate the spread in the underlying trials, more so here than in
+English: over the same 24 $k\ge4$ periodic trials the CTC(es) mean ratio is
+$0.931$ (14/24 exact), driven by one donor (\emph{veloz}) falling to
+$0.50$--$0.56$ at $k\ge8$; over the 24 repeated-sentence trials the mean is
+$0.806$ (13/24 exact), because one donor (\emph{tan}) is never recovered at
+any $k$ (ratio $0.0$ throughout) while the other five are close to exact.
+Gate 1's pass/fail check compares the medians above, not these means, against
+the pre-committed band ($[0.90,1.10]$), and the medians pass: the Spanish
+judge is not merely undercounting less than Whisper. ``Unbiased'' is a claim
+about that gate, though, not about every trial underneath it -- \emph{veloz}
+and \emph{tan} are donor-level counterexamples the median does not show. This
+is the result now in the main paper as $1.00$ against $0.19$ (S9, S27).
 
 Gate 2, the vocabulary audit, also passes cleanly: all six Spanish templates
 (\texttt{et1}--\texttt{et6}) clear the $0.05$ delivery floor with zero

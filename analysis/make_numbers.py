@@ -1151,6 +1151,20 @@ def main() -> None:
         if es:
             macros["EsCtcPer"] = fmt(es["periodic_ctc_kge4"], 2)
             macros["EsWhisperPer"] = fmt(es["periodic_whisper_kge4"], 2)
+        # The medians hide the tail, and the Spanish Whisper aggregate is
+        # conditioned exactly as the English one is: at the two highest k every
+        # call errored and returned a -1 sentinel, so 0.19 is a k=4,8 figure.
+        # Both facts are reported rather than left in the median.
+        trials = json.loads(es_path.read_text()).get("trials", [])
+        per_ctc = [t["counted"] / t["true"] for t in trials
+                   if t["kind"] == "periodic" and t["judge"] == "ctc"
+                   and t["true"] >= 4 and t["counted"] >= 0]
+        if per_ctc:
+            macros["EsCtcMean"] = fmt(sum(per_ctc) / len(per_ctc), 2)
+        errs = {t["true"] for t in trials
+                if t["kind"] == "periodic" and t["judge"] == "whisper"
+                and t["counted"] < 0}
+        macros["EsWhisperNoReturn"] = WORDS.get(len(errs), str(len(errs)))
 
     # ---- equivalence bounds for the nulls ---------------------------------
     # A CI containing zero is not evidence of absence. These are the smallest
