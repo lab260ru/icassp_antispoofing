@@ -380,3 +380,48 @@ constraints in code rather than in a README.
 `\vfill\pagebreak`, so a single spilled body line costs a whole page. Every
 addition must be paid for by a cut. Check with the pypdf snippet in
 `implementation-notes.md` before and after any edit.
+
+## 2026-08-12 (late) — the penalty is dead in two architectures
+
+`analysis/penalty_confound.py`, now with Qwen3-TTS-0.6B swept over
+1.0/1.05/1.5/3.0 alongside XTTS-v2's 1.0-8.0:
+
+    XTTS-v2, 4x range           repeated exact 15.6-21.1%
+    Qwen3-TTS-0.6B, 3x range    repeated exact  7.8-16.7%
+    Qwen3-TTS-0.6B, PENALTY OFF repeated 10.0% vs control 100.0%
+    Llasa (ships no penalty)    repeated 14.0% vs control 92.9%
+
+**The zero-penalty Qwen arm is the one to quote.** Disabling XTTS-v2's penalty
+also collapses its *control* (30.9%), so that arm is uninformative about
+repetition; Qwen's control is unharmed at zero penalty, so the comparison can
+actually be made. A model that normally ships a penalty, run without one, shows a
+90-point gap.
+
+The two architectures disagree on the sign of the slope (-0.37 vs +3.95 points
+per unit of penalty), which is the signature of a lever not acting on the
+quantity that governs the effect.
+
+**Rule for future arms:** fit slopes only over arms whose control survives. An
+arm that cannot render the control says nothing about repetition, and including
+it makes the sweep look responsive when it is not.
+
+### The judge's noise floor (`analysis/noise_floor.py`)
+
+    two CTC recognisers disagree by  0.47 repetitions (0.79 at k>=12)
+    mean repetitions missing, k>=6:  0.87  = 1.9x that floor
+
+The per-item effect is thin and the paper says so. What carries it: the control
+passes the same judge and is exact 94.3% of the time (indiscriminate half-count
+noise cannot produce that), and where the two recognisers disagree **ours reports
+the higher count in 11 of 13 cases** — our judge under-states the deficit. A more
+accurate recogniser would report a larger effect, not a smaller one.
+
+Do not quote a single item as evidence. The claim lives in the rate across
+hundreds of generations and in the control contrast.
+
+### Released for verification
+
+`data/audio_sample/` — 165 clips, 7 MB, 16 kHz mono Opus (what the judge
+consumes), one per (model, family, k-band, outcome), all eight outcome classes.
+`manifest.csv` pairs each with stimulus text, transcript, counts and label. Built
+by `scripts/make_audio_sample.py`.
