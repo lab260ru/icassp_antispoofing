@@ -5135,7 +5135,279 @@ on the released sample is the obvious thing a follow-up should do, and the sampl
 exists so that it can be done without regenerating anything.
 
 
-\bibliographystyle{IEEEtran}
-\bibliography{../refs}
+% ============================================================
+\section{A causal intervention on the count, reported uninterpretable}
+\label{sec:s26}
+
+Every mechanistic claim this project makes about the count is correlational: a
+ridge probe reads $\log_2 k$ off Llasa-1B's residual stream (S12), and S24
+showed that readability degrades with $k$. Neither result distinguishes the
+account this paper argues for -- the count is erased from the state -- from the
+rival it has never been able to exclude: the count survives in the
+representation and only the output policy that reads it fails. Separating them
+needs a manipulation of the readout at fixed state, not another probe. We ran
+one. It did not come back a hit for either account, and it did not come back a
+clean null either. It came back uninterpretable, and this section documents why,
+in the same detail S5 gives the estimator that failed on Theorem~A.
+
+The code is \texttt{analysis/causal\_count.py} (generation) and
+\texttt{analysis/causal\_count\_score.py} (the pre-committed scoring rule,
+written into that file's docstring before any audio existed). The artifacts:
+
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\toprule
+file & contents \\
+\midrule
+\texttt{data/results/causal\_count.json} & the scored verdict, both arms \\
+\texttt{causal\_patch1b\_manifest.jsonl} & Arm A, per-generation records \\
+\texttt{causal\_steer1b\_manifest.jsonl} & Arm B, per-generation records \\
+\texttt{causal\_patch1b\_flags.json} & Arm A audio-degeneracy flags \\
+\texttt{causal\_steer1b\_flags.json} & Arm B audio-degeneracy flags \\
+\texttt{causal\_steer\_directions.json} & the two steering directions \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent (the last five under \texttt{data/results/}).
+
+\subsection{The design}
+
+\textbf{Arm A -- activation patching.} A repeated \texttt{word\_rep} item at
+receiver $k\in\{16,24,32\}$ (three carrier templates, two seeds) is teacher-forced
+through its own first $P{=}128$ generated positions, then at one layer
+$L\in\{3,7,11\}$ the residual stream at exactly those positions is overwritten
+with the states a \emph{donor} item had at the same generated positions, and
+generation resumes with the hook removed. Because the key/value cache above $L$
+is rebuilt from the patched states, everything the model attends to from that
+window onward is donor-derived. Donors, per receiver:
+
+\begin{itemize}
+\item \textbf{cross-$k$} -- the same carrier asking for a different $k$ on the
+  ladder ($\{8,32\}$ or $\{8,16\}$ depending on the receiver). The informative
+  donor: if the count is causal, a higher-$k$ donor should push the rendered
+  count up and a lower-$k$ donor down.
+\item \textbf{control} -- the length-matched distinct-word control at the
+  receiver's own $k$.
+\item \textbf{same-$k$, different seed} (``diffseed'') -- the identical item,
+  identical $k$, a different sampling seed. No positional offset, no count
+  difference: it isolates ``the state moved'' from ``the count moved''.
+\item \textbf{unrelated} -- a repeated-\emph{sentence} item from a different
+  family, a different carrier, no matching adverb, and no information about the
+  receiver's $k$. The disruption control: if states that cannot possibly encode
+  the receiver's count move the rendered count as much as an informative donor
+  does, the protocol is perturbing generation rather than transplanting a count.
+\item \textbf{self} -- the receiver's own captured states. The no-op gate.
+\end{itemize}
+
+\noindent Every patched run is scored against a \emph{resume reference}: the
+identical $P$-token prefix, continued with no hook, same seed -- not against the
+receiver's own free generation, which draws from the sampler's random stream at
+a different offset. The readout is the CTC judge's rendered count on
+$\log(1+\text{count})$, paired within receiver run against its own reference,
+because Llasa-1B's rendered count on repeated text is heavy-tailed enough that
+single-seed values of 3 and 476 both occur at $k{=}24$.
+
+\textbf{Arm B -- steering.} A count direction $\hat v$ is built at layer 13 (and,
+as a check, layer 7) from activations already on disk (54 \texttt{word\_rep}
+items), two ways: the difference-in-means of terminal states between low
+$k\in\{2,3,4\}$ and high $k\in\{16,24,32\}$ items (``dim''), and the ridge probe's
+weight vector (``ridge''). $\alpha\Delta\hat v$ is added to the residual stream
+at every generated position, $\alpha\in\{-2,-1,-0.5,0,0.5,1,2\}$ for the primary
+(dim, layer 13) direction, $\{-1,1\}$ for the others, on eight \texttt{word\_rep}
+items and eight length-matched \texttt{control\_word} items ($k\in\{16,32\}$,
+four carrier templates). $\alpha{=}1$ means ``move the state by one full
+low-$k$-to-high-$k$ step''; at layer 13 that step has norm $17.0$ against a
+mean per-position state norm of $37.8$, so $\alpha{=}1$ already adds a vector
+that is $45\%$ of a position's own norm, $\alpha{=}2$ is $90\%$
+(\texttt{causal\_steer\_directions.json}). A direction that is about the count
+should move the repeated arm more than the length-matched control; one that is a
+generic ``say more speech'' knob should move both.
+
+\subsection{The sanity gate, which passed}
+
+Both arms have a bitwise gate, run before either is interpreted. The no-op
+self-patch must reproduce its resume reference bitwise, and $\alpha{=}0$
+steering must reproduce the free baseline bitwise. Both passed at $100\%$:
+
+\begin{center}
+\begin{tabular}{lrl}
+\toprule
+gate & $n$ & result \\
+\midrule
+Arm A: self-patch = resume reference & 18 & 18/18 bitwise identical \\
+Arm B: $\alpha{=}0$ = free baseline   & 18 & 18/18 bitwise identical \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent \texttt{sanity\_gate\_pass} is \texttt{true} in the JSON. The
+intervention machinery -- the hook, the position bookkeeping, the resume
+protocol -- works exactly as designed. Everything that follows is a property of
+the result, not of the instrument.
+
+\subsection{The verdict: too disruptive to interpret}
+
+\texttt{causal\_count.json}'s \texttt{verdict} field reads: \emph{``intervention
+too disruptive to interpret: states from an unrelated item move the rendered
+count 134\% as much as a donor that actually differs in $k$ \ldots\ neither a
+causal hit nor a null can be read off it.''} This is a third, pre-committed
+outcome (docstring of \texttt{causal\_count.py}), checked \emph{before} either
+a hit or a null is considered, because a broken instrument and a true null look
+identical in a table of medians. It is triggered by \texttt{D1}, the
+unrelated-donor check: at the one cell where every donor kind was run (layer 7,
+$P{=}128$), the median absolute paired shift from an unrelated donor is
+$1.037$ in $\log(1{+}\text{count})$ against $0.771$ for the informative
+cross-$k$ donor at the same cell -- a ratio of $1.34\times$
+(\texttt{disruption\_index}: \texttt{"L7\textbar P128": 1.34}). States that
+carry no information whatsoever about the receiver's $k$ move the rendered
+count \emph{more} than states that do. \texttt{D2} (degeneracy inflation) did
+not fire -- degenerate-audio rate is $0.0\%$ in both the reference and patched
+arms -- so the disruption is not the patch turning speech to noise; it shows up
+in the count and the stop decision while the audio itself stays intelligible.
+
+Two further numbers corroborate the same reading without being part of the
+pre-committed test. Pooled over every non-self patched condition against every
+resume reference:
+
+\begin{center}
+\begin{tabular}{lrrrr}
+\toprule
+arm & $n$ & cap-hit \% & stop \% & degenerate \% \\
+\midrule
+reference (resume, no hook) & 19  & 15.8 & 84.2 & 0.0 \\
+patched (any non-self donor) & 163 & 37.4 & 62.6 & 0.0 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent Patching more than doubles the cap-hit rate (a run that never emits
+its own end-of-speech token and is truncated by the token budget) and drops the
+fraction that stop on their own from $84.2\%$ to $62.6\%$ -- and this is not
+unique to the unrelated donor: even the length-matched \emph{control} donor,
+which shares the receiver's $k$ and carries no count prediction at all, hits the
+cap on $44.4\%$ of its 18 runs. Splicing donor states into this decoder disrupts
+whatever process decides to stop, essentially regardless of what the donor's
+states actually encode.
+
+Against this background, no cell clears the pre-committed hit bar. At the
+central cell (layer 7, $P{=}128$, $n{=}36$ paired cross-$k$ patches), the
+higher-$k$ donor does move the count up (median $+0.118$, raw sign-test
+$p{=}0.039$) and the lower-$k$ donor down (median $-0.717$, $p{=}0.541$) --
+the opposite-directions requirement (\texttt{A1\_opposite\_directions}) is
+satisfied -- but the cell's own Holm-corrected $p$ is $0.261$, so
+\texttt{A1\_signed\_shift} is \texttt{false}. The same-$k$-different-seed
+control moves the count by $-0.077$, which is \emph{not} comfortably smaller
+than half the cross-$k$ cell's own median ($0.070$), so
+\texttt{A2\_not\_generic\_state} is \texttt{false} too: a donor that agrees
+with the receiver about the count moves the rendered count almost as much as a
+donor that disagrees. Restricted to the clean subset (no cap-hit, no
+degenerate run on either side of the pair, $n{=}19$), the median shift flips
+sign to $-0.123$, failing \texttt{A3\_survives\_cleaning}. The two other depths
+tested fare no better -- layer 3 ($n{=}36$, median $+0.197$, $p_{\text{holm}}{=}0.449$,
+opposite-directions \texttt{false}) and layer 11 ($n{=}36$, median $+0.080$,
+$p_{\text{holm}}{=}1.0$). \texttt{hits} is the empty list at every layer, and
+\texttt{causal\_hit} for Arm A is \texttt{false} -- but given the disruption
+index above, that \texttt{false} is not evidence of a null: the protocol that
+produced it cannot be trusted to distinguish a null from a broken splice.
+
+\subsection{Arm B's outcome}
+
+The primary direction (dim, layer 13) clears none of its three pre-committed
+conditions on the repeated arm:
+
+\begin{center}
+\begin{tabular}{rrrrr}
+\toprule
+$\alpha$ & median count & degenerate \% & cap-hit \% & stop \% \\
+\midrule
+$-2.0$ & 0  & 100.0 & 100.0 &   0.0 \\
+$-1.0$ & 0  & 100.0 & 100.0 &   0.0 \\
+$-0.5$ & 0  &  55.6 & 100.0 &   0.0 \\
+$+0.0$ & 13 &   0.0 &  22.2 &  77.8 \\
+$+0.5$ & 13 &   0.0 &   0.0 & 100.0 \\
+$+1.0$ & 0  &  22.2 &   0.0 & 100.0 \\
+$+2.0$ & 0  &  66.7 &   0.0 & 100.0 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent \textbf{B1 (dose-response) fails.} The rendered count collapses to
+$0$ at \emph{both} extremes rather than rising monotonically toward the
+high-$k$ end, and the pooled Spearman correlation over all (item, $\alpha$)
+pairs is $\rho{=}0.187$ ($p{=}0.142$), short of the pre-committed $|\rho|>0.5$,
+$p<0.05$ bar, despite $87.5\%$ of items agreeing in sign (\texttt{B1\_dose\_response}:
+\texttt{false}). \textbf{B2 (not degenerate) fails.} Degenerate-plus-empty rate
+at $|\alpha|{=}2$ reaches $100.0\%$ ($-2.0$) and $66.7\%$ ($+2.0$) against
+$0.0\%$ at baseline, both far past the $15$-point pre-committed tolerance
+(\texttt{B2\_not\_degenerate}: \texttt{false}). \textbf{B3 (specificity) fails,}
+and in the wrong direction. The one contrast that survives the extremes'
+degeneracy is the paired $\alpha{=}{+1}$ vs.\ $\alpha{=}{-1}$ shift within item:
+on the \texttt{control\_word} arm it is a median $+1.10$ in $\log(1{+}\text{count})$,
+$6$ of $6$ non-tied items positive, sign-test $p{=}0.031$; on the
+\texttt{word\_rep} arm it is a median $0.0$, $3$ of $3$ non-tied items positive
+(five items tied at zero on both sides), $p{=}0.25$. The control that carries no
+count prediction moves \emph{more}, and significantly so, than the repeated arm
+the direction is supposed to be specific to -- backwards from what a count
+direction predicts (\texttt{B3\_specific}: \texttt{false}). We flag one
+artifact in the JSON rather than let it stand uncommented:
+\texttt{effect\_ratio\_rep\_over\_ctl} reads \texttt{Infinity}, but this is a
+division-by-zero in the summary statistic (both arms' effect medians, taken
+between the $\alpha{=}{\pm}2$ extremes, are exactly $0.0$ because generation has
+already collapsed to empty output at both extremes in both arms), not evidence
+of an infinitely count-specific direction; the paired $\pm1$ contrast above is
+the number that is actually informative, and it argues against specificity.
+
+\subsection{Why this matters methodologically: the control that was missing}
+
+The repository's history preserves an earlier pass through this exact protocol,
+scored before the grid was filled out: 6 resume references, 13 patched runs, cap-hit
+$50.0\%$ (reference) and $46.2\%$ (patched), spread thin over three window
+lengths ($P\in\{32,128,384\}$) that the script's own comments call ``the pilot's
+first pass'' -- about two pairs per cell, ``which cannot decide anything.''
+Critically, that pass had not yet reached the unrelated-donor condition: its
+cell table has no \texttt{unrelated} entry at all. Scored as it stood, the
+verdict was \emph{``count decodable but not causally used: the sanity controls
+pass, so the intervention machinery works, and neither patching donor states
+nor steering along the count direction moves the rendered count toward the
+donor's $k$ at any locus tested''} -- a clean, reportable null.
+
+Continuing the same manifest to $163$ patched runs and $19$ references,
+concentrating the whole layer sweep on $P{=}128$ instead of splitting it three
+ways, and -- the change that mattered -- adding the unrelated-donor condition,
+overturned that reading. It was not that the informative donors started moving
+the count; \texttt{hits} is still empty. It is that the disruption control
+revealed the null could not be trusted: an uninformative donor moves the count
+as much as an informative one, so ``neither donor moved the count'' is
+indistinguishable, in this protocol, from ``the protocol cannot register a
+donor-carried count difference at all.'' Without the unrelated-donor arm, this
+experiment would have shipped exactly the null quoted above -- confidently, and
+wrongly, since a null that cannot rule out a broken instrument is not a null.
+We record this rather than only the final verdict because the lesson is about
+the design, not just this result: a causal null is only as good as its
+disruption control, and this one did not exist until the second pass. (We can
+confirm from \texttt{data/results/causal\_count.json}'s git history that the
+donor pool, sample size, and cell coverage changed between the two passes; we
+cannot independently confirm from version control alone that the per-run token
+budget itself was raised between them, since the committed script already sets
+it to the value used throughout -- the two passes differ in how much of the
+same grid had been filled in, not necessarily in the generation budget per run.)
+
+\subsection{What would make this testable}
+
+The common thread across both arms is that the intervention itself is heavy
+enough to dominate whatever it is trying to isolate: Arm A overwrites the full
+residual-stream vector at every one of 128 consecutive positions at one layer,
+and even the same-$k$ control donor drives cap-hit to $44.4\%$; Arm B's
+$\alpha{=}1$ step is already $45\%$ of a position's own state norm. A less
+disruptive design is the obvious next attempt: steering at a fraction of the
+magnitude used here (the $\alpha\in[0,0.5]$ region is the only one that leaves
+Arm B's repeated arm non-degenerate); patching a narrower window or fewer
+dimensions per position rather than the whole state; or intervening directly on
+the stop logit -- the end-of-speech decision itself -- rather than on the
+residual stream several layers upstream of it, since the stop decision, not the
+count, is what this paper's account is ultimately about.
+
+
 
 \end{document}
