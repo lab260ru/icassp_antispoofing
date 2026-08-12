@@ -11,9 +11,26 @@ Two passes per item:
   2. **Instrument** (optional) — one teacher-forced forward over
      [prompt + generated tokens] with `output_hidden_states=True`, plus hooks on
      probe attention layers that slice the attention row down to the text span.
-     Because the model is causal, position `t` of this pass carries exactly the
-     state that produced token `t` during generation, so a single clean forward
-     recovers the whole trajectory without touching `generate()` internals.
+     Because the model is causal, a single clean forward recovers the whole
+     trajectory without touching `generate()` internals.
+
+     **The saved arrays are offset from each other by one step.** `hidden` and
+     `attn_*` are sliced `[plen:]`, so index `t` is the state left *after* token
+     `t` was emitted; `entropy` and `top1` come from `logits[plen-1:-1]`, so
+     index `t` is the distribution that *produced* token `t`. Our step `t` is
+     therefore their step `t+1`. Anything that joins the two — reading a logit
+     off a stored hidden state, or aligning attention to a predicted token —
+     must shift one of them. Getting this wrong is not loud: reconstructing the
+     EOS logit from the last probe layer gives 0.075 nats of error when shifted
+     and 3.55 nats when not, which looks like a bad probe rather than a bad
+     index. An earlier version of this docstring asserted that position `t`
+     carries the state that produced token `t`, which is false for the arrays as
+     sliced.
+
+     Note also that the last probe layer is already post-final-RMSNorm
+     (`transformers` appends `norm(h)` as the final `hidden_states` element), so
+     exact logits are one matmul with `lm_head.weight` — no forward pass needed.
+     Llasa-1B ties embeddings; Llasa-8B does not.
 
 Usage:
   python src/models/llasa_gen.py --model llasa1b --gpu 0 --seeds 0 1 2

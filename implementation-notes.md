@@ -351,3 +351,38 @@ in 11 of 13 disagreements" was n=60. At full n it is 65.9% over all k and 72.2%
 at k>=6 (61.2% and 67.1% on the repeated arm alone). Still net in our disfavour,
 i.e. our judge still under-states the deficit, but the 85% figure was optimistic
 and must not be quoted.
+
+## The stop-head analysis, and the traps it found
+
+`analysis/stop_head.py` asked what the EOS logit reads -- decoded count, or
+elapsed duration. It came back negative and is documented rather than promoted.
+The traps it surfaced matter beyond that one analysis.
+
+* **`hidden` and `entropy`/`top1` in the instrumented npz are offset by one
+  step.** `hidden`/`attn_*` are sliced `[plen:]` (the state left *after* token
+  t); `entropy`/`top1` come from `logits[plen-1:-1]` (the distribution that
+  *produced* token t). Anything joining the two must shift one. This fails
+  quietly: reconstructing the EOS logit gives 0.075 nats of error shifted and
+  3.55 unshifted, which reads as a bad probe rather than a bad index. The
+  docstring in `src/models/llasa_gen.py` asserted the wrong alignment and is
+  fixed.
+* **The last probe layer is already post-final-RMSNorm**, so exact logits are
+  one matmul with `lm_head.weight` -- no forward pass, no model load. Llasa-1B
+  ties embeddings; Llasa-8B does not.
+* **Oracle contamination is easy here.** `t/T_item` and `k*t/T_item` score
+  R^2 0.27-0.55 and mean nothing: they equal 1.0 at the stop step by
+  construction, i.e. they encode the event being explained.
+* **Never regress the stop time on log k for word_rep.** k=2->8 adds six words
+  to an eleven-word carrier, so the slope is mechanically attenuated at low k
+  for reasons unrelated to counting. Regress on expected words.
+* **True count-so-far is not measurable in this decoder.** Boundary
+  localisation needs the monotone text read-head that killed the first q
+  estimator. Only the probe's decoded count is available.
+* **The design confounds requested count with text length inside the repeated
+  arm** -- they are the same variable there. So no representational analysis on
+  repeated items alone can distinguish "encodes the count" from "encodes how
+  much text there is"; only the matched control separates them, and it does so
+  behaviourally. This is now stated in the paper.
+* I/O, not GPU, is the cost: ~10 GB per family off a shared spinning disk,
+  2-8 MB/s under sibling load, ~75 min for the first build. A cache lives at
+  `/home/kirill/mnt/hdd_6tb_1/icassp_tts/stop_head_cache/` and reruns take ~1 min.

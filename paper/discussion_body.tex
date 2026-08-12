@@ -13,15 +13,15 @@ extension horizon (\PhAllNames{}) reach \PhAllRatios{} of its error: the
 prediction holds in \PhNLost{}, \PhClearName{} plainly \emph{keeps} the count
 past the horizon, which the bound forbids, and the third sits in a
 \PhTieBand{}\% band where neither reading holds. Range is not the explanation
-(controls read \PhCtlRatio{} over the same $k$). At $n=\PhNCk{}$ this is
-inconclusive and we report it for transparency.
+(controls read \PhCtlRatio{} over the same $k$), but at $n=\PhNCk{}$ this is
+inconclusive and reported for transparency.
 
 This bears on the live rival. On the state-contraction account the count is
 erased from the state; on the output-policy
 account~\cite{venkatesh2026repeated} it survives and only the policy reading it
 fails. Repetition does cost retention relative to the control in all
-\ProbeNBelowCtl{} of \ProbeNCk{} checkpoints, as contraction predicts --- but
-the count is not erased: it stays decodable late ($R^2$ \ProbeLateMed{}) and
+\ProbeNBelowCtl{} of \ProbeNCk{}, as contraction predicts --- but the count is
+not erased: it stays decodable late ($R^2$ \ProbeLateMed{}) and
 repeated-item retention exceeds $1$ in \ProbeAboveOne{}, the probe reading it
 \emph{better} deeper in. Deciding between them needs a manipulation of the
 readout at fixed state, which we did not run; as things stand the
@@ -32,30 +32,30 @@ Closest is representational collapse~\cite{barbero2024glasses}: distinct
 prefixes converge with length, which our control separates from periodicity.
 Counting-specific expressivity results reach a compatible conclusion another way
 --- transformers count only under conditions on precision, depth and positional
-encoding~\cite{yehudai2024when,salzer2025counting,zhang2024counting}, and
+encoding~\cite{yehudai2024when,salzer2025counting,zhang2024counting}, with
 single-pass bounds~\cite{hahn2020theoretical,strobl2024formal} and state
-tracking~\cite{li2025statetracking} bracket it. The two predict differently, which
-is the point of the control: an inductive-bias limit is a property of the model
-and holds at fixed periodicity as length grows, while a contraction limit is a
-property of the \emph{conditioning}. Ours varies periodicity at fixed length,
-and the result is the periodicity-specific one --- whether contraction is the
-reason remains open.
+tracking~\cite{li2025statetracking} bracketing it. The two predict differently,
+which is the point of the control: an inductive-bias limit is a property of the
+model and survives at fixed periodicity, a contraction limit is a property of
+the \emph{conditioning}. Ours varies periodicity at fixed length, and the
+result is periodicity-specific.
 
 \noindent\textbf{What the design does not separate.}
-Our manipulation varies periodicity and \emph{verbatim token identity} together,
-so ``periodicity'' here should be read as the pair. Neither is separated from
-\emph{training-set frequency}: $k$-fold verbatim repetition is far rarer in
-speech corpora than a length-matched sentence of distinct words, so an
-out-of-distribution account predicts the same dissociation. The duration story
-about VITS and F5-TTS rests on one model per strategy and is a hypothesis, not
-a contrast. Exclusions are rule-based and applied by script without reference to
-arm or score; no per-item judgement was made.
+Our manipulation varies periodicity and \emph{verbatim token identity}
+together, so ``periodicity'' here is the pair; and neither is separated from
+\emph{training-set frequency}, since $k$-fold verbatim repetition is far rarer
+in speech corpora than a length-matched sentence of distinct words, so an
+out-of-distribution account predicts the same dissociation. Within the repeated arm the
+requested count and the amount of text are one variable, so a probe decoding $k$
+from decoder states cannot be said to decode a \emph{count} rather than a
+length; only the control separates those, and behaviourally. The VITS/F5-TTS duration story rests on one model per strategy
+and is a hypothesis, not a contrast. Exclusions are rule-based, applied by script
+without reference to arm or score.
 
 \noindent\textbf{Limitations.}
 The panel is \NFamilies{} families and English the only language tested. The
 judge is validated against concatenative ground truth, not against human
-listeners on generated audio; the \SampleN{}-clip sample ships so any scoring
-decision can be checked by ear, and we report no human agreement statistic
-because we ran no listening study. What would refute the periodicity
-claim is a control arm carrying its twin's deficit at matched length, or a
-checkpoint whose exact-rate gap runs the other way. Neither appeared.
+listeners on generated audio, and we report no agreement statistic because we
+ran no listening study. What would refute the claim is a control arm carrying
+its twin's deficit at matched length, or a checkpoint whose gap runs the other
+way; neither appeared.
