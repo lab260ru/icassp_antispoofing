@@ -51,12 +51,12 @@ because the obvious autoregressive judge is itself biased against repetition,
 models render repeated text with a median count error of \ErrRep{}\% at $k\ge6$
 and are exact in \ExactRep{}\% of generations, against \ExactCtl{}\% for
 length-matched \emph{distinct}-word controls: the limit tracks periodicity, not
-length, in every checkpoint and every family --- though not peculiar to
+length, in every checkpoint and every family --- though perhaps not peculiar to
 autoregressive decoding: of two non-autoregressive baselines, one is immune and
 one is not. Up to $k=32$ the count stays proportional rather than saturating, so
 no horizon is visible there; a post-hoc extension to $k=128$ finds one,
 repetition lowering the fitted saturation scale \HzRatio{}-fold, though not in
-one checkpoint of the \NModels{}. We do \emph{not} establish the theorem's premise: two
+one of the \HzNModels{} checkpoints that can utter anything that long. We do \emph{not} establish the theorem's premise: two
 attempts to measure the contraction factor failed and a dose-response test of the
 dilution lemma came out sign-reversed. Its \emph{conclusion} survives one
 direct test --- a linear readout recovers the count from decoder states below the
@@ -97,9 +97,10 @@ The failure is thus predicted to depend on \emph{periodicity}, not on length: a
 sequence of $k$ distinct words should survive where $k$ identical ones do not.
 That contrast is the sharpest test we run.
 
-We contribute a quantitative impossibility result for repetition counting in AR
-decoders, with an explicit horizon in the contraction factor, orbit scale and
-readout margin; a machine-checked proof of it and of the attention-dilution
+We contribute a conditional impossibility result for repetition counting in AR
+decoders, its horizon explicit in the contraction factor, orbit scale and readout
+margin --- explicit as a formula, since we never measure those quantities for any
+checkpoint; a machine-checked proof of it and of the attention-dilution
 lemma, in Lean~4 over \texttt{mathlib} with a reproducible axiom audit --- to our
 knowledge the first hallucination result in speech synthesis carried out as a
 formal artifact; and a parametric repetition-ladder benchmark with matched
