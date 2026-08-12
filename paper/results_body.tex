@@ -8,7 +8,7 @@
 $k$, CTC judge: exact below $k\!=\!6$, then a one-directional deficit that stays
 roughly proportional rather than saturating. (b) The same repeated items (solid)
 against their length-matched controls (dashed), in which the repeated word is
-replaced by $k$ distinct fillers --- control medians sit at zero throughout.
+replaced by non-adjacent fillers --- control medians sit at zero throughout.
 (c) Effective rank of the generation trajectory: it grows more slowly under
 repetition. (d) Fitted capacity gain, 95\% bootstrap intervals over stimulus
 templates.}
@@ -49,14 +49,13 @@ repeated unit is a word, a sentence or a place-value pattern.
 
 Figure~\ref{fig:main}(b) is the paper's sharpest test. Each control has its
 twin's carrier and word count, differing only in that the $k$ copies of one word
-become $k$ distinct words. Were the failure about sequence length, attention span
+become $k$ non-adjacent ones. Were the failure about sequence length, attention span
 or exposure bias, the curves would coincide. They do not: at $k\ge6$ the median
 control error is \ErrCtl{}\% $[\ErrCtlLo{}, \ErrCtlHi{}]$ over $n=\ErrCtlN{}$
 generations, at every $k$ up to $32$, for every model. The contrast is sharpest
 in exactly-correct renderings --- \ExactCtl{}\% for controls against
-\ExactRep{}\% for their twins: the same decoders that miscount a repeated
-sequence five times in six get thirty-two \emph{different} words right nineteen
-times in twenty. Controls are not perfect --- the residual \CtlMissPct{}\% carry
+\ExactRep{}\% for their twins: decoders that miscount a repeated sequence five
+times in six render its non-adjacent twin correctly nineteen times in twenty. Controls are not perfect --- the residual \CtlMissPct{}\% carry
 genuine truncations --- but they are exact where the repeated items are not.
 
 Two rival explanations --- that repeated text is simply improbable, and that the
@@ -104,6 +103,6 @@ repeated keys}. Renormalised over those columns, profile entropy grows with
 $\log k$ at slope \BlockEntropySlope{} and the most-attended occurrence holds
 $\ShareMedK{}/k$ of the block's mass typically, $\ShareMaxK{}/k$ at worst: the
 extreme spread Assumption~\ref{ass:periodic} needs is $\delta\le\DeltaMax{}$
-nats, so attention is near-uniform typically but not uniformly so (S6).
+nats, so attention is near-uniform typically but not uniformly so (S4).
 Qwen3-TTS sums text and acoustic embeddings per position, so the lemma cannot be
 checked there.

@@ -3042,6 +3042,220 @@ verified rendering and a splice, and is cheap enough to run as a standard
 validity check before treating any transcript-based repetition count as
 neutral with respect to the phenomenon it is being used to measure.
 
+
+\subsection{The judge on real generated audio}
+\label{sec:s9-field}
+
+The audit in Section~\ref{sec:s9-audit} used concatenative audio with known
+ground truth, which establishes what each recogniser does to periodic speech but
+not what it does to \emph{our models'} speech. This section validates the CTC
+judge on the generated audio the paper actually scores. Four checks, run by
+\texttt{analysis/ctc\_field\_validation.py}; the raw results are in
+\texttt{data/results/ctc\_field\_validation.json}.
+
+\paragraph{Whisper's failure on real audio is worse than de-duplication.}
+Comparing the two judges where models are reliable (control items at all $k$,
+repeated items at $k\le3$) gives 83.0\% exact agreement over $n=1729$. Divergence
+grows with $k$ on repeated items only, reaching a mean absolute difference of
+roughly $180$ words --- far too large to be a counting disagreement. A
+ground-truth-free plausibility check settles what is happening. Dividing
+transcript length by audio duration gives an implied speaking rate, and human
+speech does not exceed about four words per second:
+
+\begin{center}
+\begin{tabular}{rrrr}
+\toprule
+$k$ & $n$ & CTC median wps & Whisper median wps \\
+\midrule
+1 & 296 & 2.07 & 2.07 \\
+2 & 347 & 2.15 & 2.01 \\
+3 & 168 & 2.31 & 2.23 \\
+4 & 381 & 2.08 & 1.91 \\
+6 & 202 & 2.23 & 2.08 \\
+8 & 168 & 2.26 & 2.16 \\
+12 & 168 & 2.27 & 2.24 \\
+16 & 167 & 2.31 & 2.57 \\
+24 & 102 & 2.34 & 12.30 \\
+32 & 102 & 2.07 & 10.71 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent CTC stays flat and physically plausible across the whole ladder.
+Whisper tracks it to $k\le16$ and then rises to $10.7$--$12.3$ words per second,
+which is not a transcription of anything. Inspecting those transcripts shows
+fluent fabricated text --- the clean $k\!=\!1$ template returned for garbled
+audio, ``Thank you.'' for near-silence. The original audit characterised
+Whisper's bias as de-duplication, i.e.\ undercounting; on real audio it also
+overcounts by hallucinating. Either way it is the wrong instrument, and the
+decision to replace it is if anything better supported than when it was made.
+
+\paragraph{Perturbation stability.}
+Re-transcribing $72$ items under mild noise (30\,dB SNR) and under a
+$16$k$\rightarrow$$15.5$k$\rightarrow$$16$k resampling round trip moves the count
+by a mean of 0.12 and 0.03 counts respectively on repeated items, with
+88\% unchanged under noise. A re-implementation of the transcription path
+agreed with the stored production transcripts on $72/72$ items. The judge's count
+is not noise-fragile.
+
+\paragraph{A second, architecturally independent recogniser.}
+HuBERT-large-ls960-ft shares the CTC output structure but not the pretraining
+objective (masked cluster prediction rather than contrastive), so its errors are
+not expected to correlate with the primary judge's. It agrees exactly on
+78.3\% of $60$ items, mean absolute difference 0.47 counts. Where the two
+disagree the asymmetry is informative: in $11$ of $13$ cases the primary judge
+reports the \emph{higher} count.
+
+\paragraph{The limitation this surfaced, which the synthetic audit could not.}
+Two of those disagreements expose a real mechanism. HuBERT rendered
+\texttt{wr\_very\_t1\_k12} --- twelve copies of \emph{very} --- as
+\texttt{VERYVERY VERRYYVERYVERY}, and \texttt{wr\_no\_t2\_k06} as
+\texttt{NA NA NA NAU NA}. CTC emits a blank between repeated symbols to keep them
+apart; when a model produces identical words back-to-back with little or no gap,
+that mechanism can fail and adjacent repeats merge. The synthetic audit could not
+have found this, because it inserted 120\,ms of silence between
+every repeat.
+
+This matters for how the paper's numbers should be read, and it cuts in our
+favour, which is precisely why it belongs here. Blank-collapse depresses counts
+on \emph{same-word} runs and not on distinct-word controls --- the perturbation
+check found controls essentially perfectly stable --- so it acts along the same
+axis as the effect we report. It cannot manufacture the repeated-versus-control
+gap out of nothing, since the control side is unaffected and its exact-rate is
+94.3\%, but it can inflate the gap's magnitude. We therefore treat the
+\emph{direction} and \emph{existence} of the deficit as established and the
+precise magnitude at $k\ge16$ as approximate, and no claim in the paper rests on
+that magnitude. Carrier-word WER over a stratified sample is 0.272, most of it
+traceable to genuinely degraded audio that CTC renders as garbage and Whisper
+renders as fluent invention.
+
+
+\section{The shape of the deficit, and what it does not show}
+\label{sec:s10}
+
+This section documents the analysis that changed the paper's central claim, and
+the exclusion rules that the numbers in it depend on. It was written after a
+reviewer observed that a constant \emph{relative} deficit is not what a fixed
+horizon predicts. They were right, and the check is now part of the paper rather
+than a response to it.
+
+\subsection{Saturating versus proportional}
+
+Theorem~1(iv) bounds the largest separable repetition count by a constant
+$N^\ast$. Past that horizon no Lipschitz readout distinguishes counts, so a
+decoder driven beyond it should render roughly $N^\ast$ repetitions no matter how
+many were requested: the rendered count \emph{saturates}. A fixed relative loss
+is a different claim --- it says the decoder still tracks $k$ --- and the two are
+distinguishable with the data we already have.
+
+\texttt{analysis/horizon\_shape.py} fits the median rendered count above
+$k\!=\!6$ against three forms: a constant $a$ (the theorem's signature), a
+proportional $bk$, and the interpolating
+$N^\ast(1-e^{-k/N^\ast})$, which rises linearly and then saturates, so it is free
+to place a horizon wherever the data want one.
+
+\begin{center}
+\begin{tabular}{lrrrrl}
+\toprule
+model & sat.\ SSE & prop.\ SSE & $b$ & soft $N^\ast$ & best \\
+\midrule
+\texttt{llasa1b} & 477.5 & 35.0 & 0.855 & 85 & proportional \\
+\texttt{llasa3b} & 464.2 & 79.3 & 0.913 & 119 & soft horizon \\
+\texttt{llasa8b} & 353.5 & 2.0 & 0.830 & 71 & proportional \\
+\texttt{qwen06b} & 499.3 & 1.4 & 0.953 & 338 & proportional \\
+\texttt{qwen17b} & 668.8 & 5.1 & 1.107 & 640 & proportional \\
+\texttt{xtts2} & 378.0 & 0.8 & 0.860 & 90 & proportional \\
+\midrule
+pooled & 485.3 & 2.6 & 0.950 & 278 & proportional \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent The proportional form wins in 5 of 6 checkpoints and pooled, by two
+orders of magnitude in residual. The soft-horizon fit, given every opportunity to
+find a plateau, places $N^\ast$ at or past the top of the ladder in all six.
+Pooled median rendered count over requested, by $k$: 6:0.83 8:0.88 12:0.92 16:0.94 24:1.00 32:0.94. There is no counting
+horizon within $k\le32$.
+
+We draw the conservative conclusion. This does not refute Theorem~1, which is
+proved and whose premise we never established for these decoders; it establishes
+that the ladder does not reach the regime the theorem describes. Reporting the
+proportional deficit as though it were the theorem's signature would have been
+the error, and the main text now reports the consequence as not observed. The
+extension ladder in Section~\ref{sec:s10-ext} is the direct test.
+
+\subsection{Which rows the paper is allowed to report}
+\label{sec:s10-pop}
+
+Four exclusions, applied by \texttt{src/common/population.py} so that every
+analysis shares one definition. They had previously drifted: the count-error
+analysis listed one ablation arm where the capacity analysis listed four, so
+re-scoring the full model list would have folded three repetition-penalty arms
+into the panel without anything failing.
+
+\begin{enumerate}
+\item \textbf{Ablation arms are not panel members.} \texttt{xtts2norp} and the
+\texttt{xtts2rp*} arms are one checkpoint under altered decoding; pooling them
+would count XTTS-v2 five times.
+\item \textbf{Degenerate and empty audio has no count}, and is reported as its
+own rate rather than folded in as a large negative error.
+\item \textbf{Templates whose vocabulary the judge cannot transcribe.} Our CTC
+judge renders \texttt{okay} as ``o k'' in $106$ of $106$ items and \texttt{hmm}
+in $89$ of $89$; template t2 therefore scored the recogniser's orthography.
+The criterion is near-total absence, which no decoder behaviour can produce ---
+six checkpoints do not fail on one filler every single time while rendering its
+neighbours --- so it does not require assuming which items the models got right.
+It is applied to both families, so it cannot favour the control side.
+\item \textbf{Items cut off by our own token budget.} \texttt{hit\_cap} marks
+generations that ran into the harness limit rather than stopping on their own.
+Their median relative error is $-0.44$ against $-0.08$ for the rest: that is our
+budget truncating audio, not a model failing to count. They were included in
+earlier drafts; the pooled median is unchanged by their removal, but per-model
+figures are not.
+\end{enumerate}
+
+A fifth correction is a scoring fix rather than an exclusion. \texttt{count\_units}
+stopped scanning at the first unit it could not find, which is correct for
+repeated items --- all units are the same word, so failing to find one from a
+position means failing to find the rest --- but wrong for controls, where one
+mis-transcribed filler voided credit for every correctly rendered filler after
+it. It now skips. The change is verified bit-identical on repeated items and
+lifts the pooled control mean error from $-0.150$ to $-0.090$; the remaining gap
+closes under exclusion~3.
+
+
+\subsection{The extension ladder}
+\label{sec:s10-ext}
+
+Since the main ladder cannot separate a distant horizon from no horizon, we ran
+the same three carriers at $k \in \{48, 64, 96, 128\}$
+(\texttt{data/stimuli/make\_stimuli\_ext.py},
+\texttt{scripts/run\_ext\_ladder.sh}). Two departures from the main protocol are
+forced by the longer items and both are recorded rather than absorbed.
+
+First, the token budget is raised from $2048$ to $8192$. A $k\!=\!128$ item is
+roughly $55$ seconds of speech, far past a $2048$-token budget at X-codec2's
+$50$\,Hz, and an item cut off by our own budget would be scored as the model
+failing to count --- exactly the artifact exclusion~4 above exists to remove.
+\texttt{hit\_cap} is recorded regardless and cap-hit items are excluded from the
+fit.
+
+Second, XTTS-v2 is not run. Its decoder carries a built-in ceiling of about
+$602$ mel tokens, roughly $26$ seconds, which every $k\ge48$ item exceeds; its
+counts would be censored by architecture rather than by any horizon, and raising
+the ceiling would run the model outside the range it was trained on. This is a
+limitation of the extension, not a result about XTTS-v2.
+
+The control items also depart from the main ladder in a way worth stating,
+because it corrects a flaw the main set has. Main-ladder control fillers are
+drawn by cycling an eight-word pool, so controls at $k>8$ carry period-eight
+repetition rather than none --- tolerable when the contrast is against period-one
+repetition, and the dissociation in Section~4 of the main paper survives it, but
+at $k=128$ a cycled pool of eight would be sixteen full cycles and the control
+would no longer be a control. The extension pool holds $146$ distinct words and
+is never cycled; the generator asserts this and fails loudly rather than falling
+back.
+
 \bibliographystyle{IEEEtran}
 \bibliography{../refs}
 
