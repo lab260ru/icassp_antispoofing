@@ -16,6 +16,10 @@ cd "$REPO_ROOT/paper"
 mkdir -p build
 
 mkdir -p build
+# A hand-typed experimental number goes stale silently and reads correctly
+# forever after, so check before compiling rather than after.
+( cd "$REPO_ROOT" && python3 scripts/check_numbers.py ) || exit 1
+
 tectonic -X compile main.tex --outdir build --keep-intermediates --synctex=0 2>&1 \
   | grep -viE "^(note|warning: )" | tail -20
 
