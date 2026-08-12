@@ -195,8 +195,8 @@ whose fillers the judge never transcribes, are excluded throughout (S10).
 \noindent\textbf{State measurement.}
 For each instrumented generation we record per-step hidden states at probe layers
 and head-averaged attention onto the text span, and report the trajectory's
-effective rank as a function of $k$; Section~\ref{sec:discussion} explains why we
-do not measure $q$ directly.
+effective rank against $k$; Section~\ref{sec:discussion} says why we do not
+measure $q$ directly.
 
 \noindent\textbf{Code, data, settings.}
 The Lean development, stimuli, generation and analysis code, per-item tables and
@@ -205,8 +205,10 @@ both transcript sets are at
 \texttt{check\_lean.sh} reruns the axiom audit and \texttt{build.sh} regenerates
 every number here. Audio ($2.5$\,GB) and activations ($25$\,GB) are available on
 request and regenerable from the released seeds. Sampling uses shipped defaults
-(XTTS-v2 $T{=}0.75$, top-$p$ $0.85$, top-$k$ $50$, penalty $5.0$; Llasa
-$T{=}0.8$, top-$p$ $1.0$); the penalty is the one parameter we vary.
+(XTTS-v2 $T{=}0.75$/$0.85$/$50$/penalty $5.0$; Llasa $T{=}0.8$, top-$p$ $1.0$;
+Qwen3-TTS $T{=}0.9$/$1.0$/$50$/$1.05$), so Qwen3-TTS is the \emph{most}
+stochastic family and its larger checkpoint's null is not an artifact of
+conservative decoding. The penalty is the one parameter we vary.
 
 \section{Results}
 \label{sec:results}

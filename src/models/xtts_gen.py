@@ -75,6 +75,8 @@ import sys
 import time
 from pathlib import Path
 
+from src.common.gpus import DEFAULT_GPU, check_gpu
+
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "src"))
 
@@ -217,7 +219,7 @@ def instrumented_pass(model, cond_latent, text_tokens, gen_ids, attn_probes, pro
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", required=True)
-    ap.add_argument("--gpu", type=int, default=2, help="use GPU 2 or 3 only")
+    ap.add_argument("--gpu", type=int, default=DEFAULT_GPU, help="use GPU 2 or 3 only")
     ap.add_argument("--seeds", type=int, nargs="+", default=[0])
     ap.add_argument("--stimuli", default=str(REPO / "data/stimuli/stimuli.jsonl"))
     ap.add_argument("--instrument-seed", type=int, default=0,
@@ -238,6 +240,7 @@ def main() -> None:
     ap.add_argument("--gpt-cond-chunk-len", type=int, default=None)
     ap.add_argument("--max-ref-len", type=int, default=None)
     args = ap.parse_args()
+    check_gpu(args.gpu)
 
     if args.gpu not in (2, 3):
         print(f"[warn] GPU {args.gpu} requested; GPUs 0/1 are reserved for Llasa runs.", flush=True)

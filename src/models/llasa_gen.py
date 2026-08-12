@@ -27,6 +27,8 @@ import sys
 import time
 from pathlib import Path
 
+from src.common.gpus import DEFAULT_GPU, check_gpu
+
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "src"))
 
@@ -112,7 +114,7 @@ class TextAttentionRecorder:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", required=True)
-    ap.add_argument("--gpu", type=int, default=0)
+    ap.add_argument("--gpu", type=int, default=DEFAULT_GPU)
     ap.add_argument("--seeds", type=int, nargs="+", default=[0])
     ap.add_argument("--stimuli", default=str(REPO / "data/stimuli/stimuli.jsonl"))
     ap.add_argument("--max-new-tokens", type=int, default=2048)
@@ -123,6 +125,7 @@ def main() -> None:
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--attn-probes", type=int, default=4)
     args = ap.parse_args()
+    check_gpu(args.gpu)
 
     spec = BY_KEY[args.model]
     device = f"cuda:{args.gpu}"

@@ -24,12 +24,13 @@ already encodes k, which is arguably why it should succeed --- that is the point
 of the comparison, not a confound to apologise for. It is a baseline for the
 architectural claim, not a matched control for model quality.
 
-Usage:  python src/models/vits_gen.py --model vits --gpu 0
+Usage:  python src/models/vits_gen.py --model vits --gpu 2
 """
 from __future__ import annotations
 
 import argparse
 import json
+import sys
 import time
 from pathlib import Path
 
@@ -37,6 +38,8 @@ import numpy as np
 import torch
 
 REPO = Path(__file__).resolve().parent.parent.parent
+sys.path.insert(0, str(REPO))
+from src.common.gpus import DEFAULT_GPU, check_gpu  # noqa: E402
 HDD = Path("/home/kirill/mnt/hdd_6tb_1/icassp_tts")
 
 
@@ -44,11 +47,12 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", default="vits")
     ap.add_argument("--checkpoint", default="facebook/mms-tts-eng")
-    ap.add_argument("--gpu", type=int, default=0)
+    ap.add_argument("--gpu", type=int, default=DEFAULT_GPU)
     ap.add_argument("--seeds", type=int, nargs="+", default=[0, 1, 2])
     ap.add_argument("--stimuli", default=str(REPO / "data/stimuli/stimuli.jsonl"))
     ap.add_argument("--limit", type=int, default=0)
     args = ap.parse_args()
+    check_gpu(args.gpu)
 
     from transformers import VitsModel, AutoTokenizer
     import soundfile as sf

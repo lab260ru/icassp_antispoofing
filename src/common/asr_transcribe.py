@@ -75,10 +75,11 @@ def audio_flags(wav: np.ndarray, sr: int) -> dict:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", required=True)
-    ap.add_argument("--gpu", type=int, default=0)
+    ap.add_argument("--gpu", type=int, default=DEFAULT_GPU)
     ap.add_argument("--asr", default="openai/whisper-large-v3")
     ap.add_argument("--batch-size", type=int, default=8)
     args = ap.parse_args()
+    check_gpu(args.gpu)
 
     aud_dir = Path(DATA_ROOT) / "audio" / args.model
     out_path = Path(DATA_ROOT) / "asr" / f"{args.model}.jsonl"

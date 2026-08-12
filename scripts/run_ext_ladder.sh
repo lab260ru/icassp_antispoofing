@@ -34,11 +34,11 @@ mkdir -p "$LOG"
 
 python data/stimuli/make_stimuli_ext.py
 
-echo "=== generation (4 GPUs in parallel)"
+echo "=== generation (GPUs 2 and 3 only; two models per card)"
 conda activate base
-python src/models/llasa_gen.py --model llasa1b --gpu 0 --seeds 0 \
+python src/models/llasa_gen.py --model llasa1b --gpu 2 --seeds 0 \
   --stimuli "$STIM" --max-new-tokens 8192 >"$LOG/gen_llasa1b.log" 2>&1 &
-python src/models/llasa_gen.py --model llasa8b --gpu 1 --seeds 0 \
+python src/models/llasa_gen.py --model llasa8b --gpu 3 --seeds 0 \
   --stimuli "$STIM" --max-new-tokens 8192 >"$LOG/gen_llasa8b.log" 2>&1 &
 conda deactivate
 conda activate qwen
@@ -54,14 +54,14 @@ tail -2 "$LOG"/gen_*.log
 echo "=== vocode Llasa"
 conda activate xcodec2
 for m in llasa1b llasa8b; do
-  python src/models/xcodec2_decode.py --model "$m" --gpu 0 2>&1 | tail -1
+  python src/models/xcodec2_decode.py --model "$m" --gpu 2 2>&1 | tail -1
 done
 conda deactivate
 
 echo "=== transcribe (CTC judge)"
 conda activate base
 for m in llasa1b llasa8b qwen06b qwen17b; do
-  python src/common/asr_ctc.py --model "$m" --gpu 0 2>&1 \
+  python src/common/asr_ctc.py --model "$m" --gpu 2 2>&1 \
     | grep -viE "warn|future|^\s*$" | tail -1
 done
 

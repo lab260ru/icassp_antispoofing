@@ -59,7 +59,11 @@ def fig_main(beh: pd.DataFrame, state: pd.DataFrame, cap: dict, out: Path,
     # against k, which panel (b) already contains as its solid curves; dropping
     # it buys the remaining three enough width to stay legible once the figure
     # is scaled to fit four pages.
-    fig, axes = plt.subplots(1, 3, figsize=(7.0, 1.45))
+    # Native size is the size it is *rendered* at in the paper (0.66 of a 7-inch
+    # text width), not the full text width: including a 7-inch figure at 0.66
+    # scales 7pt labels down to 4pt, which is unreadable in print. Drawing it at
+    # final size keeps the type at its stated point size.
+    fig, axes = plt.subplots(1, 3, figsize=(4.62, 1.28))
 
     # Relative count error rather than exact-match accuracy: signed, so
     # premature stopping separates from looping, and scale-free, so k=4 and

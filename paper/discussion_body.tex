@@ -2,23 +2,21 @@
 
 \noindent\textbf{What is proved, and what the measurements do not show.}
 The Lean artifact certifies an implication: periodic conditioning plus
-contraction implies a finite counting horizon. It does not prove that any
-transformer contracts, and two attempts to measure $q$ failed --- a
-boundary-distance estimator needs a monotone read-head these decoders lack, and a
-perturbation probe found no difference in local contraction between repeated
-items and their controls ($7$ of $18$ pairs, $p=0.12$), its linearity control
-failing too (S5).
+contraction implies a finite counting horizon. It does not prove any transformer
+contracts, and two attempts to measure $q$ failed --- a boundary-distance
+estimator needs a monotone read-head these decoders lack, and a perturbation
+probe found no difference in local contraction between repeated items and their
+controls ($7$ of $18$ pairs, $p=0.12$), its linearity control failing too (S5).
 
 The theorem's distinctive prediction is a constant $N^\ast$, invisible where our
 ladder stopped. Extending to $k=128$ found saturation of the predicted kind but
 not one derived from a measured $q$, locating these decoders just below the
-collapse regime rather than confirming the bound. Consistent with that, the state
-budget stays positive while growing at \CapRatio{} of the control rate, and a
-probe finds the count degraded, not erased (\ProbeRetRep{} against
-\ProbeRetCtl{}).
+collapse regime rather than confirming the bound. The state budget stays positive
+while growing at \CapRatio{} of the control rate, and a probe finds the count
+degraded, not erased (\ProbeRetRep{} against \ProbeRetCtl{}).
 
-A conditional account risks being unfalsifiable, so we state what would refute
-it: a control with its twin's deficit; a model whose capacity gain matches its
+A conditional account risks being unfalsifiable, so we say what would refute it:
+a control with its twin's deficit; a model whose capacity gain matches its
 control; a probe reading the count as well late as early; or an AR decoder
 behaving like the non-AR one.
 \ErrBestModel{} has a capacity gap but no deficit and no horizon, so capacity
@@ -28,20 +26,18 @@ The closest prior result is representational
 collapse~\cite{barbero2024glasses}: as sequences grow, distinct prefixes map to
 arbitrarily close representations, already implying counting errors. But
 collapse-by-length predicts that equally long control and repeated items fail
-alike, and they do not wherever the control carries no repetition of its own
-(Section~4); \eqref{eq:horizon} also supplies a rate in repetitions that a
+alike, and they do not wherever the control carries no repetition of its own;
+\eqref{eq:horizon} also supplies a rate in repetitions that a
 length-indexed bound does not. Dynamical treatments index convergence by depth or an abstract
 temperature~\cite{dong2021attention,geshkovski2023emergence,gao2026clustered},
 and expressivity bounds by circuit class or state
 tracking~\cite{strobl2024formal,merrill2024illusion} constrain one forward pass;
 ours indexes generation steps. A competing account holds that in text LMs the count survives in the residual
 stream and only the output policy fails~\cite{venkatesh2026repeated}; our probes
-favour representational degradation, though both may.
+favour representational degradation, and deployed
+mitigations~\cite{wang2025eliminating,xin2024ralle} act too late to reach it.
 
-\noindent\textbf{Implications and limits.}
-Mitigations act late~\cite{wang2025eliminating,xin2024ralle} and, under this
-account, help only by raising $q$ or the readout margin --- a fourfold sweep of
-XTTS-v2's repetition penalty moves it the \emph{wrong} way (S7).
+
 % Any further body text pushes the references onto a sixth page: main.tex ends
 % with \vfill\pagebreak, so the bibliography always starts on a fresh page and
 % a single spilled line costs a whole one. Check with build.sh before adding.

@@ -28,10 +28,11 @@ SR = 16000
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", required=True)
-    ap.add_argument("--gpu", type=int, default=0)
+    ap.add_argument("--gpu", type=int, default=DEFAULT_GPU)
     ap.add_argument("--codec", default="HKUSTAudio/xcodec2")
     ap.add_argument("--batch-log", type=int, default=50)
     args = ap.parse_args()
+    check_gpu(args.gpu)
 
     tok_dir = Path(DATA_ROOT) / "tokens" / args.model
     out_dir = Path(DATA_ROOT) / "audio" / args.model

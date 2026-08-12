@@ -45,13 +45,14 @@ CTC_SR = 16000
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", required=True)
-    ap.add_argument("--gpu", type=int, default=0)
+    ap.add_argument("--gpu", type=int, default=DEFAULT_GPU)
     # wav2vec2 large, fine-tuned on 960h LibriSpeech with self-training. Pure
     # CTC: no decoder, no LM, no beam search by default.
     ap.add_argument("--ctc", default="facebook/wav2vec2-large-960h-lv60-self")
     ap.add_argument("--chunk-s", type=float, default=25.0,
                     help="split long audio; CTC attention is quadratic in frames")
     args = ap.parse_args()
+    check_gpu(args.gpu)
 
     aud_dir = Path(DATA_ROOT) / "audio" / args.model
     out_path = Path(DATA_ROOT) / "asr_ctc" / f"{args.model}.jsonl"

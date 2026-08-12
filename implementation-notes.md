@@ -236,3 +236,24 @@ print(r.pages[4].extract_text().find('REFERENCES'))  # chars of body on page 5
 
 Anything above 0 means the body spills. Reference text totals ~3.9 k chars and a
 full page holds ~5.1 k, so references fit on page 5 once the body clears it.
+
+## GPU allocation (added 2026-08-12)
+
+**This project uses GPUs 2 and 3 only.** Cards 0 and 1 on this host belong to
+someone else and must not be touched.
+
+This is enforced, not merely documented, because a default buried in a dozen
+argparse calls is the kind of constraint nobody notices until it is violated:
+
+* `src/common/gpus.py` holds `ALLOWED = (2, 3)` and `DEFAULT_GPU`. Change the
+  allocation there and nowhere else.
+* Every generation and transcription entry point calls `check_gpu(args.gpu)`
+  immediately after parsing and exits with an explanatory message on 0 or 1.
+* All `--gpu` defaults point at an allowed card, so a forgotten flag is safe.
+* `scripts/*.sh` pass 2 and 3 explicitly.
+
+The escape hatch is deliberate and loud: `ICASSP_ALLOW_ANY_GPU=1`. Use it only
+if the allocation has actually changed, and update `ALLOWED` at the same time.
+
+Note that jobs already running when the restriction arrived were left to finish
+rather than killed mid-generation; nothing has been launched on 0 or 1 since.

@@ -200,6 +200,16 @@ def main() -> None:
                 continue
             macros[f"Err{tag}"] = fmt(100 * v["rep"]["median"], 1)
             macros[f"ErrCtl{tag}"] = fmt(100 * v["ctl"]["median"], 1)
+        # Checkpoint-level median of the per-checkpoint medians. The paper
+        # argues in Section 4 that the checkpoint is the unit of replication,
+        # then quoted an item-pooled figure in the abstract; a reviewer noticed
+        # the two disagree by half their own size (-12.5 against -8.3). Both are
+        # emitted so the text can show them together.
+        _p = {m: v for m, v in ce.get("models", {}).items() if m not in ABLATIONS}
+        _meds = [v["rep"]["median"] for v in _p.values()
+                 if np.isfinite(v["rep"]["median"])]
+        if _meds:
+            macros["ErrRepCk"] = fmt(100 * float(np.median(_meds)), 1)
         # worst and best panel members, for the two-regime sentence
         panel = {m: v for m, v in ce.get("models", {}).items()
                  if m not in ABLATIONS and np.isfinite(v["rep"]["median"])}

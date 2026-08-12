@@ -10,7 +10,7 @@ cd "$REPO_ROOT"
 export HF_HOME=/home/kirill/mnt/hdd_6tb_1/icassp_tts/hf_cache
 CONDA_BASE="$(conda info --base)"; . "$CONDA_BASE/etc/profile.d/conda.sh"
 
-GPU="${1:-0}"; shift || true
+GPU="${1:-2}"; shift || true
 MODELS=("$@")
 [ ${#MODELS[@]} -eq 0 ] && MODELS=(llasa1b llasa3b llasa8b xtts2 qwen06b qwen17b)
 

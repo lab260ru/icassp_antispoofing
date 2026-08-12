@@ -3,7 +3,7 @@
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=0.78\textwidth]{figs/fig_main.pdf}
+\includegraphics[width=0.60\textwidth]{figs/fig_main.pdf}
 \caption{(a) Relative count error $(\hat c-k)/k$ against requested repetitions
 $k$ under the CTC judge, repeated items (solid) against their length-matched
 controls (dashed): control medians sit at zero throughout. (b) The extension
@@ -17,9 +17,10 @@ gain, 95\% bootstrap intervals over stimulus templates.}
 
 Figure~\ref{fig:main}(a) shows the relative count error against $k$. Below
 $k\!=\!6$ every model is essentially exact; above it, repeated items are rendered
-with a median error of \ErrRep{}\% $[\ErrRepLo{}, \ErrRepHi{}]$
-($n=\ErrRepN{}$), one-directional: models produce \emph{fewer} repetitions than
-requested, never systematically more.
+with a median error of \ErrRepCk{}\% per checkpoint, or \ErrRep{}\%
+$[\ErrRepLo{},\ErrRepHi{}]$ pooling items ($n=\ErrRepN{}$) --- pooling weights
+checkpoints by surviving item count, so we quote both. Either way it is
+one-directional: models produce \emph{fewer} repetitions than requested.
 
 Within $k\le32$ that deficit is \emph{proportional}, not saturating --- not what
 Theorem~\ref{thm:collapse}(iv) predicts. A constant fits the panel's median count
@@ -30,7 +31,8 @@ request, so no horizon lies inside this ladder.
 \subsection{Past the ladder, the count does level off}
 
 So we extended it, post hoc, to $k\in\{48,64,96,128\}$ on the \HzNModels{}
-checkpoints whose decoders admit utterances that long (S10). Tracking stops: the
+checkpoints that admit utterances that long: \HzModelNames{}. XTTS-v2's
+$602$-mel-token ceiling ($\approx\!26$\,s) censors every $k\ge48$ item (S10). Tracking stops: the
 repeated median sits at \HzMedRepKLo{} and \HzMedRepKHi{} at $k\!=\!48$ and
 $128$ while the control climbs \HzMedCtlKLo{} to \HzMedCtlKHi{}. Of \HzNGen{}
 generations \HzExclCap{} hit our budget and \HzExclDegen{} were degenerate,
@@ -55,9 +57,8 @@ shows no deficit at $k\le32$, a conditional theorem behaving conditionally.
 What degrades with $k$ is reliability, not proportion: the exactly-right share
 falls from \ExactRepKLo{}\% to \ExactRepKHi{}\% between
 $k\!=\!\ExactRepKLoVal{}$ and $\ExactRepKHiVal{}$, for word, sentence and
-place-value units alike. Because the claim is about models, not about our corpus, we take the checkpoint
-as the unit of replication, reducing each to its own repeated-minus-control
-difference. The exactly-correct rate favours the control in all \CkExactN{} (mean
+place-value units alike. Because the claim is about models rather than our corpus, the checkpoint is the
+unit of replication, each reduced to its own repeated-minus-control difference. The exactly-correct rate favours the control in all \CkExactN{} (mean
 \CkExact{} points $[\CkExactLo{},\CkExactHi{}]$); the median-error gap is
 positive in \CkErrNPos{} of \CkErrN{}, zero in \ErrBestModel{}. Those six
 cluster into \FamExactN{} families, so the effective replicate count is nearer
@@ -80,20 +81,19 @@ in exactly-correct renderings --- \ExactCtl{}\% for controls against
 times in six render its non-adjacent twin correctly nineteen times in twenty. Controls are not perfect --- the residual \CtlMissPct{}\% carry
 genuine truncations --- but they are exact where the repeated items are not.
 
-One caveat belongs here, not in a limitation list: above $k\!=\!8$ the control's
+A caveat belongs here, not in a limitation list: above $k\!=\!8$ the control's
 fillers cycle a pool of eight, making that contrast period-$1$ against
-period-$8$. Where controls carry no repetition at all --- $k\le8$ here, and the
-whole extension ladder, whose $146$-word pool is never cycled --- the
-dissociation survives: \ApLoRep{}\% against \ApLoCtl{}\% exact at $k\le8$, and
-median error \ApHiMedRep{} against \ApHiMedCtl{} at $k\ge48$. Two further
-rivals, improbability and an acoustic attractor, fail their own predictions
-(S8).
+period-$8$. Where controls carry no repetition at all --- $k\le8$, and the
+extension ladder's never-cycled $146$-word pool --- it survives: \ApLoRep{}\%
+against \ApLoCtl{}\% exact at $k\le8$, median error \ApHiMedRep{} against
+\ApHiMedCtl{} at $k\ge48$. Two further rivals, improbability and an acoustic
+attractor, fail their own predictions (S8).
 
-A fourth rival is architectural, and the one the title stakes: perhaps any
+A fourth rival is architectural, the one the title stakes: perhaps any
 synthesiser mishandles long repeated text. We ran the same ladder through
 VITS~\cite{kim2021vits}, which has no autoregressive decoder --- a duration
-predictor and a flow vocoder emit the waveform in one shot, leaving
-Assumption~\ref{ass:periodic} no recurrence to apply to. It shows \emph{no}
+predictor and flow vocoder emit the waveform in one shot, leaving
+Assumption~\ref{ass:periodic} no recurrence to act on. It shows \emph{no}
 dissociation: \NonARRep{}\% of repeated items exact against
 \NonARCtl{}\% of controls, a gap of \NonARGap{} points where the panel's is
 $+\ARPoolGap{}$, and all \NonARAbove{} AR checkpoints separate from it. VITS
@@ -133,7 +133,7 @@ Lemma~\ref{lem:dilution}'s premise holds only approximately ($\delta\le\DeltaMax
 nats, S4) and its dose-response prediction fails outright: \emph{within} a
 $(\text{model},k)$ cell, items with flatter attention are counted \emph{better},
 not worse ($r=\DilR{}$ $[\DilRLo{},\DilRHi{}]$, \DilCells{} cells, all
-\DilNAgainst{} measures agreeing; controls at $\DilCtlR{}$; S12). We record this
-as disconfirming: whatever selects which generations fail is not the degree of
-dilution, though an observational design cannot say whether peaked attention
-instead follows from a stalled decoder.
+\DilNAgainst{} measures agreeing; controls at $\DilCtlR{}$; S12). We record it as
+disconfirming --- whatever selects which generations fail is not the degree of
+dilution --- though a correlational design cannot rule out peaked attention
+following from a stalled decoder.
