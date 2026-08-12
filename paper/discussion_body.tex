@@ -1,38 +1,55 @@
 % Discussion body. Hand-written; numbers come from numbers.tex.
+%
+% Rewritten for the current revision. Its previous job was to defend the
+% theorem; its job now is to say what the benchmark licenses and to name the
+% rival account the evidence currently favours. Kept tight: the page budget is
+% hard and main.tex ends with \vfill\pagebreak, so a spilled line costs a page.
 
-\noindent\textbf{What is proved, and what the measurements do not show.}
-The Lean artifact certifies an implication: periodicity plus contraction imply a
-horizon. It proves nothing about any transformer, and two attempts to measure $q$ failed --- one estimator
-needs a monotone read-head these decoders lack, and a perturbation
-probe found no difference between the arms ($7/18$, $p=0.12$), its linearity
-control failing (S5).
+\noindent\textbf{Where the count lives, and the rival the evidence favours.}
+A linear probe recovers the count from decoder states, which lets the bound's
+one distinctive prediction be tested: a readout should fail \emph{beyond}
+$N^\ast$, not before. Against a predictor that ignores the states and answers
+the mean, the \PhNCk{} checkpoints we could run past the
+extension horizon (\PhAllNames{}) reach \PhAllRatios{} of its error. Read
+strictly the prediction holds in \PhNLost{} of \PhNCk{}: only \PhLostName{} is
+at or above the trivial predictor, \PhClearName{} plainly \emph{keeps} the count
+past the horizon --- which the bound forbids --- and the third sits inside a
+\PhTieBand{}\% band where neither reading holds. Range is not the explanation:
+over the same $k$ the probe reads control states at \PhCtlRatio{}. At
+$n=\PhNCk{}$ this is inconclusive, and we report it for transparency rather than
+as evidence either way.
 
-The theorem's distinctive prediction is a constant $N^\ast$, invisible where our
-ladder stopped; $k=128$ found saturation of that kind, though not from a
-measured $q$. A linear probe does not separate this
-from the rival on which the count survives and only the output policy
-fails~\cite{venkatesh2026repeated}: it retains less on repeated text in
-\ProbeNBelowCtl{} of \ProbeNCk{}, but the count stays decodable late
-($R^2$ \ProbeLateMed{}).
+It does, though, bear on the live rival. On the state-contraction account the
+count is erased from the state; on the output-policy
+account~\cite{venkatesh2026repeated} it survives and only the policy reading it
+fails. Repetition does cost retention relative to the control in all
+\ProbeNBelowCtl{} of \ProbeNCk{} checkpoints, which is what contraction
+predicts --- but the count is not erased: it stays decodable late ($R^2$
+\ProbeLateMed{}) and repeated-item retention exceeds $1$ in
+\ProbeAboveOne{}, the probe reading it \emph{better} deeper in. Deciding between the two needs a manipulation of the
+readout at fixed state, which we did not run; as things stand the output-policy
+account is the better supported.
 
-Past the horizon the probe does test the theorem, which forbids a readout only
-\emph{beyond} $N^\ast$. Measured against a predictor that ignores the states and
-answers the mean, \PhAllNames{} reach \PhAllRatios{} of its error; below the
-horizon \PhLostName{} reaches \PhBelowMae{} against \PhBelowConst{}. Range is
-not why: over the \emph{same} $k$ the probe reads control states at
-\PhCtlRatio{} --- which is exactly \PhClearName{}'s margin. So the prediction holds in
-\PhNLost{} of \PhNCk{}, \PhTieName{} sitting within \PhTieBand{}\% of the
-trivial predictor, and we quote the stricter count (S12).
-What would refute it: a
-control with its twin's deficit, a model whose capacity gain matches its control,
-or a probe recovering the count past $N^\ast$, as one now does.
+\noindent\textbf{Related work, and what the control decides.}
+Closest is representational collapse~\cite{barbero2024glasses}: distinct
+prefixes converge with length, which our control separates from periodicity. The
+counting-specific expressivity results reach a compatible conclusion by another
+route --- transformers count only under conditions on precision, depth and
+positional encoding~\cite{yehudai2024when,salzer2025counting}, tokenisation
+shifting the limit~\cite{zhang2024counting}. The two predict differently, which
+is the point of the control: an inductive-bias limit is a property of the model
+and holds at fixed periodicity as length grows, while a contraction limit is a
+property of the \emph{conditioning}. Ours varies periodicity at fixed length,
+and the result is the periodicity-specific one --- whether contraction is the
+reason remains open. Other
+bounds~\cite{hahn2020theoretical,dong2021attention,strobl2024formal} treat one
+pass, state tracking~\cite{li2025statetracking} many.
 
-Closest is representational collapse~\cite{barbero2024glasses}: distinct prefixes
-converge with length, which our control separates from periodicity. Related
-bounds~\cite{hahn2020theoretical,dong2021attention,geshkovski2023emergence,%
-strobl2024formal,merrill2024illusion} treat one pass, state
-tracking~\cite{li2025statetracking} many.
-
-% Any further body text pushes the references onto a sixth page: main.tex ends
-% with \vfill\pagebreak, so the bibliography always starts on a fresh page and
-% a single spilled line costs a whole one. Check with build.sh before adding.
+\noindent\textbf{Limitations.}
+The panel is \NFamilies{} families and English the only language tested. The
+judge is validated against concatenative ground truth with known counts, not
+against human listeners on generated audio; the \SampleN{}-clip sample ships so
+any scoring decision can be checked by ear, and we report no human agreement
+statistic because we ran no listening study. What would refute the periodicity
+claim is a control arm carrying its twin's deficit at matched length, or a
+checkpoint whose exact-rate gap runs the other way. Neither appeared.

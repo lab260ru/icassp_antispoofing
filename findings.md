@@ -37,17 +37,21 @@ only available behaviour.
 
 | claim | measurement | status |
 |---|---|---|
-| Models undercount repeated text | median rel. count error −8.3% [−12.5,−8.3] at k≥6, n=586, CTC judge | **confirmed**, 5/6 checkpoints with CIs disjoint from their own control |
+| Models undercount repeated text | median rel. count error −8.3% [−12.5,−6.2] at k≥6, n=457 repeated against 525 control, CTC judge (`count_error.json`) | **confirmed**, 4/6 checkpoints with CIs disjoint from their own control (5/6 below their control) |
 | Controls are unaffected | median control error **0.0%** at every k up to 32, every model | **confirmed** |
 | One model is exempt | Qwen3-TTS-1.7B: 0.0% error, yet still a capacity gap | **second regime**, reported as such |
-| Capacity saturates under repetition | gain ratio 0.50; 0.50 controlling output diversity; 0.52 on correct renderings only | **confirmed**, 6/6 disjoint CIs |
-| Lemma B (attention dilution) | block entropy = 0.98·log k, δ ≤ 0.06 nats, max share ≤ 1.9/k | **confirmed** |
+| Capacity saturates under repetition | gain ratio 0.46 (`capacity.json`); 0.50 raw / 0.50 diversity-adjusted / 0.52 correct-only (`capacity_confound.json`) | **confirmed**, 5/6 disjoint CIs |
+| Lemma B (attention dilution) | block entropy = 0.97·log k; **average** spread δ ≤ 0.45 nats (entropy gap); **extreme** δ ≤ 1.23, most-attended share ≤ 3.4/k worst case, 1.7/k typical | **confirmed** — the lemma is entitled only to the extreme; see §"Lemma B's two deltas" |
 | Theorem A premise (q<1) | not measurable — the boundary estimator is unsound here | **open**, reported as a negative result |
 | Capacity predicts count error across models | Spearman +0.49, n=6 | **underpowered**, not claimed |
 
-Per-model count error at k≥6 (CTC judge): Llasa-1B −16.1%, Llasa-3B −12.5%,
-Llasa-8B −25.0%, XTTS-v2 −15.6%, Qwen-0.6B −8.3%, Qwen-1.7B 0.0%. Control: 0.0%
-for all six.
+Per-model median count error at k≥6 (CTC judge, `data/results/count_error.json`
+under the current `src/common/population.py` exclusions): Llasa-1B −12.5%,
+Llasa-3B −8.3%, Llasa-8B −16.7%, XTTS-v2 −12.5%, Qwen-0.6B −12.5%,
+Qwen-1.7B 0.0%. Control: 0.0% for all six. (~~An earlier row read −16.1 / −12.5 /
+−25.0 / −15.6 / −8.3 / 0.0; that predates the `hit_cap` and template-t2
+exclusions and disagreed with the per-checkpoint table at the foot of this
+file.~~)
 
 ## Status (SUPERSEDED — Whisper-judged, kept for the record)
 
@@ -110,8 +114,8 @@ not argument:
 | alternative | test | result |
 |---|---|---|
 | repeated text is just improbable text | per-token NLL of matched pairs under an LM outside the panel (phi-2) | control is the *less* probable member in 87% of 54 pairs; naturalness runs opposite to the effect |
-| the attractor is acoustic, not text-side | word vs sentence repetition, whose units differ several-fold in token cost | k* differs by 1.7 repetitions while token count at collapse differs 1.34×; the horizon is counted in repetitions |
-| effective-rank decline is tautological — repeated audio *is* monotonous | add realised output diversity as covariates; and restrict to correct renderings | ratio 0.50 raw, 0.50 adjusted, 0.47 correct-only |
+| the attractor is acoustic, not text-side | word vs sentence repetition, whose units differ several-fold in token cost | k* differs by 1.7 repetitions while token count at collapse differs 1.50× (`unit_invariance.json`); the horizon is counted in repetitions |
+| effective-rank decline is tautological — repeated audio *is* monotonous | add realised output diversity as covariates; and restrict to correct renderings | ratio 0.50 raw, 0.50 adjusted, 0.52 correct-only (`capacity_confound.json`) |
 | the count survives and only the output policy fails (as in text LMs, arXiv:2605.09239) | ridge probe, early vs late third of the *same* trajectory | retention 0.97 repeated vs 1.12 control, repeated lower in 7/7; degradation, not erasure |
 
 ### The XTTS ablation (revised under the CTC judge)
@@ -491,10 +495,11 @@ conditioning past the horizon does nothing to the probe.
     Llasa-8B    repeated k=48..128    0.43     0.50    +0.19
     Llasa-1B    control  k=48..128    0.43     0.50    +0.26
 
-The theorem's conclusion therefore holds in **1 of 2** checkpoints, and the paper
-says one of two. Two readings we cannot separate with two checkpoints: Llasa-8B
-may have a horizon past k=128 (making this a range problem, not a failure), or
-the 1B null may be the accident.
+~~The theorem's conclusion therefore holds in **1 of 2** checkpoints, and the
+paper says one of two.~~ **Superseded: a third checkpoint (Llasa-3B) was run and
+it is 1 of 3 — see "third probe checkpoint" at the foot of this file.** Two
+readings we cannot separate: Llasa-8B may have a horizon past k=128 (making this
+a range problem, not a failure), or the 1B null may be the accident.
 
 Note the falsification list in the discussion names "a probe that recovers the
 count past the horizon" as a refuting observation. Llasa-8B *is* that
@@ -533,7 +538,8 @@ them (MAE 0.43 vs 0.50 constant) while failing on repeated states over the
 identical range. Narrowness is ruled out empirically, not argued away.
 
 **2. But the second checkpoint does not replicate.** See the correction above:
-Llasa-8B keeps the count. 1 of 2, and reported as such.
+Llasa-8B keeps the count. ~~1 of 2~~ **1 of 3 once Llasa-3B landed**, and
+reported as such.
 
 **3. The 3.5-fold horizon ratio is form-dependent (analysis/horizon_forms.py).**
 Refit with two one-parameter saturating families we did not choose, both with
@@ -655,3 +661,110 @@ Still open: *why* this checkpoint is weakest. Either its per-repetition map does
 not contract, or its horizon lies past k=128 — which for the smallest deficit is
 what you would expect. A longer ladder than its generation budget allows is what
 separates them.
+
+## 2026-08-12 (final) — third probe checkpoint: 1 of 3, and a threshold that nearly lied
+
+Llasa-3B, run because two checkpoints is not a test, does not lose the count past
+the horizon either (`analysis/probe_past_horizon.py`,
+`data/results/probe_horizon_compare.json`):
+
+    checkpoint  arm                    MAE   constant   ratio    R²
+    Llasa-1B    repeated k=48..128    0.505    0.500     1.01   −0.02
+    Llasa-3B    repeated k=48..128    0.494    0.500     0.99   −0.02
+    Llasa-8B    repeated k=48..128    0.432    0.500     0.86   +0.19
+    Llasa-1B    control  k=48..128    0.431    0.500     0.86   +0.26
+
+**The threshold nearly told a lie in our favour.** "Beats the constant predictor"
+put Llasa-3B on the *keeps the count* side by 0.006 MAE over twelve items. Read
+naively that is "2 of 3 checkpoints keep the count"; read the other way it is
+"2 of 3 show nothing recoverable", which flatters the theorem — and both readings
+come out of the same number. The script now calls anything within `TIE = 0.02` of
+the constant predictor **indistinguishable** and prints both counts. Under that
+band Llasa-1B and Llasa-3B are indistinguishable from the constant predictor and
+only Llasa-8B clearly keeps the count.
+
+**We quote 1 of 3**, the strict threshold and the less favourable reading. The
+more favourable one (2 of 3 null by effect size) is recorded in S12 beside it, so
+a reader weighs it rather than discovers it. Anywhere this project says "1 of 2",
+it predates Llasa-3B and is superseded.
+
+The range control is unchanged and still holds: over the *same* k the probe reads
+the count off control states (MAE 0.43 against 0.50 constant), so where the count
+is lost, narrowness is not why.
+
+*If you add a fourth checkpoint:* every verdict string and paper macro derives
+from the lost/kept/tied lists, so the wording re-derives itself. Check
+`PhKeptRatios` still reads sensibly — it lists every kept checkpoint, including
+ones that merely tie.
+
+## 2026-08-12 (final) — Lemma B's two deltas, labelled
+
+Two different quantities were being quoted under one symbol, which is why the
+draft read as inconsistent. Both are measured on the softmax **renormalised over
+the k repeated keys** (raw attention is normalised over a sequence whose length
+itself grows with k), on deep layers (`layer_frac > 0.6`) at `k >= 6`, from
+`data/results/state.csv` via `analysis/make_numbers.py`:
+
+    block entropy slope                 0.97 · log k   (predicted 1)
+    within-block share slope           −1.00 in log-log (predicted −1)
+    AVERAGE spread   max(log k − H)     δ ≤ 0.45 nats
+    EXTREME spread   max share × k       3.4/k worst case → δ ≤ 1.23
+                     median share × k    1.7/k typical    → δ = 0.51
+
+**The lemma is entitled only to the extreme.** The entropy gap `log k − H` bounds
+the *average* logit spread over the block; the most-attended occurrence is what
+bounds the *worst* one, and it is the worst one the bound has to survive. Quoting
+0.45 as though it were the bound understates δ by a factor of ~2.7 and makes the
+two numbers look like they contradict each other. Report both, labelled, and lean
+on 1.23 / 3.4·k⁻¹.
+
+Note also that `attn_share` (the *mean* within-block share) is `1/k` by
+construction and carries no information; the informative columns are
+`attn_share_max`, `attn_unif_dev` and `attn_block_entropy`.
+
+~~Earlier statement: "block entropy = 0.98·log k, δ ≤ 0.06 nats, max share ≤
+1.9/k".~~ Those were measured before the renormalisation fix and before the
+population settled; they do not reproduce from `state.csv`.
+
+## 2026-08-12 (final) — the duration intervention: it fixes low k and nothing else
+
+Every other result here is observational. This one intervenes on the
+post-hoc hypothesis that replaced the withdrawn architectural claim — that what
+matters is whether the model must represent "how many" internally. F5-TTS exposes
+`fix_duration`, so the hypothesis can be tested instead of asserted
+(`src/models/f5_fixdur.py`, `analysis/duration_intervention.py`,
+`data/results/duration_intervention.json`, `behavioural_f5fix.csv`).
+
+The supplied duration comes from F5-TTS's **own control renderings at the same
+k**, which it counts correctly. Reading it off the repeated item's own output
+would be circular.
+
+    k      free exact   duration given   n/arm
+    6         46.7%          80.0%        15
+    8         40.0%          73.3%        15
+    12        33.3%          40.0%        15
+    16        20.0%          26.7%        15
+    24         6.7%           0.0%        15
+    32         6.7%           0.0%        15
+
+    k < 12    43.3% -> 76.7%   (+33.3 pts, n=30 per arm)
+    k >= 12   16.7% -> 16.7%   ( +0.0 pts, n=60 per arm)
+    overall   25.6% -> 36.7%   (n=90 per arm, k>=6)
+
+**The split is the finding.** Where the deficit is mild, supplying the total
+length removes most of it; where the deficit is severe it does nothing at all —
+at k=24 and k=32 the intervention arm is at zero. A model handed the correct
+total length still cannot place thirty-two repetitions inside it, so at high k
+the failure is not reducible to mis-estimating how much speech to make. Do not
+paraphrase the low-k result as "duration explains it": +33.3 points is most of
+the low-k deficit, not all of it, and the high-k gain is exactly zero.
+
+*Unit trap, and it cost a whole run:* `fix_duration` in F5-TTS is the length of
+the reference clip **plus** the generated speech, not of the generated speech
+alone. Passing the target directly asks for a total shorter than the reference,
+and the model duly emits near-silence — which is what the first run produced.
+`f5_fixdur.py` measures the reference duration and adds it.
+
+Limits: one non-AR checkpoint, one seed, 15 items per (k, arm) cell, and the
+hypothesis under test is still post-hoc. A null would have retired the
+hypothesis; a split does not confirm it.

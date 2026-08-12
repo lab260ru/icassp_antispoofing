@@ -1,0 +1,4682 @@
+{
+  "kmin": 6,
+  "question": "six checkpoints are three architecture families; what does the arm effect look like when the clustering is modelled instead of apologised for",
+  "population_note": "3420 -> 1559 rows before the k>=6 cut; src/common/population.py, panel() defaults",
+  "reproduction": {
+    "n_rows": 982,
+    "n_repeated": 457,
+    "n_control": 525,
+    "n_checkpoints": 6,
+    "n_families": 3,
+    "agreement": {
+      "checkpoint_level.exact_rate_gap": {
+        "max_abs_diff": 0.0,
+        "matches": true
+      },
+      "checkpoint_level.count_error_gap": {
+        "max_abs_diff": 0.0,
+        "matches": true
+      },
+      "family_level.exact_rate_gap": {
+        "max_abs_diff": 0.0,
+        "matches": true
+      }
+    },
+    "reproduces_existing": true
+  },
+  "mixed": {
+    "available": true,
+    "outcome": "exact (0/1), linear probability",
+    "fixed": "arm + log2 k",
+    "sign": "reported as control - repeated",
+    "mixedlm": {
+      "arm_effect_pts": 76.42262146736354,
+      "se_pts": 2.2944035203119095,
+      "wald_lo": 71.92567320049498,
+      "wald_hi": 80.9195697342321,
+      "t2_lo": 66.55059989754673,
+      "t2_hi": 86.29464303718035,
+      "vcomp": {
+        "arch": 0.010657172141163906,
+        "arch_x_rep": 0.000187706968815475,
+        "ckpt": 0.002405811412499232,
+        "stim": 0.0015791057839222174
+      },
+      "vcomp_sd_pts": {
+        "arch": 10.32335804918337,
+        "arch_x_rep": 1.3700619285837958,
+        "ckpt": 4.904907147438402,
+        "stim": 3.9737964013298632
+      },
+      "vcomp_on_boundary": {
+        "arch": false,
+        "arch_x_rep": false,
+        "ckpt": false,
+        "stim": false
+      },
+      "converged": false,
+      "note": "with three families the family-varying arm slope is barely identified and REML shrinks it hard, so this Wald interval is narrower than the between-family spread alone would license; the clustered, family-t and bootstrap intervals below are the widths to quote"
+    },
+    "cluster_family": {
+      "n_clusters": 3,
+      "arm_effect_pts": 76.18265994447022,
+      "se_pts": 1.7434767339585304,
+      "lo": 68.68108501584886,
+      "hi": 83.68423487309155,
+      "crit": "t(2)"
+    },
+    "cluster_checkpoint": {
+      "n_clusters": 6,
+      "arm_effect_pts": 76.18265994447022,
+      "se_pts": 5.048559507067406,
+      "lo": 63.20492457947371,
+      "hi": 89.16039530946671,
+      "crit": "t(5)"
+    },
+    "gee_binomial_family_clustered": {
+      "log_odds": 4.568687789673201,
+      "se": 0.29269976059677216,
+      "lo": 3.3093023657444856,
+      "hi": 5.828073213601916,
+      "odds_ratio": 96.41750667811972,
+      "crit": "t(2)"
+    },
+    "family_t_interval": {
+      "per_family": {
+        "Llasa": 78.90522937224297,
+        "Qwen3-TTS": 76.11111111111111,
+        "XTTS": 71.11111111111111
+      },
+      "n": 3,
+      "mean_pts": 75.37581719815508,
+      "sd_pts": 3.9487419162247015,
+      "lo": 65.56659849009203,
+      "hi": 85.1850359062181,
+      "crit": "t(2)"
+    },
+    "cluster_bootstrap_family": {
+      "n_units": 3,
+      "mean_pts": 76.00277273533543,
+      "lo": 71.11111111111111,
+      "hi": 79.03743315508022,
+      "frac_positive": 1.0
+    },
+    "cluster_bootstrap_checkpoint": {
+      "n_units": 6,
+      "mean_pts": 76.2062733770861,
+      "lo": 67.22222222222223,
+      "hi": 84.78412457477916,
+      "frac_positive": 1.0
+    },
+    "worst_case_lower_bound_pts": 63.20492457947371,
+    "all_intervals_exclude_zero": true
+  },
+  "bayes": {
+    "model": "binomial likelihood, logit scale; control level and arm gap each carry a family offset and a checkpoint offset nested in it",
+    "priors": {
+      "alpha": "Normal(0,5)",
+      "Delta": "Normal(0,5)",
+      "sigma": "HalfNormal(1.0)"
+    },
+    "cells": {
+      "llasa1b": {
+        "y_ctl": 75,
+        "n_ctl": 82,
+        "y_rep": 8,
+        "n_rep": 60
+      },
+      "llasa3b": {
+        "y_ctl": 80,
+        "n_ctl": 85,
+        "y_rep": 10,
+        "n_rep": 59
+      },
+      "llasa8b": {
+        "y_ctl": 82,
+        "n_ctl": 88,
+        "y_rep": 8,
+        "n_rep": 68
+      },
+      "qwen06b": {
+        "y_ctl": 90,
+        "n_ctl": 90,
+        "y_rep": 7,
+        "n_rep": 90
+      },
+      "qwen17b": {
+        "y_ctl": 89,
+        "n_ctl": 90,
+        "y_rep": 35,
+        "n_rep": 90
+      },
+      "xtts2": {
+        "y_ctl": 79,
+        "n_ctl": 90,
+        "y_rep": 15,
+        "n_rep": 90
+      }
+    },
+    "diagnostics": {
+      "engine": "numpyro NUTS",
+      "rhat_max": 1.000466227531433,
+      "ess_min": 3824.9964667509194,
+      "converged": true
+    },
+    "crosscheck_diagnostics": {
+      "engine": "hand-rolled blocked Metropolis",
+      "rhat_max": 1.0255319958739175,
+      "ess_min": 295.55071182136953,
+      "draws": 24000
+    },
+    "delta_log_odds": {
+      "mean": 4.628432273864746,
+      "lo": 3.22294545173645,
+      "hi": 5.984603404998779,
+      "p_gt0": 1.0
+    },
+    "per_checkpoint_gap_pts": {
+      "llasa1b": {
+        "mean": 79.54787015914917,
+        "lo": 70.47473192214966,
+        "hi": 86.89650297164917,
+        "p_gt0": 1.0
+      },
+      "llasa3b": {
+        "mean": 77.24043130874634,
+        "lo": 66.99851751327515,
+        "hi": 85.54818630218506,
+        "p_gt0": 1.0
+      },
+      "llasa8b": {
+        "mean": 81.04802966117859,
+        "lo": 72.6912260055542,
+        "hi": 87.96160221099854,
+        "p_gt0": 1.0
+      },
+      "qwen06b": {
+        "mean": 87.64328360557556,
+        "lo": 80.05933165550232,
+        "hi": 93.75981092453003,
+        "p_gt0": 1.0
+      },
+      "qwen17b": {
+        "mean": 60.48019528388977,
+        "lo": 50.373685359954834,
+        "hi": 70.02264857292175,
+        "p_gt0": 1.0
+      },
+      "xtts2": {
+        "mean": 73.70103597640991,
+        "lo": 63.546133041381836,
+        "hi": 82.18020796775818,
+        "p_gt0": 1.0
+      }
+    },
+    "per_family_gap_pts": {
+      "Llasa": {
+        "mean": 79.27877306938171,
+        "lo": 73.39144945144653,
+        "hi": 84.40940976142883,
+        "p_gt0": 1.0
+      },
+      "Qwen3-TTS": {
+        "mean": 74.06173348426819,
+        "lo": 67.7103579044342,
+        "hi": 79.90853786468506,
+        "p_gt0": 1.0
+      },
+      "XTTS": {
+        "mean": 73.70103597640991,
+        "lo": 63.546133041381836,
+        "hi": 82.18020796775818,
+        "p_gt0": 1.0
+      }
+    },
+    "panel_gap_pts": {
+      "mean": 74.88568425178528,
+      "lo": 41.542261838912964,
+      "hi": 89.37780857086182,
+      "p_gt0": 1.0
+    },
+    "new_family_gap_pts": {
+      "mean": 65.26941062494073,
+      "lo": 5.865634944928325,
+      "hi": 93.28359999151597,
+      "p_gt0": 0.9955833333333334
+    },
+    "sigma": {
+      "family_level": 0.9688722491264343,
+      "checkpoint_level": 0.4494897723197937,
+      "family_gap": 0.7206267714500427,
+      "checkpoint_gap": 0.8142049312591553
+    },
+    "crosscheck": {
+      "engine": "hand-rolled Metropolis vs numpyro NUTS",
+      "max_abs_diff": {
+        "delta_log_odds_mean": 0.023788842399835808,
+        "panel_gap_mean_pts": 0.11750565255097456,
+        "new_family_gap_mean_pts": 0.33193091892378845
+      },
+      "agrees": true,
+      "metropolis": {
+        "delta_log_odds": {
+          "mean": 4.60464343146491,
+          "lo": 3.111093633476772,
+          "hi": 5.93518635006871,
+          "p_gt0": 1.0
+        },
+        "panel_gap_pts": {
+          "mean": 74.7681785992343,
+          "lo": 43.85579037111646,
+          "hi": 89.02824915262498,
+          "p_gt0": 1.0
+        },
+        "new_family_gap_pts": {
+          "mean": 64.93747970601694,
+          "lo": 5.427402396931558,
+          "hi": 93.33716375351676,
+          "p_gt0": 0.994375
+        }
+      }
+    },
+    "prior_sensitivity": {
+      "HalfNormal(0.5)": {
+        "delta_log_odds": {
+          "mean": 4.57962703704834,
+          "lo": 3.6436564922332764,
+          "hi": 5.519978046417236,
+          "p_gt0": 1.0
+        },
+        "panel_gap_pts": {
+          "mean": 77.09711790084839,
+          "lo": 58.64850878715515,
+          "hi": 87.32626438140869,
+          "p_gt0": 1.0
+        },
+        "new_family_gap_pts": {
+          "mean": 71.6733264922919,
+          "lo": 26.640787761612827,
+          "hi": 90.88934274872264,
+          "p_gt0": 1.0
+        }
+      },
+      "HalfNormal(3.0)": {
+        "delta_log_odds": {
+          "mean": 4.543280601501465,
+          "lo": 1.8318543434143066,
+          "hi": 6.795185565948486,
+          "p_gt0": 0.99775
+        },
+        "panel_gap_pts": {
+          "mean": 67.68266558647156,
+          "lo": 9.083865582942963,
+          "hi": 91.8928325176239,
+          "p_gt0": 0.99775
+        },
+        "new_family_gap_pts": {
+          "mean": 52.26904686657669,
+          "lo": -1.6315181439223232,
+          "hi": 96.0680658718237,
+          "p_gt0": 0.956
+        }
+      }
+    }
+  },
+  "spec_curve": {
+    "axes": {
+      "exclusions": [
+        "panel",
+        "plus_bad_templates",
+        "plus_cap_hits",
+        "plus_degenerate",
+        "everything"
+      ],
+      "kmin": [
+        1,
+        6,
+        8,
+        12,
+        16
+      ],
+      "control": [
+        "cycled",
+        "aperiodic"
+      ],
+      "seeds": [
+        "all",
+        "seed0"
+      ],
+      "aggregation": [
+        "pooled",
+        "checkpoint",
+        "family"
+      ],
+      "outcome": [
+        "exact_rate",
+        "median_rel_error"
+      ]
+    },
+    "n_specifications": 420,
+    "n_infeasible": 0,
+    "n_duplicate_populations_collapsed": 180,
+    "specs": [
+      {
+        "exclusions": "panel",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 1559,
+        "gap": 45.68879524616879
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 1559,
+        "gap": 0.0
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 1559,
+        "gap": 47.03499791522739
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 1559,
+        "gap": 10.416666666666666
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 1559,
+        "gap": 46.75995745788822
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 1559,
+        "gap": 6.944444444444444
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 526,
+        "gap": 44.32010409889394
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 526,
+        "gap": 0.0
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 526,
+        "gap": 45.89411371799347
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 526,
+        "gap": 13.888888888888891
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 526,
+        "gap": 44.83064371323022
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 526,
+        "gap": 9.259259259259261
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 462,
+        "gap": 71.20495495495496
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 462,
+        "gap": 3.125
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 462,
+        "gap": 71.36904761904762
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 462,
+        "gap": 4.6875
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 462,
+        "gap": 68.21428571428572
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 462,
+        "gap": 6.944444444444444
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 153,
+        "gap": 70.0513698630137
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 153,
+        "gap": 4.166666666666666
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 153,
+        "gap": 71.25
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 153,
+        "gap": 7.421875
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 153,
+        "gap": 70.83333333333333
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 153,
+        "gap": 10.243055555555555
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 982,
+        "gap": 76.12378868396374
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 982,
+        "gap": 8.333333333333332
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 982,
+        "gap": 76.6748369083437
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 982,
+        "gap": 10.416666666666666
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 982,
+        "gap": 75.37581719815508
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 982,
+        "gap": 10.416666666666666
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 326,
+        "gap": 75.45454545454547
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 326,
+        "gap": 8.333333333333332
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 326,
+        "gap": 77.10455143945056
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 326,
+        "gap": 12.760416666666664
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 326,
+        "gap": 73.99562688555964
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 326,
+        "gap": 12.557870370370372
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 821,
+        "gap": 81.59566984989925
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 821,
+        "gap": 8.333333333333332
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 821,
+        "gap": 82.02991270023375
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 821,
+        "gap": 8.680555555555555
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 821,
+        "gap": 79.50142328163732
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 821,
+        "gap": 8.680555555555555
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 271,
+        "gap": 79.82311579872557
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 271,
+        "gap": 8.333333333333332
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 271,
+        "gap": 81.4379779577148
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 271,
+        "gap": 9.114583333333334
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 271,
+        "gap": 76.95865197180986
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 271,
+        "gap": 9.027777777777779
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 649,
+        "gap": 84.55587392550143
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 649,
+        "gap": 6.25
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 649,
+        "gap": 85.07582013782861
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 649,
+        "gap": 7.291666666666667
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 649,
+        "gap": 82.18017638818203
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 649,
+        "gap": 7.407407407407407
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 214,
+        "gap": 82.60946327683615
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 214,
+        "gap": 6.25
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 214,
+        "gap": 84.59899749373433
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 214,
+        "gap": 8.072916666666666
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 214,
+        "gap": 79.7326649958229
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 214,
+        "gap": 8.854166666666666
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 482,
+        "gap": 85.30221445019652
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 482,
+        "gap": 6.25
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 482,
+        "gap": 86.40445215088874
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 482,
+        "gap": 7.986111111111111
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 482,
+        "gap": 82.91161007590114
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 482,
+        "gap": 7.754629629629629
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 159,
+        "gap": 81.91421254801537
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 159,
+        "gap": 4.166666666666666
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 159,
+        "gap": 84.36507936507935
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 159,
+        "gap": 9.54861111111111
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 159,
+        "gap": 78.46560846560845
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 159,
+        "gap": 8.854166666666666
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 346,
+        "gap": 67.44310575635876
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 346,
+        "gap": 0.0
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 346,
+        "gap": 67.831541218638
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 346,
+        "gap": 4.6875
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 346,
+        "gap": 64.14575866188768
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 346,
+        "gap": 7.291666666666667
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 114,
+        "gap": 65.18518518518519
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 114,
+        "gap": 1.5625
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 114,
+        "gap": 66.66666666666667
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 114,
+        "gap": 5.729166666666666
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 114,
+        "gap": 65.55555555555554
+      },
+      {
+        "exclusions": "panel",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 114,
+        "gap": 8.506944444444445
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 1863,
+        "gap": 35.26194780876127
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 1863,
+        "gap": 0.0
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 1863,
+        "gap": 36.47151864158574
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 1863,
+        "gap": 10.069444444444445
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 1863,
+        "gap": 35.92957209850572
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 1863,
+        "gap": 6.712962962962963
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 626,
+        "gap": 35.155667650332376
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 626,
+        "gap": 0.0
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 626,
+        "gap": 36.73275143794012
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 626,
+        "gap": 13.715277777777777
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 626,
+        "gap": 35.013192316651434
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 626,
+        "gap": 9.143518518518517
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 553,
+        "gap": 72.7974318658281
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 553,
+        "gap": 6.25
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 553,
+        "gap": 72.9591836734694
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 553,
+        "gap": 6.510416666666667
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 553,
+        "gap": 69.73261526832955
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 553,
+        "gap": 9.027777777777779
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 184,
+        "gap": 74.0530303030303
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 184,
+        "gap": 6.25
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 184,
+        "gap": 75.0
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 184,
+        "gap": 8.203125
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 184,
+        "gap": 74.30555555555556
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 184,
+        "gap": 11.111111111111109
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 1172,
+        "gap": 62.62856474988312
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 1172,
+        "gap": 8.333333333333332
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 1172,
+        "gap": 63.297543965847716
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 1172,
+        "gap": 10.243055555555555
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 1172,
+        "gap": 61.79712807599724
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 1172,
+        "gap": 10.763888888888888
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 389,
+        "gap": 63.027552157986946
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 389,
+        "gap": 8.333333333333332
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 389,
+        "gap": 64.78653864777336
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 389,
+        "gap": 11.197916666666664
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 389,
+        "gap": 61.092260333083466
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 389,
+        "gap": 11.516203703703702
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 980,
+        "gap": 68.54004871099673
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 980,
+        "gap": 8.333333333333332
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 980,
+        "gap": 69.0972132822494
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 980,
+        "gap": 9.375
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 980,
+        "gap": 66.31172243507984
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 980,
+        "gap": 9.375
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 324,
+        "gap": 67.03448275862068
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 324,
+        "gap": 8.333333333333332
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 324,
+        "gap": 68.66944562266019
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 324,
+        "gap": 10.416666666666666
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 324,
+        "gap": 63.742593378069756
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 324,
+        "gap": 9.982638888888888
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 774,
+        "gap": 71.53355146703856
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 774,
+        "gap": 8.333333333333332
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 774,
+        "gap": 72.09265537758596
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 774,
+        "gap": 8.506944444444445
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 774,
+        "gap": 69.20374556036595
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 774,
+        "gap": 9.027777777777779
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 256,
+        "gap": 70.45440570620427
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 256,
+        "gap": 6.25
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 256,
+        "gap": 72.10096489188562
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 256,
+        "gap": 8.940972222222221
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 256,
+        "gap": 67.51175437236819
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 256,
+        "gap": 9.49074074074074
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 574,
+        "gap": 71.94907813871816
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 574,
+        "gap": 6.25
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 574,
+        "gap": 73.03699874440474
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 574,
+        "gap": 9.461805555555555
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 574,
+        "gap": 69.67898681725748
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 574,
+        "gap": 9.432870370370372
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 190,
+        "gap": 69.54382826475849
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 190,
+        "gap": 5.208333333333333
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 190,
+        "gap": 71.609477124183
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 190,
+        "gap": 10.677083333333334
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 190,
+        "gap": 66.25816993464052
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 190,
+        "gap": 10.069444444444445
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 414,
+        "gap": 68.6026936026936
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 414,
+        "gap": 0.0
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 414,
+        "gap": 68.98148148148148
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 414,
+        "gap": 5.859375
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 414,
+        "gap": 65.12345679012346
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 414,
+        "gap": 8.854166666666666
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 137,
+        "gap": 69.63675213675214
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 137,
+        "gap": 3.125
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 137,
+        "gap": 70.83333333333334
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 137,
+        "gap": 7.421875
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 137,
+        "gap": 69.44444444444444
+      },
+      {
+        "exclusions": "plus_bad_templates",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 137,
+        "gap": 10.416666666666666
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 1637,
+        "gap": 47.30111724323597
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 1637,
+        "gap": 0.0
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 1637,
+        "gap": 47.753110866915215
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 1637,
+        "gap": 15.451388888888891
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 1637,
+        "gap": 47.2386994256801
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 1637,
+        "gap": 10.300925925925927
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 551,
+        "gap": 47.009664131812414
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 551,
+        "gap": 0.0
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 551,
+        "gap": 47.449796186613945
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 551,
+        "gap": 14.930555555555555
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 551,
+        "gap": 45.8677653589772
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 551,
+        "gap": 9.953703703703704
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 474,
+        "gap": 71.80555555555557
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 474,
+        "gap": 4.166666666666666
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 474,
+        "gap": 71.89814814814815
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 474,
+        "gap": 5.208333333333333
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 474,
+        "gap": 68.91975308641976
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 474,
+        "gap": 7.638888888888889
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 159,
+        "gap": 71.09177215189874
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 159,
+        "gap": 4.166666666666666
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 159,
+        "gap": 71.25
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 159,
+        "gap": 7.421875
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 159,
+        "gap": 70.83333333333333
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 159,
+        "gap": 10.243055555555555
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 1048,
+        "gap": 76.74748173919379
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 1048,
+        "gap": 8.333333333333332
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 1048,
+        "gap": 76.96658204611659
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 1048,
+        "gap": 11.458333333333334
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 1048,
+        "gap": 75.57031395667032
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 1048,
+        "gap": 11.111111111111112
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 348,
+        "gap": 76.7349636483807
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 348,
+        "gap": 8.333333333333332
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 348,
+        "gap": 77.30516609826954
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 348,
+        "gap": 14.670138888888888
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 348,
+        "gap": 74.12936999143896
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 348,
+        "gap": 13.831018518518519
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 876,
+        "gap": 81.86031961208582
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 876,
+        "gap": 8.333333333333332
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 876,
+        "gap": 82.00337794843453
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 876,
+        "gap": 9.375
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 876,
+        "gap": 79.48373344710451
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 876,
+        "gap": 9.143518518518517
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 291,
+        "gap": 81.25059079308063
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 291,
+        "gap": 8.333333333333332
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 291,
+        "gap": 81.72929606625259
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 291,
+        "gap": 12.5
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 291,
+        "gap": 77.1528640441684
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 291,
+        "gap": 11.284722222222223
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 702,
+        "gap": 84.30700785867377
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 702,
+        "gap": 8.333333333333332
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 702,
+        "gap": 84.4423122540977
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 702,
+        "gap": 8.333333333333334
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 702,
+        "gap": 81.7578377990281
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 702,
+        "gap": 8.101851851851851
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 232,
+        "gap": 83.54279765003346
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 232,
+        "gap": 6.25
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 232,
+        "gap": 84.03021442495127
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 232,
+        "gap": 9.809027777777779
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 232,
+        "gap": 79.35347628330084
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 232,
+        "gap": 10.011574074074074
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 527,
+        "gap": 84.44962982168063
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 527,
+        "gap": 6.25
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 527,
+        "gap": 84.64366813204022
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 527,
+        "gap": 8.333333333333334
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 527,
+        "gap": 81.73775406333544
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 527,
+        "gap": 7.986111111111112
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 174,
+        "gap": 82.7230667547918
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 174,
+        "gap": 4.166666666666666
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 174,
+        "gap": 83.25396825396825
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 174,
+        "gap": 9.54861111111111
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 174,
+        "gap": 77.72486772486774
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 174,
+        "gap": 8.854166666666666
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 357,
+        "gap": 68.15442561205273
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 357,
+        "gap": 0.0
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 357,
+        "gap": 68.25396825396825
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 357,
+        "gap": 4.6875
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 357,
+        "gap": 64.70899470899471
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 357,
+        "gap": 7.291666666666667
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 120,
+        "gap": 66.66666666666667
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 120,
+        "gap": 1.5625
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 120,
+        "gap": 66.66666666666667
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 120,
+        "gap": 5.729166666666666
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 120,
+        "gap": 65.55555555555554
+      },
+      {
+        "exclusions": "plus_cap_hits",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 120,
+        "gap": 8.506944444444445
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 1578,
+        "gap": 45.98732051457176
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 1578,
+        "gap": 0.0
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 1578,
+        "gap": 47.07785717637208
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 1578,
+        "gap": 13.541666666666666
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 1578,
+        "gap": 46.788530298651345
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 1578,
+        "gap": 9.027777777777777
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 527,
+        "gap": 43.99107014258966
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 527,
+        "gap": 0.0
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 527,
+        "gap": 45.5747176668901
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 527,
+        "gap": 13.888888888888891
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 527,
+        "gap": 44.61771301249464
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 527,
+        "gap": 9.259259259259261
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 464,
+        "gap": 71.30952380952381
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 464,
+        "gap": 3.645833333333333
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 464,
+        "gap": 71.47727272727272
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 464,
+        "gap": 5.208333333333333
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 464,
+        "gap": 68.35858585858587
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 464,
+        "gap": 7.638888888888889
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 153,
+        "gap": 70.0513698630137
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 153,
+        "gap": 4.166666666666666
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 153,
+        "gap": 71.25
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 153,
+        "gap": 7.421875
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 153,
+        "gap": 70.83333333333333
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 153,
+        "gap": 10.243055555555555
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 990,
+        "gap": 76.00132786341041
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 990,
+        "gap": 8.333333333333332
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 990,
+        "gap": 76.5267980425876
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 990,
+        "gap": 10.763888888888888
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 990,
+        "gap": 75.27712462098432
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 990,
+        "gap": 10.648148148148147
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 326,
+        "gap": 75.45454545454547
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 326,
+        "gap": 8.333333333333332
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 326,
+        "gap": 77.10455143945056
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 326,
+        "gap": 12.760416666666664
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 326,
+        "gap": 73.99562688555964
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 326,
+        "gap": 12.557870370370372
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 827,
+        "gap": 81.55660709672875
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 827,
+        "gap": 8.333333333333332
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 827,
+        "gap": 81.98755707347915
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 827,
+        "gap": 9.027777777777777
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 827,
+        "gap": 79.47318619713424
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 827,
+        "gap": 8.912037037037036
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 271,
+        "gap": 79.82311579872557
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 271,
+        "gap": 8.333333333333332
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 271,
+        "gap": 81.4379779577148
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 271,
+        "gap": 9.114583333333334
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 271,
+        "gap": 76.95865197180986
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 271,
+        "gap": 9.027777777777779
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 651,
+        "gap": 84.62209909106436
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 651,
+        "gap": 7.291666666666666
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 651,
+        "gap": 85.14797020997868
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 651,
+        "gap": 7.638888888888888
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 651,
+        "gap": 82.22827643628209
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 651,
+        "gap": 7.638888888888889
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 214,
+        "gap": 82.60946327683615
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 214,
+        "gap": 6.25
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 214,
+        "gap": 84.59899749373433
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 214,
+        "gap": 8.072916666666666
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 214,
+        "gap": 79.7326649958229
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 214,
+        "gap": 8.854166666666666
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 483,
+        "gap": 85.34025096525096
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 483,
+        "gap": 6.25
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 483,
+        "gap": 86.43805430142639
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 483,
+        "gap": 7.986111111111111
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 483,
+        "gap": 82.93401150959289
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 483,
+        "gap": 7.754629629629629
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 159,
+        "gap": 81.91421254801537
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 159,
+        "gap": 4.166666666666666
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 159,
+        "gap": 84.36507936507935
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 159,
+        "gap": 9.54861111111111
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 159,
+        "gap": 78.46560846560845
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 159,
+        "gap": 8.854166666666666
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 347,
+        "gap": 67.51164337990684
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 347,
+        "gap": 0.0
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 347,
+        "gap": 67.88194444444444
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 347,
+        "gap": 4.6875
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 347,
+        "gap": 64.21296296296296
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 347,
+        "gap": 7.291666666666667
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 114,
+        "gap": 65.18518518518519
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 114,
+        "gap": 1.5625
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 114,
+        "gap": 66.66666666666667
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 114,
+        "gap": 5.729166666666666
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 114,
+        "gap": 65.55555555555554
+      },
+      {
+        "exclusions": "plus_degenerate",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 114,
+        "gap": 8.506944444444445
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 2052,
+        "gap": 35.26748971193416
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 2052,
+        "gap": 4.166666666666666
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 2052,
+        "gap": 35.267489711934154
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 2052,
+        "gap": 19.53125
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 2052,
+        "gap": 35.12688614540466
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 2052,
+        "gap": 13.020833333333334
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 684,
+        "gap": 35.833333333333336
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 684,
+        "gap": 0.0
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 684,
+        "gap": 35.833333333333336
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 684,
+        "gap": 18.402777777777775
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 684,
+        "gap": 34.41358024691358
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 1,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 684,
+        "gap": 12.268518518518517
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 576,
+        "gap": 73.61111111111111
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 576,
+        "gap": 6.25
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 576,
+        "gap": 73.61111111111111
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 576,
+        "gap": 7.421875
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 576,
+        "gap": 70.60185185185186
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 576,
+        "gap": 10.243055555555555
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 192,
+        "gap": 75.0
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 192,
+        "gap": 6.25
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 192,
+        "gap": 75.0
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 192,
+        "gap": 8.203125
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 192,
+        "gap": 74.30555555555556
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 1,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 192,
+        "gap": 11.111111111111109
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 1296,
+        "gap": 61.72839506172839
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 1296,
+        "gap": 12.5
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 1296,
+        "gap": 61.7283950617284
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 1296,
+        "gap": 13.888888888888888
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 1296,
+        "gap": 60.751028806584365
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 1296,
+        "gap": 13.194444444444445
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 432,
+        "gap": 62.5
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 432,
+        "gap": 8.333333333333332
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 432,
+        "gap": 62.5
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 432,
+        "gap": 15.885416666666664
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 432,
+        "gap": 59.5679012345679
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 6,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 432,
+        "gap": 14.641203703703704
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 1080,
+        "gap": 67.03703703703704
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 1080,
+        "gap": 8.333333333333332
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 1080,
+        "gap": 67.03703703703702
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 1080,
+        "gap": 10.9375
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 1080,
+        "gap": 64.93827160493828
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 1080,
+        "gap": 10.416666666666666
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 360,
+        "gap": 66.66666666666666
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 360,
+        "gap": 8.333333333333332
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 360,
+        "gap": 66.66666666666667
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 360,
+        "gap": 12.413194444444443
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 360,
+        "gap": 62.40740740740741
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 8,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 360,
+        "gap": 11.313657407407405
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 864,
+        "gap": 69.44444444444444
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 864,
+        "gap": 8.333333333333332
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 864,
+        "gap": 69.44444444444444
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 864,
+        "gap": 9.635416666666666
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 864,
+        "gap": 67.43827160493828
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 864,
+        "gap": 9.780092592592593
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 288,
+        "gap": 69.44444444444444
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 288,
+        "gap": 8.333333333333332
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 288,
+        "gap": 69.44444444444444
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 288,
+        "gap": 11.371527777777777
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 288,
+        "gap": 65.74074074074073
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 12,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 288,
+        "gap": 11.111111111111109
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 648,
+        "gap": 69.1358024691358
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 648,
+        "gap": 6.25
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 648,
+        "gap": 69.1358024691358
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 648,
+        "gap": 10.677083333333334
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 648,
+        "gap": 67.07818930041152
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 648,
+        "gap": 10.243055555555555
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 216,
+        "gap": 68.51851851851852
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 216,
+        "gap": 6.25
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 216,
+        "gap": 68.51851851851852
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 216,
+        "gap": 11.979166666666666
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 216,
+        "gap": 64.19753086419753
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 16,
+        "control": "cycled",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 216,
+        "gap": 10.9375
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 432,
+        "gap": 69.44444444444446
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 432,
+        "gap": 3.645833333333333
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 432,
+        "gap": 69.44444444444444
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 432,
+        "gap": 6.380208333333333
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 432,
+        "gap": 65.74074074074075
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "all",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 432,
+        "gap": 9.54861111111111
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "exact_rate",
+        "n": 144,
+        "gap": 70.83333333333333
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "pooled",
+        "outcome": "median_rel_error",
+        "n": 144,
+        "gap": 3.125
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "exact_rate",
+        "n": 144,
+        "gap": 70.83333333333334
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "checkpoint",
+        "outcome": "median_rel_error",
+        "n": 144,
+        "gap": 7.03125
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "exact_rate",
+        "n": 144,
+        "gap": 69.44444444444444
+      },
+      {
+        "exclusions": "everything",
+        "kmin": 16,
+        "control": "aperiodic",
+        "seeds": "seed0",
+        "aggregation": "family",
+        "outcome": "median_rel_error",
+        "n": 144,
+        "gap": 9.895833333333334
+      }
+    ],
+    "exact_rate": {
+      "n": 210,
+      "min": 34.41358024691358,
+      "max": 86.43805430142639,
+      "median": 70.52812877902807,
+      "q05": 36.58907339994521,
+      "q95": 84.50806407878207,
+      "n_positive": 210,
+      "n_zero": 0,
+      "n_negative": 0,
+      "frac_sign_preserved": 1.0
+    },
+    "median_rel_error": {
+      "n": 210,
+      "min": 0.0,
+      "max": 19.53125,
+      "median": 8.333333333333332,
+      "q05": 0.0,
+      "q95": 13.778935185185183,
+      "n_positive": 197,
+      "n_zero": 13,
+      "n_negative": 0,
+      "frac_sign_preserved": 0.9380952380952381
+    },
+    "all_specifications": {
+      "n": 420,
+      "n_positive": 407,
+      "n_zero": 13,
+      "n_negative": 0,
+      "frac_sign_preserved": 0.969047619047619
+    },
+    "axis_influence_exact_rate": {
+      "exclusions": {
+        "median_by_level": {
+          "panel": 75.7891670692546,
+          "plus_bad_templates": 68.82546355207083,
+          "plus_cap_hits": 76.74122269378725,
+          "plus_degenerate": 75.72793665897794,
+          "everything": 67.05761316872429
+        },
+        "spread": 9.683609525062963
+      },
+      "kmin": {
+        "median_by_level": {
+          "1": 57.98369829060047,
+          "6": 74.70324730621164,
+          "8": 78.31302512065132,
+          "12": 80.7452513974255,
+          "16": 69.44444444444444
+        },
+        "spread": 22.761553106825033
+      },
+      "control": {
+        "median_by_level": {
+          "cycled": 72.02086675815207,
+          "aperiodic": 69.68468370254084
+        },
+        "spread": 2.3361830556112295
+      },
+      "seeds": {
+        "median_by_level": {
+          "all": 69.67898681725748,
+          "seed0": 70.83333333333333
+        },
+        "spread": 1.1543465160758473
+      },
+      "aggregation": {
+        "median_by_level": {
+          "pooled": 70.6438695197688,
+          "checkpoint": 71.30952380952381,
+          "family": 69.06174932339286
+        },
+        "spread": 2.2477744861309503
+      }
+    },
+    "worst_specification_exact_rate": {
+      "exclusions": "everything",
+      "kmin": 1,
+      "control": "cycled",
+      "seeds": "seed0",
+      "aggregation": "family",
+      "outcome": "exact_rate",
+      "n": 684,
+      "gap": 34.41358024691358
+    },
+    "reproduces": {
+      "max_abs_diff_pts": {
+        "exclusion_sensitivity.panel": 0.0,
+        "exclusion_sensitivity.plus_bad_templates": 0.0,
+        "exclusion_sensitivity.plus_cap_hits": 0.0,
+        "exclusion_sensitivity.plus_degenerate": 0.0,
+        "exclusion_sensitivity.everything": 0.0,
+        "aperiodic_controls.re-generated": 0.0
+      },
+      "matches": true
+    }
+  },
+  "least_favourable": {
+    "frequentist_lower_bound_pts": 63.20492457947371,
+    "bayes_new_family_lo_pts": -1.6315181439223232,
+    "bayes_new_family_worst_prior": "HalfNormal(3.0)",
+    "bayes_new_family_worst_p_gt0": 0.956,
+    "spec_curve_min_pts": 34.41358024691358,
+    "spec_curve_worst": {
+      "exclusions": "everything",
+      "kmin": 1,
+      "control": "cycled",
+      "seeds": "seed0",
+      "aggregation": "family",
+      "outcome": "exact_rate",
+      "n": 684,
+      "gap": 34.41358024691358
+    },
+    "every_reading_positive": true,
+    "a_credible_interval_crosses_zero": true
+  },
+  "verdict": "arm effect 76.4 pts; the least favourable of six frequentist intervals has lower bound 63.2 pts; the posterior predictive gap for an architecture family outside the panel is 65.3 pts [5.9, 93.3] with P(gap>0)=0.996; the exact-rate gap ranges 34.4 to 86.4 pts across 210 specifications and keeps its sign in 100% of them.",
+  "clears_zero": true
+}

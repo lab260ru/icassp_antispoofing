@@ -139,18 +139,25 @@ than prose. Every one of them can come back the wrong way, and two did:
 ```bash
 python analysis/exclusion_sensitivity.py   # do our own exclusions make the gap?
 python analysis/horizon_forms.py           # is the ratio a property of the curve?
-python analysis/probe_past_horizon.py      # the theorem's own prediction, 1 of 2
+python analysis/probe_past_horizon.py      # the theorem's own prediction, 1 of 3
 python analysis/vits_config.py             # is VITS immune, or its defaults?
 python analysis/greedy_decoding.py         # does the deficit survive argmax?
 ```
 
 Two of these weakened published claims and the paper says so: `horizon_forms.py`
 showed the 3.5-fold ratio is form-dependent (2.7--4.3 across three saturating
-families, though no family flips a checkpoint), and `probe_past_horizon.py`'s
-second checkpoint did not replicate the paper's one positive result. If you rerun
-them and get a different answer, the scripts pick their own verdict strings from
-the measured numbers, so read the stdout rather than assuming the paper's wording
-still applies.
+families, though no family flips a checkpoint), and neither of the two further
+checkpoints run through `probe_past_horizon.py` replicated the paper's one
+positive result. It stands at **1 of 3** (MAE ratios against the constant
+predictor: Llasa-1B 1.01, Llasa-3B 0.99, Llasa-8B 0.86; only Llasa-1B loses the
+count). Llasa-3B beat the threshold by 0.006 MAE over twelve items, so the script
+applies a `TIE = 0.02` band and calls Llasa-1B and Llasa-3B *indistinguishable*
+from a constant predictor: by effect size 2 of 3 show nothing recoverable and
+only Llasa-8B clearly keeps the count. We quote 1 of 3, the stricter reading.
+Anything in this repo still saying "1 of 2" predates the Llasa-3B run. If you
+rerun them and get a different answer, the scripts pick their own verdict strings
+from the measured numbers, so read the stdout rather than assuming the paper's
+wording still applies.
 
 `paper/build.sh` regenerates `numbers.tex` from the CSVs before every compile, so
 a number in the PDF cannot drift from the data it came from. **Never hand-edit a

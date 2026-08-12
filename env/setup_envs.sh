@@ -21,6 +21,10 @@ CU130="--index-url https://download.pytorch.org/whl/cu130"
 setup_base() {
   conda activate base
   pip install -q "transformers==4.57.3" accelerate num2words jiwer 2>&1
+  # analysis/hierarchical.py: mixed-effects and cluster-robust models, and NUTS
+  # for the hierarchical posterior. numpyro pulls the CPU jax wheel and the
+  # script pins JAX_PLATFORMS=cpu, so neither touches a GPU.
+  pip install -q statsmodels numpyro 2>&1
 }
 
 setup_qwen() {

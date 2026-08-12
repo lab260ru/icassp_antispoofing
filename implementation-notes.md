@@ -100,13 +100,36 @@ ours: Lemma B bounds the softmax **restricted to the `k` repeated keys**, but we
 measured raw attention weight, which is normalised over the whole sequence, whose
 length itself grows with `k`. That confounds dilution with sequence growth.
 
-Renormalised over the occurrence columns, the lemma is confirmed tightly: block
-entropy `= 0.98 log k`, implied spread `δ <= 0.06` nats over the whole ladder,
-and the most-attended occurrence never exceeds `1.9/k` of the block's mass.
+Renormalised over the occurrence columns, the lemma is confirmed: block entropy
+`= 0.97 log k` and the within-block share falls with a log-log slope of `-1.00`,
+both as predicted.
+
+**Two deltas, and only one of them is the lemma's.** The measurement emits two
+quantities that were once quoted under a single symbol, which is what made the
+draft read as inconsistent:
+
+| quantity | what it bounds | value (deep layers, `k>=6`) |
+|---|---|---|
+| entropy gap `max(log k - H)` | the **average** logit spread over the block | `<= 0.45` nats |
+| most-attended share `max(share x k)` | the **extreme** — the single worst occurrence | `3.4/k` worst case, `delta <= 1.23` |
+| median share `x k` | the same extreme, typical rather than worst | `1.7/k`, `delta = 0.51` |
+
+Lemma B has to survive the worst occurrence, not the mean one, so it is entitled
+only to the extreme: quote `delta <= 1.23` / `3.4/k`. Quoting 0.45 as the bound
+understates it ~2.7x. `analysis/make_numbers.py` emits them as separate macros
+(`DeltaEntropy`, `DeltaMax`, `ShareMaxK`, `ShareMedK`, `DeltaMedian`) for exactly
+this reason; do not collapse them again. Superseded values from before the
+renormalisation fix: `0.98 log k`, `delta <= 0.06`, `1.9/k`.
 
 Note `attn_share` (the *mean* within-block share) is `1/k` by construction and
 carries no information; the informative quantities are `attn_share_max`,
 `attn_unif_dev` and `attn_block_entropy`.
+
+Caveat worth knowing before you requote these: this block in `make_numbers.py`
+takes `state.csv` as-is and does **not** drop `ABLATIONS`, so `xtts2norp` rows
+are inside it. Recomputed without them the numbers are unchanged to the reported
+precision (`ShareMedK` moves 1.668 -> 1.678), so nothing rests on it — but the
+filter is missing and every other panel statistic applies it.
 
 ## 6. Bugs that mattered
 

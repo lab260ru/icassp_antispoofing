@@ -18,6 +18,14 @@
 \makeatletter
 \def\thm@space@setup{\thm@preskip=3pt \thm@postskip=3pt}
 \makeatother
+% Float separation. Two floats at 12pt of default padding above and below cost
+% more lines than the last paragraph of the discussion is worth, and the page
+% limit is hard. Caption spacing likewise.
+\setlength{\textfloatsep}{8pt plus 2pt minus 2pt}
+\setlength{\intextsep}{8pt plus 2pt minus 2pt}
+\setlength{\floatsep}{8pt plus 2pt minus 2pt}
+\setlength{\abovecaptionskip}{4pt}
+\setlength{\belowcaptionskip}{0pt}
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}{Lemma}
@@ -25,8 +33,8 @@
 
 \input{numbers}
 
-\title{Counting Collapse in Autoregressive Text-to-Speech:\\
-       A Lean-Verified Bound, and a Horizon It Does Not Yet Explain}
+\title{Periodicity, Not Length: A Controlled Benchmark for\\
+       Repetition Miscounting in Neural Text-to-Speech}
 
 \twoauthors
   {Ivan Viakhirev$^{1}$, Kirill Borodin$^{2,3}$, Grach Mkrtchian$^{2}$}
@@ -39,36 +47,34 @@
 \maketitle
 
 \begin{abstract}
-Autoregressive text-to-speech models loop, truncate, and lose count on text that
-repeats a phrase many times. Modelling one repetition as a state map $F$ on the
-decoder's hidden state, we prove that if $F$ contracts with factor $q<1$ then
-\emph{no} Lipschitz readout---the model's own stop head included---can separate
-repetition counts beyond a horizon $N^\ast \le \log(\mu/(2LC))/\log q$. Both it and a
-companion dilution lemma are machine-checked in Lean~4 with \texttt{mathlib},
-free of \texttt{sorry} and nonstandard axioms. We do \emph{not} establish the theorem's premise: two
-attempts to measure the contraction factor failed and the dilution lemma's dose-response test came
-out sign-reversed. Across
-\NModels{} checkpoints from \NFamilies{} architectures, judged by a CTC recogniser, the
-obvious autoregressive judge being biased against repetition,
-models render repeated text with a median count error of \ErrRepCk{}\% per
-checkpoint at $k\ge6$
-and are exact in \ExactRep{}\% of generations, against \ExactCtl{}\% for
-length-matched \emph{distinct}-word controls: the limit tracks periodicity, not
-length, in every checkpoint and family ($n{=}6$, too small to test). It may not
-be peculiar to autoregressive decoding: of two non-autoregressive baselines, one
-is immune and one is not. Up to $k=32$ the count stays proportional rather than saturating, so
-no horizon is visible there; a post-hoc and exploratory extension to $k=128$ finds
-one, repetition lowering the fitted saturation scale \HzFormLo{}--\HzFormHi{}-fold
-by fitted family, though not in
-one of the \HzNModels{} checkpoints that can utter that much. Its \emph{conclusion} survives one
-direct test --- a linear readout recovers the count from decoder states below the
-horizon and no better than chance past it --- in \PhNLost{} of the \PhNCk{}
-checkpoints we could run it on.
+Text-to-speech models loop, truncate and lose count on text that repeats a
+phrase many times. We isolate what drives it with a parametric repetition
+ladder: \NStimuli{} stimuli in which a target word recurs $k$ times, each paired
+with a \emph{length-matched control} of the same carrier and word count whose
+repeated token is replaced by distinct fillers. Across \NModels{} checkpoints
+from \NFamilies{} architectures, models render repeated text exactly in
+\ExactRep{}\% of generations against \ExactCtl{}\% for their controls: a gap of
+\FamExact{} points $[\FamExactLo{},\FamExactHi{}]$ by architecture family
+($n{=}\FamExactN{}$), favouring the control in all \CkExactN{} checkpoints. The
+limit tracks \emph{periodicity, not length}. It survives greedy decoding, an
+order-of-magnitude repetition-penalty sweep, checkpoints that pass no penalty at
+all, never-cycled controls, and every exclusion rule switched off
+(\ExSensAll{} points). Measuring it needs care: the obvious judge, Whisper, is
+autoregressive and biased \emph{against} the phenomenon, scoring
+\WhisperValPer{} of the true count on periodic ground truth where a CTC
+recogniser scores \CtcValPer{}. Nor is the failure peculiar to autoregressive
+decoding --- of two non-autoregressive baselines one is immune and one is not.
+We also state and machine-check in Lean~4 a conditional bound: if the
+per-repetition state map contracts with factor $q<1$, no Lipschitz readout can
+separate counts past a computable horizon. We report it as an untested
+conjecture: two attempts to measure $q$ failed and the companion dilution
+lemma's dose-response came out sign-reversed. The empirical result stands
+independently of it.
 \end{abstract}
 
 \begin{keywords}
-speech synthesis, hallucination, autoregressive models, formal verification,
-fixed-point dynamics
+speech synthesis, hallucination, evaluation benchmark, autoregressive models,
+formal verification
 \end{keywords}
 
 \section{Introduction}
@@ -82,91 +88,33 @@ problem~\cite{song2024ellav,wang2023valle} and usually attributed to
 exposure bias or to the absence of a monotonic alignment constraint, with fixes
 proposed at the level of attention supervision or decoding
 rules~\cite{xin2024ralle,du2024cosyvoice2} --- the speech analogue of neural text
-degeneration, whose remedies are likewise sampling- or
-objective-level~\cite{holtzman2020curious,welleck2020neural}.
+degeneration~\cite{holtzman2020curious,welleck2020neural}.
 
-Much of this behaviour may have a simpler cause, statable as a theorem.
-When the conditioning text contains $k$ copies of one phrase, softmax attention
-cannot tell one copy from another: each gets weight $\Theta(1/k)$ and the profile
-flattens (Lemma~\ref{lem:dilution}). The decoder therefore meets approximately
-the \emph{same} conditioning at every repetition boundary, so the map between
-boundaries is approximately autonomous. If that map contracts, its record of how
-many repetitions it has produced is erased geometrically, and past a computable
-horizon no Lipschitz function of the state---the stop-token logit included---can
-recover the count (Theorem~\ref{thm:collapse}).
+Reports of this behaviour confound two things, because repeating a phrase $k$
+times makes the text both \emph{longer} and \emph{periodic}. If long inputs are
+simply harder --- through attention span, exposure bias or a duration budget ---
+then nothing about repetition needs explaining. The benchmark here separates
+them by construction: every repeated item is paired with a
+\emph{length-matched control} of the same carrier and the same word count, in
+which the $k$ copies of one word become $k$ non-adjacent distinct ones. A
+length account predicts the two curves coincide. They do not, and that contrast
+is the paper's sharpest result.
 
-The failure is thus predicted to depend on \emph{periodicity}, not on length: a
-sequence of $k$ distinct words should survive where $k$ identical ones do not.
-That contrast is the sharpest test we run.
+Measuring it is its own problem, because the natural instrument shares the
+failure it is meant to detect: a judge biased in the direction of the effect can
+manufacture it. That constrains the design rather than decorating it, and
+Section~\ref{sec:method} treats it as a result in its own right.
 
-We contribute a conditional impossibility result for repetition counting in AR
-decoders, its horizon explicit in the contraction factor, orbit scale and readout
-margin --- explicit as a formula, since we never measure those quantities for any
-checkpoint; an elementary machine-checked proof of it and of the
-attention-dilution lemma, in Lean~4 over \texttt{mathlib} with a reproducible
-axiom audit --- to our knowledge the first hallucination result in speech
-synthesis carried out as a formal artifact; and a parametric repetition-ladder benchmark with matched
-controls and a non-autoregressive baseline. The work is the autoregressive-decoder companion to a
-spectral study of hallucination in encoder--decoder
-ASR~\cite{viakhirev2026dispersion}, which identified an attractor regime
-descriptively; here the attractor is what the theorem is about.
-
-\section{Counting Collapse}
-\label{sec:theory}
-
-Let $S$ be the decoder state space, a nonempty complete metric space ($\mathbb{R}^d$
-in practice). Fix a prompt containing $k$ copies of a phrase and write
-$s_m \in S$ for the state at the $m$-th \emph{repetition boundary}, after $m$
-copies have been rendered.
-
-\begin{assumption}[Periodic conditioning]\label{ass:periodic}
-There is a single map $F : S \to S$ with $s_{m+1} = F(s_m)$ for all $m$.
-\end{assumption}
-
-This is what the lemma buys: if the decoder cannot distinguish the $k$ spans, its
-update between consecutive boundaries is the same to within $O(\delta + 1/k)$.
-
-\begin{lemma}[Attention dilution]\label{lem:dilution}
-Let $z_1,\dots,z_k$ be attention logits over the $k$ repeated spans with
-$z_a - z_b \le \delta$ for all $a,b$. Then
-$e^{-\delta}/k \le \mathrm{softmax}(z)_i \le e^{\delta}/k$ for every $i$, hence
-$|\mathrm{softmax}(z)_i - \mathrm{softmax}(z)_j| \le (e^\delta-e^{-\delta})/k$,
-and the profile entropy satisfies $H \ge \log k - \delta$.
-\end{lemma}
-
-\begin{assumption}[Contraction]\label{ass:contraction}
-$F$ is $q$-Lipschitz with $q < 1$.
-\end{assumption}
-
-Assumption~\ref{ass:contraction} is an empirical claim about a particular
-decoder, not a theorem about transformers; where it fails, the bound fails with it. Write
-$C = d(s_0, F s_0)/(1-q)$ for the orbit scale.
-
-\begin{theorem}[Counting collapse]\label{thm:collapse}
-Under Assumptions~\ref{ass:periodic} and~\ref{ass:contraction}: (i)
-$d(s_m, s^\ast) \le C q^m$ for the unique fixed point $s^\ast$; (ii) for every
-$\varepsilon>0$ there is $N$ with $d(s_m,s_n)<\varepsilon$ for all $m,n \ge N$;
-(iii) every $L$-Lipschitz readout $g$ satisfies
-$|g(s_m)-g(s_n)| \le LC(q^m+q^n)$; and therefore (iv) if $g$ still separates
-counts $m \le n$ with decision margin $\mu>0$, then $\mu \le 2LCq^m$ and
-\begin{equation}\label{eq:horizon}
-  m \;\le\; \log\!\big(\mu / (2LC)\big)\big/\log q \;=:\; N^\ast .
-\end{equation}
-\end{theorem}
-
-Part~(iv) is the operative statement: how many repetitions a decoder can count is
-bounded by how fast its per-repetition map contracts, how large its orbit is, and
-how much separation its readout needs. No property of the decoding rule enters,
-so the bound covers greedy, sampled and beam decoding alike.
-
-\noindent\textbf{Formal verification.}
-Both results are formalised in Lean~4 against \texttt{mathlib}: part~(i)
-specialises its Banach fixed-point machinery, while (ii)--(iv) and all of
-Lemma~\ref{lem:dilution} are proved from scratch. The development contains no
-\texttt{sorry}, and an axiom audit confirms every exported theorem depends only
-on \texttt{propext}, \texttt{Classical.choice} and \texttt{Quot.sound}.
-Formalisation also forced the separation between what is proved (the implication)
-and what is measured (the premise).
+We contribute, in order of what the evidence supports: a parametric
+repetition-ladder benchmark with matched controls, \NModels{} checkpoints and
+two non-autoregressive baselines, on which the deficit tracks periodicity rather
+than length and survives the field's standard mitigations; a judge methodology
+for repetitive speech, the obvious judge shown to be disqualified; and a
+conditional impossibility result for repetition counting, machine-checked in
+Lean~4 over \texttt{mathlib} --- to our knowledge the first hallucination result
+in speech synthesis carried out as a formal artifact --- whose premise we state
+plainly that we could not measure. The work is a companion to a spectral study
+of hallucination in encoder--decoder ASR~\cite{viakhirev2026dispersion}.
 
 \section{Method}
 \label{sec:method}
@@ -174,68 +122,112 @@ and what is measured (the premise).
 \noindent\textbf{Stimuli.}
 A parametric repetition ladder of \NStimuli{} items: carrier sentences with a
 target word repeated $k \in \{1,2,3,4,6,8,12,16,24,32\}$ times, plus repeated
-sentences, tongue twisters, and English number phrases with intrinsic digit-word
+sentences, tongue twisters and English number phrases with intrinsic digit-word
 repetition. Every word- and sentence-repetition item at $k\ge2$ has a
 \emph{length-matched control}: same carrier and word count, the repeated token
 replaced by fillers from a per-template pool of eight, cycled above $k\!=\!8$
 (S10).
 
 \noindent\textbf{Models.}
-\NModels{} checkpoints but only \NFamilies{} designs, scale variants making up
-the difference: Llasa at 1B/3B/8B (Llama backbones over X-codec2
+The panel is \NModels{} checkpoints but only \NFamilies{} designs, scale
+variants making up the difference: Llasa at 1B/3B/8B (Llama backbones over X-codec2
 tokens~\cite{ye2025llasa}) and Qwen3-TTS at 0.6B/1.7B are within-architecture
-ladders, plus XTTS-v2~\cite{casanova2024xtts}; every checkpoint renders every
-item at \NSeeds{} seeds. VITS~\cite{kim2021vits} and
-F5-TTS~\cite{chen2024f5tts} are run as non-autoregressive baselines at the same
-\NSeeds{} seeds, and XTTS-v2 and Qwen3-TTS-0.6B at altered repetition penalty as
-ablations; none is pooled into the panel.
+ladders, plus XTTS-v2~\cite{casanova2024xtts}. VITS~\cite{kim2021vits} and
+F5-TTS~\cite{chen2024f5tts} run as non-autoregressive baselines, XTTS-v2 and
+Qwen3-TTS-0.6B at altered repetition penalty as ablations; neither group is
+pooled into the panel. Every arm renders every item at \NSeeds{} seeds.
 
 \noindent\textbf{Behavioural measurement, and why the obvious judge is wrong.}
 The natural instrument, Whisper large-v3~\cite{radford2023whisper}, is
 demonstrably the wrong one: its decoder is autoregressive with a language-model
 prior, so it is subject to the very dynamics under study. Audited against
 concatenative audio with known ground truth its counted/true ratio falls to
-$0.27$--$0.65$ for $k\ge4$, while \emph{same-voice distinct-word} sequences of
-identical length score $1.00$ --- a bias specific to periodicity, pointing the
-way of the effect we want to measure. We score instead with a CTC recogniser
-(\texttt{wav2vec2-large-960h-lv60-self}): no decoder, no language model, output
-length governed by the acoustics. Worse in absolute WER, right for this purpose,
-and put through the same audit: ratio \CtcValPer{} on periodic ground truth
-against \WhisperValPer{} for Whisper. Both transcript sets are released.
+$0.27$--$0.65$ over $k\ge4$ and to \WhisperValPer{} at the top of the ladder,
+while \emph{same-voice distinct-word} sequences of identical length score
+$1.00$: a bias specific to periodicity, pointing the way of the effect we want
+to measure. We score instead with a CTC recogniser
+(\texttt{wav2vec2-large-960h-lv60-self}, greedy best-path, no language model),
+put through the same audit --- ratio \CtcValPer{} on the same ground truth.
+Worse in absolute WER, right for this purpose. Both transcript sets are
+released.
 
-The reported quantity is the \emph{relative count error} $(\hat c - k)/k$ for
-$\hat c$ units delivered; exact-match scores $30$-of-$32$ and $3$-of-$32$ alike.
-Audio-level degeneracy is detected separately.
-Of \MainNGen{} panel generations we exclude \MainExclTmpl{} in one template
-whose fillers the judge never transcribes, \MainExclCap{} stopped by our token
-budget rather than by the model, and \MainExclDegen{} degenerate, leaving
-\MainKept{}; per-condition rates are in S10, where the template rule falls evenly
-on both arms and the budget rule works against the contrast.
+$\hat c$ is obtained by matching the target unit against the transcript's word
+sequence, counting non-overlapping occurrences in order and skipping
+unrecognised ones rather than stopping at the first miss, which would void
+credit for every later filler in a control. The reported quantity is the
+\emph{relative count error} $(\hat c - k)/k$; exact-match scores $30$-of-$32$
+and $3$-of-$32$ alike. Of \MainNGen{} panel generations we exclude
+\MainExclTmpl{} in one template whose fillers the judge never transcribes,
+\MainExclCap{} stopped by our token budget rather than by the model, and
+\MainExclDegen{} degenerate, leaving \MainKept{}; S10 gives per-condition rates.
 
 \noindent\textbf{State measurement.}
-For each instrumented generation we record per-step hidden states at probe layers
-and head-averaged attention onto the text span, reporting the trajectory's
-effective rank against $k$.
+For each instrumented generation we record per-step hidden states at probe
+layers and head-averaged attention onto the text span. \emph{Effective rank} is
+the participation ratio of the trajectory's singular-value spectrum; the count
+probe is ridge regression on mean-pooled states with leave-one-template-out
+cross-validation. Probe layers, ridge penalties and the layer-selection rule are
+listed per checkpoint in S6.
 
 \noindent\textbf{Code, data, settings.}
-Lean development, stimuli, code, per-item tables and both transcript sets are on
-tag \texttt{v1.1-icassp} of
-\url{https://github.com/lab260ru/icassp_antispoofing} (name predates this study).
-\texttt{build.sh} regenerates every number here from pinned revisions (S19), and
-a stratified
-\SampleN{}-clip sample spanning every model, $k$ band and outcome ships with each
-clip's transcript and scoring decision, so a judgement can be checked by ear. Full audio and activations regenerate from the
-released seeds. Sampling uses shipped defaults
-(XTTS-v2 $T{=}0.75$/$0.85$/$50$/penalty $5.0$; Llasa $T{=}0.8$, top-$p$ $1.0$;
-Qwen3-TTS $T{=}0.9$/$1.0$/$50$/$1.05$), making Qwen3-TTS the \emph{most}
-stochastic family, so its larger checkpoint's null is not an artifact of
-conservative decoding. The penalty is the one parameter we vary.
+Lean development, stimuli, code, per-item tables, the full supplement and both
+transcript sets are public at tag \texttt{v1.1-icassp} of
+\url{https://github.com/lab260ru/icassp_antispoofing} (name predates this
+study). \texttt{build.sh} regenerates every number here from pinned revisions
+(S19), and a stratified \SampleN{}-clip sample spanning every model, $k$ band
+and outcome ships with each clip's transcript and scoring decision, so a
+judgement can be checked by ear. Audio and activations regenerate from the
+released seeds. Sampling uses shipped defaults (XTTS-v2
+$T{=}0.75$/$0.85$/$50$/penalty $5.0$; Llasa $T{=}0.8$, top-$p$ $1.0$; Qwen3-TTS
+$T{=}0.9$/$1.0$/$50$/$1.05$), making Qwen3-TTS the \emph{most} stochastic
+family, so its larger checkpoint's null is not an artifact of conservative
+decoding. The penalty is the one parameter we vary.
 
 \section{Results}
 \label{sec:results}
 
 % ---- placeholder: filled by analysis/make_numbers.py ----
 \input{results_body}
+
+\section{A Conditional Bound, and a Premise We Could Not Measure}
+\label{sec:theory}
+
+One mechanism for a periodicity-specific limit can be stated exactly. Softmax
+attention over $k$ repeated spans whose logits differ by at most $\delta$ gives
+each weight in $[e^{-\delta}/k, e^{\delta}/k]$, so the profile flattens and
+$H\ge\log k-\delta$ (Lemma~1, formalised). A decoder that cannot tell the spans
+apart meets the same conditioning at every \emph{repetition boundary}: with $S$
+complete and $s_m\in S$ the state at boundary $m$, one $F:S\to S$ has
+$s_{m+1}=F(s_m)$. Assume $F$ is $q$-Lipschitz, $q<1$; write
+$C=d(s_0,Fs_0)/(1-q)$.
+
+\begin{theorem}[Counting collapse]\label{thm:collapse}
+(i) $d(s_m,s^\ast)\le Cq^m$ for the unique fixed point $s^\ast$; (ii) for every
+$\varepsilon>0$ there is $N$ with $d(s_m,s_n)<\varepsilon$ for $m,n\ge N$; (iii)
+every $L$-Lipschitz readout $g$ satisfies $|g(s_m)-g(s_n)|\le LC(q^m+q^n)$; so
+(iv) if $g$ separates counts $m\le n$ with margin $\mu>0$ then $\mu\le 2LCq^m$,
+$m \le \log(\mu/(2LC))/\log q =: N^\ast$.
+\end{theorem}
+
+Part~(iv) bounds how far a decoder can count by how fast its per-repetition map
+contracts, how large its orbit is and how much separation its readout needs; no
+property of the decoding rule enters. Both results are formalised in Lean~4
+against \texttt{mathlib}
+--- part~(i) specialises its Banach machinery, the rest is proved from scratch
+--- with no \texttt{sorry} and an axiom audit confirming dependence only on
+\texttt{propext}, \texttt{Classical.choice} and \texttt{Quot.sound}.
+
+Formalisation separates what is proved (the implication) from what is measured
+(the premise), and \emph{the premise is not measured}. Two independent
+estimators of $q$ failed: one needs a monotone attention read-head these
+decoders lack --- the flatter the profile, the worse any attention-based
+localiser, so Lemma~1 undercuts it structurally --- and a finite-difference
+probe found no repeated-versus-control difference ($7/18$ pairs, $p=0.12$) while
+failing its own linearity control (S5). Lemma~1's premise holds only
+approximately ($\delta\le\DeltaMax{}$ nats) and its dose-response prediction
+fails outright: within a $(\text{model},k)$ cell, flatter attention goes with
+\emph{better} counting ($r=\DilR{}$ $[\DilRLo{},\DilRHi{}]$; S12). Nothing in
+Section~\ref{sec:results} depends on this and none of it is evidence for it.
 
 \section{Discussion}
 \label{sec:discussion}

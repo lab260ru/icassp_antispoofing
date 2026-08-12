@@ -46,23 +46,36 @@ findings_headline:
   horizon: >
     THE MAIN LADDER WAS TOO SHORT. Within k<=32 the count is proportional
     (c = 0.95k, SSE 2.6 against 485 for a constant), so no horizon is visible.
-    The extension ladder k=48..128 finds it: repeated medians fall 27 -> 15
-    between k=48 and 128. Controls saturate too, near 60 -- these decoders have
-    a general utterance-length ceiling -- so the reportable quantity is the
-    RATIO: N*_rep 23 [16,39] vs N*_ctl 94 [71,111], disjoint in both
-    checkpoints, i.e. repetition lowers the counting horizon ~4x.
+    The extension ladder k=48..128 finds it. FINISHED NUMBERS (4 checkpoints,
+    2 families, 21-26 items/cell, data/results/horizon_ext.json): the repeated
+    median is FLAT at 25-30 from k=48 to 128 while controls climb 46 -> 66.5.
+    Controls saturate too -- these decoders have a general utterance-length
+    ceiling -- so the reportable quantity is the RATIO, which divides it out:
+    N*_rep 30.1 [23.8,45.9] vs N*_ctl 104.8 [93.7,114.1], pooled ratio 3.5.
+    Disjoint per-checkpoint CIs for llasa1b (5.97) and llasa8b (4.12); qwen06b
+    (15.0) has an unbounded repeated CI and qwen17b INVERTS it (0.27) -- the
+    same checkpoint with no deficit at k<=32. Magnitude is form-dependent
+    (2.7-4.3, analysis/horizon_forms.py); direction is not.
     NEVER quote a repeated horizon without its matched control horizon.
+    SUPERSEDED, do not requote: the 2-checkpoint morning numbers "medians fall
+    27 -> 15", "controls saturate near 60", "N*_rep 23 [16,39] / N*_ctl 94
+    [71,111] / ratio 4.1". The decline past the plateau was a small-n artifact.
   mechanism: >
     Capacity gain dN_eff/dlog k on repeated text is 0.46x the control gain,
     disjoint 95% template-bootstrap CIs in 5 of 6. Crucially the gain stays
     POSITIVE in 5 of 6: repetition slows state acquisition, it does not halt it,
     which is consistent with decoders below their horizon at k<=32.
   lemma_b: >
-    Renormalised over the k repeated keys, block entropy grows with log k. The
-    entropy gap bounds the AVERAGE spread (<=0.45 nats); the most-attended
-    occurrence bounds the EXTREME (delta <= 1.23, share <= 3.4/k worst case,
-    1.7/k typical). The lemma needs the extreme. Do not quote the average as
-    though it were the bound -- an earlier draft did, and it read as inconsistent.
+    Renormalised over the k repeated keys, block entropy grows as 0.97 log k and
+    the within-block share falls with log-log slope -1.00. TWO DELTAS, labelled:
+    the entropy gap max(log k - H) bounds the AVERAGE spread (<= 0.45 nats); the
+    most-attended occurrence bounds the EXTREME (share <= 3.4/k worst case ->
+    delta <= 1.23; 1.7/k typical -> delta 0.51). The lemma needs the EXTREME and
+    is entitled only to it: quote delta <= 1.23 / 3.4-over-k. Do not quote the
+    average as though it were the bound -- an earlier draft did, and it read as
+    inconsistent. Source: data/results/state.csv via analysis/make_numbers.py
+    (macros DeltaEntropy, DeltaMax, ShareMaxK, ShareMedK, DeltaMedian).
+    SUPERSEDED, pre-renormalisation: "0.98 log k, delta <= 0.06, 1.9/k".
   negative_results: >
     (1) The boundary-difference estimator for q is unsound here: deep-layer
     attention centroid advances on ~51% of steps. (2) A finite-difference
@@ -88,13 +101,17 @@ findings_headline:
     gap rather than manufacturing it, so magnitudes at k>=16 are approximate.
 
 model_panel:
-  - {key: llasa1b, status: complete, ext_ladder: complete}
-  - {key: llasa3b, status: complete, ext_ladder: "not run"}
-  - {key: llasa8b, status: complete, ext_ladder: complete}
+  # ext_ladder status verified against data/results/behavioural_ext.csv, which is
+  # the only place the k=48..128 rows live. Row counts are per checkpoint.
+  - {key: llasa1b, status: complete, ext_ladder: "complete -- seeds 0,1,2, 72 rows"}
+  - {key: llasa3b, status: complete,
+     ext_ladder: "not run -- no k>=48 rows in behavioural_ext.csv; it is the one
+                  panel checkpoint absent from the ladder and the paper says why"}
+  - {key: llasa8b, status: complete, ext_ladder: "complete -- seeds 0,1,2, 72 rows"}
   - {key: xtts2,   status: complete,
      ext_ladder: "IMPOSSIBLE -- built-in ~602 mel-token ceiling (~26 s) censors every k>=48 item"}
-  - {key: qwen06b, status: complete, ext_ladder: generating}
-  - {key: qwen17b, status: complete, ext_ladder: generating}
+  - {key: qwen06b, status: complete, ext_ladder: "complete -- seed 0 only, 24 rows"}
+  - {key: qwen17b, status: complete, ext_ladder: "complete -- seed 0 only, 24 rows"}
   - {key: "xtts2norp / xtts2rp{2,3,8}", status: complete,
      note: "ablation arms, repetition penalty sweep. NEVER pool into panel stats."}
 instrumentation_notes:
@@ -124,14 +141,30 @@ rivals_excluded:
     NOT EXCLUDED -- withdrawn 2026-08-12. Two non-AR baselines disagree: VITS
     shows no dissociation (-6.7) but F5-TTS shows +60.0, growing with k as the
     panel's does. Absence of an autoregressive decoder confers no immunity. The
-    replacement hypothesis (post-hoc, untested): what matters is whether the
-    count must be held internally, not recurrence. analysis/nonar_baseline.py
+    replacement hypothesis (post-hoc): what matters is whether the count must be
+    held internally, not recurrence. It has since had ONE direct test -- the
+    F5-TTS duration intervention, see final_day_results.duration_intervention --
+    which splits: supplying the total length lifts exact-rate 43.3 -> 76.7 at
+    k<12 and 16.7 -> 16.7 at k>=12. Still post-hoc, still one checkpoint.
+    analysis/nonar_baseline.py
   improbability_and_acoustics: "ruled out by their own predictions; supplement S8"
 
 # ------------------------------------------------------------------- in flight
 active_background_jobs:
-  - "llasa1b/llasa8b extension ladder seeds 1,2 (GPU 0,1) -> experiments/exp08_ext_ladder/logs/seeds12.log"
-  - "qwen06b/qwen17b extension ladder seed 0 (GPU 2,3) -> scripts/run_ext_ladder.sh"
+  - "activation-patching pilot: analysis/causal_count.py --arm A --gpu 3
+     (running, started 2026-08-12 17:11; writes data/results/causal_patch1b_manifest.jsonl).
+     analysis/jacobian_q.py and analysis/hierarchical.py exist but are untracked
+     and have produced no result JSON yet -- treat them as unrun."
+  - "env build: conda env `cosyvoice` pip-installing torch/torchaudio (CPU only,
+     logs/env_cosyvoice_create.log)"
+  # SUPERSEDED. The two extension-ladder jobs listed here until 2026-08-12 have
+  # both landed and are gone:
+  #   - llasa1b/llasa8b extension ladder seeds 1,2 -- landed; behavioural_ext.csv
+  #     carries seeds 0,1,2 for both, 72 rows each. That job was launched on
+  #     GPUs 0,1 BEFORE the current restriction and was left to finish rather
+  #     than killed; nothing has been launched on 0/1 since. Do not read it as a
+  #     precedent -- src/common/gpus.py allows only 2 and 3.
+  #   - qwen06b/qwen17b extension ladder seed 0 -- landed; 24 rows each.
 
 # --------------------------------------------------------------- what is next
 next_actions:
@@ -161,10 +194,15 @@ final_day_results:
   probe_past_horizon:
     status: "1 of 3 checkpoints; llasa1b loses the count, llasa3b and llasa8b do not"
     caution: >
-      llasa3b's MAE ratio is 0.99 -- on the 'keeps the count' side of the
-      threshold by 0.006 over 12 items, which is not a margin. By effect size
-      2 of 3 show nothing recoverable. The paper quotes 1 of 3, the less
-      favourable reading; S12 records both.
+      MAE ratios against the constant predictor: llasa1b 1.01, llasa3b 0.99,
+      llasa8b 0.86. llasa3b is on the 'keeps the count' side of the threshold by
+      0.006 over 12 items, which is not a margin, so probe_past_horizon.py
+      applies a TIE = 0.02 band: llasa1b and llasa3b are called INDISTINGUISHABLE
+      from a constant predictor and only llasa8b clearly keeps the count. By
+      effect size 2 of 3 show nothing recoverable. The paper quotes 1 of 3, the
+      less favourable reading; S12 records both. Anything in the repo still
+      saying '1 of 2' predates the llasa3b run.
+    file: data/results/probe_horizon_compare.json
     range_confound: "ruled out by a matched control arm over the same k"
     script: analysis/probe_past_horizon.py
   greedy_decoding:
@@ -182,6 +220,21 @@ final_day_results:
   vits_config:
     status: "immunity holds at 3 duration-predictor settings; sign not size"
     script: analysis/vits_config.py
+  duration_intervention:
+    status: >
+      F5-TTS handed the total duration a correct rendering takes (read off its
+      OWN control at the same k, never off the repeated item -- that would be
+      circular). Exact-rate, n=90/arm at k>=6: overall 25.6 -> 36.7; k<12
+      43.3 -> 76.7 (+33.3 pts, n=30/arm); k>=12 16.7 -> 16.7 (+0.0, n=60/arm),
+      and the intervention arm is at 0.0% at k=24 and k=32. Duration estimation
+      accounts for much of the low-k deficit and NONE of the high-k one.
+    trap: >
+      fix_duration is reference + generated seconds, not generated alone. Passing
+      the target directly asks for a total shorter than the reference clip and
+      the model emits near-silence -- which is what the first run produced.
+    script: analysis/duration_intervention.py
+    generator: src/models/f5_fixdur.py
+    file: data/results/duration_intervention.json
   model_revisions:
     status: "10 repositories pinned incl. judge and vocoder"
     file: data/results/model_revisions.json
