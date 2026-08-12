@@ -5442,5 +5442,232 @@ residual stream several layers upstream of it, since the stop decision, not the
 count, is what this paper's account is ultimately about.
 
 
+% ============================================================
+\section{The Spanish arm: the judge replicates, the counting statistic does not}
+\label{sec:s27}
+
+Three review rounds made the same objection: the headline framing --
+periodicity, not length -- is stated without linguistic qualification while
+every measurement behind it is English. This section renders the same
+repetition ladder in Spanish, with the same XTTS-v2 weights, the same speaker
+reference and the same decoding configuration, and reports what that arm can
+and cannot support. Code: \texttt{analysis/crosslingual\_es.py} (a
+pre-committed docstring, fixed before any Spanish transcript existed) and
+\texttt{data/stimuli/make\_stimuli\_es.py}. Data:
+\texttt{data/results/crosslingual\_es.json},
+\texttt{data/results/ctc\_validation\_es.json},
+\texttt{data/results/judge\_vocab\_audit\_es.json},
+\texttt{data/results/behavioural\_es.csv}. One line summarises it: \textbf{the
+judge audit replicates and is now in the paper; the counting statistic does
+not survive the judge that has to score it, and that failure is itself the
+finding.}
+
+\subsection{Language and judge}
+
+Spanish, not German, was chosen for the reason a re-implementer would want
+stated rather than assumed: on greedy, LM-free decoding through the same
+XLSR-53 fine-tuning recipe, the Spanish community checkpoint
+(\texttt{jonatasgrosman/wav2vec2-large-xlsr-53-spanish}) scores $8.82\%$ WER
+against $12.07\%$ for the equivalent German checkpoint. This comparison is
+recorded in the project history (commit \texttt{939a1c8}) rather than in a
+result JSON; no separate WER-audit artifact backs it, and it is reported here
+on that basis. The judge is pinned at revision
+\texttt{96d7e9b4e4a78af515a3c6d3cee7c0826045d276}
+(\texttt{data/results/model\_revisions.json}) -- not \texttt{main}, which
+carries no \texttt{safetensors} file; see the third trap below.
+
+\subsection{Gate 1: the judge audit -- reportable}
+
+The paper's central methodological claim is that an autoregressive judge is
+biased against the phenomenon under study. Adopting a Spanish judge without
+re-running that same audit would be the exact error the paper criticises.
+\texttt{ctc\_validation\_es.json} builds the identical concatenative
+construction used for the English audit (S9) in Spanish: one verified
+$k{=}1$ rendering spliced $N$ times, so the true count is exact by
+construction, scored by both the Spanish CTC judge and Whisper-es.
+
+\begin{center}
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+ & \multicolumn{5}{c}{periodic ground truth} & \\
+judge & $k{=}2$ & $k{=}4$ & $k{=}8$ & $k{=}16$ & $k{=}32$ & $k{\ge}4$ pooled \\
+\midrule
+CTC (es)      & 1.00 & 1.00 & 1.00  & 1.00  & 1.00  & \textbf{1.00} \\
+Whisper (es)  & 1.00 & 0.25 & 0.125 & error & error & \textbf{0.19} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent Whisper-es returns no transcript at all (a hard decoder error) on
+every $k{\ge}16$ periodic trial -- at the top of the ladder there is no
+measurement rather than a poor one, exactly as S9 found for English Whisper.
+The distinct-material rows, built from six carrier/unit pairs (\emph{tan},
+\emph{claro}, \emph{hondo}, \emph{verde}, \emph{firme}, \emph{muy}) rather than
+one repeated word, confirm the CTC judge is not merely under-counting
+uniformly:
+
+\begin{center}
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+ & \multicolumn{5}{c}{distinct-material ground truth} & \\
+judge & $k{=}2$ & $k{=}4$ & $k{=}8$ & $k{=}16$ & $k{=}32$ & $k{\ge}4$ pooled \\
+\midrule
+CTC (es)      & 1.00 & 1.00 & 1.00  & 0.969 & 0.984 & \textbf{1.00} \\
+Whisper (es)  & 1.00 & 0.25 & 0.125 & error & error & \textbf{0.25} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent Pooled over $k{\ge}4$: CTC $1.00$ against Whisper $0.1875$ on
+periodic material, $1.00$ against $0.25$ on distinct material -- the same
+qualitative pattern as the English audit (S9), in a language with different
+orthography and a judge fine-tuned on an entirely different corpus (Common
+Voice, not LibriSpeech). Gate 1 passes on both bounds (the pre-committed band
+was $[0.90,1.10]$): the Spanish judge is not merely undercounting less than
+Whisper, it is unbiased on ground truth where truth is known. This is the
+result now in the main paper as $1.00$ against $0.19$ (S9, S27).
+
+Gate 2, the vocabulary audit, also passes cleanly: all six Spanish templates
+(\texttt{et1}--\texttt{et6}) clear the $0.05$ delivery floor with zero
+exclusions (\texttt{judge\_vocab\_audit\_es.json}: \texttt{below\_floor: []},
+\texttt{excluded\_templates: []}). This is a strictly better outcome than
+English, which loses template \texttt{t2} (the judge never transcribes
+\emph{okay} or \emph{hmm}). Nothing about the Spanish vocabulary needed to be
+discarded to run the counting arm below.
+
+\subsection{Gate 3 and the verdict: the counting arm is not reportable}
+
+The measurement is exactly the English statistic: over $k\ge6$, after
+\texttt{population.panel()}'s exclusions, the fraction of items whose counted
+occurrences equal $k$, for \texttt{word\_rep} and its length-matched
+\texttt{control\_word}, and the difference.
+
+\begin{center}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+arm & rep.\ exact & ctl.\ exact & gap & $n$ \\
+\midrule
+Spanish (XTTS-v2, es judge)   & 11.1\% & 20.4\% & $+9.3$  & 216 \\
+English XTTS-v2 alone         & 16.7\% & 87.8\% & $+71.1$ & 234 \\
+English panel (all checkpoints, reference) & -- & -- & $+76.1$ & -- \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent The pre-committed gate that decides whether this gap means anything
+is Gate 3: control exact-rate $\ge 50\%$ over $k\ge6$, on the reasoning that if
+Spanish rendering is simply hard for XTTS-v2 and \emph{both} families
+collapse, a shrunken gap is not evidence about periodicity. Spanish control
+exact-rate is $20.4\%$ ($0.2037$), well under the $50\%$ bar. Gate 3
+\textbf{fails}. \texttt{crosslingual\_es.json}'s own verdict field: \emph{
+``UNINFORMATIVE -- Spanish rendering fails on the control family too, so the
+gap is small for a reason unrelated to periodicity; this is a finding about
+XTTS-v2's Spanish, not about the periodicity claim.''} The $+9.3$-point gap is
+therefore not reported as a weaker replication, and it is not reported as
+evidence that the English effect is English-specific either -- Gate 3 exists
+precisely to rule both readings out when it fails. This is what the main
+paper's limits paragraph means by ``a Spanish arm came out unreportable rather
+than replicated'' (S27).
+
+\subsection{The diagnosis, which is the actual finding}
+
+A control item is exact only if all $k$ distinct fillers match as exact
+tokens, so control exact-match behaves roughly like (per-occurrence hit
+rate)$^k$. The post-hoc diagnostic in \texttt{crosslingual\_es.json} (computed
+after the verdict, and not part of the pre-committed gates) reports the
+average fraction of a control's expected words that the judge actually
+delivers:
+
+\begin{center}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+arm & rep.\ counted/$k$ & ctl.\ counted/$k$ \\
+\midrule
+Spanish (all templates) & 0.674 & 0.722 \\
+English XTTS-v2          & 0.873 & 0.973 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent The English judge's control side survives close to intact through
+$k{=}32$; the Spanish one does not, for a reason that traces to the judge's
+own word error rate rather than to the model. Both \texttt{implementation-notes.md}
+and the analysis script's own narrative put this at roughly $0.97$
+per-occurrence delivery for the English judge against roughly $0.80$ for the
+Spanish one -- we flag that these two rounded figures are a narrative estimate
+recorded in project history and the script's print output, not a field stored
+in any result JSON; the closest literal JSON quantity is the
+\texttt{ctl\_counted\_over\_k} row above ($0.722$ for Spanish, $0.973$ for
+English), which is somewhat lower than $0.80$ for Spanish and should be read
+as the authoritative number if the two disagree. Either way the mechanism is
+the same: a single inflectional slip -- \emph{tenue} transcribed
+\emph{tenues} -- voids an entire control item's credit, because scoring is
+conjunctive across all $k$ occurrences. Duration ratio on the failing controls
+is close to $1.0$ and the transcripts carry the right number of words; the
+model said the fillers, the judge spelled one of them differently.
+
+\textbf{The exact-rate statistic is not transportable to a lower-accuracy
+judge.} The paper's headline $76.1$-point gap depends on a
+$\sim2\%$-WER judge holding the control side near $1.0$ across the whole
+ladder; an $8.8\%$-WER judge cannot do that, and no amount of correct counting
+by the model can rescue a statistic whose control side is capped below $1.0$
+by transcription noise alone. Critically, every artefact identified here
+(inflectional endings, short-word letter-shedding at long chunk lengths)
+depresses the \emph{control} side only -- nothing here inflates the repeated
+side's score -- so the measured $+9.3$-point Spanish gap is a lower bound, not
+an estimate. That is simultaneously the least favourable reading for a
+replication and the most favourable one for ``the effect is
+English-specific,'' which is exactly why the arm cannot be reported as either.
+
+\subsection{The generation ceiling}
+
+Zero of the $342$ Spanish generations hit XTTS-v2's $602$-mel-token cap in
+either family (\texttt{crosslingual\_es.json}: \texttt{word\_rep} rate
+$0.0$, $n{=}180$; \texttt{control\_word} rate $0.0$, $n{=}162$). The ceiling
+was close, though: the longest Spanish item reaches $590$ of $602$ mel
+tokens, a \texttt{word\_rep} item at $k{=}32$ (template \texttt{et1}) -- one
+rung from censoring. Restricted to the same two families, English XTTS-v2's
+own worst case across the ladder is $581$ of $602$, reached at $k{=}24$ (its
+own $k{=}32$ worst case is lower, at $577$). So $k{=}32$ is the effective
+Spanish ceiling for this arm: not because anything was truncated, but because
+the margin below the cap is thinner in Spanish than in English at the top of
+the ladder, and extending the Spanish ladder further would risk measuring the
+harness rather than the model.
+
+\subsection{Traps, which generalise beyond this arm}
+
+\textbf{\texttt{AutoProcessor} silently reintroduces a language model.}
+Community CTC checkpoints often ship a KenLM beside the acoustic model, and
+\texttt{AutoProcessor} resolves such a repository to
+\texttt{Wav2Vec2ProcessorWithLM}, whose \texttt{batch\_decode} is beam search
+under an $n$-gram prior -- precisely the dynamic this paper's judge exists to
+avoid, since it re-introduces exactly the kind of language-model-conditioned
+decoding bias the CTC judge was chosen to escape. It fails \emph{open}:
+transcripts get better, not worse, so nothing about the output looks broken.
+It was caught only because \texttt{pyctcdecode} happened to be missing from
+the environment, turning silent contamination into an \texttt{ImportError}.
+\texttt{asr\_ctc.py} now takes \texttt{--processor wav2vec2} explicitly and
+asserts the resolved class.
+
+\textbf{CTC chunk length is part of the instrument, and it is judge-specific.}
+The English judge (LibriSpeech-trained) is validated at $25$-second chunks.
+The Spanish XLSR-53 judge, fine-tuned on Common Voice clips mostly under $10$
+seconds, drops to $0.75$ periodic accuracy at $25$-second chunks and recovers
+to $1.00$ at every $k$ once chunked to $5$ seconds -- not by collapsing
+repetitions the way an autoregressive judge does, but by shedding letters from
+short words. That failure mode mimics the paper's central bias without being
+an instance of it, and the only way to tell the difference is to validate
+chunking per judge, on ground truth, rather than assuming one instrument's
+working configuration transfers to another.
+
+\textbf{A pinned revision is not necessarily where the weights came from.}
+\texttt{main} for the Spanish judge carries no \texttt{safetensors} file,
+so \texttt{from\_pretrained} fetched \texttt{model.safetensors} from a
+separate auto-conversion commit and cached it under a second snapshot
+directory. It was verified bit-identical to \texttt{main}'s
+\texttt{pytorch\_model.bin} across all $424$ tensors before pinning
+\texttt{96d7e9b4e4a78af515a3c6d3cee7c0826045d276} as the revision reported
+above. Reading a hash out of the local cache without first checking the
+snapshot count would have pinned the wrong provenance silently.
 
 \end{document}
