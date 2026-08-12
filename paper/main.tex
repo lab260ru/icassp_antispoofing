@@ -38,17 +38,16 @@ because the obvious autoregressive judge is itself biased against repetition,
 models render repeated text with a median count error of \ErrRep{}\% at $k\ge6$
 and are exact in \ExactRep{}\% of generations, against \ExactCtl{}\% for
 length-matched \emph{distinct}-word controls: the limit tracks periodicity, not
-length, in every checkpoint and every family. It is not, however, peculiar to
-autoregressive decoding: of two non-autoregressive baselines on the same ladder
-one is immune and one is not. Up to $k=32$ the count
-stays
-proportional rather than saturating, so no horizon is visible there; a post-hoc
-extension to $k=128$ on \HzNModels{} of them finds one, repetition lowering the
-fitted saturation scale \HzRatio{}-fold --- though not in the one checkpoint that
-shows no deficit either. We do \emph{not} establish the theorem's premise: two
+length, in every checkpoint and every family --- though not peculiar to
+autoregressive decoding: of two non-autoregressive baselines, one is immune and
+one is not. Up to $k=32$ the count stays proportional rather than saturating, so
+no horizon is visible there; a post-hoc extension to $k=128$ finds one,
+repetition lowering the fitted saturation scale \HzRatio{}-fold, though not in
+the one checkpoint that shows no deficit either. We do \emph{not} establish the theorem's premise: two
 attempts to measure the contraction factor failed and a dose-response test of the
 dilution lemma came out sign-reversed. What is proved is an implication; what is
-measured is a periodicity-specific deficit and a horizon of the predicted shape.
+measured is a periodicity-specific deficit, and the horizon that matches its
+shape is an exploratory follow-up, not a test the theorem passed.
 \end{abstract}
 
 \begin{keywords}
@@ -168,10 +167,10 @@ replaced by fillers from a per-template pool of eight, cycled above $k\!=\!8$
 \NModels{} checkpoints spanning \NFamilies{} families: Llasa at 1B/3B/8B (Llama
 backbones over X-codec2 tokens~\cite{ye2025llasa}), a within-architecture scale
 ladder; XTTS-v2~\cite{casanova2024xtts}; and Qwen3-TTS at 0.6B/1.7B, every
-checkpoint rendering every item at \NSeeds{} seeds. VITS~\cite{kim2021vits} is
-run as a non-autoregressive baseline at the same \NSeeds{} seeds, and further
-XTTS-v2 runs at altered repetition penalty as ablations; neither is pooled into
-the panel.
+checkpoint rendering every item at \NSeeds{} seeds. VITS~\cite{kim2021vits} and
+F5-TTS~\cite{chen2024f5tts} are run as non-autoregressive baselines at the same
+\NSeeds{} seeds, and XTTS-v2 and Qwen3-TTS-0.6B at altered repetition penalty as
+ablations; none is pooled into the panel.
 
 \noindent\textbf{Behavioural measurement, and why the obvious judge is wrong.}
 The natural instrument, Whisper large-v3~\cite{radford2023whisper}, is

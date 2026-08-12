@@ -227,9 +227,18 @@ def main() -> None:
                 full = out[0][: plen + gen_no_eos.shape[0]].unsqueeze(0)
                 recorder = TextAttentionRecorder(lo, hi)
                 recorder.attach(model, attn_probes)
-                set_attn("eager")
+                # Eager attention materialises a T-by-T matrix per layer, which
+                # is the only way to read attention weights and also what makes
+                # this pass impossible past a few thousand tokens: at k=128 the
+                # sequence is ~4000 long and one softmax wants 5.4 GiB. When no
+                # attention probes are requested -- the count probe reads hidden
+                # states only -- SDPA does the same forward without ever forming
+                # that matrix.
+                want_attn = bool(attn_probes)
+                set_attn("eager" if want_attn else "sdpa")
                 with torch.no_grad():
-                    fwd = model(full, output_hidden_states=True, output_attentions=True)
+                    fwd = model(full, output_hidden_states=True,
+                                output_attentions=want_attn)
                 recorder.detach()
                 # hidden_states: tuple(n_layers+1) of [1, T, d]; index 0 is the
                 # embedding output, so layer l is at index l+1.
