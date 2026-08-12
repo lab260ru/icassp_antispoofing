@@ -21,20 +21,22 @@ CONDA_BASE="$(conda info --base)"; . "$CONDA_BASE/etc/profile.d/conda.sh"
 LOG=experiments/exp11_qwen_penalty/logs
 mkdir -p "$LOG"
 
+# Sequential on one card: the other is usually busy vocoding, and three arms of
+# this size finish comfortably either way.
+GPU="${1:-3}"
 conda activate qwen
 # 1.0 disables the penalty; 1.05 is shipped; 1.5 and 3.0 push well past it.
-python src/models/qwen_gen.py --model qwen06brp10 --gpu 2 --seeds 0 \
-  --repetition-penalty 1.0 >"$LOG/rp10.log" 2>&1 &
-python src/models/qwen_gen.py --model qwen06brp15 --gpu 3 --seeds 0 \
-  --repetition-penalty 1.5 >"$LOG/rp15.log" 2>&1 &
-wait
-python src/models/qwen_gen.py --model qwen06brp30 --gpu 2 --seeds 0 \
+python src/models/qwen_gen.py --model qwen06brp10 --gpu "$GPU" --seeds 0 \
+  --repetition-penalty 1.0 >"$LOG/rp10.log" 2>&1
+python src/models/qwen_gen.py --model qwen06brp15 --gpu "$GPU" --seeds 0 \
+  --repetition-penalty 1.5 >"$LOG/rp15.log" 2>&1
+python src/models/qwen_gen.py --model qwen06brp30 --gpu "$GPU" --seeds 0 \
   --repetition-penalty 3.0 >"$LOG/rp30.log" 2>&1
 conda deactivate
 
 conda activate base
 for m in qwen06brp10 qwen06brp15 qwen06brp30; do
-  python src/common/asr_ctc.py --model "$m" --gpu 2 2>&1 | grep -viE "warn|future" | tail -1
+  python src/common/asr_ctc.py --model "$m" --gpu "$GPU" 2>&1 | grep -viE "warn|future" | tail -1
 done
 python src/common/score_counts.py --models qwen06brp10 qwen06brp15 qwen06brp30 \
   --judge ctc --out data/results/behavioural_qwen_penalty.csv 2>&1 | tail -4
