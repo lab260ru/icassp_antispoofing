@@ -89,13 +89,12 @@ against \ApMidCtl{}\%, $n=\ApMidN{}$) where cycled controls give \ApCycGap{}: th
 confound is worth \ApCost{} points, not the bulk of it.
 
 A third rival is a decoding rule: the families ship repetition penalties
-differing by an order of magnitude, and a penalty suppresses repeated tokens by
-construction. Swept on \PenNArch{} architectures (S15) the deficit stays put --- XTTS-v2 over a \PenFold{}-fold range at
-\PenRepLo{}--\PenRepHi{}\% exact, Qwen3-TTS-0.6B over a \PenQFold{}-fold range at
-\PenQRepLo{}--\PenQRepHi{}\% --- and with Qwen's penalty off outright it renders
-\PenZeroRep{}\% against \PenZeroCtl{}\%. The \PenNoneN{} Llasa checkpoints pass
-\emph{no} penalty and show the effect at full size, \PenNoneRep{}\% against
-\PenNoneCtl{}\%.
+differing by an order of magnitude, and a penalty suppresses repeated tokens. Swept on \PenNArch{} architectures (S15) the deficit stays put --- XTTS-v2 at
+\PenRepLo{}--\PenRepHi{}\% exact over a \PenFold{}-fold range, Qwen3-TTS-0.6B at
+\PenQRepLo{}--\PenQRepHi{}\% over \PenQFold{}-fold --- and with Qwen's penalty
+off outright it renders \PenZeroRep{}\% against \PenZeroCtl{}\%. The \PenNoneN{} Llasa checkpoints pass \emph{no}
+penalty and show it at full size, \PenNoneRep{}\% against \PenNoneCtl{}\%. Nor is it a sampling artifact: greedy
+decoding gives \GreedyGap{} against \GreedySampGap{} sampled (S22).
 
 S20 sets out three we cannot exclude, chiefly a learned dispreference for
 verbatim repetition. The last we can test is architectural: two

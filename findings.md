@@ -589,3 +589,39 @@ effect (distinct words cost more under fast/noisy speech), not a counting one.
 All ten repositories including the CTC judge and the vocoder — the judge decides
 every count, so a change to it changes every number. Regenerated from the
 download cache, never typed.
+
+## 2026-08-12 (final) — greedy decoding, and the deficit is not in the draw
+
+Round 14 called this the cheapest ablation the paper could have run and the one
+most relevant to its own premise, and they were right on both counts. Theorem 1
+bounds a readout, so no property of the sampling rule enters the proof — yet
+every generation in the panel was sampled.
+
+Assumption 1 is what makes it matter. It posits a single time-invariant map F
+between repetition boundaries. Stochastic token choice is exactly the per-step
+perturbation that would break that autonomy: what gets sampled at repetition m
+changes what conditions repetition m+1. Greedy removes the perturbation, so it is
+where Assumption 1 is *most* defensible and the deficit has the fewest excuses.
+
+    arm                    n    exact rep   exact ctl    gap
+    sampled, three seeds  216      8.3%       83.3%     75.0
+    sampled, seed 0        72      5.6%       83.3%     77.8
+    greedy                 72     11.1%       83.3%     72.2
+
+The deficit survives. The control rate is identical across all three arms, and
+removing sampling noise moves the repeated side about five points. Whatever
+produces the failure is in the conditioning, not in the draw.
+
+**Checked, not assumed:** greedy on repetitive text hits a generation budget more
+readily than sampling does, and truncated counts are censored downward — the
+direction that would manufacture this result. Cap-hit rate is 0.0% on both Qwen
+arms, so nothing was excluded on either side. (Llasa runs 9–18%, which is why the
+rule exists at all.)
+
+*Trap:* the first launch ran the whole 208-item stimulus file. Greedy hits the
+token cap far more often than sampling, so it was heading for hours on families
+the comparison never uses. Restart with `data/stimuli/stimuli_greedy.jsonl`
+(word_rep + control_word only); generation resumes from the meta file, so nothing
+is lost.
+
+Limits: one checkpoint, one alternative decoding mode. Beam search untested.

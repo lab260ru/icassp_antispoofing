@@ -711,6 +711,16 @@ def main() -> None:
     if smp.exists():
         macros["SampleN"] = str(len(pd.read_csv(smp)))
 
+    # ---- does the deficit survive greedy decoding? ------------------------
+    gd_path = Path("data/results/greedy_decoding.json")
+    if gd_path.exists():
+        gd = json.loads(gd_path.read_text())
+        macros["GreedyGap"] = fmt(100 * gd["gap_greedy"], 1)
+        macros["GreedySampGap"] = fmt(100 * gd["gap_sampled_pooled"], 1)
+        macros["GreedyRep"] = fmt(100 * gd["arms"]["greedy"]["rep"]["exact"], 1)
+        macros["GreedyCtl"] = fmt(100 * gd["arms"]["greedy"]["ctl"]["exact"], 1)
+        macros["GreedyN"] = str(gd["arms"]["greedy"]["n"])
+
     # ---- is VITS immune, or is its stock configuration immune? ------------
     vc_path = Path("data/results/vits_config.json")
     if vc_path.exists():

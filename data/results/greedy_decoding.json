@@ -1,0 +1,66 @@
+{
+  "kmin": 6,
+  "model": "qwen06b",
+  "arms": {
+    "sampled_pooled": {
+      "rep": {
+        "n": 108,
+        "exact": 0.08333333333333333,
+        "median_err": -0.08333333333333333
+      },
+      "ctl": {
+        "n": 108,
+        "exact": 0.8333333333333334,
+        "median_err": 0.0
+      },
+      "gap": 0.75,
+      "n": 216
+    },
+    "sampled_seed0": {
+      "rep": {
+        "n": 36,
+        "exact": 0.05555555555555555,
+        "median_err": -0.08333333333333333
+      },
+      "ctl": {
+        "n": 36,
+        "exact": 0.8333333333333334,
+        "median_err": 0.0
+      },
+      "gap": 0.7777777777777778,
+      "n": 72
+    },
+    "greedy": {
+      "rep": {
+        "n": 36,
+        "exact": 0.1111111111111111,
+        "median_err": -0.08854166666666666
+      },
+      "ctl": {
+        "n": 36,
+        "exact": 0.8333333333333334,
+        "median_err": 0.0
+      },
+      "gap": 0.7222222222222223,
+      "n": 72
+    }
+  },
+  "cap_hit_rate": {
+    "llasa1b": 0.16161616161616163,
+    "llasa3b": 0.18446601941747573,
+    "llasa8b": 0.09090909090909091,
+    "qwen06b": 0.0,
+    "qwen06bgreedy": 0.0,
+    "qwen17b": 0.0,
+    "xtts2": 0.0,
+    "xtts2norp": 0.23255813953488372,
+    "xtts2rp2": 0.0,
+    "xtts2rp3": 0.0,
+    "xtts2rp8": 0.0
+  },
+  "gap_greedy": 0.7222222222222223,
+  "gap_sampled_seed0": 0.7777777777777778,
+  "gap_sampled_pooled": 0.75,
+  "survives": true,
+  "verdict": "the deficit survives greedy decoding: it is not a sampling artifact"
+}

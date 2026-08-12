@@ -4057,6 +4057,85 @@ reason: what is proved is an implication, what is measured is a dissociation, an
 the link between them is the part still missing.
 
 
+\section{What the brackets mean}
+
+Every bracketed pair in the paper is a $95\%$ interval. Which kind depends on
+what is being estimated, and the choice is not cosmetic:
+
+\begin{itemize}
+\item \textbf{Rates} (exactly-correct percentages, outcome rates) use a Wilson
+score interval. Several cells sit at or near $0\%$ and $100\%$, where the
+normal approximation is degenerate or runs outside $[0,1]$.
+\item \textbf{Fitted quantities} (capacity gain, saturation scale $\hat K$, the
+horizon ratio) use a nonparametric bootstrap, resampling the unit named in the
+relevant section --- stimulus templates for capacity, items for $\hat K$.
+\item \textbf{Checkpoint-level means} (the $n=6$ panel statistics) use the range
+across checkpoints, not a distributional interval. With six points a percentile
+interval would imply more than six points can support.
+\end{itemize}
+
+\noindent Item-pooled intervals treat items as exchangeable and therefore ignore
+clustering within checkpoints; they are narrower than they should be, which is
+why the main text quotes the checkpoint-level number beside every pooled one and
+leans on the former.
+
+\section{Does the deficit survive greedy decoding?}
+
+Theorem~1 bounds a readout, so no property of the sampling rule enters the proof
+and the bound is stated as covering greedy, sampled and beam decoding alike. That
+claim sat next to a panel in which every generation was sampled. It is the
+cheapest ablation the paper could have run and, as a reviewer observed, the one
+most directly relevant to its own premise.
+
+The premise is what makes it interesting rather than merely tidy. Assumption~1
+posits a single time-invariant map $F$ between repetition boundaries. Stochastic
+token choice is exactly the per-step perturbation that would break that
+autonomy: what gets sampled at repetition $m$ changes what conditions repetition
+$m+1$. Greedy decoding removes the perturbation, so it is the setting in which
+Assumption~1 is \emph{most} defensible --- and therefore the one in which the
+deficit has the fewest excuses.
+
+\begin{center}
+\begin{tabular}{lrrrr}
+\toprule
+arm & $n$ & exact rep & exact ctl & gap \\
+\midrule
+sampled, three seeds & 216 & 8.3\%  & 83.3\% & 75.0 \\
+sampled, seed 0      &  72 & 5.6\%  & 83.3\% & 77.8 \\
+greedy               &  72 & 11.1\% & 83.3\% & 72.2 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent Qwen3-TTS-0.6B, $k\ge6$, \texttt{do\_sample=False} with temperature and
+top-$p$ omitted rather than passed and ignored. Greedy is deterministic, so one
+seed is the entire experiment on that arm; the sampled arm is given both at seed
+0 and pooled over its three seeds, because quoting whichever is more favourable
+would be the obvious way to cheat here.
+
+The deficit survives. Greedy renders 11.1\% of repeated items exactly against
+83.3\% of controls --- the control rate is identical across all three arms --- for
+a gap of 72.2 points against 75.0 sampled. Removing sampling noise moves the
+repeated side by about five points and leaves the dissociation intact. Whatever
+produces it is in the conditioning, not in the draw.
+
+\noindent\textbf{The truncation confound, checked rather than assumed.} Greedy
+decoding on repetitive text runs into a generation budget more readily than
+sampling does, and budget-truncated counts are censored downward --- precisely
+the direction that would manufacture a greedy deficit. The cap-hit rate is
+$0.0\%$ on both Qwen arms, so nothing was excluded on either side and the
+comparison is not doing hidden work. (It is not zero everywhere: the Llasa
+checkpoints run 9--18\%, which is why the rule exists.) The first launch of this
+run, over the full stimulus file, was abandoned for the related reason that
+greedy decoding hit the cap far more often on families the comparison does not
+use.
+
+\noindent\textbf{Limits.} One checkpoint, one alternative decoding mode. It says
+that Qwen3-TTS-0.6B's deficit is not a sampling artifact; it does not say so for
+the panel, and beam search remains untested. \texttt{python
+analysis/greedy\_decoding.py}.
+
+
 \bibliographystyle{IEEEtran}
 \bibliography{../refs}
 
