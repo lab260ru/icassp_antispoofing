@@ -13,7 +13,7 @@
 \input{numbers}
 
 \title{Counting Collapse in Autoregressive Text-to-Speech:\\
-       A Lean-Verified Bound and a Measured Counting Horizon}
+       A Lean-Verified Bound, and a Horizon It Does Not Yet Explain}
 
 \twoauthors
   {Ivan Viakhirev$^{1}$, Kirill Borodin$^{2,3}$, Grach Mkrtchian$^{2}$}
@@ -169,8 +169,9 @@ replaced by fillers from a per-template pool of eight, cycled above $k\!=\!8$
 backbones over X-codec2 tokens~\cite{ye2025llasa}), a within-architecture scale
 ladder; XTTS-v2~\cite{casanova2024xtts}; and Qwen3-TTS at 0.6B/1.7B, every
 checkpoint rendering every item at \NSeeds{} seeds. VITS~\cite{kim2021vits} is
-run as a non-autoregressive baseline, and further XTTS-v2 runs at altered
-repetition penalty as ablations; neither is pooled into the panel.
+run as a non-autoregressive baseline at the same \NSeeds{} seeds, and further
+XTTS-v2 runs at altered repetition penalty as ablations; neither is pooled into
+the panel.
 
 \noindent\textbf{Behavioural measurement, and why the obvious judge is wrong.}
 The natural instrument, Whisper large-v3~\cite{radford2023whisper}, is

@@ -10,9 +10,11 @@ together, so they live here and every analysis calls `panel()`.
 
 The four rules, and why each exists:
 
-* **Ablations are not panel members.** `xtts2norp` and the `xtts2rp*` arms are
-  the same checkpoint under altered decoding, run to test a mitigation. Pooling
-  them with the six checkpoints would count XTTS-v2 five times.
+* **Ablations and baselines are not panel members.** The `xtts2*` and
+  `qwen06brp*` arms are panel checkpoints under altered decoding, run to sweep a
+  mitigation; pooling them would count XTTS-v2 five times and Qwen3-TTS-0.6B
+  four. `vits` is the non-autoregressive baseline, which the theorem makes no
+  claim about and which exists precisely to contrast with the panel.
 * **Degenerate and empty audio has no count.** Folding it in as a large negative
   error would let a failure to produce speech masquerade as a failure to count;
   it is reported as its own rate instead.
@@ -38,7 +40,8 @@ import pandas as pd
 
 REPO = Path(__file__).resolve().parent.parent.parent
 
-ABLATIONS = {"xtts2norp", "xtts2rp2", "xtts2rp3", "xtts2rp8"}
+ABLATIONS = {"xtts2norp", "xtts2rp2", "xtts2rp3", "xtts2rp8",
+             "qwen06brp10", "qwen06brp15", "qwen06brp30", "vits"}
 DEGENERATE = {"empty", "degenerate"}
 AUDIT = REPO / "data/results/judge_vocab_audit.json"
 META_DIR = Path("/home/kirill/mnt/hdd_6tb_1/icassp_tts/tokens")

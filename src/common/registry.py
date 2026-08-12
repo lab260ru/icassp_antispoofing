@@ -63,6 +63,17 @@ PANEL = [
               21.53, 24000, "every3", False, "XTTS-v2, repetition_penalty=3.0"),
     ModelSpec("xtts2rp8", "coqui/XTTS-v2", "xtts", "0.4B", "coqui",
               21.53, 24000, "every3", False, "XTTS-v2, repetition_penalty=8.0"),
+    # The same sweep on a second architecture, because two review rounds
+    # objected that one model cannot support a claim about the field's standard
+    # mitigation. Qwen3-TTS-0.6B shows the deficit and ships a penalty of 1.05,
+    # far below XTTS-v2's 5.0, so this covers a different part of the range
+    # rather than repeating the same one.
+    ModelSpec("qwen06brp10", "Qwen/Qwen3-TTS-12Hz-0.6B-Base", "qwen", "0.6B", "qwen",
+              12.5, 24000, "every3", False, "Qwen3-TTS-0.6B, repetition_penalty=1.0"),
+    ModelSpec("qwen06brp15", "Qwen/Qwen3-TTS-12Hz-0.6B-Base", "qwen", "0.6B", "qwen",
+              12.5, 24000, "every3", False, "Qwen3-TTS-0.6B, repetition_penalty=1.5"),
+    ModelSpec("qwen06brp30", "Qwen/Qwen3-TTS-12Hz-0.6B-Base", "qwen", "0.6B", "qwen",
+              12.5, 24000, "every3", False, "Qwen3-TTS-0.6B, repetition_penalty=3.0"),
 ]
 
 BY_KEY = {m.key: m for m in PANEL}

@@ -193,6 +193,11 @@ def main() -> None:
     ap.add_argument("--temperature", type=float, default=None,
                     help="default: checkpoint's own generation_config.json value")
     ap.add_argument("--top-p", type=float, default=None)
+    # Exposed so the repetition-penalty sweep can be run on a second
+    # architecture. Two reviewers noted that testing the field's standard
+    # mitigation on XTTS-v2 alone cannot support a general claim about it.
+    ap.add_argument("--repetition-penalty", type=float, default=None,
+                    help="default: the checkpoint's shipped 1.05")
     ap.add_argument("--instrument-seed", type=int, default=0,
                     help="only this seed gets the instrumented capture saved")
     ap.add_argument("--limit", type=int, default=0)
@@ -256,6 +261,8 @@ def main() -> None:
         gen_kwargs_base["temperature"] = args.temperature
     if args.top_p is not None:
         gen_kwargs_base["top_p"] = args.top_p
+    if args.repetition_penalty is not None:
+        gen_kwargs_base["repetition_penalty"] = args.repetition_penalty
 
     t_start = time.time()
     n_done = 0
