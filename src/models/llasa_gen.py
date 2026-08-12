@@ -27,6 +27,9 @@ import sys
 import time
 from pathlib import Path
 
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).resolve().parent.parent.parent))
 from src.common.gpus import DEFAULT_GPU, check_gpu
 
 REPO = Path(__file__).resolve().parents[2]

@@ -38,6 +38,11 @@ import numpy as np  # noqa: E402
 import soundfile as sf  # noqa: E402
 import torch  # noqa: E402
 
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).resolve().parent.parent.parent))
+from src.common.gpus import DEFAULT_GPU, check_gpu  # noqa: E402
+
 DATA_ROOT = "/home/kirill/mnt/hdd_6tb_1/icassp_tts"
 CTC_SR = 16000
 
