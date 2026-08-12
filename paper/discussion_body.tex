@@ -1,11 +1,11 @@
 % Discussion body. Hand-written; numbers come from numbers.tex.
 
 \noindent\textbf{What is proved, and what the measurements do not show.}
-The Lean artifact certifies an implication: periodicity plus contraction imply a horizon. It does not prove any transformer
-contracts, and two attempts to measure $q$ failed --- one estimator
+The Lean artifact certifies an implication: periodicity plus contraction imply a
+horizon. It proves nothing about any transformer, and two attempts to measure $q$ failed --- one estimator
 needs a monotone read-head these decoders lack, and a perturbation
-probe found no difference between repeated and control items ($7/18$,
-$p=0.12$), its linearity control failing (S5).
+probe found no difference between the arms ($7/18$, $p=0.12$), its linearity
+control failing (S5).
 
 The theorem's distinctive prediction is a constant $N^\ast$, invisible where our
 ladder stopped; $k=128$ found saturation of that kind, though not from a
@@ -26,13 +26,13 @@ in \PhNLost{} of \PhNCk{} --- \PhNNull{} of \PhNCk{} sitting within
 \PhTieBand{}\% of that predictor, and we quote the stricter count (S12).
 What would refute it: a
 control with its twin's deficit, a model whose capacity gain matches its control,
-or a probe recovering the count past the horizon, as one just did.
+or a probe recovering the count past $N^\ast$, as one now does.
 
 Closest is representational collapse~\cite{barbero2024glasses}: distinct prefixes
 converge with length, which our control separates from periodicity. Related
 bounds~\cite{hahn2020theoretical,dong2021attention,geshkovski2023emergence,%
-strobl2024formal,merrill2024illusion} bound one pass; state
-tracking~\cite{li2025statetracking} probes many.
+strobl2024formal,merrill2024illusion} treat one pass, state
+tracking~\cite{li2025statetracking} many.
 
 % Any further body text pushes the references onto a sixth page: main.tex ends
 % with \vfill\pagebreak, so the bibliography always starts on a fresh page and
