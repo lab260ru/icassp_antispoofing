@@ -16,7 +16,7 @@ past the horizon, which the bound forbids, and the third sits in a
 (controls read \PhCtlRatio{} over the same $k$). At $n=\PhNCk{}$ this is
 inconclusive and we report it for transparency.
 
-It does bear on the live rival. On the state-contraction account the count is
+This bears on the live rival. On the state-contraction account the count is
 erased from the state; on the output-policy
 account~\cite{venkatesh2026repeated} it survives and only the policy reading it
 fails. Repetition does cost retention relative to the control in all
@@ -24,23 +24,22 @@ fails. Repetition does cost retention relative to the control in all
 the count is not erased: it stays decodable late ($R^2$ \ProbeLateMed{}) and
 repeated-item retention exceeds $1$ in \ProbeAboveOne{}, the probe reading it
 \emph{better} deeper in. Deciding between them needs a manipulation of the
-readout at fixed state, which we did not run; as things stand the output-policy
-account is the better supported.
+readout at fixed state, which we did not run; as things stand the
+output-policy account is better supported.
 
 \noindent\textbf{Related work, and what the control decides.}
 Closest is representational collapse~\cite{barbero2024glasses}: distinct
-prefixes converge with length, which our control separates from periodicity. The
-counting-specific expressivity results reach a compatible conclusion by another
-route --- transformers count only under conditions on precision, depth and
-positional encoding~\cite{yehudai2024when,salzer2025counting}, tokenisation
-shifting the limit~\cite{zhang2024counting}. The two predict differently, which
+prefixes converge with length, which our control separates from periodicity.
+Counting-specific expressivity results reach a compatible conclusion another way
+--- transformers count only under conditions on precision, depth and positional
+encoding~\cite{yehudai2024when,salzer2025counting,zhang2024counting}, and
+single-pass bounds~\cite{hahn2020theoretical,strobl2024formal} and state
+tracking~\cite{li2025statetracking} bracket it. The two predict differently, which
 is the point of the control: an inductive-bias limit is a property of the model
 and holds at fixed periodicity as length grows, while a contraction limit is a
 property of the \emph{conditioning}. Ours varies periodicity at fixed length,
 and the result is the periodicity-specific one --- whether contraction is the
-reason remains open. Other
-bounds~\cite{hahn2020theoretical,dong2021attention,strobl2024formal} treat one
-pass, state tracking~\cite{li2025statetracking} many.
+reason remains open.
 
 \noindent\textbf{What the design does not separate.}
 Our manipulation varies periodicity and \emph{verbatim token identity} together,

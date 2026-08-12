@@ -56,11 +56,18 @@ def main() -> None:
     ap.add_argument("--ctc", default="facebook/wav2vec2-large-960h-lv60-self")
     ap.add_argument("--chunk-s", type=float, default=25.0,
                     help="split long audio; CTC attention is quadratic in frames")
+    # Which transcript store to write into. The default is the primary judge's,
+    # and it must stay the default: every downstream analysis reads `asr_ctc/`.
+    # A second, independent recogniser writes beside it rather than over it, so
+    # the two transcript sets can be compared clip for clip instead of one
+    # silently replacing the other.
+    ap.add_argument("--out-sub", default="asr_ctc",
+                    help="subdirectory of DATA_ROOT to write transcripts into")
     args = ap.parse_args()
     check_gpu(args.gpu)
 
     aud_dir = Path(DATA_ROOT) / "audio" / args.model
-    out_path = Path(DATA_ROOT) / "asr_ctc" / f"{args.model}.jsonl"
+    out_path = Path(DATA_ROOT) / args.out_sub / f"{args.model}.jsonl"
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
     done = set()
@@ -78,10 +85,14 @@ def main() -> None:
         return
 
     import librosa
-    from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor
+    # Auto* rather than Wav2Vec2*: the second judge is a HuBERT encoder with a
+    # CTC head, which the wav2vec2-specific classes will not load. The decode
+    # path below is unchanged, so the two recognisers are driven identically and
+    # any difference between them cannot be a chunking or decoding artefact.
+    from transformers import AutoModelForCTC, AutoProcessor
     device = f"cuda:{args.gpu}"
-    proc = Wav2Vec2Processor.from_pretrained(args.ctc)
-    model = Wav2Vec2ForCTC.from_pretrained(args.ctc).to(device).eval()
+    proc = AutoProcessor.from_pretrained(args.ctc)
+    model = AutoModelForCTC.from_pretrained(args.ctc).to(device).eval()
 
     @torch.no_grad()
     def transcribe(wav: np.ndarray, sr: int) -> str:

@@ -60,11 +60,13 @@ architecture family ($n{=}\FamExactN{}$), favouring the control in all
 $k{=}1$. The limit tracks \emph{periodicity, not length}. It survives greedy decoding, an
 order-of-magnitude repetition-penalty sweep, checkpoints that pass no penalty at
 all, never-cycled controls, and every exclusion rule switched off
-(\ExSensAll{} points). Measuring it needs care: the obvious judge, Whisper, is
-autoregressive and biased \emph{against} the phenomenon, scoring
+(\ExSensAll{} points), and it replicates at \IndGapLo{}--\IndGapHi{} points
+across \IndNJudges{} recognisers, which rules out the judge-side artifact that
+would otherwise explain it. Measuring it needs care: the obvious judge, Whisper,
+is autoregressive and biased \emph{against} the phenomenon, scoring
 \WhisperValPer{} of the true count on periodic ground truth where a CTC
 recogniser scores \CtcValPer{}. Nor is the failure peculiar to autoregressive
-decoding --- of two non-autoregressive baselines one is immune and one is not.
+decoding --- of two non-autoregressive baselines one is immune, one is not.
 We also state and machine-check in Lean~4 a conditional bound: if the
 per-repetition state map contracts with factor $q<1$, no Lipschitz readout can
 separate counts past a computable horizon. We report it as a motivating
@@ -124,8 +126,7 @@ encoder--decoder ASR~\cite{viakhirev2026dispersion}.
 \noindent\textbf{Stimuli.}
 A parametric repetition ladder of \NStimuli{} items: carrier sentences with a
 target word repeated $k \in \{1,2,3,4,6,8,12,16,24,32\}$ times, plus repeated
-sentences, tongue twisters and English number phrases with intrinsic digit-word
-repetition. Every word- and sentence-repetition item at $k\ge2$ has a
+sentences, tongue twisters and number phrases. Every item at $k\ge2$ has a
 \emph{length-matched control}: same carrier and word count, the repeated token
 replaced by fillers from a per-template pool of eight, cycled above $k\!=\!8$
 (S10).
@@ -149,9 +150,7 @@ while \emph{same-voice distinct-word} sequences of identical length score
 $1.00$: a bias specific to periodicity, pointing the way of the effect we want
 to measure. We score instead with a CTC recogniser
 (\texttt{wav2vec2-large-960h-lv60-self}, greedy best-path, no language model),
-put through the same audit --- ratio \CtcValPer{} on the same ground truth.
-Worse in absolute WER, right for this purpose. Both transcript sets are
-released.
+put through the same audit --- ratio \CtcValPer{} on the same ground truth: worse in absolute WER, right for this purpose.
 
 $\hat c$ is obtained by matching the target unit against the transcript's word
 sequence, counting non-overlapping occurrences in order and skipping
@@ -177,12 +176,11 @@ transcript sets are public at tag \texttt{v1.1-icassp} of
 study). \texttt{build.sh} regenerates every number here from pinned revisions
 (S19), and a stratified \SampleN{}-clip sample spanning every model, $k$ band
 and outcome ships with each clip's transcript and scoring decision, so a
-judgement can be checked by ear. Audio and activations regenerate from the
-released seeds. Sampling uses shipped defaults (XTTS-v2
+judgement can be checked by ear. Sampling uses shipped defaults (XTTS-v2
 $T{=}0.75$/$0.85$/$50$/penalty $5.0$; Llasa $T{=}0.8$, top-$p$ $1.0$; Qwen3-TTS
 $T{=}0.9$/$1.0$/$50$/$1.05$), making Qwen3-TTS the \emph{most} stochastic
 family, so its larger checkpoint's null is not an artifact of conservative
-decoding. The penalty is the one parameter we vary.
+decoding.
 
 \section{Results}
 \label{sec:results}
@@ -193,33 +191,27 @@ decoding. The penalty is the one parameter we vary.
 \section{A Candidate Mechanism, and the Evidence Against It}
 \label{sec:theory}
 
-One mechanism for a periodicity-specific limit can be stated exactly, so we
-state it and then report that our own tests of it failed. Softmax attention over
-$k$ repeated spans whose logits differ by at most $\delta$ gives each weight in
-$[e^{-\delta}/k,e^{\delta}/k]$, so the profile flattens (Lemma~1). A decoder
-that cannot tell the spans apart meets the same conditioning at every
-\emph{repetition boundary}, making the map $F$ between consecutive boundary
-states autonomous; if $F$ is a $q$-contraction with orbit scale $C$, boundary
-states converge geometrically and no $L$-Lipschitz readout --- the stop head
-included --- separates counts with margin $\mu$ beyond
-$N^\ast=\log(\mu/2LC)/\log q$ (Theorem~1). Both are machine-checked in Lean~4
-over \texttt{mathlib}, free of \texttt{sorry} and with an axiom audit;
-statements, proofs, and a clause-by-clause correspondence to their informal
-versions are in S1--S2.
-
-\emph{We could not measure the premise, and the lemma's one directional
-prediction came out backwards.} Two independent estimators of $q$ failed: one
-needs a monotone attention read-head these decoders lack --- the flatter the
-profile, the worse any attention-based localiser, so Lemma~1 undercuts it
-structurally --- and a finite-difference probe found no repeated-versus-control
-difference ($7/18$ pairs, $p=0.12$) while failing its own linearity control
-(S5). Lemma~1's premise itself holds only approximately
-($\delta\le\DeltaMax{}$ nats). And its dose-response prediction is not merely
-untested but \emph{disconfirmed}: within a $(\text{model},k)$ cell, flatter
-attention goes with \emph{better} counting ($r=\DilR{}$
-$[\DilRLo{},\DilRHi{}]$; S12), the opposite of what dilution-driven collapse
-requires. We report the bound because it is what motivated the study, not
-because the data support it; nothing in Section~\ref{sec:results} rests on it.
+The mechanism that motivated this study can be stated exactly, and our own tests
+of it failed. Softmax attention over $k$ repeated spans whose logits differ by at
+most $\delta$ gives each weight in $[e^{-\delta}/k,e^{\delta}/k]$, so the profile
+flattens; a decoder that cannot tell the spans apart then meets the same
+conditioning at every \emph{repetition boundary}, making the map between
+consecutive boundary states autonomous, and if that map contracts, no Lipschitz
+readout --- the stop head included --- separates counts beyond a computable
+horizon. Both statements are machine-checked in Lean~4 over \texttt{mathlib},
+free of \texttt{sorry} and with an axiom audit (S1--S2). But the contraction
+premise is not measured: two independent estimators failed, one because it needs
+a monotone attention read-head these decoders lack --- the flatter the profile,
+the worse any attention-based localiser, so the dilution lemma undercuts it
+structurally --- and one because a finite-difference probe found no
+repeated-versus-control difference ($7/18$ pairs, $p=0.12$) while failing its own
+linearity control (S5). Worse for the account, the dilution lemma's one
+directional prediction is not merely untested but \emph{disconfirmed}: within a
+$(\text{model},k)$ cell, flatter attention goes with \emph{better} counting
+($r=\DilR{}$ $[\DilRLo{},\DilRHi{}]$; S12), the opposite of what
+dilution-driven collapse requires. We report the bound because it is what
+motivated the study, not because the data support it, and Section~\ref{sec:discussion}
+takes up the account the evidence does favour.
 
 \section{Discussion}
 \label{sec:discussion}

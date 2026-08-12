@@ -35,10 +35,9 @@ every model is essentially exact; above it, repeated items are rendered with a
 median count error of \ErrRepCk{}\% per checkpoint against \ErrCtl{}\%
 $[\ErrCtlLo{},\ErrCtlHi{}]$ for controls ($n=\ErrCtlN{}$), at every $k$ to $32$
 and for every model. The contrast is sharpest in exactly-correct renderings:
-\ExactCtl{}\% for controls against \ExactRep{}\% for their twins. Decoders that
-miscount a repeated sequence five times in six render its non-adjacent twin
-right nineteen times in twenty. Controls are not perfect --- \CtlMissPct{}\%
-carry genuine truncations --- but they are exact where their twins are not.
+\ExactCtl{}\% for controls against \ExactRep{}\% for their twins. Controls are
+not perfect --- \CtlMissPct{}\% carry genuine truncations --- but they are exact
+where their twins are not.
 
 \emph{Our \NModels{} checkpoints are only \NFamilies{} architecture families},
 so we model the clustering rather than count checkpoints. By family the gap is
@@ -68,7 +67,7 @@ period-$1$ against period-$8$ rather than periodic against aperiodic.
 Re-generating $k=12\ldots32$ from a never-cycled $146$-word pool leaves the
 dissociation at \ApMidGap{} points (\ApMidRep{}\% against \ApMidCtl{}\%,
 $n=\ApMidN{}$) where cycled controls give \ApCycGap{}: residual periodicity in
-the control arm is worth \ApCost{} points, not the bulk. We quote both.
+the control arm is worth \ApCost{} points, not the bulk of the gap.
 
 \subsection{Confirmatory: not the decoding rule, the judge, or our exclusions}
 
@@ -85,16 +84,30 @@ our exclusions: with every rule off the gap is \ExSensAll{} points against
 unevenly --- removes \ExclCapRep{}\% of repeated generations against
 \ExclCapCtl{}\% of controls, which works against the contrast, not for it.
 
-Nor is it the judge, and a non-autoregressive baseline is what clears it.
-VITS~\cite{kim2021vits} shows \emph{no} dissociation through the \emph{same}
-recogniser on the \emph{same} strings (\VitsRep{}\% of repeated items exact
-against \VitsCtl{}\% of controls, $n=90$, a gap of \VitsGap{} against the
-panel's $+\ARPoolGap{}$), and not for want of competence: at
-$k\!=\!6\text{--}8$, where the panel's gap reaches \ARMidGap{} points, it renders
-\NonARMidRep{}\% against \NonARMidCtl{}\%, the other way round; nor for its
-defaults, the sign holding at \VitsCfgWord{} duration-predictor settings (S13).
-CTC blank-collapse --- the judge-side failure with the same periodicity
-signature as the effect --- would have depressed VITS's repeated items too.
+Nor is it the recogniser, the objection this design most has to answer: CTC
+blank-collapse merges adjacent identical words, so it would depress repeated
+counts and not control counts --- a judge-side artifact with exactly the
+periodicity signature of the effect. Re-scoring the \emph{same} audio with
+\IndNJudges{} recognisers --- a second CTC model with different
+pretraining, a robust-finetuned one, and Whisper, whose autoregressive decoder
+has no blank-collapse mechanism at all --- leaves the gap at
+\IndGapLo{}--\IndGapHi{} points, positive in all \IndNCkPos{} of \IndNCk{}
+checkpoints and every family under every judge. Decisive is which arm moves:
+across the \IndNJudges{} judges the repeated arm's exact rate spans
+\IndRepSpread{} points (\IndRepLo{}--\IndRepHi{}\%) while the control arm's spans
+\IndCtlSpread{}. Changing the scorer moves the arm the models get \emph{right} --- that is word
+error rate --- and leaves the arm they get wrong fixed, where a judge-side
+collapse predicts the reverse. Where they disagree they disagree
+more on repeated items, but in the direction that \emph{under}-states the
+deficit ($\IndAsym{}$ counts against $\IndAsymThresh{}$ required for the
+confound; S14). VITS~\cite{kim2021vits}
+shows \emph{no} dissociation through the same recogniser on the same strings
+(\VitsRep{}\% of repeated items exact against \VitsCtl{}\%, $n=90$, a gap of
+\VitsGap{} against the panel's $+\ARPoolGap{}$), not for want of competence ---
+at $k\!=\!6\text{--}8$ it renders \NonARMidRep{}\% against \NonARMidCtl{}\%, the
+other way round --- nor for its defaults, the sign holding at \VitsCfgWord{}
+duration-predictor settings (S13). Blank-collapse would have depressed its
+repeated items too.
 
 But F5-TTS~\cite{chen2024f5tts}, contemporary and flow-matching rather than
 recurrent, \emph{does} show it: \FivettsRep{}\% against \FivettsCtl{}\%,
@@ -123,23 +136,20 @@ capacity gain as a fraction of the control's, at deep layers.}
 \subsection{Exploratory: past the ladder, the count levels off}
 
 Both analyses here were decided on after seeing the results above; S16 dates
-every analysis decision against the commit log, and we claim little from either.
+every decision against the commit log, and we claim little from either.
 
-Within $k\le32$ the deficit is \emph{proportional}, not saturating: the panel
+Within $k\le32$ the deficit is \emph{proportional}, not saturating (the panel
 median above $k\!=\!6$ is fitted far better by $\hat c=\ShapePropSlope{}k$ than
-by any constant (RSS \ShapePropSSE{} against \ShapeSatSSE{}), so no counting
-horizon lies inside this ladder. On the \HzNModels{} checkpoints admitting
-utterances long enough to extend it to $k\in\{48,64,96,128\}$ tracking does
-stop --- but so does the controls', these decoders having a general
-utterance-length ceiling, so the reportable quantity is the ratio of fitted
-saturation scales: \HzRatio{}-fold, just past where the main ladder stopped,
-which is why $k\le32$ looked proportional. The magnitude is form-dependent
+by any constant, RSS \ShapePropSSE{} against \ShapeSatSSE{}), so no counting
+horizon lies inside this ladder. Extending it to $k\!\le\!128$ on the
+\HzNModels{} checkpoints that can utter that much, tracking does stop --- but so
+does the controls', these decoders having a general utterance-length ceiling, so
+the reportable quantity is the ratio of fitted saturation scales:
+\HzRatio{}-fold. The magnitude is form-dependent
 (\HzFormLo{}--\HzFormHi{}, S17), the panel is not unanimous (\HzRevNames{}
-inverts it), and a saturation scale read off counts is \emph{not} the $N^\ast$
-of Section~\ref{sec:theory}: this is consistent with any saturating process.
-
-Internally, repetition slows state acquisition without halting it: the capacity
-gain --- states visited, by the trajectory's effective rank --- is a median
-factor \CapRatio{} of the control's (Fig.~\ref{fig:main}(c); S8), positive in
-all \CkCapN{} checkpoints. Positive is what a decoder below a horizon looks like
-and equally what a decoder with none looks like.
+inverts it), and a saturation scale read off counts is not a horizon on the
+count: this is consistent with any saturating process (S10). Internally,
+repetition slows state acquisition without halting it --- capacity gain a median
+factor \CapRatio{} of the control's, positive in all \CkCapN{} checkpoints
+(Fig.~\ref{fig:main}(c); S8) --- which is what a decoder below a horizon looks
+like and equally what a decoder with none looks like.

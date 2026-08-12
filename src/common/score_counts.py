@@ -168,6 +168,18 @@ def count_units(tokens: list[str], units: list[str]) -> int:
     return c
 
 
+# Transcript store per judge. Adding a judge here and nowhere else is the point:
+# a second recogniser must be scored by *this* file's counting rules, not by a
+# reimplementation, or the comparison measures two pipelines instead of two
+# recognisers.
+JUDGE_DIRS = {
+    "whisper": "asr",       # Whisper large-v3, autoregressive
+    "ctc": "asr_ctc",       # wav2vec2-large-960h-lv60-self, the paper's judge
+    "hubert": "asr_hubert",  # hubert-large-ls960-ft, the independent judge
+    "robust": "asr_robust",  # wav2vec2-large-robust-ft-libri-960h, third judge
+}
+
+
 def load(model: str, judge: str = "whisper") -> tuple[dict, dict]:
     """Load transcripts from the chosen judge.
 
@@ -177,9 +189,13 @@ def load(model: str, judge: str = "whisper") -> tuple[dict, dict]:
     speech and so undercounts exactly the material this study is about, whereas a
     CTC judge's output length is governed by the acoustics. See
     `analysis/asr_reliability.py` for the audit that forced this option to exist.
+
+    `hubert` and `robust` are independent recognisers over the same audio, used
+    by `analysis/independent_judge.py` to test whether the reported effect is a
+    property of the speech or of the judge that scored it.
     """
     asr = {}
-    sub = "asr" if judge == "whisper" else "asr_ctc"
+    sub = JUDGE_DIRS.get(judge, "asr_ctc")
     p = Path(DATA_ROOT) / sub / f"{model}.jsonl"
     if p.exists():
         for line in open(p):
@@ -273,7 +289,7 @@ def main() -> None:
     ap.add_argument("--models", nargs="+", required=True)
     ap.add_argument("--stimuli", default="data/stimuli/stimuli.jsonl")
     ap.add_argument("--out", default="data/results/behavioural.csv")
-    ap.add_argument("--judge", choices=["whisper", "ctc"], default="whisper",
+    ap.add_argument("--judge", choices=sorted(JUDGE_DIRS), default="whisper",
                     help="which recogniser scores the transcripts")
     args = ap.parse_args()
 
