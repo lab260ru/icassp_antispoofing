@@ -5,6 +5,7 @@
 \documentclass{article}
 \usepackage{spconf,amsmath,amssymb,amsthm,graphicx,booktabs,hyperref,microtype}
 \usepackage[table]{xcolor}
+\usepackage{cite}   % IEEE house style: [15]--[19] instead of [15, 16, 17, 18, 19]
 
 % Display and theorem spacing, tightened. The page limit is hard and this costs
 % no content; the defaults leave more air around one display equation and three
@@ -55,7 +56,7 @@ autoregressive decoding: of two non-autoregressive baselines, one is immune and
 one is not. Up to $k=32$ the count stays proportional rather than saturating, so
 no horizon is visible there; a post-hoc extension to $k=128$ finds one,
 repetition lowering the fitted saturation scale \HzRatio{}-fold, though not in
-the one checkpoint that shows no deficit either. We do \emph{not} establish the theorem's premise: two
+one checkpoint of the \NModels{}. We do \emph{not} establish the theorem's premise: two
 attempts to measure the contraction factor failed and a dose-response test of the
 dilution lemma came out sign-reversed. Its \emph{conclusion} does survive one
 direct test --- a linear readout recovers the count from decoder states below the

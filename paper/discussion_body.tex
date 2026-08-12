@@ -1,39 +1,36 @@
 % Discussion body. Hand-written; numbers come from numbers.tex.
 
 \noindent\textbf{What is proved, and what the measurements do not show.}
-The Lean artifact certifies an implication: periodic conditioning plus
-contraction implies a finite counting horizon. It does not prove any transformer
+The Lean artifact certifies an implication: periodicity plus contraction imply a finite counting horizon. It does not prove any transformer
 contracts, and two attempts to measure $q$ failed --- a boundary-distance
 estimator needs a monotone read-head these decoders lack, and a perturbation
-probe found no difference in local contraction between repeated and control items
-($7$ of $18$ pairs, $p=0.12$), its own linearity control failing (S5).
+probe found no difference between repeated and control items ($7/18$ pairs,
+$p=0.12$), its linearity control failing (S5).
 
 The theorem's distinctive prediction is a constant $N^\ast$, invisible where our
 ladder stopped; extending to $k=128$ found saturation of the predicted kind,
-though not one derived from a measured $q$. A linear probe does not separate this
+though not from a measured $q$. A linear probe does not separate this
 from the rival on which the count survives and only the output policy
 fails~\cite{venkatesh2026repeated}: it retains less on repeated text in
 \ProbeNBelowCtl{} of \ProbeNCk{} checkpoints, but the count stays decodable late
 ($R^2$ \ProbeLateMed{}), as that rival predicts.
 
-Run past the horizon, the probe does test the theorem, which forbids a Lipschitz
+Past the horizon the probe does test the theorem, which forbids a Lipschitz
 readout only \emph{beyond} $N^\ast$. On $k=48\ldots128$ states it reaches MAE
 \PhPastMae{} in $\log_2 k$ against \PhPastConst{} for a predictor that ignores
 them and answers the mean; below the horizon, \PhBelowMae{} against
 \PhBelowConst{}. Range cannot explain this: over the \emph{same} $k$ it still
-reads the count off control states (\PhCtlMae{}, $R^2$ \PhCtlRTwo{}), so what it
-loses is periodicity, not dynamic range. The theorem's prediction tested where it
-applies --- \PhPastN{} items, one checkpoint: one clean observation, not a
-panel (S12).
-A conditional account risks being unfalsifiable, so we say what would refute it:
+reads the count off control states (\PhCtlMae{}, $R^2$ \PhCtlRTwo{}), what it loses is
+periodicity, not range. The theorem's prediction tested where it
+applies --- \PhPastN{} items, one checkpoint: one observation, not a panel (S12).
+To keep this falsifiable, we say what would refute it:
 a control with its twin's deficit, or a model whose capacity gain matches its
 control.
 
-The closest prior result is representational
-collapse~\cite{barbero2024glasses}, where distinct prefixes converge as sequences
-grow --- our control separates that from periodicity --- and related
+Closest is representational collapse~\cite{barbero2024glasses}: distinct prefixes
+converge with length; our control separates that from periodicity. Related
 bounds~\cite{dong2021attention,geshkovski2023emergence,gao2026clustered,%
-strobl2024formal,merrill2024illusion} constrain one forward pass.
+strobl2024formal,merrill2024illusion} constrain one pass.
 
 % Any further body text pushes the references onto a sixth page: main.tex ends
 % with \vfill\pagebreak, so the bibliography always starts on a fresh page and

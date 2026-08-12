@@ -362,6 +362,16 @@ def main() -> None:
         macros["HzSepNames"] = " and ".join(sep_names) if sep_names else "none"
         macros["HzRevNames"] = " and ".join(rev_names) if rev_names else "none"
         macros["HzNRev"] = str(len(rev_names))
+        # The reversing checkpoint's exact-rate gap. It is the one checkpoint
+        # with no median-error deficit, which a reader can easily misread as
+        # "no deficit at all" -- it has one, and it is large. Derived from the
+        # same reversal set as HzRevNames so the two cannot drift apart.
+        rev_keys = [m for m, v in mods.items() if v.get("ratio", 1) < 1]
+        ck_early = json.loads(Path("data/results/checkpoint_level.json").read_text()) \
+            if Path("data/results/checkpoint_level.json").exists() else {}
+        per = ck_early.get("exact_rate_gap", {}).get("per_model", {})
+        if len(rev_keys) == 1 and rev_keys[0] in per:
+            macros["CkRevExact"] = fmt(100 * per[rev_keys[0]], 1)
         dc = he.get("decline", {})
         if dc:
             macros["HzDeclinePeak"] = fmt(dc.get("c_peak"), 0)
