@@ -257,3 +257,47 @@ if the allocation has actually changed, and update `ALLOWED` at the same time.
 
 Note that jobs already running when the restriction arrived were left to finish
 rather than killed mid-generation; nothing has been launched on 0 or 1 since.
+
+## Traps in the final day's scripts
+
+Six analyses were added on the last day, each answering one reviewer objection
+with data. Five have a trap worth knowing before you rerun them.
+
+**`horizon_forms.py` — populations, not maths.** Its first run returned 4.13 for
+the same soft-horizon fit `horizon_ext.py` reports as 3.48. Neither was wrong
+arithmetically: the new script's `--ext` default listed one extension CSV where
+the old one used two, so they were fitting different rows. *If a new script
+disagrees with an old one on the same estimator, suspect the population first.*
+The soft-horizon row now reproduces `horizon_ext.py` exactly, and that agreement
+is the check.
+
+**`probe_past_horizon.py` — the threshold decides borderline cases.**
+"Beats the constant predictor" is a hard boundary, and Llasa-3B sits 0.006 MAE on
+the favourable side of it over twelve items. Both readings of that number were
+available and one flattered us. The script now calls anything within `TIE = 0.02`
+of the constant predictor indistinguishable and prints both counts. If you widen
+the panel, check `PhKeptRatios` still reads sensibly — it lists every kept
+checkpoint, including ones that merely tie.
+
+**`greedy_decoding.py` — cap hits are the confound.** Greedy on repetitive text
+reaches the token budget far more often than sampling, and truncated counts are
+censored downward: exactly the direction that manufactures a greedy deficit. The
+script applies the panel's cap-hit rule and *reports the rate per arm* (0.0% on
+both Qwen arms) rather than asserting the check was done. Also: run it over
+`data/stimuli/stimuli_greedy.jsonl`, not the full file — the first launch spent
+twenty minutes on families the comparison never uses.
+
+**`vits_config.py` — read the sign, not the size.** Both duration-predictor
+perturbations hurt the *control* arm more than the repeated one, because a
+control made of distinct words loses more to fast or noisy speech. That inflates
+the magnitude of VITS's negative gap and says nothing about repetition.
+
+**`sample_sizes.py` — asserts its own arithmetic.** `457 + 525 = 982` is checked,
+not left to the reader, so a change to the exclusion rules that breaks the
+reconciliation fails loudly instead of producing a table that no longer adds up.
+
+**`scripts/check_supp_tables.py`** closes the gap `check_numbers.py` leaves. The
+main paper is all macros and cannot hold a stale number; the supplement's tables
+are hand-typed and could. It fails on any result-JSON number missing from
+`supp.tex` — including numbers the supplement legitimately does not quote, which
+is a decision worth making on purpose rather than by omission.
