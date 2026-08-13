@@ -53,11 +53,11 @@ ladder: \NStimuli{} stimuli in which a target word recurs $k$ times, each paired
 with a \emph{length-matched control} of the same carrier and word count whose
 repeated token is replaced by distinct fillers. Across \NModels{} checkpoints
 from \NFamilies{} architectures, models render repeated text exactly in
-\ExactRep{}\% of generations against \ExactCtl{}\% for their controls at
-$k\ge6$: a gap of \FamExact{} points $[\FamExactLo{},\FamExactHi{}]$ by
-architecture family ($n{=}\FamExactN{}$; \ApHeadFam{} with never-cycled control
-fillers), favouring the control in all \CkExactN{} checkpoints, and
-\FullLadderGap{} points over the whole ladder from $k{=}1$. A period ladder separates periodicity
+\ExactRep{}\% of generations against \ExactCtl{}\% for their cycled controls at
+$k\ge6$: a gap of \ApHeadFam{} points by architecture family
+($n{=}\FamExactN{}$) with never-cycled control fillers, \ApHeadFamCyc{} with
+the cycled pool the ladder ships, favouring the control in all \CkExactN{}
+checkpoints and \FullLadderGap{} points over the whole ladder from $k{=}1$. A period ladder separates periodicity
 from verbatim identity: exact rates climb \PerPOne{}, \PerPTwo{}, \PerPFour{},
 \PerPEight{}\% as the period goes $1,2,4,8$, and half the deficit survives at
 period two, where no token is adjacent to itself. The limit tracks \emph{periodicity, not length}. It survives greedy decoding, an
