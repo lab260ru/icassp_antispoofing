@@ -5598,8 +5598,10 @@ Two cells fell back. The cycle assigns \texttt{degenerate} to Qwen3-TTS-1.7B and
 \texttt{empty} to XTTS-v2, and neither checkpoint produced a single row with
 that label anywhere in the panel, so both fall back to the first panel row and
 the artifact records that they did. That Qwen3-TTS-1.7B never degenerates is
-consistent with its being the one checkpoint that counts correctly at
-$k\le32$; that it still shows the full period ladder (S28) is the point.
+consistent with its being the one checkpoint whose median count error is zero
+--- though it still renders repeated items exactly only $38.9\%$ of the time
+against $98.9\%$ for its controls, and still shows the full period ladder (S28),
+which is the point.
 
 
 % ============================================================

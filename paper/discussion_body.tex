@@ -9,17 +9,16 @@
 With contraction refuted, the live question is where the count fails: erased
 from the state, or surviving there while the policy reading it fails.
 Venkatesh~\cite{venkatesh2026repeated} established the representational half of
-that in text models by probing; we add the causal half and the isolation of periodicity
-from length. The count is not erased: it stays decodable late ($R^2$ \ProbeLateMed{}), and a
+that in text models by probing; we add the causal half. The count is not
+erased: it stays decodable late ($R^2$ \ProbeLateMed{}), and a
 probe past the extension horizon is inconclusive (S12). Deciding needs a manipulation of
 the readout at fixed state. Splicing whole donor states is too disruptive to read; a
 rank-1 patch transferring only the probe's count coordinate is not
 (\CausalDegen{}\% degenerate, self-patch bitwise-identical
-\CausalNoop{}/\CausalNoop{}), and it moves the count not at all
-($\CausalShift{}$ log-count $[\CausalShiftLo{},\CausalShiftHi{}]$, $n=\CausalN{}$)
-on \CausalCkOk{} checkpoints across \CausalFamN{} families, within
-\EqPatchQlgFrac{}--\EqPatchLsmFrac{}\% of a full transfer; steering gives no
-dose-response. The fourth, Llasa-8B, returns \emph{cannot tell}, not \emph{no}: a
+\CausalNoop{}/\CausalNoop{}), and it moves the count not at all on
+\CausalCkOk{} checkpoints across \CausalFamN{} families: equivalence bounds of
+\EqPatchQlgFrac{}--\EqPatchLsmFrac{}\% of a full transfer, $n=\CausalN{}$ per
+cell. Steering gives no dose-response. The fourth, Llasa-8B, returns \emph{cannot tell}, not \emph{no}: a
 same-$k$ donor moves the count as much as a cross-$k$ one (\CausalSameK{} vs.\
 \CausalCrossK{}), so that arm measures foreign state (S26).
 
@@ -43,5 +42,5 @@ and an out-of-distribution account predicts the same dissociation. Inside the
 repeated arm count and text length are one variable. The duration story rests on
 one model per strategy, the causal patch on \CausalCkOk{} of \CausalCkAll{}
 checkpoints, the panel on \NFamilies{} families, and the Spanish arm was
-unreportable, needing a more accurate judge (S27). Exclusions are blind to arm
-and score; the judge is validated on concatenative ground truth, not listeners.
+unreportable, needing a more accurate judge (S27). Exclusions are blind to the
+count; the judge is validated on concatenative audio, not listeners.

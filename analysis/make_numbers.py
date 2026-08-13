@@ -548,7 +548,11 @@ def main() -> None:
         if z:
             macros["PenZeroRep"] = fmt(100 * z["exact_rep"], 1)
             macros["PenZeroCtl"] = fmt(100 * z["exact_ctl"], 1)
-        macros["PenNArch"] = str(len(pc.get("by_arch", {})))
+        # A word, not a digit: it is read in prose two clauses before
+        # "the three Llasa checkpoints", and "Swept on 2 architectures" next to
+        # "the three Llasa checkpoints" reads as a typo.
+        macros["PenNArch"] = WORDS.get(len(pc.get("by_arch", {})),
+                                       str(len(pc.get("by_arch", {}))))
         np_ = pc.get("no_penalty_summary", {})
         if np_:
             macros["PenNoneN"] = WORDS.get(np_["n_models"], str(np_["n_models"]))
