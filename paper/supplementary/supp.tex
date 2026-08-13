@@ -5109,6 +5109,69 @@ deal more precise than the model was entitled to promise, and should be read as
 one architecture falling comfortably inside a wide predictive interval rather
 than as a sharp quantitative hit.
 
+\subsection{What changed after the first review round}
+
+The paragraph above --- ``only the original ladder and the matched-control
+design were fixed in advance'' --- describes the study as it stood then, and it
+is no longer the whole story. Every experiment run since carries a
+pre-commitment written into its own script's docstring before any of its audio
+existed, and the docstrings are in the repository at commits that predate the
+corresponding manifests. The point of listing them together is not that they
+were pre-committed but that the commitments had teeth: one of them cost us a
+claim.
+
+\begin{center}
+\begin{tabular}{@{}lp{3.4cm}p{2.6cm}@{}}
+\toprule
+experiment & what was fixed in advance & outcome \\
+\midrule
+period ladder &
+  $D(2)\ge 0.5\,D(1)$ confirms periodicity; $\le 0.25$ forces a retitle;
+  between is ambiguous and also forces one &
+  confirmed \\
+odd rungs &
+  $E(2)<E(3)<E(4)$ and $E(4)<E(6)<E(8)$; either odd rung reaching $E(8)$ or
+  falling below $E(2)$ refutes &
+  confirmed \\
+causal replication &
+  gate P1, the noise-floor escape at $25\%$ of a full transfer, and the
+  equivalence margin below which a null is ``underpowered'' rather than
+  ``null'' &
+  3 null, 1 \emph{cannot tell} \\
+positive control &
+  detection and direction-appropriateness thresholds, and what would count
+  as the patch being inert &
+  \textbf{against us} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent The first two went our way, the third partly, and the fourth did not:
+the positive control is why the main text no longer claims a causal half, why
+the causal section is titled after a question we could not decide, and why the
+title says \emph{isolating} rather than \emph{locating}. A pre-commitment that
+has never once changed a conclusion is decoration; this one changed the paper's
+headline.
+
+Two honesty notes belong here rather than only at the experiments.
+
+The positive control is \emph{not} fully pre-registered and is not described as
+such anywhere. Its thresholds were fixed before any audio, but four
+operationalisations were repaired after 35--41 pilot rows, each recorded in the
+file at the point of change. One mattered: the detection statistic was a
+\emph{median} word-level edit distance whose noise-floor value is exactly zero,
+so ``at least twice the floor'' would have marked every cell detectable by
+construction --- the answer that would have rescued the causal claim. It was
+changed to the mean, which is strictly harder to clear, and the change is
+disclosed in-file. The correct description is: thresholds pre-registered, three
+operationalisations repaired at pilot stage in the conservative direction.
+
+The period ladder's baseline moved between the pooled ladder and the $k{=}24$
+rung the odd periods were run at ($E(1)$ $8.5$ against $10.4$, $E(2)$ $51.2$
+against $47.9$). The $k{=}24$ values were written into the generator docstring
+before generation, so the comparison the tests use is the one that was fixed,
+not the one that flattered the result afterwards.
+
 \noindent\textbf{The extension ladder is the exception, and we flag it as such.}
 It was run because the pre-specified range failed to show the theorem's
 signature, and it is the one result whose framing benefited from being sought.
