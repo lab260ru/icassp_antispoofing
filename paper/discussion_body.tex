@@ -24,14 +24,17 @@ same-$k$ donor moves the count as much as a cross-$k$ one (\CausalSameK{} vs.\
 \CausalCrossK{}), so that arm measures foreign state (S26).
 
 \noindent\textbf{Related work, and what the control decides.}
-Closest is representational collapse~\cite{barbero2024glasses}, where distinct
-prefixes converge with length --- which our control separates from periodicity.
-Counting-specific expressivity results agree by another route --- transformers
+Closest is representational collapse~\cite{barbero2024glasses}, which our control
+separates from periodicity and which we measure: distinguishable states grow at
+\CapRatio{} of the control's rate (\CapAdjRatio{} adjusted, disjoint in
+\CapSepPhrase{}) but still grow in \CapPosModels{} --- a slowing, not the
+theorem's fixed point (S8).
+Counting-specific expressivity results agree by another route: transformers
 count only under conditions on precision, depth and positional
 encoding~\cite{yehudai2024when,salzer2025counting,zhang2024counting}, with
 single-pass~\cite{hahn2020theoretical,strobl2024formal} and state-tracking
-bounds~\cite{li2025statetracking} bracketing it. Those are properties of the model, invariant to
-period; ours moves with it.
+bounds~\cite{li2025statetracking} bracketing it --- properties of the model,
+invariant to period; ours moves with it.
 
 \noindent\textbf{What the design does not separate, and other limits.}
 Periodicity is not separated from \emph{training-set frequency}: $k$-fold

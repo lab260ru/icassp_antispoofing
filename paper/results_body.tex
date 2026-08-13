@@ -46,13 +46,11 @@ renders repeated items exactly \CkRevExact{} points less often than its controls
 (Table~\ref{tab:models}). A mixed-effects linear probability model with
 architecture as a random effect and checkpoint nested inside it puts the gap at
 \MixArm{} points, and \MixAllClear{} six interval constructions exclude zero,
-the widest being $[\MixLo{},\MixHi{}]$. Partial pooling answers what three
-families cannot: the posterior predictive gap for an architecture
-\emph{outside} the panel is \BayesNewFam{}
-$[\BayesNewFamLo{},\BayesNewFamHi{}]$, $P{=}\BayesNewFamP{}$ --- enough to
-place the effect, not to exclude a fourth architecture lacking it, and under the
-widest prior on the group-level scales it touches zero
-($\BayesWidePriorLo{}$, $P{=}\BayesWidePriorP{}$). We then acquired a fourth architecture.
+the widest being $[\MixLo{},\MixHi{}]$. Partial pooling puts the posterior
+predictive gap for an architecture \emph{outside} the panel at \BayesNewFam{}
+$[\BayesNewFamLo{},\BayesNewFamHi{}]$, but three groups barely identify a
+group-level scale and under the widest prior on it that gap touches zero
+($\BayesWidePriorLo{}$), so we did not rest on the extrapolation: we tested it.
 CosyVoice~2, whose alignment supervision makes it the design most likely to be
 immune, renders repeated text exactly \CosyRep{}\% against \CosyCtl{}\% for its
 controls ($n=\CosyN{}$): a gap of \CosyGap{} points, inside the predicted
