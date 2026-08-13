@@ -1172,9 +1172,26 @@ def main() -> None:
             d2s = [x["mean_D2"] for x in rules]
             macros["PerDTwoLo"] = fmt(100 * min(d2s), 1)
             macros["PerDTwoHi"] = fmt(100 * max(d2s), 1)
-            macros["PerNRules"] = WORDS.get(len(rules), str(len(rules)))
+            # Count DISTINCT computations. "by family" reproduces the ordered
+            # scan exactly, because every family in this panel has one
+            # checkpoint, so calling it a fifth rule overstates independence.
+            seen, distinct = set(), 0
+            for x in rules:
+                key = round(x["mean_D2"], 6)
+                if key not in seen:
+                    seen.add(key); distinct += 1
+            macros["PerNRules"] = WORDS.get(distinct, str(distinct))
             macros["PerAllAgree"] = ("all" if all(
                 x.get("verdict") == base.get("verdict") for x in rules) else "not all")
+            # The headline rule is the least favourable one and clears "half the
+            # deficit survives" by a hair; the recount rules clear it on every
+            # checkpoint. Both facts belong in the paper.
+            macros["PerRatioScan"] = fmt(base["mean_ratio"], 3)
+            rec = [x for x in rules if "recount" in x["label"] or "strict" in x["label"]]
+            if rec:
+                per = [v for x in rec for v in x["ratio_per_checkpoint"].values()]
+                macros["PerRatioRecLo"] = fmt(min(per), 2)
+                macros["PerRatioRecHi"] = fmt(max(per), 2)
         macros["PerNKept"] = str(pl.get("kept", ""))
 
     # ---- and the disambiguator arm, which falsified our own account --------

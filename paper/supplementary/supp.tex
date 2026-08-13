@@ -6046,4 +6046,370 @@ directory. It was verified bit-identical to \texttt{main}'s
 above. Reading a hash out of the local cache without first checking the
 snapshot count would have pinned the wrong provenance silently.
 
+% ============================================================
+\section{The period ladder: periodicity, or verbatim identity?}
+\label{sec:s28}
+
+Every reviewer in one round made the same objection: the design never varied
+periodicity on its own. The published repeated arm is one word repeated $k$
+times -- period $1$ \emph{and} verbatim token identity, confounded from the
+start -- and the only controls on record were period-$8$ (cycled) or aperiodic
+(never-cycled). This section is the missing ladder: holding the carrier
+sentence, the word count and the requested count $k$ fixed and varying only the
+period $p\in\{1,2,4,8,k\}$, plus a second, independent arm that leaves the
+repetition verbatim and tests the companion account that survived every
+mechanistic probe in Sections~\ref{sec:s8}--\ref{sec:s26}. Code:
+\texttt{analysis/period\_ladder.py} and \texttt{analysis/disambiguation.py};
+stimuli: \texttt{data/stimuli/stimuli\_period.jsonl}
+(\texttt{make\_stimuli\_period.py}) and
+\texttt{data/stimuli/stimuli\_disambig.jsonl}
+(\texttt{make\_stimuli\_disambig.py}); results:
+\texttt{data/results/period\_ladder.json} and
+\texttt{data/results/disambiguation.json}. Both analysis scripts carry a
+pre-committed docstring, written and thresholds fixed before any of this
+audio existed; every verdict below is read off those thresholds, not chosen
+after the fact.
+
+\subsection{Design}
+
+At a fixed carrier sentence, a fixed word count and a fixed requested count
+$k$, only the period of the repeating block changes:
+\[
+\begin{aligned}
+p=1&:\ A\,A\,A\,A\,\dots &&\text{(the published repeated arm)}\\
+p=2&:\ A\,B\,A\,B\,\dots &&\text{no token adjacent to itself}\\
+p=4&:\ A\,B\,C\,D\,A\,B\,C\,D\,\dots\\
+p=8&:\ A\,B\,C\,D\,E\,F\,G\,H\,A\,B\,\dots &&\text{(the published cycled control)}\\
+p=k&:\ k\text{ distinct words} &&\text{(the published never-cycled control)}
+\end{aligned}
+\]
+Five carriers (\texttt{t1}, \texttt{t3}--\texttt{t6}; \texttt{t2} is the
+template the CTC judge never transcribes the fillers of and is excluded from
+the whole panel, S10) $\times$ three requested counts $k\in\{16,24,32\}$ are
+rendered at every period. Vocabulary is balanced by rotation: $p\in\{2,4,8\}$
+draw from one shared pool of eight words, so that pooled over rotations
+($4$ at $p{=}2$, $2$ at $p{=}4$, $1$ at $p{=}8$) every arm uses the same
+eight words the same number of times and cannot differ lexically; $p=1$ (the
+template's own target word) and $p=k$ (the $146$-word extension pool, tail
+delivery $0.79$--$0.85$) are inherited, reported confounds rather than
+controlled ones, so the vocabulary-matched comparison is $p\in\{2,4,8\}$ and
+$p=1,k$ are attached with that caveat. Three seeds per item, three
+checkpoints (Llasa-1B, Qwen3-TTS-0.6B, XTTS-v2), scored under
+\texttt{population.panel()}'s standard exclusions. After exclusions, $n=1134$
+(\texttt{kept} in the JSON; dropped: $9$ degenerate, $73$ token-budget cap
+hits, $0$ ablations, out of $1395$ candidate rows).
+
+The companion arm (\texttt{disambiguation.py}) holds the period at $1$ and
+the count and word exact-match target fixed, and instead edits the
+\emph{boundary} between successive copies: \texttt{bare} (\emph{very very
+very\ldots}, the published arm), \texttt{comma} (\emph{very, very,
+very,\ldots}), \texttt{stop} (\emph{Very. Very. Very.\ldots}) and \texttt{and}
+(\emph{very and very and very\ldots}). \texttt{comma} and \texttt{stop} hold
+the word count exactly fixed -- punctuation attaches to a word,
+\texttt{text.split()} is unchanged -- so they are the length-matched cells;
+\texttt{and} inserts $k-1$ extra words and is reported beside them, never
+averaged in. This arm ran on two of the panel's three checkpoints: the
+behavioural CSV has no \texttt{pd\_*} disambiguator rows for Llasa-1B at all
+(none were generated), so every number in \S\ref{sec:s28-dis} below is over
+Qwen3-TTS-0.6B and XTTS-v2 only, $n=353$ after exclusions.
+
+\subsection{The full ladder}
+
+Exact rate ($=k$ requested units delivered, in order, the paper's own
+statistic) by period and checkpoint, under the headline ordered-scan rule
+(\texttt{exact\_by\_period\_scan}):
+
+\begin{center}
+\begin{tabular}{@{}lrrrrrl@{}}
+\toprule
+checkpoint & $p{=}1$ & $p{=}2$ & $p{=}4$ & $p{=}8$ & $p{=}k$ & $n$ ($1,2,4,8,k$) \\
+\midrule
+Llasa-1B         &  3.6 & 54.6 & 83.3 &  92.5 & 75.0 & 28, 130, 84, 40, 44 \\
+Qwen3-TTS-0.6B   &  6.8 & 41.3 & 73.3 & 100.0 & 86.7 & 44, 179, 90, 45, 45 \\
+XTTS-v2          & 11.1 & 51.7 & 75.6 &  82.2 & 57.8 & 45, 180, 90, 45, 45 \\
+\midrule
+MEAN             &  7.2 & 49.2 & 77.4 &  91.6 & 73.2 & \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent Every one of the three checkpoints is individually monotone
+increasing across $p=1,2,4,8$ ($3.6{<}54.6{<}83.3{<}92.5$;
+$6.8{<}41.3{<}73.3{<}100.0$; $11.1{<}51.7{<}75.6{<}82.2$) -- the deficit is
+graded, not a step function, at every checkpoint separately as well as on
+the pooled mean. The $p=k$ arm sits below $p=8$ at all three checkpoints, as
+its inherited vocabulary caveat predicts (a $146$-word tail delivering
+$0.79$--$0.85$, against the balanced eight-word pool at $p=8$), and is not
+part of the monotonicity claim above.
+
+\subsection{Five scoring rules: magnitude disagrees, ordering does not}
+
+\texttt{period\_ladder.json} computes the deficit
+$D(p)=E(8)-E(p)$ under five rules and calls a verdict on each from the
+pre-committed thresholds ($D(2)/D(1)\ge0.50\to$ PERIODICITY,
+$\le0.25\to$ VERBATIM TOKEN IDENTITY, between $\to$ GRADED), pooling the
+$D(2)/D(1)$ ratio over checkpoints:
+
+\begin{center}
+\begin{tabular}{@{}lrrrrl@{}}
+\toprule
+rule & $D(1)$ & $D(2)$ & $D(4)$ & $D(2)/D(1)$ & verdict \\
+\midrule
+ordered scan (headline)     & 84.4 & 42.4 & 14.2 & 0.502 & PERIODICITY \\
+unbounded recount           & 82.9 & 60.9 & 20.1 & 0.734 & PERIODICITY \\
+strict conjunction          & 82.9 & 61.2 & 21.2 & 0.738 & PERIODICITY \\
+cap hits kept (censored bound) & 81.9 & 43.5 & 13.5 & 0.531 & PERIODICITY \\
+by family                   & 84.4 & 42.4 & 14.2 & 0.502 & PERIODICITY \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent $D(2)$ ranges $42.4$--$61.2$ points across the five rules -- the
+magnitude of the recovered effect is genuinely rule-dependent -- but all five
+land on PERIODICITY. Two caveats a reader should have that the range alone
+does not convey. First, ``by family'' is not an independent computation: in
+this panel every architecture family contributes exactly one checkpoint
+(Llasa-1B$\to$Llasa, Qwen3-TTS-0.6B$\to$Qwen3-TTS, XTTS-v2$\to$XTTS), so its
+numbers reproduce the ordered-scan row exactly rather than triangulating it;
+the row is included because the JSON stores it as a distinct verdict, but it
+should not be read as a fifth independent method -- there are four. Second,
+the headline scan rule's pooled ratio, $0.502$, clears the $0.50$
+PERIODICITY threshold by $0.002$: per checkpoint the scan-rule ratio is
+$0.426$ (Llasa-1B), $0.630$ (Qwen3-TTS-0.6B) and $0.430$ (XTTS-v2) -- two of
+three checkpoints individually fall \emph{below} $0.50$ under this rule, and
+the pooled call is carried by Qwen3-TTS-0.6B. Under both recount-based rules
+(unbounded, strict) every checkpoint individually clears $0.50$
+comfortably ($0.65$--$0.81$), so the qualitative call is not fragile, but the
+margin on the rule the main text quotes as its headline is thin and should
+be read as such rather than as $0.502$ implies at a glance.
+
+\subsection{A caution on the bootstrap interval}
+
+\texttt{period\_ladder.json}'s \texttt{bootstrap} block is a cluster
+bootstrap ($4000$ replicates, resampling (template, $k$) cells) computed on
+the \emph{strict conjunction} rule (\texttt{exact\_both}), not the ordered
+scan:
+
+\begin{center}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+quantity & point (strict conjunction) & 95\% CI \\
+\midrule
+$D(1)$ & 82.9 pts & [75.0, 90.2] pts \\
+$D(2)$ & 61.2 pts & [48.3, 72.9] pts \\
+$D(2)/D(1)$ & 0.738 & [0.633, 0.824] \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent The point estimate is inside its own interval only when read this
+way. The ordered-scan headline reported in the main text and above, $D(2)=42.4$
+points, is \emph{not} the quantity this interval was built on, and $42.4$
+falls outside $[48.3,72.9]$ -- below its lower bound. Quoting the bootstrap
+interval beside the scan-rule point estimate would therefore make the
+headline number look like it misses its own confidence interval, when in fact
+the two are answers to differently-defined statistics computed on the same
+data. This is not a contradiction in the result; it is a labelling hazard in
+how the JSON is organised, and the read requested for this section -- do not
+pair \texttt{bootstrap} with the ordered-scan $D(2)=42.4$ -- is correct
+and is exactly what the main text does instead by quoting the across-rule
+range ($42.4$--$61.2$) rather than this interval (\texttt{analysis/make\_numbers.py},
+the \texttt{PerDTwoLo}/\texttt{PerDTwoHi} block, records the same reasoning
+in a comment predating this section).
+
+\subsection{$p=2$ by rotation}
+
+A single-rotation design would have let the decisive cell's answer depend on
+which two words happened to be picked. Pooled over the four rotations of the
+eight-word pool, the spread across rotations is the size of that confound:
+
+\begin{center}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+checkpoint & rot.\ 0 & rot.\ 1 & rot.\ 2 & rot.\ 3 & range \\
+\midrule
+Llasa-1B         & 69.7 & 55.6 & 42.9 & 51.4 & 26.8 \\
+Qwen3-TTS-0.6B   & 24.4 & 48.9 & 38.6 & 53.3 & 28.9 \\
+XTTS-v2          & 57.8 & 55.6 & 53.3 & 40.0 & 17.8 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent The within-checkpoint range ($17.8$--$28.9$ points) is comparable
+to or larger than the pooled $D(2)$ itself ($42.4$ points, headline rule):
+a $p=2$ arm built on any single rotation could have read anywhere from
+roughly $25\%$ to $70\%$ exact depending on which pair of words it happened
+to use. Pooling over all four rotations, as the design does, is what makes
+the $p=2$ cell interpretable at all.
+
+\subsection{Replication of the pre-existing arms}
+
+The $p=1$, $p=8$ and $p=k$ rungs are character-identical re-renders of the
+published \texttt{wr\_*}, \texttt{ct\_*} and \texttt{ap\_*} items on the same
+seeds -- a check that today's population is the same population, not a new
+pipeline:
+
+\begin{center}
+\begin{tabular}{@{}llrrrrr@{}}
+\toprule
+checkpoint & arm & new & published & $\Delta$ & $n_{\text{new}}$ & $n_{\text{pub}}$ \\
+\midrule
+Llasa-1B         & $p{=}1$ &  3.6 &  6.5 & $-2.9$ & 28 & 31 \\
+Llasa-1B         & $p{=}8$ & 92.5 & 89.7 & $+2.8$ & 40 & 39 \\
+Llasa-1B         & $p{=}k$ & 75.0 & 73.3 & $+1.7$ & 44 & 45 \\
+Qwen3-TTS-0.6B   & $p{=}1$ &  6.8 &  6.8 &  0.0   & 44 & 44 \\
+Qwen3-TTS-0.6B   & $p{=}8$ &100.0 &100.0 &  0.0   & 45 & 45 \\
+Qwen3-TTS-0.6B   & $p{=}k$ & 86.7 & 86.7 &  0.0   & 45 & 45 \\
+XTTS-v2          & $p{=}1$ & 11.1 & 11.1 &  0.0   & 45 & 45 \\
+XTTS-v2          & $p{=}8$ & 82.2 & 82.2 &  0.0   & 45 & 45 \\
+XTTS-v2          & $p{=}k$ & 57.8 & 57.8 &  0.0   & 45 & 45 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent Six of the nine rows reproduce the published value to the decimal
+stored in the JSON, exactly $0.0$. The other three -- all Llasa-1B, the
+smallest-$n$ checkpoint here ($n=28$--$44$) -- do not: $-2.9$, $+2.8$ and
+$+1.7$ points, the worst being $p{=}1$ at $n_{\text{new}}=28$ against
+$n_{\text{pub}}=31$. \texttt{period\_ladder.py}'s own docstring for this
+check does not claim exact reproduction (``not expected to be identical --
+generation is sampled''); it only flags a \emph{large} disagreement as
+evidence of a changed pipeline, and $2.9$ points on $n\approx30$ is well
+inside sampling noise for a Bernoulli rate at that $n$. The replication
+therefore supports what it is meant to support -- the ladder's rungs are
+commensurable with the published arms -- but ``deltas of $0.000$'' describes
+two of the three checkpoints, not all three, and should not be quoted as a
+blanket property of this check.
+
+\subsection{The disambiguation arm}
+\label{sec:s28-dis}
+
+The mechanistic account this arm was built to test is the paper's own, not a
+straw alternative: after contraction, attention dilution, a stop-head/duration
+account and a causal rank-1 patch on the count coordinate were each tested to
+a conclusion (Sections~\ref{sec:s8}--\ref{sec:s26}), the reading that survived
+was that \emph{the decoder cannot individuate identical spans} -- the count is
+represented and stays decodable, but the generation policy runs on local
+context, and token-identical neighbours give it nothing to advance against.
+\texttt{make\_stimuli\_disambig.py}'s docstring states this account and the
+falsification thresholds before any disambiguator audio existed
+(\texttt{R}$\ge0.50\to$ SUPPORTED, $\le0.15\to$ FALSIFIED). The experiment
+was run to test that account, not to defend it.
+
+Exact rate by variant (period $1$ throughout, $k\in\{16,24,32\}$; Qwen3-TTS-0.6B
+and XTTS-v2 only, per the scope note above):
+
+\begin{center}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+checkpoint & bare & comma & stop & and \\
+\midrule
+Qwen3-TTS-0.6B  & 6.8  & 6.8  &  9.8 & 15.6 \\
+XTTS-v2         & 11.1 & 8.9  & 13.6 & 11.1 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent Recovered fraction $R=(E(\text{dis})-E(\text{bare}))/(E(8)-E(\text{bare}))$,
+against each checkpoint's own period-ladder $E(8)$ ceiling ($100.0\%$ for
+Qwen3-TTS-0.6B, $82.2\%$ for XTTS-v2):
+
+\begin{center}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+checkpoint & $R_{\text{comma}}$ & $R_{\text{stop}}$ & $R_{\text{and}}$ \\
+\midrule
+Qwen3-TTS-0.6B & $+0.000$ & $+0.031$ & $+0.094$ \\
+XTTS-v2        & $-0.031$ & $+0.036$ & $+0.000$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent Mean $R$ over the length-matched cells (\texttt{comma}, \texttt{stop}):
+$R_{\text{matched}}=0.009$, i.e.\ $0.9\%$ of the deficit recovered
+(\texttt{R\_matched} in the JSON; the main text's \texttt{\textbackslash DisR}
+macro, $0.9$, reads the same field). $R_{\text{and}}=0.047$ ($4.7\%$), reported beside it and never
+averaged in, since \texttt{and} is not length-matched. Both are far under the
+$0.15$ falsification bar. \textbf{Verdict: INDIVIDUATION FALSIFIED}
+(\texttt{disambiguation.json}, \texttt{verdict} field, verbatim). The ordering
+prediction the account also made -- \texttt{stop}$\ge$\texttt{comma} -- holds
+(\texttt{ordering\_as\_predicted: true}), but a correctly-ordered near-zero
+recovery is not the confirmation the account needed; per its own
+pre-committed rule, no mechanism section is written on this result.
+
+The confound the design handles: \texttt{comma} and \texttt{stop} add
+punctuation, which changes character count and spoken duration without
+changing word count, so the scoring target stays the repeated content word
+and its required count throughout:
+
+\begin{center}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+variant & words & chars & duration (s) \\
+\midrule
+bare  & 31.8 & 170.6 & 11.65 \\
+comma & 31.8 & 194.3 & 13.11 \\
+stop  & 31.6 & 191.6 & 13.42 \\
+and   & 54.8 & 263.0 & 16.23 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent \texttt{bare}, \texttt{comma} and \texttt{stop} hold word count
+fixed to within $0.2$ words while duration shifts by $1.5$--$1.8$s from
+inserted pauses -- exactly the length-matched, duration-varying design the
+account requires. \texttt{and} nearly doubles the word count ($k-1$ extra
+tokens) and is the one variant a text front-end cannot silently normalise
+away; its small positive $R$ is reported as conservative rather than
+confirmatory, since added length is independently known to hurt counting.
+
+\subsection{Hygiene and audits}
+
+\textbf{Front-end check} (\texttt{disambiguation.json}): $0.0\%$ of
+\texttt{comma}, \texttt{stop} and \texttt{and} waveforms are byte-identical to
+their \texttt{bare} twin, at $n=88$, $84$ and $89$ compared cells
+respectively. No text front-end silently stripped the disambiguator, so no
+cell is excluded as a pipeline null (\texttt{disambiguation.json} carries no
+\texttt{identical\_cells} key, meaning the dead-cell set was empty) and all
+$353$ scored rows are model measurements.
+
+\textbf{Judge audit} (\texttt{disambiguation.json}, target-word delivery --
+does the counted word come back in the transcript at all, independent of
+count): \texttt{bare} $100.0\%$ ($n{=}89$), \texttt{comma} $100.0\%$
+($n{=}89$), \texttt{stop} $100.0\%$ ($n{=}85$), \texttt{and} $93.3\%$
+($n{=}90$). Spread across arms is $6.7$ points
+(\texttt{judge\_delivery\_spread}), under the script's own $10$-point warning
+threshold -- the recovered-fraction numbers above are not an artefact of the
+judge reading some arms' target word less often than others.
+
+\textbf{Per-arm hygiene} (\texttt{period\_ladder.json}, cap hits excluded from
+every table above):
+
+\begin{center}
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+arm & $n_{\text{kept}}$ & cap\% & words & chars & dur.\ (s) & degen.\% \\
+\midrule
+$p{=}1$ & 117 & 11.4 & 31.8 & 170.3 & 13.79 & 0.0 \\
+$p{=}2$ & 489 &  8.8 & 31.6 & 187.8 & 16.10 & 0.0 \\
+$p{=}4$ & 264 &  2.2 & 31.7 & 188.6 & 16.08 & 0.0 \\
+$p{=}8$ & 130 &  2.3 & 31.8 & 188.8 & 15.55 & 0.0 \\
+$p{=}k$ & 134 &  0.7 & 31.7 & 214.9 & 16.93 & 0.0 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent Cap rate falls steadily from $11.4\%$ at $p{=}1$ to $0.7\%$ at
+$p{=}k$, matching the pre-committed hygiene reasoning: the $p=1$ arm loops
+and hits the generation-length budget far more often than the higher-period
+arms, so excluding cap hits (as every table above does) removes more of
+$p=1$'s worst items than any other arm's -- which works against, not for, a
+finding that the deficit is largest at $p=1$. Word count and duration are
+flat across $p\in\{1,2,4,8\}$ (within $0.2$ words, within $0.6$s of one
+another); character count and duration rise at $p=k$ ($214.9$ chars,
+$16.93$s) because the $146$-word extension pool skews toward longer words,
+consistent with its already-flagged vocabulary caveat. Degenerate-output rate
+is $0.0\%$ at every arm: none of the differences above are outputs the judge
+failed to score at all.
+
 \end{document}
