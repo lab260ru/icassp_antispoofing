@@ -1,0 +1,61 @@
+row_id,clip,model,arm,family,k,k_band,item_id,seed,outcome,target_word,ctc_count,requested
+L001,clips/xtts2__wr_blue_t4_k06__s0.opus,xtts2,repeated,word_rep,6,mid,wr_blue_t4_k06,0,undercount,blue,5,6
+L002,clips/xtts2__ct_far_t3_k16__s0.opus,xtts2,control,control_word,16,high,ct_far_t3_k16,0,miscount,deep / fast / long / wide / high / low / near / past / deep / fast / long / wide / high / low / near / past,16,16
+L003,clips/xtts2__ct_blue_t4_k16__s1.opus,xtts2,control,control_word,16,high,ct_blue_t4_k16,1,truncation,green / bright / pale / dim / warm / cold / sharp / soft / green / bright / pale / dim / warm / cold / sharp / soft,16,16
+L004,clips/qwen06b__wr_far_t3_k12__s1.opus,qwen06b,repeated,word_rep,12,mid,wr_far_t3_k12,1,loop,far,29,12
+L005,clips/llasa3b__ct_really_t6_k24__s1.opus,llasa3b,control,control_word,24,high,ct_really_t6_k24,1,miscount,truly / quite / very / rather / deeply / clearly / plainly / surely / truly / quite / very / rather / deeply / clearly / plainly / surely / truly / quite / very / rather / deeply / clearly / plainly / surely,24,24
+L006,clips/llasa3b__wr_blue_t4_k01__s0.opus,llasa3b,repeated,word_rep,1,low,wr_blue_t4_k01,0,undercount,blue,0,1
+L007,clips/llasa1b__ct_blue_t4_k06__s0.opus,llasa1b,control,control_word,6,mid,ct_blue_t4_k06,0,loop,green / bright / pale / dim / warm / cold,0,6
+L008,clips/qwen17b__ct_blue_t4_k06__s0.opus,qwen17b,control,control_word,6,mid,ct_blue_t4_k06,0,correct,green / bright / pale / dim / warm / cold,6,6
+L009,clips/llasa3b__ct_blue_t4_k08__s0.opus,llasa3b,control,control_word,8,mid,ct_blue_t4_k08,0,correct,green / bright / pale / dim / warm / cold / sharp / soft,8,8
+L010,clips/qwen17b__ct_no_t2_k04__s2.opus,qwen17b,control,control_word,4,low,ct_no_t2_k04,2,undercount,yes / maybe / sure / fine,3,4
+L011,clips/llasa8b__ct_blue_t4_k06__s1.opus,llasa8b,control,control_word,6,mid,ct_blue_t4_k06,1,undercount,green / bright / pale / dim / warm / cold,0,6
+L012,clips/llasa1b__wr_blue_t4_k01__s0.opus,llasa1b,repeated,word_rep,1,low,wr_blue_t4_k01,0,truncation,blue,0,1
+L013,clips/xtts2__wr_blue_t4_k04__s0.opus,xtts2,repeated,word_rep,4,low,wr_blue_t4_k04,0,undercount,blue,3,4
+L014,clips/qwen06b__ct_far_t3_k03__s1.opus,qwen06b,control,control_word,3,low,ct_far_t3_k03,1,undercount,deep / fast / long,2,3
+L015,clips/qwen06b__wr_blue_t4_k16__s0.opus,qwen06b,repeated,word_rep,16,high,wr_blue_t4_k16,0,undercount,blue,13,16
+L016,clips/llasa3b__wr_far_t3_k16__s2.opus,llasa3b,repeated,word_rep,16,high,wr_far_t3_k16,2,undercount,far,12,16
+L017,clips/qwen06b__ct_blue_t4_k02__s0.opus,qwen06b,control,control_word,2,low,ct_blue_t4_k02,0,correct,green / bright,2,2
+L018,clips/llasa3b__ct_no_t2_k12__s1.opus,llasa3b,control,control_word,12,mid,ct_no_t2_k12,1,loop,yes / maybe / sure / fine / okay / well / right / hmm / yes / maybe / sure / fine,6,12
+L019,clips/xtts2__ct_blue_t4_k16__s0.opus,xtts2,control,control_word,16,high,ct_blue_t4_k16,0,correct,green / bright / pale / dim / warm / cold / sharp / soft / green / bright / pale / dim / warm / cold / sharp / soft,16,16
+L020,clips/llasa3b__ct_blue_t4_k03__s0.opus,llasa3b,control,control_word,3,low,ct_blue_t4_k03,0,correct,green / bright / pale,3,3
+L021,clips/llasa8b__ct_far_t3_k02__s0.opus,llasa8b,control,control_word,2,low,ct_far_t3_k02,0,correct,deep / fast,2,2
+L022,clips/llasa8b__wr_blue_t4_k01__s1.opus,llasa8b,repeated,word_rep,1,low,wr_blue_t4_k01,1,undercount,blue,0,1
+L023,clips/qwen06b__wr_very_t1_k12__s1.opus,qwen06b,repeated,word_rep,12,mid,wr_very_t1_k12,1,miscount,very,12,12
+L024,clips/qwen17b__wr_blue_t4_k06__s0.opus,qwen17b,repeated,word_rep,6,mid,wr_blue_t4_k06,0,correct,blue,6,6
+L025,clips/xtts2__wr_far_t3_k06__s2.opus,xtts2,repeated,word_rep,6,mid,wr_far_t3_k06,2,correct,far,6,6
+L026,clips/llasa3b__wr_blue_t4_k06__s0.opus,llasa3b,repeated,word_rep,6,mid,wr_blue_t4_k06,0,truncation,blue,1,6
+L027,clips/llasa1b__wr_blue_t4_k16__s2.opus,llasa1b,repeated,word_rep,16,high,wr_blue_t4_k16,2,loop,blue,7,16
+L028,clips/llasa3b__ct_blue_t4_k16__s1.opus,llasa3b,control,control_word,16,high,ct_blue_t4_k16,1,truncation,green / bright / pale / dim / warm / cold / sharp / soft / green / bright / pale / dim / warm / cold / sharp / soft,16,16
+L029,clips/llasa3b__ct_no_t2_k16__s0.opus,llasa3b,control,control_word,16,high,ct_no_t2_k16,0,loop,yes / maybe / sure / fine / okay / well / right / hmm / yes / maybe / sure / fine / okay / well / right / hmm,6,16
+L030,clips/qwen17b__wr_far_t3_k16__s0.opus,qwen17b,repeated,word_rep,16,high,wr_far_t3_k16,0,correct,far,16,16
+L031,clips/llasa8b__ct_blue_t4_k03__s1.opus,llasa8b,control,control_word,3,low,ct_blue_t4_k03,1,truncation,green / bright / pale,1,3
+L032,clips/llasa1b__ct_blue_t4_k16__s1.opus,llasa1b,control,control_word,16,high,ct_blue_t4_k16,1,loop,green / bright / pale / dim / warm / cold / sharp / soft / green / bright / pale / dim / warm / cold / sharp / soft,8,16
+L033,clips/xtts2__wr_blue_t4_k01__s0.opus,xtts2,repeated,word_rep,1,low,wr_blue_t4_k01,0,correct,blue,1,1
+L034,clips/llasa3b__wr_far_t3_k03__s2.opus,llasa3b,repeated,word_rep,3,low,wr_far_t3_k03,2,loop,far,0,3
+L035,clips/llasa3b__wr_really_t6_k04__s2.opus,llasa3b,repeated,word_rep,4,low,wr_really_t6_k04,2,miscount,really,4,4
+L036,clips/llasa1b__wr_blue_t4_k06__s0.opus,llasa1b,repeated,word_rep,6,mid,wr_blue_t4_k06,0,truncation,blue,1,6
+L037,clips/llasa8b__wr_far_t3_k12__s1.opus,llasa8b,repeated,word_rep,12,mid,wr_far_t3_k12,1,loop,far,40,12
+L038,clips/llasa3b__wr_no_t2_k08__s1.opus,llasa3b,repeated,word_rep,8,mid,wr_no_t2_k08,1,overcount,no,15,8
+L039,clips/qwen17b__wr_very_t1_k24__s2.opus,qwen17b,repeated,word_rep,24,high,wr_very_t1_k24,2,loop,very,33,24
+L040,clips/qwen06b__wr_quick_t5_k04__s1.opus,qwen06b,repeated,word_rep,4,low,wr_quick_t5_k04,1,undercount,quick,3,4
+L041,clips/llasa1b__wr_blue_t4_k16__s0.opus,llasa1b,repeated,word_rep,16,high,wr_blue_t4_k16,0,overcount,blue,29,16
+L042,clips/qwen17b__ct_blue_t4_k16__s0.opus,qwen17b,control,control_word,16,high,ct_blue_t4_k16,0,correct,green / bright / pale / dim / warm / cold / sharp / soft / green / bright / pale / dim / warm / cold / sharp / soft,16,16
+L043,clips/qwen06b__ct_blue_t4_k08__s0.opus,qwen06b,control,control_word,8,mid,ct_blue_t4_k08,0,truncation,green / bright / pale / dim / warm / cold / sharp / soft,8,8
+L044,clips/xtts2__ct_no_t2_k04__s0.opus,xtts2,control,control_word,4,low,ct_no_t2_k04,0,undercount,yes / maybe / sure / fine,3,4
+L045,clips/llasa3b__ct_no_t2_k04__s0.opus,llasa3b,control,control_word,4,low,ct_no_t2_k04,0,truncation,yes / maybe / sure / fine,3,4
+L046,clips/qwen17b__wr_blue_t4_k16__s0.opus,qwen17b,repeated,word_rep,16,high,wr_blue_t4_k16,0,overcount,blue,19,16
+L047,clips/llasa8b__ct_blue_t4_k16__s0.opus,llasa8b,control,control_word,16,high,ct_blue_t4_k16,0,correct,green / bright / pale / dim / warm / cold / sharp / soft / green / bright / pale / dim / warm / cold / sharp / soft,16,16
+L048,clips/qwen17b__ct_blue_t4_k02__s0.opus,qwen17b,control,control_word,2,low,ct_blue_t4_k02,0,correct,green / bright,2,2
+L049,clips/xtts2__wr_blue_t4_k08__s2.opus,xtts2,repeated,word_rep,8,mid,wr_blue_t4_k08,2,truncation,blue,6,8
+L050,clips/xtts2__wr_blue_t4_k16__s1.opus,xtts2,repeated,word_rep,16,high,wr_blue_t4_k16,1,undercount,blue,12,16
+L051,clips/llasa1b__ct_blue_t4_k16__s0.opus,llasa1b,control,control_word,16,high,ct_blue_t4_k16,0,truncation,green / bright / pale / dim / warm / cold / sharp / soft / green / bright / pale / dim / warm / cold / sharp / soft,16,16
+L052,clips/llasa1b__ct_blue_t4_k03__s2.opus,llasa1b,control,control_word,3,low,ct_blue_t4_k03,2,undercount,green / bright / pale,2,3
+L053,clips/qwen06b__wr_really_t6_k24__s2.opus,qwen06b,repeated,word_rep,24,high,wr_really_t6_k24,2,loop,really,241,24
+L054,clips/xtts2__ct_far_t3_k12__s2.opus,xtts2,control,control_word,12,mid,ct_far_t3_k12,2,miscount,deep / fast / long / wide / high / low / near / past / deep / fast / long / wide,12,12
+L055,clips/qwen06b__wr_very_t1_k24__s1.opus,qwen06b,repeated,word_rep,24,high,wr_very_t1_k24,1,correct,very,24,24
+L056,clips/llasa1b__wr_far_t3_k01__s0.opus,llasa1b,repeated,word_rep,1,low,wr_far_t3_k01,0,correct,far,1,1
+L057,clips/llasa3b__ct_blue_t4_k12__s0.opus,llasa3b,control,control_word,12,mid,ct_blue_t4_k12,0,truncation,green / bright / pale / dim / warm / cold / sharp / soft / green / bright / pale / dim,12,12
+L058,clips/llasa8b__ct_blue_t4_k08__s0.opus,llasa8b,control,control_word,8,mid,ct_blue_t4_k08,0,correct,green / bright / pale / dim / warm / cold / sharp / soft,8,8
+L059,clips/llasa1b__wr_blue_t4_k01__s1.opus,llasa1b,repeated,word_rep,1,low,wr_blue_t4_k01,1,undercount,blue,0,1
+L060,clips/llasa3b__ct_blue_t4_k06__s1.opus,llasa3b,control,control_word,6,mid,ct_blue_t4_k06,1,undercount,green / bright / pale / dim / warm / cold,0,6
