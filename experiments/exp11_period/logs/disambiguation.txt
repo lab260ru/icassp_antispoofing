@@ -1,0 +1,37 @@
+population 540 -> 465 (dropped: degenerate=7, cap_hits=68, templates=t2)
+checkpoints: llasa1b, qwen06b, xtts2   n=465
+
+--- front-end check: is the disambiguated audio the bare audio? ---
+  comma  identical to bare in   0.0% of 107 cells
+  stop   identical to bare in   0.0% of 100 cells
+  and    identical to bare in   0.0% of 111 cells
+
+--- judge audit: does the target word come back at all? ---
+  bare   target delivered in  99.1% of  117 generations
+  comma  target delivered in  96.6% of  116 generations
+  stop   target delivered in  99.1% of  111 generations
+  and    target delivered in  92.6% of  121 generations
+
+exact rate by disambiguator (period 1 throughout; k = 16, 24, 32)
+  checkpoint    bare   comma    stop     and     (n per cell)
+  llasa1b        3.6     0.0     3.8     6.5     (28,27,26,31)
+  qwen06b        6.8     6.8     9.8    15.6     (44,44,41,45)
+  xtts2         11.1     8.9    13.6    11.1     (45,45,44,45)
+  MEAN           7.2     5.2     9.1    11.0
+
+recovered fraction R = (E(dis) - E(bare)) / (E(8) - E(bare))
+  checkpoint    E(8)  E(bare) R[comma]  R[stop]  R[and]
+  llasa1b      92.5%     3.6% -0.040  +0.003  +0.032
+  qwen06b     100.0%     6.8% +0.000  +0.032  +0.094
+  xtts2        82.2%    11.1% -0.031  +0.036  +0.000
+
+  mean R over the length-matched arms (comma, stop): -0.000  ->  INDIVIDUATION FALSIFIED
+  `and` (not length-matched, k-1 extra words, confound points down): R = +0.042
+  ordering stop >= comma: yes
+
+--- per-arm length and duration ---
+  bare    31.8 words   170.3 chars   13.79 s
+  comma   31.7 words   193.0 chars   14.74 s
+  stop    31.5 words   191.7 chars   14.83 s
+  and     54.5 words   260.8 chars   17.36 s
+wrote /home/kirill/icassp_antispoofing/data/results/disambiguation.json

@@ -46,7 +46,7 @@ from analysis.equivalence import (  # noqa: E402
     boot_dist, boot_dist_cluster, equivalence, reps_at,
 )
 from analysis.causal_count_second import (  # noqa: E402
-    CONFIG, DATA_ROOT, PUBLISHED_LLASA1B, load_stimuli,
+    CONFIG, DATA_ROOT, PUBLISHED_LLASA1B, RIDGE_ALPHAS, load_stimuli,
 )
 from src.common.score_counts import count_occurrences, count_units, normalise  # noqa: E402
 
@@ -116,13 +116,30 @@ def pct(xs: list[bool]) -> float:
 # ---------------------------------------------------------------- arm A
 
 
-def analyse_patch(model: str, rows: list[dict]) -> dict:
+def analyse_patch(model: str, rows: list[dict], pair: str = "baseline") -> dict:
+    """Score one rank-1 patch arm.
+
+    `pair` selects the reference a patched cell is compared against, which is
+    the one thing the two protocols disagree about. Under the decode-time
+    protocol the reference is the item's free baseline at the same seed; under
+    the published resume protocol it is the resume reference at the same
+    (item, seed, window). Everything downstream is identical.
+    """
     cfg = CONFIG[model]
     P, central = cfg["patch_pos"], cfg["central_layer"]
     central_cell = f"crossk|L{central}|P{P}"
-    out: dict = dict(model=model, n_rows=len(rows), central_cell=central_cell)
+    out: dict = dict(model=model, n_rows=len(rows), central_cell=central_cell,
+                     protocol=("decode-time, paired against the free baseline"
+                               if pair == "baseline" else
+                               "published resume, paired against the resume "
+                               "reference"))
 
-    ref = {(r["recv_item"], r["seed"]): r for r in rows if r["kind"] == "baseline"}
+    if pair == "resume":
+        ref = {(r["recv_item"], r["seed"]): r for r in rows
+               if r["kind"] == "resume" and r.get("patch_pos") == P}
+    else:
+        ref = {(r["recv_item"], r["seed"]): r for r in rows
+               if r["kind"] == "baseline"}
     base = defaultdict(list)
     for r in rows:
         if r["kind"] == "baseline":
@@ -418,17 +435,33 @@ def main() -> None:
         entry: dict = {}
         pa = load_rows(f"pq_{m}", stim)
         if pa:
-            entry["rank1_patch"] = analyse_patch(m, pa)
+            entry["rank1_patch"] = analyse_patch(m, pa, pair="baseline")
+        rs = load_rows(f"rs_{m}", stim)
+        if rs:
+            entry["rank1_patch_published_protocol"] = analyse_patch(
+                m, rs, pair="resume")
         rr = load_rows(f"rq_{m}", stim)
-        if rr:
+        # A sweep that was stopped part-way is not a null and not an
+        # inconclusive result -- it is an arm that did not run, and scoring its
+        # first few rows would manufacture a verdict out of a truncation. The
+        # Qwen-1.7B sweep was deliberately killed to free the card for the
+        # protocol-clean Llasa-1B resume run, and is reported as not run.
+        MIN_SWEEP_ROWS = 4 * len(RIDGE_ALPHAS)
+        if len(rr) >= MIN_SWEEP_ROWS:
             entry["ridge_sweep"] = analyse_sweep(m, rr)
+        elif rr:
+            entry["ridge_sweep_not_run"] = dict(
+                n_rows=len(rr), needed=MIN_SWEEP_ROWS,
+                note="arm stopped part-way; not scored")
         if entry:
             res["checkpoints"][m] = entry
 
     for m, e in res["checkpoints"].items():
-        p = e.get("rank1_patch")
         print(f"\n=== {m} ===")
-        if p:
+        for tag in ("rank1_patch", "rank1_patch_published_protocol"):
+          p = e.get(tag)
+          if p:
+            print(f"  -- {tag}: {p['protocol']}")
             print(f"  rank-1 patch: n_rows={p['n_rows']} "
                   f"no-op {p['n_noop']}/{p['n_noop']} identical="
                   f"{p['noop_all_identical']} max|delta|={p['noop_max_abs_delta']:.3g}")
@@ -473,6 +506,36 @@ def main() -> None:
                   f"rep/ctl effect ratio "
                   f"{s['effect_ratio_rep_over_ctl']:.2f}")
             print(f"    VERDICT: {s['verdict']}")
+
+    # ---- the three Llasa-1B numbers, side by side and never one instead of
+    # another. A re-run that disagrees with a published one is a fact about the
+    # study; quoting the newer number as though it superseded the older is not
+    # an option this printout leaves open.
+    l1 = res["checkpoints"].get("llasa1b", {})
+    dt = l1.get("rank1_patch")
+    rs = l1.get("rank1_patch_published_protocol")
+    if dt or rs:
+        pub = PUBLISHED_LLASA1B
+        print("\n=== Llasa-1B, three measurements of the same cell ===")
+        print(f"  {'measurement':38s} {'n':>3s} {'median':>8s} {'bound':>8s} "
+              f"{'%transfer':>9s}  verdict")
+        print(f"  {'published (resume protocol)':38s} {pub['n']:3d} "
+              f"{pub['median']:+8.3f} {pub['bound']:8.3f} {9:9d}  readable null")
+        for tag, e in (("this run, resume protocol", rs),
+                       ("this run, decode-time protocol", dt)):
+            if not e:
+                continue
+            c = e["cells"].get(e["central_cell"], {})
+            q = e.get("equivalence") or {}
+            print(f"  {tag:38s} {c.get('n', 0):3d} "
+                  f"{c.get('median', float('nan')):+8.3f} "
+                  f"{q.get('bound', float('nan')):8.3f} "
+                  f"{100 * q.get('bound_as_fraction_of_transfer', float('nan')):9.0f}"
+                  f"  {e['verdict']}")
+        res["llasa1b_three_way"] = dict(
+            published=pub,
+            resume_protocol_this_run=(rs or {}).get("verdict"),
+            decode_time_protocol_this_run=(dt or {}).get("verdict"))
 
     Path(args.out).write_text(json.dumps(res, indent=1, default=str))
     print(f"\nwrote {args.out}")

@@ -1,12 +1,12 @@
 {
   "kept": 1134,
   "drop": {
-    "n_input": 1395,
+    "n_input": 1755,
     "ablations": 0,
-    "degenerate": 9,
+    "degenerate": 16,
     "bad_templates": 0,
-    "cap_hits": 73,
-    "n_output": 1313
+    "cap_hits": 140,
+    "n_output": 1599
   },
   "exact_by_period_scan": {
     "1": {
