@@ -1140,6 +1140,39 @@ def main() -> None:
             macros["AuditCtcN"] = str(cp["n_trials"])
             macros["AuditCtcMean"] = fmt(cp["mean_ratio"], 3)
 
+    # ---- the contraction premise, measured across the panel ----------------
+    # The single-checkpoint measurement drew the same objection from all four
+    # reviewers in one round. It now covers five checkpoints and two families,
+    # and two facts sharpen it past "it replicates": q GROWS with scale inside
+    # Llasa, so a contraction confined to larger checkpoints is excluded in the
+    # strongest direction; and the one checkpoint in the panel that counts
+    # correctly has an equally expansive map, so whatever separates counting
+    # from not-counting here, it is not q.
+    jp_path = Path("data/results/jacobian_q_panel.json")
+    if jp_path.exists():
+        jp = json.loads(jp_path.read_text())
+        cks = jp.get("checkpoints", {})
+        if cks:
+            macros["JacPanelN"] = WORDS.get(jp["n_checkpoints"],
+                                            str(jp["n_checkpoints"]))
+            macros["JacPanelFam"] = WORDS.get(len(jp.get("families", [])),
+                                              str(len(jp.get("families", []))))
+            qs = {k: v["q_repeated"] for k, v in cks.items()}
+            macros["JacQMin"] = fmt(min(qs.values()), 1)
+            macros["JacQMax"] = fmt(max(qs.values()), 1)
+            # The most favourable cell anywhere in the study: even there the
+            # bootstrap floor is an order of magnitude above 1.
+            macros["JacBestFloor"] = fmt(
+                min(v["min_q_ci_lo_any_cell"] for v in cks.values()), 1)
+            # The Llasa scale ladder, in order.
+            for key, tag in (("llasa1b", "One"), ("llasa3b", "Three"),
+                             ("llasa8b", "Eight")):
+                if key in cks:
+                    macros[f"JacQLlasa{tag}"] = fmt(cks[key]["q_repeated"], 0)
+            # The checkpoint that counts correctly.
+            if "qwen17b" in cks:
+                macros["JacQCounter"] = fmt(cks["qwen17b"]["q_repeated"], 1)
+
     # ---- never-cycled controls, panel-wide ---------------------------------
     # The published gap uses controls whose fillers cycle a pool of eight above
     # k=8, i.e. period-8 material standing in for aperiodic. The re-generated

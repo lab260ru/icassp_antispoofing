@@ -20,8 +20,8 @@ coordinate removes the damage (\CausalDegen{}\% degenerate, self-patch
 bitwise-identical \CausalNoop{}/\CausalNoop{}) and moves the count not at all
 ($\CausalShift{}$ log-count $[\CausalShiftLo{},\CausalShiftHi{}]$,
 $n=\CausalN{}$); steering along it gives no dose-response. On this checkpoint the count coordinate
-transplants cleanly and the decoder ignores it (S26). Both are single-checkpoint results
-on Llasa-1B: they refute the mechanism where tested, not panel-wide.
+transplants cleanly and the decoder ignores it (S26). The patch is a single-checkpoint
+result on Llasa-1B, where the Jacobian measurement now spans \JacPanelN{}.
 
 \noindent\textbf{Related work, and what the control decides.}
 Closest is representational collapse~\cite{barbero2024glasses}, where distinct
@@ -42,8 +42,8 @@ Periodicity and \emph{verbatim token identity} vary together here, so
 frequency}: $k$-fold repetition is far rarer in speech corpora than a matched
 distinct-word sentence, and an out-of-distribution account predicts the same
 dissociation. Inside the repeated arm count and text length are one variable, so
-a probe decoding $k$ may be decoding length. The duration story rests on one model per
-strategy, $q$ on one checkpoint, the panel on \NFamilies{} families; a Spanish
+a probe decoding $k$ may be decoding length. The duration story rests on one model per strategy,
+the causal patch on one checkpoint, the panel on \NFamilies{} families; a Spanish
 arm was unreportable, an exact-rate contrast needing a judge accurate enough to
 pin the control side near one (S27).
 Exclusions are rule-based and blind to arm and score, and the judge is

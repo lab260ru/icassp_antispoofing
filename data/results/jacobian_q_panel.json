@@ -1,0 +1,165 @@
+{
+  "checkpoints": {
+    "llasa1b": {
+      "family": "llasa",
+      "hf_id": "HKUSTAudio/Llasa-1B",
+      "n_layers": 16,
+      "n_pairs": 29,
+      "max_tokens": 2000,
+      "selftests": {
+        "S1": true,
+        "S2": true,
+        "S3": true
+      },
+      "q_repeated": 38.094364166259766,
+      "q_repeated_ci": [
+        32.877906799316406,
+        51.386993408203125
+      ],
+      "q_control": 31.837129592895508,
+      "q_control_ci": [
+        27.280763626098633,
+        39.8385009765625
+      ],
+      "paired_wilcoxon_p": 0.01678590476512909,
+      "paired_median_diff": 3.2464466094970703,
+      "frac_items_q_below_1_repeated": 0.0,
+      "frac_items_q_below_1_control": 0.0,
+      "min_q_ci_lo_any_cell": 3.503887176513672,
+      "both_arms_expansive": true,
+      "verdict": "PREMISE DEAD",
+      "source": "data/results/jacobian_q.json"
+    },
+    "llasa3b": {
+      "family": "llasa",
+      "hf_id": "HKUSTAudio/Llasa-3B",
+      "n_layers": 28,
+      "n_pairs": 26,
+      "max_tokens": 1100,
+      "selftests": {
+        "S1": true,
+        "S2": true,
+        "S3": true
+      },
+      "q_repeated": 118.83587265014648,
+      "q_repeated_ci": [
+        101.85054779052734,
+        156.51657104492188
+      ],
+      "q_control": 86.41668510437012,
+      "q_control_ci": [
+        77.1803970336914,
+        137.343656539917
+      ],
+      "paired_wilcoxon_p": 0.26870664954185486,
+      "paired_median_diff": 32.9921817779541,
+      "frac_items_q_below_1_repeated": 0.0,
+      "frac_items_q_below_1_control": 0.0,
+      "min_q_ci_lo_any_cell": 7.598518967628479,
+      "both_arms_expansive": true,
+      "verdict": "PREMISE DEAD",
+      "source": "data/results/jacobian_q_llasa3b.json"
+    },
+    "llasa8b": {
+      "family": "llasa",
+      "hf_id": "HKUSTAudio/Llasa-8B",
+      "n_layers": 32,
+      "n_pairs": 29,
+      "max_tokens": 700,
+      "selftests": {
+        "S1": true,
+        "S2": true,
+        "S3": true
+      },
+      "q_repeated": 347.70111083984375,
+      "q_repeated_ci": [
+        258.1273498535156,
+        393.5294418334961
+      ],
+      "q_control": 185.4423828125,
+      "q_control_ci": [
+        142.09771156311035,
+        236.51734924316406
+      ],
+      "paired_wilcoxon_p": 0.25600792095065117,
+      "paired_median_diff": 71.78701782226562,
+      "frac_items_q_below_1_repeated": 0.0,
+      "frac_items_q_below_1_control": 0.0,
+      "min_q_ci_lo_any_cell": 11.432954788208008,
+      "both_arms_expansive": true,
+      "verdict": "PREMISE DEAD",
+      "source": "data/results/jacobian_q_llasa8b.json"
+    },
+    "qwen06b": {
+      "family": "qwen",
+      "hf_id": "Qwen/Qwen3-TTS-12Hz-0.6B-Base",
+      "n_layers": 28,
+      "n_pairs": 44,
+      "max_tokens": 2000,
+      "selftests": {
+        "S1": true,
+        "S2": true,
+        "S4": true,
+        "S3": true
+      },
+      "q_repeated": 20.956521034240723,
+      "q_repeated_ci": [
+        19.744150161743164,
+        24.24022388458252
+      ],
+      "q_control": 21.920804977416992,
+      "q_control_ci": [
+        20.604345321655273,
+        23.219595909118652
+      ],
+      "paired_wilcoxon_p": 0.9309580952671013,
+      "paired_median_diff": 0.2792482376098633,
+      "frac_items_q_below_1_repeated": 0.0,
+      "frac_items_q_below_1_control": 0.0,
+      "min_q_ci_lo_any_cell": 3.345555067062378,
+      "both_arms_expansive": true,
+      "verdict": "PREMISE DEAD",
+      "source": "data/results/jacobian_q_qwen06b.json"
+    },
+    "qwen17b": {
+      "family": "qwen",
+      "hf_id": "Qwen/Qwen3-TTS-12Hz-1.7B-Base",
+      "n_layers": 28,
+      "n_pairs": 45,
+      "max_tokens": 2000,
+      "selftests": {
+        "S1": true,
+        "S2": true,
+        "S4": true,
+        "S3": true
+      },
+      "q_repeated": 24.65754508972168,
+      "q_repeated_ci": [
+        23.05645751953125,
+        25.719039916992188
+      ],
+      "q_control": 23.633493423461914,
+      "q_control_ci": [
+        21.3856258392334,
+        25.055566787719727
+      ],
+      "paired_wilcoxon_p": 0.17728841606088963,
+      "paired_median_diff": 1.4267959594726562,
+      "frac_items_q_below_1_repeated": 0.0,
+      "frac_items_q_below_1_control": 0.0,
+      "min_q_ci_lo_any_cell": 3.3520913124084473,
+      "both_arms_expansive": true,
+      "verdict": "PREMISE DEAD",
+      "source": "data/results/jacobian_q_qwen17b.json"
+    }
+  },
+  "n_checkpoints": 5,
+  "families": [
+    "llasa",
+    "qwen"
+  ],
+  "refutation_generalises": true,
+  "both_arms_expansive_everywhere": true,
+  "any_checkpoint_contracts_anywhere": false,
+  "answer": "the refutation generalises: every checkpoint measured, across 2 architecture families, has q far above 1 on BOTH the repeated and the length-matched control arm, so the contraction premise was never a live description of any of these decoders"
+}

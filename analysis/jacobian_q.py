@@ -1221,6 +1221,11 @@ def main() -> None:
                          "results file records per skipped anchor.")
     ap.add_argument("--selftest", action="store_true",
                     help="run gate 0 (the three self-tests) and exit")
+    ap.add_argument("--panel", nargs="+", default=[],
+                    help="combine per-checkpoint result JSONs into one panel "
+                         "answer: does the refutation generalise, and does the "
+                         "premise fail on both arms in each checkpoint. First "
+                         "argument is the output path. No GPU.")
     ap.add_argument("--resummarize", default="",
                     help="path to an existing results JSON: recompute the "
                          "summary block from its stored records and rewrite it, "
@@ -1230,6 +1235,61 @@ def main() -> None:
     if not args.out:
         args.out = str(REPO / ("data/results/jacobian_q.json" if args.model == "llasa1b"
                                else f"data/results/jacobian_q_{args.model}.json"))
+
+    if args.panel:
+        out_path, inputs = Path(args.panel[0]), args.panel[1:]
+        rows, both, any_contract = {}, [], []
+        for f in inputs:
+            r = json.loads(Path(f).read_text())
+            c, sm = r["config"], r["summary"]
+            h, pa = sm["headline"], sm["premise_by_arm"]
+            rows[c["model"]] = dict(
+                # `family` was added to the config after the llasa1b run; fall
+                # back to the registry rather than emitting a null that would
+                # break the panel's family count.
+                family=c.get("family") or BY_KEY[c["model"]].family,
+                hf_id=c["hf_id"], n_layers=c["n_layers"],
+                n_pairs=c["n_pairs"], max_tokens=c.get("max_tokens"),
+                selftests={k: bool(v.get("passed")) for k, v in r["selftests"].items()},
+                q_repeated=h["q_repeated"], q_repeated_ci=h["ci"],
+                q_control=h["q_control"], q_control_ci=h["control_ci"],
+                paired_wilcoxon_p=h["paired"].get("wilcoxon_p"),
+                paired_median_diff=h["paired"].get("median_diff"),
+                frac_items_q_below_1_repeated=sm["by_cell"]["tau|substack0"]["repeated"]["frac_below_1"],
+                frac_items_q_below_1_control=sm["by_cell"]["tau|substack0"]["control"]["frac_below_1"],
+                min_q_ci_lo_any_cell=min(pa["arms"]["repeated"]["min_ci_lo"],
+                                         pa["arms"]["control"]["min_ci_lo"]),
+                both_arms_expansive=pa["both_arms_expansive"],
+                verdict=h["verdict"], source=str(f))
+            both.append(pa["both_arms_expansive"])
+            any_contract.append(pa["arms"]["repeated"]["contracting_in_some_cell"]
+                                or pa["arms"]["control"]["contracting_in_some_cell"])
+        gen = bool(rows) and all(v["verdict"] == "PREMISE DEAD" for v in rows.values())
+        res = dict(
+            checkpoints=rows, n_checkpoints=len(rows),
+            families=sorted({v["family"] for v in rows.values()}),
+            refutation_generalises=gen,
+            both_arms_expansive_everywhere=bool(both and all(both)),
+            any_checkpoint_contracts_anywhere=bool(any(any_contract)),
+            answer=("the refutation generalises: every checkpoint measured, across "
+                    f"{len(sorted({v['family'] for v in rows.values()}))} architecture "
+                    "families, has q far above 1 on BOTH the repeated and the "
+                    "length-matched control arm, so the contraction premise was "
+                    "never a live description of any of these decoders"
+                    if gen and both and all(both) else
+                    "MIXED -- read the per-checkpoint table; at least one "
+                    "checkpoint does not refute the premise the same way"))
+        out_path.write_text(json.dumps(res, indent=2, default=lambda x: None))
+        print(f"{'checkpoint':>10s} {'fam':>6s} {'q repeated (95% CI)':>28s} "
+              f"{'q control (95% CI)':>28s} {'p':>7s} {'both arms':>10s}")
+        for m, v in rows.items():
+            print(f"{m:>10s} {v['family']:>6s} "
+                  f"{v['q_repeated']:9.2f} [{v['q_repeated_ci'][0]:7.2f},{v['q_repeated_ci'][1]:8.2f}] "
+                  f"{v['q_control']:9.2f} [{v['q_control_ci'][0]:7.2f},{v['q_control_ci'][1]:8.2f}] "
+                  f"{v['paired_wilcoxon_p']:7.3f} {str(v['both_arms_expansive']):>10s}")
+        print(f"\n{res['answer']}")
+        print(f"wrote {out_path}")
+        return
 
     if args.resummarize:
         path = Path(args.resummarize)
