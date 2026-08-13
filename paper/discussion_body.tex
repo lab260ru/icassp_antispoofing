@@ -36,10 +36,11 @@ bounds~\cite{li2025statetracking} bracketing it --- properties of the model,
 invariant to period; ours moves with it.
 
 \noindent\textbf{What the design does not separate, and other limits.}
-Periodicity is not separated from \emph{training-set frequency}: $k$-fold
-repetition is far rarer in speech corpora than a matched distinct-word sentence,
-and an out-of-distribution account predicts the same dissociation. Inside the
-repeated arm count and text length are one variable. The duration story rests on
+Periodicity is not separated from \emph{training-set frequency}, though the
+obvious form of it predicts the wrong arm: under an independent LM the
+\emph{control} is the less probable text in \NllIndCtlHigherPct{}\% of pairs
+(S8). Text likelihood is not corpus frequency, so it is weakened, not closed.
+Count and length covary inside the repeated arm. The duration story rests on
 one model per strategy, the causal patch on \CausalCkOk{} of \CausalCkAll{}
 checkpoints, the panel on \NFamilies{} families, and the Spanish arm was
 unreportable, needing a more accurate judge (S27). Exclusions are blind to the
