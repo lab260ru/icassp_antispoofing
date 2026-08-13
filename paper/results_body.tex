@@ -35,7 +35,7 @@ essentially exact; above it, repeated items are rendered with a median count
 error of \ErrRepCk{}\% per checkpoint against \ErrCtl{}\%
 $[\ErrCtlLo{},\ErrCtlHi{}]$ for controls ($n=\ErrCtlN{}$), at every $k$ to $32$
 and for every model. The contrast is sharpest in exactly-correct renderings:
-\ExactCtl{}\% for controls against \ExactRep{}\% for their twins.
+\ExactRep{}\% for repeated items against \ExactCtl{}\% for their controls.
 
 \emph{Our \NModels{} checkpoints are only \NFamilies{} architecture families},
 so we model the clustering rather than count checkpoints. By family the gap is
@@ -60,8 +60,8 @@ checkable rather than asserted; S16). That interval is wide, and the agreement
 closer than it entitles us to expect. Across \SpecN{} specifications
 spanning every forking choice we made --- exclusions, $k$ threshold, cycled
 against never-cycled controls, seed subset, aggregation and outcome definition
---- the gap runs \SpecLo{}--\SpecHi{} points and none reverses its
-sign. These are not independent tests and we correct across none of them: the
+--- the gap runs \SpecLo{}--\SpecHi{} points, median \SpecMed{}, and none
+reverses its sign. These are not independent tests and we correct across none of them: the
 curve is a robustness envelope over one comparison, not a family of hypotheses,
 and our claims rest on effect sizes, not $p$-values (S11).
 

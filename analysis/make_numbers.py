@@ -1001,6 +1001,12 @@ def main() -> None:
             macros["SpecN"] = str(allsp["n"])
             macros["SpecLo"] = fmt(er["min"], 1)
             macros["SpecHi"] = fmt(er["max"], 1)
+            # A reviewer pointed out that a min-max range alone cannot tell a
+            # reader whether the specifications cluster near the headline or
+            # whether the range is a couple of outliers. The median answers it
+            # in one number, and answers it in our favour, which is the reason
+            # to report it rather than a reason not to.
+            macros["SpecMed"] = fmt(er["median"], 1)
             macros["SpecNRev"] = str(allsp["n_negative"])
 
     # ---- the judge, re-run ------------------------------------------------
