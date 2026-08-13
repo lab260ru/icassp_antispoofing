@@ -1305,14 +1305,37 @@ def main() -> None:
             loto = q.get("V2_carrier_loto", {})
             if loto:
                 macros["PcCarrierLoto"] = fmt(min(loto.values()), 2)
+            # At what magnitude, if any, does SOME direction steer the output
+            # toward its donor? This guard has already earned its keep: it fired
+            # when the seed-1 power pass landed, because at n=18 the carrier
+            # direction does steer at alpha=16, where at n=9 nothing did. The
+            # paper's sentence was rewritten rather than re-macroed, which is
+            # what the raise below exists to force.
             fa = q.get("first_direction_appropriate_alpha", {})
-            # None at any alpha, for any direction. Assert rather than assume:
-            # if one ever steers, the paper's sentence is false.
-            if fa and any(v is not None for v in fa.values()):
+            steer = [v for v in fa.values() if v is not None]
+            if steer:
+                macros["PcSteerAlpha"] = fmt(min(steer), 0)
+            # The claim the paper actually makes is about the PUBLISHED
+            # magnitude, not about all magnitudes. If anything ever steers at
+            # alpha=1, that claim is false and no macro edit can save it.
+            if any(v is not None and v <= 1.0 for v in fa.values()):
                 raise SystemExit(
-                    "positive control: some direction is now direction-appropriate "
-                    f"({fa}); the discussion's claim is false and must be "
-                    "rewritten, not re-macroed")
+                    "positive control: a direction now steers at the published "
+                    f"magnitude ({fa}); the discussion's claim is false and must "
+                    "be rewritten, not re-macroed")
+            car = q.get("cells", {}).get("carrier|crosstemplate|a1", {})
+            if car.get("n"):
+                macros["PcCarrierN"] = str(car["n"])
+            # Llasa-8B is the checkpoint the reviewer's objection named, and it
+            # is the one where nothing is detectable at the published magnitude
+            # at all. Its ratio is quoted so the two checkpoints can be reported
+            # separately rather than pooled -- they genuinely differ.
+            l8 = cks.get("llasa8b", {})
+            c8 = l8.get("cells", {}).get("count|crossk|a1", {})
+            if c8.get("S1_over_floor") is not None:
+                macros["PcInertRatio"] = fmt(c8["S1_over_floor"], 2)
+            if l8.get("verdict", "").startswith("PATCH IS INERT"):
+                macros["PcInertCk"] = "Llasa-8B"
 
             # The paper quotes the BOUND, not the failed sign test, and the
             # distinction is not pedantic. At n=9 with ties dropped the carrier
@@ -1324,13 +1347,16 @@ def main() -> None:
             # a real measurement at any n, and it is the stronger statement
             # anyway: the write transfers at most this fraction of what a full
             # donor-to-receiver transfer along the same direction would.
-            for cell, tag in (("carrier|crosstemplate|a1", "PcCarrierBound"),
-                              ("carrier|crosstemplate|a16", "PcCarrierBoundMax"),
-                              ("count|crossk|a1", "PcCountBound")):
+            # Two decimals on the carrier bound: it is the smallest number the
+            # paper quotes, and at one decimal 1.46 and 1.54 both print as 1.5,
+            # which is a tenth of the quantity being bounded.
+            for cell, tag, nd in (("carrier|crosstemplate|a1", "PcCarrierBound", 2),
+                                  ("carrier|crosstemplate|a16", "PcCarrierBoundMax", 2),
+                                  ("count|crossk|a1", "PcCountBound", 1)):
                 c = q.get("cells", {}).get(cell, {})
                 if c.get("S4_bound_as_fraction_of_transfer") is not None:
                     macros[tag] = fmt(
-                        100 * c["S4_bound_as_fraction_of_transfer"], 1)
+                        100 * c["S4_bound_as_fraction_of_transfer"], nd)
 
         # The published arms against a pure re-roll, over every checkpoint that
         # has the comparison and every readout. The paper quotes the SMALLEST
