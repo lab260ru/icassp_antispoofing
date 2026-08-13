@@ -1201,6 +1201,12 @@ def main() -> None:
             # deficit survives" by a hair; the recount rules clear it on every
             # checkpoint. Both facts belong in the paper.
             macros["PerRatioScan"] = fmt(base["mean_ratio"], 3)
+            # The family-level ratio is the floor worth quoting: pooling Qwen's
+            # two checkpoints stops the family that clears the bar from counting
+            # twice, and it is where the margin over one half is thinnest.
+            fam = next((x for x in rules if "famil" in x["label"].lower()), None)
+            if fam:
+                macros["PerRatioFam"] = fmt(fam["mean_ratio"], 3)
             rec = [x for x in rules if "recount" in x["label"] or "strict" in x["label"]]
             if rec:
                 per = [v for x in rec for v in x["ratio_per_checkpoint"].values()]
