@@ -67,6 +67,53 @@ sys.exit(1 if bad else 0)
 PY
 [ $? -ne 0 ] && FAIL=1
 
+note "Every back-pointer from the supplement into the paper resolves"
+# The check above runs one way only: paper -> supplement. The other direction
+# went unchecked and rotted. The body was restructured when the theorem moved
+# out of it and periodicity became the headline, and eleven pointers in the
+# supplement still named sections from the old numbering -- Section 4.2 for the
+# dissociation, 4.3 for the capacity measurement, 4.4 for the negative result,
+# none of which exist. A reader following any of them lands somewhere else, and
+# nothing in the build complains, because LaTeX never sees these: they are
+# hand-typed numerals in one document naming sections in another.
+python3 - <<'PY'
+import re, pathlib, sys
+# \input must be expanded in place: results_body.tex is pulled in *inside*
+# Section 3, so concatenating the files in file order would attribute its
+# subsections to whatever section came last in main.tex.
+def expand(path):
+    out = []
+    for line in pathlib.Path(path).read_text().splitlines():
+        m = re.match(r'\s*\\input\{([^}]+)\}', line)
+        if m:
+            out.append(expand(f"paper/{m.group(1)}.tex"))
+        else:
+            out.append(line)
+    return "\n".join(out)
+body = expand('paper/main.tex')
+# Section numbers the built paper actually has: \section order, and \subsection
+# order within the section that contains them.
+sections, subs, sec_i, sub_i = [], set(), 0, 0
+for line in body.splitlines():
+    if line.startswith(r'\section{'):
+        sec_i += 1; sub_i = 0; sections.append(sec_i)
+    elif line.startswith(r'\subsection{'):
+        sub_i += 1; subs.add(f"{sec_i}.{sub_i}")
+have = {str(s) for s in sections} | subs
+supp = pathlib.Path('paper/supplementary/supp.tex').read_text()
+# Every LITERAL `Section~N` in the supplement is by construction a pointer into
+# the main paper: the supplement's own cross-references are all \ref{sec:...},
+# which LaTeX resolves and would error on. So no context heuristic is needed,
+# and none should be used -- an earlier version filtered on the phrase "main
+# paper" appearing nearby and silently checked 3 of the 14 pointers.
+cited = set(re.findall(r'Section~(\d+(?:\.\d+)?)', supp))
+bad = sorted(cited - have, key=lambda s: [int(x) for x in s.split('.')])
+print(f"  {'FAIL' if bad else 'OK  '} {len(cited)} back-pointers, paper has "
+      f"{sorted(have)}" + (f"; dangling: {bad}" if bad else ""))
+sys.exit(1 if bad else 0)
+PY
+[ $? -ne 0 ] && FAIL=1
+
 note "Released audio sample is present and matches its manifest"
 python3 - <<'PY'
 import csv, pathlib, sys

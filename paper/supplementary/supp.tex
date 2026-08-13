@@ -51,7 +51,7 @@ Repetition Hallucination in Autoregressive Text-to-Speech}
 self-contained. It reproduces the formal artifact in full, states precisely
 what it does and does not certify, documents the benchmark and measurement
 protocol down to the level a re-implementer needs, reports the negative
-result of Section~4.4 of the main paper in the detail it deserves, answers,
+negative result of the main paper's Section~4 in the detail it deserves, answers,
 with new measurements rather than argument, five alternative explanations
 for the main results raised across two rounds of review
 (Section~\ref{sec:s8}), and documents, in Section~\ref{sec:s9}, the audit
@@ -273,7 +273,10 @@ $\epsilon>0$; then there is a step count $N$ (a horizon) past which \emph{every
 pair} of repetition counts $m,n \ge N$ produces states within $\epsilon$ of
 each other. It is the formal counterpart of ``the states the decoder visits
 stop being mutually distinguishable,'' the empirical claim tested by the
-capacity-gain measurement in the main paper's Section~4.3.
+capacity-gain measurement, which is reported in
+Section~\ref{sec:s8-capacity} of this supplement rather than in the main paper:
+it was cut from the body in the revision that made periodicity the headline, and
+the pointer here went stale with it.
 
 The proof strategy: because $q<1$, $q^N \to 0$, so mathlib's
 \texttt{exists\_pow\_lt\_of\_lt\_one} supplies an $N$ with $q^N$ below any
@@ -1158,7 +1161,7 @@ same word count, with the $k$ copies of the target replaced by $k$
 skipped past any accidental collision with the target itself, so the target
 word is guaranteed never to appear in its own control). This is the
 construction underlying the paper's central dissociation test
-(Section~4.2 of the main paper, Figure~1(b)): the control holds carrier
+(Section~3.1 of the main paper, Figure~1(a)): the control holds carrier
 syntax and word count fixed while removing exactly one variable, periodicity,
 so that a difference in outcome between the repeated item and its control
 cannot be explained by sequence length, generation duration, or the amount of
@@ -1321,7 +1324,7 @@ otherwise slip through the duration test):
   implausible pacing'').
 \end{enumerate}
 
-The main paper's Section~4.3 describes this taxonomy at the six-way level a
+The main paper's Section~2 describes this taxonomy at the six-way level a
 figure caption can carry --
 $\{\texttt{correct}, \texttt{undercount}, \texttt{truncation},
 \texttt{overcount}, \texttt{loop}, \texttt{degenerate}\}$ -- which folds
@@ -1395,7 +1398,7 @@ trajectory matrix and $p_i = \sigma_i/\sum_j\sigma_j$.
   count of how many singular directions are actually being used, smoothly
   interpolating between $1$ (all variance in one direction) and the nominal
   matrix rank (perfectly flat spectrum). This is the statistic behind the
-  capacity-gain measurement of Section~4.3 of the main paper.
+  capacity-gain measurement of Section~\ref{sec:s8-capacity}.
 \item \textbf{Spectral slope} $\alpha$: the negative slope of $\log\sigma_i$
   regressed against $\log(i+1)$ over the mid-tail index window
   $i \in [2, \max(6, 0.8\cdot\text{rank})]$ -- excluding the first couple of
@@ -1447,8 +1450,8 @@ gained strictly more distinguishable states than its matched repeated twin.
 \section{The negative result, in detail}
 \label{sec:s5}
 
-This section expands the main paper's Section~4.4 (``A note on what we could
-not measure''). We consider it a real contribution of the project, not a
+This section expands the main paper's Section~4, which measures the theorem's
+premise and rejects it. We consider it a real contribution of the project, not a
 discarded attempt, and document it at the level of detail a reviewer wanting
 to check the diagnosis would need. The relevant code is
 \texttt{src/common/boundaries.py} (explicitly marked, in its own module
@@ -2670,9 +2673,9 @@ than a control rendering sixteen distinct words. A shrinking effective rank on
 repeated-text trajectories could then be measuring nothing but this surface
 fact about the stimulus -- the audio the prompt asked for -- rather than any
 loss of the decoder's capacity to represent \emph{how many} repetitions have
-occurred. Under this reading, the main paper's capacity-gain ratio
-(0.50, Section~4.3) would be a restatement of the stimulus design, not
-a discovery about the decoder.
+occurred. Under this reading, the capacity-gain ratio
+(Section~\ref{sec:s8-capacity}) would be a restatement of the stimulus design,
+not a discovery about the decoder.
 
 \textbf{What would have to be true.} For the tautology objection to fully
 account for the ratio, the repeated-vs-control gap in effective-rank growth
@@ -2793,9 +2796,9 @@ probe on the residual stream decodes the true count near-perfectly at every
 layer, including the exact layer where the model's own output is already
 wrong: the count is not erased, only unused by the output pathway. A trained
 linear probe is precisely the $L$-Lipschitz readout class
-Theorem~A(iii)/(iv) (main paper, Section~2) constrains, so if the same
+Theorem~A(iii)/(iv) (main paper, Section~4) constrains, so if the same
 dissociation holds for TTS decoders, the effective-rank account of
-Section~4.3 would be measuring the wrong thing: a small, count-specific
+Section~\ref{sec:s8-capacity} would be measuring the wrong thing: a small, count-specific
 subspace could persist and remain linearly readable inside a trajectory whose
 \emph{aggregate} rank still looks low, since a whole-trajectory
 participation-ratio statistic like $\mathcal{N}_{\mathrm{eff}}$ has no reason
@@ -3065,7 +3068,7 @@ every script cited in this section -- is a Bonferroni, Holm, or
 Benjamini--Hochberg correction applied across the per-model tests that make up
 the panel-level claims. The count a reader wanting a family-wise guarantee
 would need depends on which family of tests they consider the relevant unit.
-The primary capacity-gain contrast of Section~4.3 (main paper) is six
+The primary capacity-gain contrast of Section~\ref{sec:s8-capacity} is six
 per-model disjoint-interval tests, one per panel checkpoint
 (\texttt{ci\_separated} in \texttt{capacity.json}). The confound checks of
 Section~\ref{sec:s8-capacity} add up to two further ratio estimates per model
@@ -3120,7 +3123,7 @@ continuation: it discounts it. A decoder transcribing ``the dog was very big
 strong internal evidence -- from its own prior over what sentences look like
 -- that the correct continuation is \emph{not} an implausible ninth verbatim
 repeat, and it is prone to closing the sentence and stopping. That is the
-same architectural pattern Theorem~A (main paper, Section~2) describes for a
+same architectural pattern Theorem~A (main paper, Section~4) describes for a
 TTS \emph{decoder} under periodic conditioning, applied here to a different
 modality by the instrument doing the scoring. Using such a recogniser to
 grade a TTS decoder's repetition count is accordingly not a noisy
@@ -3417,7 +3420,7 @@ XTTS-v2, no penalty (abl.) & $-58.3\ [-83.3,-31.3]$, $n{=}107$ & $-66.7\ [-75.0,
 Five of six panel checkpoints show a repeated-item error interval disjoint
 from their own control's, which sits at exactly $0.0\%$ for every model at
 every $k$ up to $32$ -- the matched-control result of the main paper's
-Section~4.2 reproduced under the new judge with the new metric. Qwen3-TTS-1.7B
+Section~3.1 reproduced under the new judge with the new metric. Qwen3-TTS-1.7B
 is the exception, at $0.0\%$ on both arms: not a null result but a second
 regime, as the main paper's Discussion frames it -- a checkpoint for which
 Theorem~A's contraction premise may simply not hold, which the theorem
@@ -3745,7 +3748,7 @@ The control items also depart from the main ladder in a way worth stating,
 because it corrects a flaw the main set has. Main-ladder control fillers are
 drawn by cycling an eight-word pool, so controls at $k>8$ carry period-eight
 repetition rather than none --- tolerable when the contrast is against period-one
-repetition, and the dissociation in Section~4 of the main paper survives it, but
+repetition, and the dissociation in Section~3.1 of the main paper survives it, but
 at $k=128$ a cycled pool of eight would be sixteen full cycles and the control
 would no longer be a control. The extension pool holds $146$ distinct words and
 is never cycled; the generator asserts this and fails loudly rather than falling
