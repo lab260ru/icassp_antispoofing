@@ -23,6 +23,9 @@ fi
 note "Every reported number is generated, not typed"
 if python3 scripts/check_numbers.py; then :; else bad "check_numbers.py failed"; fi
 
+note "The exclusion rules are blind to the comparison they feed"
+python3 scripts/check_exclusions_blind.py || FAIL=1
+
 note "Supplement tables have not gone stale against their result JSONs"
 python3 scripts/check_supp_tables.py || FAIL=1
 
