@@ -1616,6 +1616,348 @@ side for every instrumented item (columns \texttt{q\_hat} for dispersion and
 each row's boundaries, precisely so this substitution is auditable rather
 than silent.
 
+\subsection{A third attempt: the exact Jacobian, gated before it touches a model}
+\label{sec:s5-jacobian}
+
+Neither of the two estimators above measures the theorem's contraction factor
+directly, and \texttt{analysis/jacobian\_q.py} (the source of the main paper's
+Section~4 numbers) is not a retry of either: it differentiates the decoder's
+own boundary-to-boundary map exactly, rather than inferring it from attention
+or approximating it from within-window spread.
+
+\noindent\textbf{What is differentiated.} In a KV-cached autoregressive
+transformer, the theorem's state $s_m$ has no single-layer realisation:
+information reaches a later position only by rising through depth, so the map
+from depth $\ell$ at position $t$ to depth $\ell$ at $t'>t$ is \emph{exactly}
+zero, not small. The only well-posed object is the whole per-repetition
+sub-stack, $S_m = (h_\ell(t): \ell=0..L-1,\, t\in W_m)$, the residual stream
+entering every layer at every token position of repetition $m$. Teacher-forcing
+the generated tokens fixes everything outside $W_m\cup W_{m+1}$, making
+$S_{m+1}=F(S_m)$ a deterministic, differentiable endomorphism. Because the
+restriction to depths $\ge\ell$ is exactly closed under the same argument,
+$q_\ell:=\sigma_{\max}$ of $F$ restricted to that sub-stack is itself a
+legitimate contraction factor, non-increasing in $\ell$; $q_0$ (whole stack) is
+the headline and the sweep over $\ell$ is reported alongside. Perturbations are
+measured in units of each layer's own RMS activation (matching the RMSNorm
+that $K,V$ are actually computed from), so $F$ stays an endomorphism of a fixed
+metric space across layers of very different activation scale. Because the
+speech-token span of each repetition is not directly observed, boundaries are
+\emph{constructed} -- a uniform partition of the rendered trajectory into $k$
+equal spans -- rather than located by an attention read-head, and the
+conclusion is required to survive a sweep over which width counts as ``one
+repetition'' (lags \texttt{half\_tau}, \texttt{tau}, \texttt{two\_tau},
+\texttt{tau\_rendered}, the last keyed to the CTC-judged rendered count) rather
+than resting on the partition being exactly right.
+
+\noindent\textbf{Two biases, declared before the model was run.}
+Teacher-forcing deletes the token channel -- in real generation, perturbing
+$S_m$ changes which tokens $S_{m+1}$ renders from, an additional path this
+measurement cannot see -- so the reported $q$ is a \emph{lower} bound on the
+true per-repetition Lipschitz constant, biased \emph{toward} the contraction
+premise: a measured $q\ge1$ is decisive against it, and a measured $q<1$ would
+be weaker evidence for it than it looks. Working against that, perturbing each
+layer's cache entries independently admits a larger set of directions than the
+network's own forward pass can reach at a boundary, which over-states
+$\sigma_{\max}$ and biases \emph{against} the premise. The two are not claimed
+to cancel.
+
+\noindent\textbf{Gate 0, run identically on every checkpoint before it was
+pointed at that checkpoint's real generations.} S1 is a synthetic positive
+control -- the identical power-iteration code path applied to
+$y=A\tanh(x)+b$, whose Jacobian at $x=0$ is $A$ -- and is independent of which
+model is being measured, so it is bit-identical across all five runs, as shown.
+S2 is causality: the same estimator run backwards in time (state at
+$W_{m+1}\to$ state at $W_m$) must return exactly $0$, since a causal
+transformer cannot move information back in time; any nonzero value means the
+hooks leak. S3 checks exact JVPs against finite differences over the step range
+where the map is linear ($h\in\{0.3,1.0,3.0\}$; smaller steps are float32
+roundoff divided by $h$ and are reported, not judged).
+
+\begin{center}
+\begin{tabular}{lrrrr}
+\toprule
+checkpoint & S1 rel.\ err.\ & S2 $\sigma_{\text{fwd}}$ & S2 $\sigma_{\text{bwd}}$ & S3 max rel.\ err.\ (judged) \\
+\midrule
+Llasa-1B & $3.7\times10^{-4}$ & 43.89 & 0.000000 & $5.8\times10^{-4}$ \\
+Llasa-3B & $3.7\times10^{-4}$ & 85.33 & 0.000000 & $1.5\times10^{-3}$ \\
+Llasa-8B & $3.7\times10^{-4}$ & 101.10 & 0.000000 & $5.9\times10^{-4}$ \\
+Qwen3-TTS-0.6B & $3.7\times10^{-4}$ & 40.14 & 0.000000 & $8.9\times10^{-4}$ \\
+Qwen3-TTS-1.7B & $3.7\times10^{-4}$ & 32.99 & 0.000000 & $8.5\times10^{-4}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+All five pass S1--S3 well inside their gates ($5\%$ for S1 and S3, exactly $0$
+for S2). $\sigma_{\text{fwd}}$ is not itself a report of $q$ -- it is the S2
+scale reference that first showed a value far above $1$ and motivated adding
+the typical-direction gain as a descriptive companion statistic
+(Section~\ref{sec:s5-jacobian-corrob}).
+
+\noindent\textbf{Qwen needed a fourth gate.} Qwen3-TTS's talker never
+materialises a flat token stream to teacher-force: each decode step's input is
+a sum of sixteen RVQ-codebook embeddings plus a text term, and the codec ids
+themselves are never saved by generation. The inputs the model actually used
+are instead captured by a forward pre-hook at generation time
+(\texttt{analysis/qwen\_codec\_dump.py}) and required to reproduce incremental
+generation to cosine $\ge0.999$ before any Jacobian is computed from them (S4,
+\texttt{extra\_selftests} in \texttt{analysis/jacobian\_q.py}).
+
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+checkpoint & $n$ items & cosine (min / median) & rel.\ err.\ (max) \\
+\midrule
+Qwen3-TTS-0.6B & 88 & 0.99920 / 0.99980 & 0.0399 \\
+Qwen3-TTS-1.7B & 90 & 0.99963 / 0.99987 & 0.0274 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Both pass ($\text{cosine}_{\min}>0.999$ and $\text{rel.\ err.}_{\max}<0.05$).
+The dump script additionally counts, per item, whether its own re-sampled
+\texttt{n\_speech\_tokens} agrees with the generation ledger's; per the
+project's committed record this agreement is $88/88$ on Qwen3-TTS-0.6B and
+$90/90$ on Qwen3-TTS-1.7B. That specific pairwise count is not itself a field
+in \texttt{jacobian\_q\_qwen06b.json} / \texttt{jacobian\_q\_qwen17b.json} --
+only the cosine and relative-error summary derived from it is -- so, in the
+same spirit as the attention-drift figure in
+Section~\ref{sec:s5-replacement}, it is flagged here as sourced from the
+dump-time verification and the commit record rather than reproduced by a
+script in the current results snapshot.
+
+\subsection{The five-checkpoint panel}
+\label{sec:s5-jacobian-panel}
+
+Having passed its gates, the estimator is run at its headline setting (lag
+$\tau$, whole stack, RMS metric) on every checkpoint. \texttt{jacobian\_q.json}
+(Llasa-1B) and its four siblings
+(\texttt{jacobian\_q\_\{llasa3b,llasa8b,qwen06b,qwen17b\}.json}) together cover
+$346$ items (repeated plus length-matched control) and $15{,}243$ attempted
+measurements, of which $14{,}796$ are valid and reported (the $447$ excluded
+are addressed in Section~\ref{sec:s5-jacobian-flags}, not silently dropped).
+\texttt{jacobian\_q\_panel.json} is the cross-checkpoint summary.
+
+\begin{center}
+\begin{tabular}{lrrp{2.8cm}p{2.8cm}r}
+\toprule
+checkpoint & layers & $n$ pairs & $q$ repeated [95\% CI] & $q$ control [95\% CI] & paired $p$ \\
+\midrule
+Llasa-1B & 16 & 29 & 38.1 [32.9, 51.4] & 31.8 [27.3, 39.8] & 0.017 \\
+Llasa-3B & 28 & 26 & 118.8 [101.9, 156.5] & 86.4 [77.2, 137.3] & 0.269 \\
+Llasa-8B & 32 & 29 & 347.7 [258.1, 393.5] & 185.4 [142.1, 236.5] & 0.256 \\
+Qwen3-TTS-0.6B & 28 & 44 & 21.0 [19.7, 24.2] & 21.9 [20.6, 23.2] & 0.931 \\
+Qwen3-TTS-1.7B & 28 & 45 & 24.7 [23.1, 25.7] & 23.6 [21.4, 25.1] & 0.177 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+$q<1$ in $0$ of the $346$ items on either arm -- \texttt{frac\_items\_q\_below\_1}
+is exactly $0.0$ for both repeated and control on every checkpoint in
+\texttt{jacobian\_q\_panel.json}. Pooling across checkpoints, $q$ runs
+$21.0$--$347.7$. The single most favourable cell in the entire panel (the
+smallest bootstrap lower confidence bound over all lags, sub-stacks and both
+arms of any checkpoint) is Qwen3-TTS-0.6B's $3.35$, rounding to the $3.3$ the
+main paper reports as the floor. \texttt{verdict} is \texttt{"PREMISE DEAD"} on
+every one of the five, and \texttt{jacobian\_q\_panel.json}'s own
+\texttt{answer} field states the pooled conclusion in one sentence: ``the
+refutation generalises: every checkpoint measured, across 2 architecture
+families, has $q$ far above 1 on BOTH the repeated and the length-matched
+control arm, so the contraction premise was never a live description of any of
+these decoders.''
+
+\subsection{Both arms are expansive, in all sixteen cells, on all five checkpoints}
+\label{sec:s5-jacobian-arms}
+
+The paired $p$ column above is the repeated-versus-control contrast at the
+headline cell only. The stronger and more direct fact is per-arm: at every one
+of the sixteen (lag $\times$ sub-stack) cells the estimator visits, on every
+checkpoint, on \emph{both} arms, the bootstrap CI for $q$ lies entirely at or
+above $1$ (\texttt{expansive\_in\_every\_cell: true},
+\texttt{contracting\_in\_some\_cell: false} in every checkpoint's
+\texttt{summary.premise\_by\_arm}), and the fraction of items with $q<1$ is
+$0.0$ in every cell of every checkpoint on both arms.
+
+\begin{center}
+\begin{tabular}{lp{3.6cm}p{3.6cm}}
+\toprule
+checkpoint & repeated: range over 16 cells & control: range over 16 cells \\
+\midrule
+Llasa-1B & [3.90, 78.10] & [3.50, 46.61] \\
+Llasa-3B & [9.33, 182.80] & [7.60, 148.28] \\
+Llasa-8B & [11.43, 499.13] & [12.28, 329.33] \\
+Qwen3-TTS-0.6B & [3.35, 29.47] & [3.41, 28.23] \\
+Qwen3-TTS-1.7B & [3.45, 37.83] & [3.35, 31.18] \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The repeated-versus-control contrast at the headline cell is significant in
+the \emph{wrong} direction on Llasa-1B ($p=0.017$: repetition makes the map
+\emph{more} expansive than its own length-matched control, not less) and null
+on the other four ($p=0.269$, $0.256$, $0.931$, $0.177$ -- the range the main
+paper quotes as $0.18$--$0.93$). \texttt{premise\_by\_arm.statement} in every
+one of the five JSONs states the honest reading in identical language: ``the
+premise fails on BOTH arms: the length-matched control, which this decoder
+counts correctly, is also expansive in every cell. Contraction was never a
+live description of this decoder for any input -- periodicity does not break
+it, it was never there to break.'' This is a claim about measurement, not
+about prose: it is what \texttt{expansive\_in\_every\_cell} and
+\texttt{contracting\_in\_some\_cell} record for every arm of every checkpoint,
+not an inference drawn on top of the numbers.
+
+\subsection{Two facts that sharpen the refutation past replication}
+\label{sec:s5-jacobian-scale}
+
+\noindent\textbf{$q$ grows with scale inside Llasa.} The three checkpoints of
+one architecture family, same estimator, same headline cell:
+
+\begin{center}
+\begin{tabular}{lr}
+\toprule
+checkpoint & $q$ (headline) \\
+\midrule
+Llasa-1B & 38.1 \\
+Llasa-3B & 118.8 \\
+Llasa-8B & 347.7 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+A ``contraction mechanism specific to the larger checkpoints'' is excluded in
+the direction that would have rescued the theory: the bigger the checkpoint,
+the further from contraction, not the closer.
+
+\noindent\textbf{Qwen3-TTS-1.7B counts correctly and has $q=24.7$.} It is the
+one checkpoint in this panel with zero median count error (the main paper's
+\texttt{ErrBestModel} result), and its per-repetition map is exactly as
+expansive as everyone else's -- $24.7\ [23.1,25.7]$, indistinguishable in kind
+from Llasa-1B's $38.1$ or Qwen3-TTS-0.6B's $21.0$, both of which count
+imperfectly. A decoder that renders the count perfectly has an equally
+expansive map to decoders that do not: whatever separates counting from
+miscounting in this panel, it is not $q$.
+
+\subsection{Reported against interest}
+\label{sec:s5-jacobian-flags}
+
+Two things about how these five runs were produced would flatter the result if
+left unstated, so they are stated.
+
+\noindent\textbf{Llasa-8B skipped 22\% of its measurements.} Of $1{,}677$
+attempted measurements, $365$ ($21.8\%$, rounding to the $22\%$ the main paper
+reports) were not taken:
+
+\begin{center}
+\begin{tabular}{@{}lrrrp{4.6cm}@{}}
+\toprule
+checkpoint & read window (tok.) & attempted & skipped & reasons \\
+\midrule
+Llasa-1B & 2000 & 2736 & 12 (0.4\%) & exceeds MAX\_TOKENS (8), OOM (4) \\
+Llasa-3B & 1100 & 2286 & 70 (3.1\%) & exceeds MAX\_TOKENS (70) \\
+Llasa-8B & 700 & 1677 & 365 (21.8\%) & exceeds MAX\_TOKENS (236), OOM (129) \\
+Qwen3-TTS-0.6B & 2000 & 4224 & 0 (0.0\%) & --- \\
+Qwen3-TTS-1.7B & 2000 & 4320 & 0 (0.0\%) & --- \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Llasa-8B ran at \texttt{MAX\_TOKENS=700} (a smaller read window than the other
+four, on the card it happened to be scheduled on) plus a share of
+out-of-memory skips at the same card; between them these account for all $365$
+skipped anchors, individually recorded (\texttt{"skipped": "exceeds
+MAX\_TOKENS"} or \texttt{"skipped": "OOM"}) in \texttt{jacobian\_q\_llasa8b
+.json}'s \texttt{records}, not aggregated away. Truncating at the read window
+is exact on a causal model -- a shorter window changes which anchors can be
+formed, not the value the estimator returns for the anchors it does form -- so
+every surviving $\sigma_{\max}$ is unchanged and only the anchor set shrinks.
+The main paper's framing (``truncating at the read window is exact... so
+surviving values are unchanged and only the anchor set shrinks'') covers the
+majority reason (\texttt{exceeds MAX\_TOKENS}, $236$ of $365$); the remaining
+$129$ are plain out-of-memory skips on the same card, a capacity limit rather
+than a windowing choice, and are reported here as a distinct reason rather
+than folded into the read-window story.
+
+\noindent\textbf{Llasa-3B ran before a \texttt{MIN\_TAU} patch.} The narrowest
+window the estimator will call ``one repetition'' was originally $8$ decoder
+frames, a value that is a rate heuristic, not a principle: at Llasa's $50\,$Hz
+codec that is $8/50=0.16\,$s, but at Qwen3-TTS's $12.5\,$Hz codec the same $8$
+frames is $8/12.5=0.64\,$s ($\approx0.6\,$s) -- long enough to have silently
+discarded nearly every Qwen item, the checkpoint the whole extension from one
+to five checkpoints was about, for a reason that is about sample rate and not
+about the decoder. The floor was lowered to \texttt{MIN\_TAU=3} (still a
+window, not a single position) before the Qwen runs. Llasa-3B was measured
+under the old floor, and the patch changes only its \texttt{half\_tau} lag, and
+only where $\lfloor\tau_k/2\rfloor<8$: exactly two items,
+\texttt{wr\_quick\_t5\_k32} at seeds $0$ and $1$ ($\tau_k=15$, so
+$\texttt{half\_tau}=7$ under the current floor, would have been clamped to $8$
+under the old one). No other checkpoint, lag or item is affected. The bias of
+the patch runs \emph{toward} the contraction premise, not against it: $\sigma_{\max}$
+grows with window width (measured directly on Llasa-1B: $16.2$ at a
+$1$-frame window against $39.4$ at a $77$-frame window, per
+\texttt{analysis/jacobian\_q.py}'s own constants), so the narrower floor makes
+the two affected estimates \emph{smaller}, i.e.\ more favourable to
+contraction, not less -- and the premise still fails on them.
+
+\subsection{Two corroborating measurements}
+\label{sec:s5-jacobian-corrob}
+
+\noindent\textbf{Typical-direction gain.} $\sigma_{\max}$ is what the
+theorem's uniform Lipschitz bound requires and what decides the verdict above;
+$\mathbb{E}\lVert Jv\rVert/\lVert v\rVert$ over random unit directions $v$ (a
+Frobenius-norm probe) is a purely descriptive companion, reported because
+``$\sigma_{\max}>1$ while the average direction contracts hard'' and ``the map
+expands in every direction'' are different mechanistic pictures. At the
+headline cell:
+
+\begin{center}
+\begin{tabular}{lrr}
+\toprule
+checkpoint & repeated (median) & control (median) \\
+\midrule
+Llasa-1B & 0.152 & 0.129 \\
+Llasa-3B & 0.238 & 0.187 \\
+Llasa-8B & 0.408 & 0.285 \\
+Qwen3-TTS-0.6B & 0.283 & 0.231 \\
+Qwen3-TTS-1.7B & 0.229 & 0.191 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Typical-direction gain runs $0.15$--$0.41$ at the headline cell, below $1$ in
+$100\%$ of items on both arms of every checkpoint and every cell
+(\texttt{frac\_below\_1}$=1.0$ throughout \texttt{summary.by\_cell\_typical\_gain}),
+and repeated exceeds control at the headline cell on all five checkpoints. So
+the typical direction genuinely contracts everywhere it is measured; it is the
+worst direction, the one the uniform bound is about, that does not, and the
+verdict above is decided by $\sigma_{\max}$, never by this statistic.
+
+\noindent\textbf{Boundary-distance decay.} \texttt{summary.boundary\_distance\_decay}
+fits $\log(d_m/d_0)$ against $m$ on the same uniformly-partitioned boundaries,
+independently of the Jacobian estimator:
+
+\begin{center}
+\begin{tabular}{lp{2.6cm}rr}
+\toprule
+checkpoint & $\hat q$ [95\% CI] (word\_rep) & $R^2$ & $n$ items \\
+\midrule
+Llasa-1B & 0.981 [0.970, 0.989] & 0.020 & 29 \\
+Llasa-3B & 0.991 [0.986, 0.994] & $-0.015$ & 26 \\
+Llasa-8B & 0.991 [0.981, 0.998] & 0.011 & 29 \\
+Qwen3-TTS-0.6B & 0.986 [0.982, 0.988] & $-0.308$ & 44 \\
+Qwen3-TTS-1.7B & 0.995 [0.993, 0.996] & $-0.123$ & 45 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+$\hat q$ sits in a narrow $0.98$--$0.99$ band on every checkpoint --
+statistically indistinguishable from $1$, the same qualitative finding
+Section~\ref{sec:s5} reports for the boundary-based estimator on Llasa-1B --
+and $R^2$ runs from $-0.31$ to $+0.02$: at no checkpoint does distance from a
+repetition boundary decay geometrically at all, let alone at a rate matching
+the Jacobian estimate. Every row is marked \texttt{"usable": false} in the
+source JSON for exactly this reason -- not fit for computing a horizon --
+which is why Section~\ref{sec:s5-jacobian-panel}'s headline uses the Jacobian
+estimator, not this one.
+
 % ============================================================
 \section{Per-model implementation notes}
 \label{sec:s6}
