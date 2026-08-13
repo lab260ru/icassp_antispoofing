@@ -1140,6 +1140,31 @@ def main() -> None:
             macros["AuditCtcN"] = str(cp["n_trials"])
             macros["AuditCtcMean"] = fmt(cp["mean_ratio"], 3)
 
+    # ---- never-cycled controls, panel-wide ---------------------------------
+    # The published gap uses controls whose fillers cycle a pool of eight above
+    # k=8, i.e. period-8 material standing in for aperiodic. The re-generated
+    # never-cycled arm now covers all six checkpoints, so the headline can be
+    # reported de-confounded instead of as a subset robustness check -- which is
+    # what a reviewer objected to. It costs 7 points, but most of that is
+    # vocabulary rather than periodicity: see the within-one-unit and
+    # median-error arms, which barely move and do not move at all.
+    ap_path = Path("data/results/aperiodic_controls.json")
+    if ap_path.exists():
+        hd = json.loads(ap_path.read_text()).get("headline", {})
+        for lvl, tag in (("by_checkpoint", "Ck"), ("by_family", "Fam")):
+            blk = hd.get(lvl, {})
+            if blk:
+                macros[f"ApHead{tag}"] = fmt(100 * blk["gap_never_cycled"]["mean"], 1)
+                macros[f"ApHead{tag}Cyc"] = fmt(100 * blk["gap_cycled_full"]["mean"], 1)
+        ck = hd.get("by_checkpoint", {})
+        if ck:
+            macros["ApHeadTolDrop"] = fmt(
+                100 * (ck["tol_gap_cycled_full"]["mean"]
+                       - ck["tol_gap_never_cycled"]["mean"]), 1)
+            macros["ApHeadDrop"] = fmt(
+                100 * (ck["gap_cycled_full"]["mean"]
+                       - ck["gap_never_cycled"]["mean"]), 1)
+
     # ---- the judge audit, repeated in a second language --------------------
     # The counting arm in Spanish is not reportable (S27): the exact-rate
     # statistic needs a judge accurate enough to pin the control side near 1,

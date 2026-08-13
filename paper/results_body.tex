@@ -70,10 +70,16 @@ curve is a robustness envelope over one comparison, not a family of hypotheses,
 and our claims rest on effect sizes, not $p$-values (S11).
 
 Above $k\!=\!8$ the control's fillers cycle a pool of eight, making the contrast
-period-$1$ against period-$8$ rather than periodic against aperiodic.
-Re-generating $k=12\ldots32$ from a never-cycled $146$-word pool leaves the
-dissociation at \ApMidGap{} points against \ApCycGap{} for cycled controls
-($n=\ApMidN{}$): the residual is worth \ApCost{} points, not the bulk.
+period-$1$ against period-$8$ rather than periodic against aperiodic. Re-running
+every checkpoint with a never-cycled $146$-word pool wherever cycling occurs
+puts the gap at \ApHeadCk{} by checkpoint and \ApHeadFam{} by family against
+\ApHeadCkCyc{} and \ApHeadFamCyc{} cycled --- positive in all \CkExactN{} and
+all \FamExactN{}, and we quote the smaller. Most of that \ApHeadDrop{} points is
+vocabulary: a never-cycled control at $k\!=\!32$ must return
+thirty-two \emph{distinct} adverbs and the pool's tail transcribes worse, its
+failures missing one filler where the cycled arm's drop whole cycles. Within one
+unit the substitution costs \ApHeadTolDrop{} points; the median-error contrast
+does not move.
 
 \subsection{Pre-specified: not the decoding rule, judge, or exclusions}
 
@@ -82,9 +88,9 @@ penalty suppresses repeated tokens directly. Swept on \PenNArch{} architectures
 the deficit stays put (XTTS-v2 \PenRepLo{}--\PenRepHi{}\% exact over a
 \PenFold{}-fold range, Qwen3-TTS-0.6B \PenQRepLo{}--\PenQRepHi{}\% over
 \PenQFold{}-fold, S15), and the \PenNoneN{} Llasa checkpoints pass \emph{no}
-penalty and show it at full size, \PenNoneRep{}\% against \PenNoneCtl{}\%. Nor
-is it sampling: greedy decoding gives \GreedyGap{} points against
-\GreedySampGap{} sampled, at $0$\% cap-hit in both arms (S22). Nor our exclusions: with every rule off the gap is
+penalty and show it at full size, \PenNoneRep{}\% against \PenNoneCtl{}\%. Nor is it
+sampling: greedy decoding gives \GreedyGap{} points against \GreedySampGap{}
+sampled (S22). Nor our exclusions: with every rule off the gap is
 \ExSensAll{} points against \ExSensPanel{}, and the one rule that falls
 unevenly works against the contrast (S18).
 
@@ -122,11 +128,11 @@ $k\!=\!\DurSplit{}$ it lifts exact renderings \DurLoFree{}\% to
 \DurLoFixed{}\% ($n=\DurLoN{}$), at or above it the gain is \DurHiGain{}
 ($n=\DurHiN{}$, with any gain above \EqDurBound{} points excluded). Handed the
 right length the model still cannot place thirty-two repetitions inside it
-(S13). CosyVoice~2 says the same from the other direction: it
+(S13). CosyVoice~2 says the same from the other side: it
 \emph{over}-produces (median $+\CosyMedErr{}$\%) at a \CosyCapHit{}\% cap-hit
-rate, making about the right amount of speech and still losing the count; its
-repetition-aware sampling rule does not prevent that (S20 sets out three
-further rivals).
+rate --- the right amount of speech, the wrong count --- and its
+repetition-aware sampling does not prevent that (S20 lists three further
+rivals).
 
 \begin{table}[t]
 \centering
@@ -137,14 +143,10 @@ rendered count equals the requested one.}
 {\scriptsize\setlength{\tabcolsep}{3pt}\input{table1}}
 \end{table}
 
-\subsection{Exploratory: past the ladder, the count levels off}
-
-Both were decided on after the results above and we claim little from either;
-S16 dates every decision. Within $k\le32$ the deficit is \emph{proportional},
-not saturating (RSS \ShapePropSSE{} against \ShapeSatSSE{}), so no horizon
-lies inside this ladder; extending to $k\!\le\!128$ lowers the fitted saturation
-scale \HzRatio{}-fold for repeated text, but form-dependently
-(\HzFormLo{}--\HzFormHi{}) and not unanimously (\HzRevNames{} inverts it).
-Neither this nor the rate at which the state trajectory gains effective rank
-distinguishes a horizon from any saturating process (Fig.~\ref{fig:main}(b,c);
-S8, S10, S17).
+Two exploratory analyses, decided on after the above and dated in S16 (S8, S10,
+S17), occupy Fig.~\ref{fig:main}(b,c). Within $k\le32$ the deficit is proportional, not
+saturating (RSS \ShapePropSSE{} against \ShapeSatSSE{}), so no horizon lies in
+this ladder; extending to $k\!\le\!128$ lowers the fitted saturation
+scale \HzRatio{}-fold, but form-dependently (\HzFormLo{}--\HzFormHi{}) and not
+unanimously (\HzRevNames{} inverts it). Neither that nor the rate of
+effective-rank gain distinguishes a horizon from any saturating process.

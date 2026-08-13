@@ -55,11 +55,10 @@ repeated token is replaced by distinct fillers. Across \NModels{} checkpoints
 from \NFamilies{} architectures, models render repeated text exactly in
 \ExactRep{}\% of generations against \ExactCtl{}\% for their controls at
 $k\ge6$: a gap of \FamExact{} points $[\FamExactLo{},\FamExactHi{}]$ by
-architecture family ($n{=}\FamExactN{}$), favouring the control in all
-\CkExactN{} checkpoints, and \FullLadderGap{} points over the whole ladder from
-$k{=}1$. The limit tracks \emph{periodicity, not length}. It survives greedy decoding, an
-order-of-magnitude penalty sweep, never-cycled controls and every exclusion rule
-switched off (\ExSensAll{} points), and replicates at
+architecture family ($n{=}\FamExactN{}$; \ApHeadFam{} with never-cycled control
+fillers throughout), favouring the control in all \CkExactN{} checkpoints, and
+\FullLadderGap{} points over the whole ladder from $k{=}1$. The limit tracks \emph{periodicity, not length}. It survives greedy decoding, an
+order-of-magnitude penalty sweep and every exclusion rule switched off (\ExSensAll{} points), and replicates at
 \IndGapLo{}--\IndGapHi{} points across \IndNJudges{} recognisers, ruling out
 the judge-side artifact that would otherwise explain it. Measuring it needs care: the obvious judge, Whisper,
 is autoregressive and biased \emph{against} the phenomenon, scoring

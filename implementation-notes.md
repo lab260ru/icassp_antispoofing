@@ -582,3 +582,63 @@ CosyVoice 2, the q measurement, the causal intervention and every bug fix since.
 **Re-cut the tag and update the line as the last action before submission**, in
 that order, and check the tag actually contains the built PDF you are sending.
 Tags currently in play: `v1.0-submission`, `v1.1-icassp`, `v1.2-locating`.
+
+## The never-cycled controls now cover the whole panel, and what that costs
+
+Llasa-3B and Llasa-8B were the two arms missing from
+`data/results/behavioural_aperiodic.csv`, which meant the de-confounded number
+was a four-checkpoint robustness check sitting next to a six-checkpoint
+headline. `scripts/run_aperiodic_llasa.sh` fills them in (144 generations, same
+stimulus file and flags as the other four, ~42 min for 3B and ~64 min for 8B on
+one card), and `analysis/aperiodic_controls.py` now recomputes the headline
+itself with the never-cycled arm substituted in.
+
+**The number moves, and it moves against us.** The exact-rate gap at `k>=6`
+falls from 76.7 to 69.6 by checkpoint and from 75.4 to 67.6 by family. All six
+checkpoints stay positive and the smallest is still +60; the direction and the
+6-of-6 vote are untouched, but ~7 points of the headline were the control arm's
+own period-8 structure. The subset number the paper currently quotes (a 13.4-pt
+reduction over `k=12..32` on four checkpoints) becomes 11.4 over all six.
+
+Three things worth knowing before requoting any of this.
+
+* **Match the cells, not the item ids.** `ct_very_t1_k12` and `ap_very_t1_k12`
+  are the same carrier, k and seed under two filler pools. The comparison is
+  paired on `(model, template, target_unit, k, seed)`; every cycled cell
+  surviving `panel()` turns out to have a surviving aperiodic twin, so the two
+  arms are the same population and the substitution is the only difference.
+  `headline()` reports the cycled arm on the full and on the matched cells for
+  exactly this reason -- they agree here, and if they ever stop agreeing the
+  attribution belongs to the matched pair.
+* **Part of the drop is vocabulary, not periodicity, and the failure mode says
+  so.** A never-cycled `k=32` control needs 32 *distinct* adverbs back, and the
+  tail of the 146-word pool transcribes worse than the eight the ladder cycles
+  (`crudely` 0.79, `coolly` 0.81, `darkly` 0.85 against 0.98-1.00). At `k=32`,
+  18 of the 33 non-exact never-cycled controls miss exactly **one** filler,
+  while the cycled arm's failures drop whole cycles of eight. Under a
+  within-one-unit criterion applied to *both* arms the substitution costs 1.7
+  points by checkpoint instead of 7.1. So 69.6 is a floor, the truth is
+  somewhere between it and 76.7, and quoting 69.6 is the conservative choice
+  rather than the correct-to-a-decimal one.
+* **The median-error contrast does not move at all** (10.4 pts either way):
+  control medians are zero under both pools, so only the exact rate is
+  sensitive to this. Figure 1(a) plots the median, so the figure is not
+  affected even though the objection was aimed at it.
+
+Two smaller traps. `xcodec2_decode.py` and `asr_ctc.py` now take `--glob`,
+because both Llasa checkpoints carry 24 undecoded `*i` token files from the
+instrumented extension ladder that exist for their activations and were never
+meant to have audio; a bare decode would have vocoded them and the ASR pass
+would then have transcribed them into a population nobody scored. And
+`scripts/run_aperiodic.sh` scored only the four models it generates into a file
+it overwrites, so re-running it after this would have deleted the Llasa-3B/8B
+rows -- the same trap `run_pipeline.sh` shipped once already. It now names all
+six; `score_counts.py` emits rows only for item ids in the stimulus file, so
+naming a model with no aperiodic audio costs nothing.
+
+Note also that `data/results/checkpoint_level.json` is a hair stale: it has
+qwen06b at 0.9222 where today's ledger gives 0.9213, because `wr_really_t6_k24`
+seed 2 has since been flagged `hit_cap` and is now excluded by rule 4. That is
+0.015 pt on the panel mean and changes no reported figure, but
+`aperiodic_controls.py` asserts against that file and its tolerance is set at
+0.005 so a *real* population difference still fails loudly.

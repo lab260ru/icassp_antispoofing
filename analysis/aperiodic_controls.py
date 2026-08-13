@@ -115,6 +115,16 @@ def headline(main_d: pd.DataFrame, apf: pd.DataFrame, args, res: dict) -> None:
     apf = apf.assign(err=(apf.count_a - apf.k) / apf.k)
     apf = apf[apf.family == "control_word"]
     ap_cells = dict(zip(_cells(apf), apf.err == 0))
+    # A never-cycled control at k=32 has to get 32 *distinct* adverbs back, and
+    # the tail of the 146-word pool is not as cleanly transcribed as the eight
+    # words the main ladder cycles (`crudely` 0.79, `coolly` 0.81 against
+    # 0.98-1.00 for the pool of eight). The failure it produces is losing one
+    # filler, not losing count: 18 of the 33 non-exact never-cycled items at
+    # k=32 miss exactly one, where the cycled arm's failures drop whole cycles
+    # of eight. So the substitution buys some of its effect with vocabulary
+    # rather than with periodicity, and a within-one-unit criterion -- applied
+    # to *both* arms, or it would be a thumb on the scale -- brackets how much.
+    ap_tol = dict(zip(_cells(apf), (apf.count_a - apf.k).abs() <= args.tolerance))
     # Panel (a) of the figure is a *median relative error* curve, not an exact
     # rate, and the objection was aimed at the figure as much as at the number.
     # Carry the errors as well as the hit/miss so both statistics can be
@@ -157,6 +167,15 @@ def headline(main_d: pd.DataFrame, apf: pd.DataFrame, args, res: dict) -> None:
         matched = rate(lo_ok, list(hi_m.err == 0))
         never = rate(lo_ok, [ap_cells.get(c, ok) for c, ok
                              in zip(_cells(hi_m), hi_m.err == 0)])
+        # Same three arms under the within-`tolerance` criterion.
+        tol = args.tolerance
+        t_rep = float(((rep.count_a - rep.k).abs() <= tol).mean())
+        lo_t = list((lo.count_a - lo.k).abs() <= tol)
+        t_full = rate(lo_t, list((hi.count_a - hi.k).abs() <= tol))
+        t_matched = rate(lo_t, list((hi_m.count_a - hi_m.k).abs() <= tol))
+        t_never = rate(lo_t, [ap_tol.get(c, ok) for c, ok
+                              in zip(_cells(hi_m), (hi_m.count_a - hi_m.k).abs() <= tol)])
+
         pool_acc["rep"] += list(rep.err == 0)
         pool_acc["full"] += lo_ok + list(hi.err == 0)
         pool_acc["matched"] += lo_ok + list(hi_m.err == 0)
@@ -183,7 +202,11 @@ def headline(main_d: pd.DataFrame, apf: pd.DataFrame, args, res: dict) -> None:
             median_rep=m_rep,
             err_gap_cycled_full=med_full - m_rep,
             err_gap_cycled_matched=med_matched - m_rep,
-            err_gap_never_cycled=med_never - m_rep)
+            err_gap_never_cycled=med_never - m_rep,
+            tol_rep=t_rep,
+            tol_gap_cycled_full=t_full - t_rep,
+            tol_gap_cycled_matched=t_matched - t_rep,
+            tol_gap_never_cycled=t_never - t_rep)
 
     e_rep_p = float(np.mean(pool_acc["rep"]))
     pooled = {"n_rep": len(pool_acc["rep"]), "n_ctl_full": len(pool_acc["full"]),
@@ -207,7 +230,8 @@ def headline(main_d: pd.DataFrame, apf: pd.DataFrame, args, res: dict) -> None:
               f"{100*(r['gap_never_cycled']-r['gap_cycled_matched']):+8.1f}")
 
     KEYS = ("gap_cycled_full", "gap_cycled_matched", "gap_never_cycled",
-            "err_gap_cycled_full", "err_gap_cycled_matched", "err_gap_never_cycled")
+            "err_gap_cycled_full", "err_gap_cycled_matched", "err_gap_never_cycled",
+            "tol_gap_cycled_full", "tol_gap_cycled_matched", "tol_gap_never_cycled")
     for unit in ("checkpoint", "family"):
         agg = {}
         for key in KEYS:
@@ -233,6 +257,10 @@ def headline(main_d: pd.DataFrame, apf: pd.DataFrame, args, res: dict) -> None:
               f"{agg['periodicity_points']:+.1f} on matched cells)   "
               f"median-error gap {100*agg['err_gap_cycled_full']['mean']:.1f} -> "
               f"{100*agg['err_gap_never_cycled']['mean']:.1f} pts")
+        print(f"  {'':13s}  within-{args.tolerance} gap "
+              f"{100*agg['tol_gap_cycled_full']['mean']:.1f} -> "
+              f"{100*agg['tol_gap_never_cycled']['mean']:.1f} pts "
+              f"({100*(agg['tol_gap_never_cycled']['mean'] - agg['tol_gap_cycled_full']['mean']):+.1f})")
 
     # The trap this repo has hit twice: a new script and an old one disagreeing
     # on an estimator because they were fitting different rows, not because the
@@ -272,6 +300,9 @@ def main() -> None:
                     help="published per-checkpoint gaps; the cycled arm must match")
     ap.add_argument("--kmin", type=int, default=6,
                     help="the headline is quoted at k>=6")
+    ap.add_argument("--tolerance", type=int, default=1,
+                    help="units of slack for the symmetric sensitivity "
+                         "criterion; applied to both arms")
     ap.add_argument("--tol", type=float, default=0.005,
                     help="allowed drift of the cycled arm from the stored "
                          "checkpoint-level file before the run fails")

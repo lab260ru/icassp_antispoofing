@@ -31,5 +31,11 @@ conda activate base
 for m in llasa1b xtts2 qwen06b qwen17b; do
   python src/common/asr_ctc.py --model "$m" --gpu 2 2>&1 | grep -viE "warn|future" | tail -1
 done
-python src/common/score_counts.py --models llasa1b xtts2 qwen06b qwen17b \
+# Score every checkpoint that has aperiodic transcripts, not just the four this
+# script generates: the output file is overwritten, so listing only these four
+# would delete the Llasa-3B/8B rows that `run_aperiodic_llasa.sh` adds -- the
+# same trap `run_pipeline.sh` shipped once already. Rows are emitted only for
+# item ids present in "$STIM", so naming a model with no aperiodic audio costs
+# nothing.
+python src/common/score_counts.py --models llasa1b llasa3b llasa8b xtts2 qwen06b qwen17b \
   --stimuli "$STIM" --judge ctc --out data/results/behavioural_aperiodic.csv 2>&1 | tail -4

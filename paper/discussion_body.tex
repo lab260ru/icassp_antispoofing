@@ -26,8 +26,8 @@ on Llasa-1B: they refute the mechanism where tested, not panel-wide.
 \noindent\textbf{Related work, and what the control decides.}
 Closest is representational collapse~\cite{barbero2024glasses}, where distinct
 prefixes converge with length --- which our control separates from periodicity.
-Counting-specific expressivity results reach a compatible conclusion another way
---- transformers count only under conditions on precision, depth and positional
+Counting-specific expressivity results agree by another route --- transformers
+count only under conditions on precision, depth and positional
 encoding~\cite{yehudai2024when,salzer2025counting,zhang2024counting}, with
 single-pass~\cite{hahn2020theoretical,strobl2024formal} and state-tracking
 bounds~\cite{li2025statetracking} bracketing it. The two predict differently,
@@ -38,14 +38,13 @@ result is periodicity-specific.
 
 \noindent\textbf{What the design does not separate, and other limits.}
 Periodicity and \emph{verbatim token identity} vary together here, so
-``periodicity'' is the pair; neither is separated from \emph{training-set
-frequency}, $k$-fold repetition being far rarer in speech corpora than a matched
-distinct-word sentence, so an out-of-distribution account predicts the same
-dissociation. Inside the repeated arm count and text length are one
-variable, so a probe decoding $k$ may be decoding length; the VITS/F5-TTS
-duration story rests on one model per strategy, and $q$ on one checkpoint. The
-panel is \NFamilies{} families, and a Spanish arm came out unreportable rather
-than replicated, an exact-rate contrast needing a judge accurate enough to pin
-the control side near one (S27). Exclusions are rule-based and blind to arm and score, and
-the judge is validated against concatenative ground truth; no listening study
-was run.
+``periodicity'' is the pair, and neither is separated from \emph{training-set
+frequency}: $k$-fold repetition is far rarer in speech corpora than a matched
+distinct-word sentence, and an out-of-distribution account predicts the same
+dissociation. Inside the repeated arm count and text length are one variable, so
+a probe decoding $k$ may be decoding length. The duration story rests on one model per
+strategy, $q$ on one checkpoint, the panel on \NFamilies{} families; a Spanish
+arm was unreportable, an exact-rate contrast needing a judge accurate enough to
+pin the control side near one (S27).
+Exclusions are rule-based and blind to arm and score, and the judge is
+validated against concatenative ground truth, not listeners.
