@@ -18,10 +18,10 @@
 \caption{(a) Relative count error $(\hat c-k)/k$ against requested repetitions
 $k$ under the CTC judge, repeated items (solid) against their length-matched
 controls (dashed), one pair per checkpoint: control medians sit at zero
-throughout. (b) The extension ladder --- rendered against requested count, both
-families, dotted line $y\!=\!x$. Both level off, the repeated far lower.
-(c) Rate of effective-rank gain per checkpoint, repeated (dark) against control
-(light, hatched), 95\% bootstrap intervals over templates.}
+throughout. (b) Exact renderings against period $p$ at fixed carrier and word
+count ($n=\PerNKept{}$, ordered scan, no interval): graded and monotone, not a
+step at $p\!>\!1$. Rungs $p=2,4,8$ share one 8-word pool; hollow markers past
+the rule are the $p\!=\!k$ arm, matched to neither in vocabulary nor length.}
 \label{fig:main}
 \end{figure}
 
@@ -145,7 +145,8 @@ rendered count equals the requested one.}
 
 The $k\!\ge\!6$ threshold was chosen after seeing where the arms diverge, which
 is why the abstract gives the unconditioned figure too and the specification
-curve varies it. Two exploratory analyses, dated in S16 (S8, S10, S17), occupy Fig.~\ref{fig:main}(b,c). Within $k\le32$ the deficit is proportional, not
+curve varies it. Two exploratory analyses, dated in S16, are reported in
+text alone (S8, S10, S17). Within $k\le32$ the deficit is proportional, not
 saturating (RSS \ShapePropSSE{} against \ShapeSatSSE{}), so no horizon lies in
 this ladder; extending to $k\!\le\!128$ lowers the fitted saturation
 scale \HzRatio{}-fold, but form-dependently (\HzFormLo{}--\HzFormHi{}) and not

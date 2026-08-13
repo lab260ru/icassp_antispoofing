@@ -2,7 +2,9 @@
 """Generate the paper's figures.
 
 Fig 1  the dissociation: counting accuracy vs k for repeated text and for
-       length-matched non-repetitive controls
+       length-matched non-repetitive controls, beside the period ladder that
+       says the deficit is graded in the period rather than switched on by
+       verbatim token identity
 Fig 2  the mechanism: boundary-state distances d_m decaying geometrically, and
        the cross-model regression of k* on 1/log(1/q_hat) that Theorem A predicts
 Fig 3  attention dilution: per-occurrence mass ~ 1/k and entropy ~ log k
@@ -41,9 +43,25 @@ LABEL = {"llasa1b": "Llasa-1B", "llasa3b": "Llasa-3B", "llasa8b": "Llasa-8B",
 # Short forms for the one place a tick label has to carry the checkpoint name:
 # panel (c) gives each of six models about 9pt of x-axis.
 SHORT = {"llasa1b": "Llasa-1B", "llasa3b": "Llasa-3B", "llasa8b": "Llasa-8B",
-         "xtts2": "XTTS-v2", "qwen06b": "Qwen-0.6B", "qwen17b": "Qwen-1.7B"}
+         "xtts2": "XTTS-v2", "qwen06b": "Qwen-0.6B", "qwen17b": "Qwen-1.7B",
+         # Not a panel member (see population.ABLATIONS), but it can appear in
+         # the period ladder, whose legend is the one place its name would show.
+         "cosyvoice2": "CosyVoice2"}
 COLOR = {"llasa1b": "#4C72B0", "llasa3b": "#DD8452", "llasa8b": "#55A868",
          "xtts2": "#C44E52", "qwen06b": "#8172B3", "qwen17b": "#937860"}
+# Panel (b) separates checkpoints from one another rather than repeated from
+# control, so hue is the only encoding it inherits -- and hue alone is exactly
+# what a greyscale printer and a red-green deficiency both destroy (#C44E52 and
+# #4C72B0 have nearly the same luminance). Each curve therefore also gets a dash
+# pattern and a marker, assigned by position in the plotted list so that a
+# checkpoint arriving in period_ladder.json tomorrow gets the next unused pair
+# instead of a KeyError.
+CURVE_STYLES = [("-", "o"), ((0, (3.0, 1.3)), "s"), ((0, (1.0, 1.2)), "^"),
+                ((0, (4.5, 1.2, 1.0, 1.2)), "D"), ((0, (2.0, 1.0, 0.6, 1.0)), "v"),
+                ((0, (5.5, 1.4)), "P")]
+# Hues for a checkpoint that is not in COLOR (a fourth architecture landing in
+# the ladder before it lands in ORDER).
+SPARE_COLORS = ["#4C72B0", "#8172B3", "#C44E52", "#55A868", "#DD8452", "#937860"]
 # Repeated vs. control is the figure's one recurring contrast, so it gets one
 # encoding everywhere: colour *and* line style *and* marker in (b), colour *and*
 # fill lightness *and* hatch in (c), so neither greyscale printing nor a
@@ -122,31 +140,119 @@ def _fit_ylabels(fig, axes) -> None:
             lbl.set_position((x, y + dy / (ax.get_position().height * FIG_H_PT)))
 
 
-def fig_main(beh: pd.DataFrame, state: pd.DataFrame, cap: dict, out: Path,
-             beh_ext: pd.DataFrame | None = None) -> None:
-    """The paper's single figure: behaviour, the control contrast, and the
-    capacity mechanism, in one full-width row.
+def _period_panel(ax, period: dict) -> None:
+    """Exact rate against period p, one line per checkpoint.
 
-    Three panels, not four. The old panel (a) plotted repeated-item error
-    against k, which panel (b) already contains as its solid curves; dropping
-    it buys the remaining three enough width to stay legible.
+    Reads `exact_by_period_scan` (the published ordered-scan rule) and
+    `n_by_period` out of period_ladder.json rather than naming checkpoints:
+    the ladder gains rungs and checkpoints between drafts, and a hardcoded list
+    would either crash or silently drop the new one.
+
+    Two things this panel is not allowed to imply:
+
+    * **p=k is not the far end of the ladder.** p in {2,4,8} are rotations of
+      one 8-word pool, so they are lexically identical to each other; p=k draws
+      a 146-word pool and runs ~215 characters against ~188 for the interior,
+      so it is neither vocabulary- nor length-matched to them and the verdict
+      in the text is computed without it. It is drawn detached, past a rule,
+      with hollow markers and no connecting segment, so no eye reads a
+      trend through it.
+    * **No error bars.** The stored bootstrap is over (template, k) cells of the
+      *strict conjunction* rule, while these points are the ordered scan; the
+      two rules differ by up to 28 points at p=2, so borrowing the interval
+      would draw points outside their own bars. The interval that belongs to
+      these points is not computed here, so none is drawn.
+    """
+    scan = period.get("exact_by_period_scan") or {}
+    if not scan:
+        ax.set_axis_off()
+        return
+    nby = period.get("n_by_period") or {}
+
+    def rate(arm: str, m: str):
+        """The cell's rate, or None if the cell is absent or empty.
+
+        A (checkpoint, arm) cell can exist in the rate table with a null while
+        that checkpoint's audio is still generating; plotting it would join a
+        line across a rung nobody measured.
+        """
+        v = scan.get(arm, {}).get(m)
+        n = nby.get(arm, {}).get(m, 1) if nby else 1
+        return None if v is None or not n else 100 * float(v)
+
+    arms = [a for a in ("1", "2", "4", "8", "k") if a in scan]
+    interior = [a for a in arms if a != "k"]
+    models = ordered({m for a in arms for m in scan[a]}, drop_ablations=False)
+    # Ladder rungs are equally spaced, not placed at p: the interesting
+    # comparison is rung-to-rung, and a linear p axis would crush p=1,2,4 into
+    # the left eighth of the panel while a log axis would relabel them as powers.
+    xpos = {a: float(i) for i, a in enumerate(interior)}
+    if "k" in arms:
+        xpos["k"] = float(len(interior)) + 0.55   # detached: see docstring
+
+    for i, m in enumerate(models):
+        ls, mk = CURVE_STYLES[i % len(CURVE_STYLES)]
+        col = COLOR.get(m, SPARE_COLORS[i % len(SPARE_COLORS)])
+        pts = [(xpos[a], rate(a, m)) for a in interior]
+        pts = [(x, y) for x, y in pts if y is not None]
+        ax.plot([x for x, _ in pts], [y for _, y in pts], ls=ls, marker=mk,
+                color=col, lw=0.9, ms=2.0, mew=0, label=SHORT.get(m, m))
+        yk = rate("k", m) if "k" in arms else None
+        if yk is not None:
+            # Hollow, unconnected: a point on the same axes, not a fifth rung.
+            ax.plot([xpos["k"]], [yk], ls="none", marker=mk,
+                    mfc="none", mec=col, mew=0.6, ms=2.4)
+    if "k" in arms:
+        ax.axvline(0.5 * (xpos[interior[-1]] + xpos["k"]), color="0.55",
+                   lw=0.5, ls=(0, (1.2, 1.4)))
+
+    ax.set_xticks([xpos[a] for a in arms])
+    ax.set_xticklabels(arms, fontsize=5.5)
+    ax.set_xlim(-0.35, max(xpos.values()) + 0.35)
+    _int_ticks(ax, "y", [0, 50, 100])
+    # Headroom above 100% for the panel letter, and below 0% so the p=1 markers
+    # do not sit on the spine.
+    ax.set_ylim(-8, 124)
+    ax.set_xlabel(r"period $p$", fontsize=6, labelpad=0.8)
+    ax.set_ylabel("exactly right (%)", fontsize=6, labelpad=1.0)
+    # Lower right is empty by the shape of the result -- the curves are high
+    # everywhere except p=1, which is at the far left -- so the legend needs no
+    # box and hides nothing.
+    ax.legend(fontsize=5, loc="lower right", ncol=2 if len(models) > 3 else 1,
+              handlelength=1.6, handletextpad=0.4, labelspacing=0.12,
+              columnspacing=0.8, borderpad=0.1, borderaxespad=0.15)
+
+
+def fig_main(beh: pd.DataFrame, out: Path, period: dict | None = None) -> None:
+    """The paper's single figure: the dissociation, and the period ladder.
+
+    Two panels, not three. The figure used to spend (b) on the k<=128 extension
+    ladder and (c) on the fitted rate of effective-rank gain -- both exploratory,
+    and the body now compresses both into one sentence saying neither
+    distinguishes a counting horizon from any saturating process. Meanwhile the
+    period ladder, which is the paper's answer to its own title, had no figure at
+    all. Two panels at the same total width is the trade: the headline result
+    gets drawn, and the two survivors get half a column each instead of a third.
     """
     models = [m for m in ordered(beh.model.unique()) if m in ORDER]
 
     fig = plt.figure(figsize=(FIG_W_PT * PT, FIG_H_PT * PT))
-    # Vertical budget, in points: 27 under the axes -- set by the six rotated
-    # checkpoint names of panel (c), the tallest thing below any axis -- 2.5
-    # above, and 36 of plot in between. The panel letters go *inside* the axes:
-    # a title row would cost a fifth of the plot height.
-    bot, top_pad = 27.0, 2.5
+    # Vertical budget, in points. The canvas is the same 246.3 x 65.5pt it has
+    # always been -- it is printed at this size, not scaled -- but the 27pt that
+    # used to sit under the axes existed for one thing only: the six rotated
+    # checkpoint names of the old panel (c). Both surviving panels label their
+    # x axis with short horizontal integers, so 15pt covers a tick row and a
+    # label, and the 12pt released goes straight into plot height. The panel
+    # letters go *inside* the axes: a title row would cost a quarter of it back.
+    bot, top_pad = 15.0, 2.5
     axh = FIG_H_PT - bot - top_pad
     # Horizontal budget: each panel keeps its own gutter for a rotated y label
-    # plus its widest tick label.
-    gut = (29.0, 27.0, 23.0)
-    axw = (FIG_W_PT - sum(gut) - 4.0) / 3.0
-    x0 = [gut[0], gut[0] + axw + gut[1], gut[0] + axw + gut[1] + axw + gut[2]]
+    # plus its widest tick label ("-100" in (a), "100" in (b)).
+    gut = (29.0, 25.0)
+    axw = (FIG_W_PT - sum(gut) - 4.0) / 2.0
+    x0 = [gut[0], gut[0] + axw + gut[1]]
     axes = [fig.add_axes(_rect(x, bot, axw, axh)) for x in x0]
-    for ax, letter in zip(axes, "abc"):
+    for ax, letter in zip(axes, "ab"):
         ax.tick_params(labelsize=5.5, pad=1.2, length=1.8, width=0.5)
         ax.text(0.035, 0.955, f"({letter})", transform=ax.transAxes, ha="left",
                 va="top", fontsize=6)
@@ -177,8 +283,10 @@ def fig_main(beh: pd.DataFrame, state: pd.DataFrame, cap: dict, out: Path,
     _int_ticks(ax, "x", [1, 8, 32])
     ax.set_yticks([-100, -50, 0])
     # Headroom below the data for the legend, and above it for the panel letter;
-    # -100% is the floor of the measure, so nothing is hidden by either.
-    ax.set_ylim(-196, 58)
+    # -100% is the floor of the measure, so nothing is hidden by either. The
+    # band was -196 when the axes were 36pt tall; at 48pt the same legend needs
+    # proportionally less of it, so the data get the space back.
+    ax.set_ylim(-158, 44)
     ax.set_xlabel(r"repetitions $k$", fontsize=6, labelpad=0.8)
     ax.set_ylabel("count error (%)", fontsize=6, labelpad=1.0)
     # The band under -100% is empty by construction -- the measure floors at
@@ -187,85 +295,58 @@ def fig_main(beh: pd.DataFrame, state: pd.DataFrame, cap: dict, out: Path,
     ax.legend(fontsize=5, loc="lower right", handlelength=1.5, handletextpad=0.4,
               labelspacing=0.1, borderpad=0.1, borderaxespad=0.1)
 
-    # ---- (b) the extension ladder -------------------------------------
-    # This is where the count actually stops tracking the request, and the
-    # control curve is what stops that being read as counting collapse when it
-    # is partly a general utterance-length ceiling.
+    # ---- (b) the period ladder ----------------------------------------
+    # The paper's answer to its own title. Carrier, word count and requested
+    # count are held fixed and only the period p varies, so the shape of this
+    # curve is the whole argument: a *step* between p=1 and p>1 would say the
+    # effect is verbatim token identity, and a graded monotone rise says it is
+    # the period. Draw it as a line per checkpoint precisely so the reader can
+    # see gradedness holding within each one, not only in a pooled mean.
     ax = axes[1]
-    if beh_ext is not None and len(beh_ext):
-        e = beh_ext.copy()
-        eok = ~e.outcome.isin(["empty", "degenerate"])
-        ks = np.array(sorted(e.k.unique()), dtype=float)
-        # Linear on both axes, where the old panel was log-log: the requested
-        # counts span less than two octaves, so the log axes bought nothing and
-        # cost a set of power-of-two tick labels. Linear also makes y=x the
-        # straight diagonal a reader expects.
-        ax.plot([ks[0] - 20, ks[-1]], [ks[0] - 20, ks[-1]], ":", color="0.35",
-                lw=0.7)
-        for fam, ls, mk, col in (("word_rep", "-", "o", C_REP),
-                                 ("control_word", "--", "s", C_CTL)):
-            g = e[(e.family == fam) & eok].groupby("k")["count_a"].median().sort_index()
-            if g.empty:
-                continue
-            ax.plot(g.index, g.values, ls, marker=mk, color=col, lw=0.9,
-                    ms=2.0, mew=0)
-        _int_ticks(ax, "x", [48, 64, 96, 128])
-        _int_ticks(ax, "y", [0, 64, 128])
-        ax.set_xlim(ks[0] - 8, ks[-1] + 8)
-        ax.set_ylim(0, 148)
-        ax.set_xlabel(r"requested $k$", fontsize=6, labelpad=0.8)
-        ax.set_ylabel("rendered count", fontsize=6, labelpad=1.0)
-        # The two families and the reference line are named on themselves. A
-        # legend box would have to sit in the wedge above the diagonal, which
-        # is the only free space this panel has and is not big enough for it.
-        ax.text(0.5, 0.02, "repeated", transform=ax.transAxes, ha="center",
-                va="bottom", fontsize=5, color=C_REP)
-        ax.text(0.97, 0.57, "control", transform=ax.transAxes, ha="right",
-                va="center", fontsize=5, color=C_CTL)
-        p0 = ax.transData.transform((ks[0], ks[0]))
-        p1 = ax.transData.transform((ks[-1], ks[-1]))
-        ax.text(0.5 * (ks[0] + ks[-1]), 0.5 * (ks[0] + ks[-1]) + 7, r"$y=x$",
-                ha="center", va="bottom", fontsize=5, color="0.25",
-                rotation=np.degrees(np.arctan2(p1[1] - p0[1], p1[0] - p0[0])),
-                rotation_mode="anchor")
+    if period:
+        _period_panel(ax, period)
     else:
         ax.set_axis_off()
-
-    # ---- (c) fitted capacity gain, 95% bootstrap CIs -------------------
-    ax = axes[2]
-    cm = [m for m in ordered(list(cap["models"].keys())) if m in ORDER]
-    xs = np.arange(len(cm), dtype=float)
-    w = 0.36
-    # Light hatched fill against dark flat fill, not two saturated hues: the
-    # bars carry the repeated/control contrast with no line style available to
-    # back the colour up, and #C44E52 and #4C72B0 have the same greyscale value.
-    for off, key, face, edge, hatch in (
-            (-w / 2, "repeated", C_REP, C_REP, ""),
-            (w / 2, "control", "#AEC8E0", C_CTL, "//")):
-        v = [cap["models"][m][key]["gain"] for m in cm]
-        lo = [cap["models"][m][key]["lo"] for m in cm]
-        hi = [cap["models"][m][key]["hi"] for m in cm]
-        err = np.array([[max(a - b, 0) for a, b in zip(v, lo)],
-                        [max(b - a, 0) for a, b in zip(v, hi)]])
-        ax.bar(xs + off, v, w, color=face, hatch=hatch, edgecolor=edge,
-               linewidth=0.4)
-        ax.errorbar(xs + off, v, yerr=err, fmt="none", ecolor="0.15",
-                    elinewidth=0.5, capsize=0.9, capthick=0.5)
-    ax.set_xticks(xs)
-    ax.set_xticklabels([SHORT.get(m, m) for m in cm], rotation=45, ha="right",
-                       rotation_mode="anchor", fontsize=5.0)
-    ax.tick_params(axis="x", pad=0.6)
-    ax.set_xlim(-0.6, len(cm) - 0.4)
-    ax.set_yticks([0, 25, 50])
-    ax.set_ylim(0, 88)     # room above the tallest interval for the letter
-    ax.set_ylabel(r"$\mathrm{d}\mathcal{N}_{\mathrm{eff}}/\mathrm{d}\log k$",
-                  fontsize=5.6, labelpad=1.0)
 
     _fit_ylabels(fig, axes)
     # Not bbox_inches="tight" (the rcParam default): a tight box would resize
     # the output to whatever overflowed, and the printed size is the one thing
     # this figure is not allowed to change.
     fig.savefig(out, bbox_inches=fig.bbox_inches, pad_inches=0.0)
+    plt.close(fig)
+    print(f"  {out}")
+
+
+def fig_extension(beh_ext: pd.DataFrame, out: Path) -> None:
+    """The k<=128 extension ladder: rendered count against requested count.
+
+    This was panel (b) of the main figure until the period ladder took the
+    slot. It is exploratory -- the body now gives it one clause -- so it lives
+    here, at supplementary scale, rather than spending a third of a column.
+    """
+    e = beh_ext.copy()
+    eok = ~e.outcome.isin(["empty", "degenerate"])
+    ks = np.array(sorted(e.k.unique()), dtype=float)
+    if not ks.size:
+        return
+    fig, ax = plt.subplots(figsize=(3.35, 2.0))
+    ax.plot([ks[0] - 20, ks[-1]], [ks[0] - 20, ks[-1]], ":", color="0.35", lw=0.7,
+            label=r"$y=x$")
+    for fam, ls, mk, col, lab in (("word_rep", "-", "o", C_REP, "repeated"),
+                                  ("control_word", "--", "s", C_CTL, "control")):
+        g = e[(e.family == fam) & eok].groupby("k")["count_a"].median().sort_index()
+        if g.empty:
+            continue
+        ax.plot(g.index, g.values, ls, marker=mk, color=col, lw=0.9, label=lab)
+    _int_ticks(ax, "x", [48, 64, 96, 128])
+    _int_ticks(ax, "y", [0, 64, 128])
+    ax.set_xlim(ks[0] - 8, ks[-1] + 8)
+    ax.set_ylim(0, 148)
+    ax.set_xlabel(r"requested $k$")
+    ax.set_ylabel("rendered count")
+    ax.legend(loc="upper left")
+    fig.tight_layout(pad=0.3)
+    fig.savefig(out)
     plt.close(fig)
     print(f"  {out}")
 
@@ -456,6 +537,8 @@ def main() -> None:
                     default=["data/results/behavioural_ext_llasa.csv",
                              "data/results/behavioural_ext.csv"],
                     help="extension-ladder tables; missing ones are skipped")
+    ap.add_argument("--period", default="data/results/period_ladder.json",
+                    help="period ladder table; panel (b) is dropped if missing")
     ap.add_argument("--summary", default="data/results/summary.json")
     ap.add_argument("--outdir", default="paper/figs")
     args = ap.parse_args()
@@ -481,11 +564,16 @@ def main() -> None:
         beh_ext = beh_ext[[not flags.get((r.model, r.item_id, r.seed), False)
                            for r in beh_ext.itertuples()]]
 
-    if beh is not None and state is not None and cap is not None:
-        fig_main(beh, state, cap, outdir / "fig_main.pdf", beh_ext=beh_ext)
+    per_path = Path(args.period)
+    period = json.loads(per_path.read_text()) if per_path.exists() else None
+
+    if beh is not None:
+        fig_main(beh, outdir / "fig_main.pdf", period=period)
     # supplementary figures
     if beh is not None:
         fig_dissociation(beh, outdir / "fig1_dissociation.pdf")
+    if beh_ext is not None and len(beh_ext):
+        fig_extension(beh_ext, outdir / "fig5_extension.pdf")
     if state is not None:
         if cap is not None:
             fig_mechanism(state, cap, outdir / "fig2_mechanism.pdf")
