@@ -210,22 +210,22 @@ implication holds; its antecedent does not.
 \noindent\textbf{Measuring $q$.}
 We estimate the top singular value of the boundary-to-boundary Jacobian by power
 iteration with exact directional derivatives, teacher-forcing the generated
-tokens so the map is well defined. It passes three gates on every checkpoint first:
-it recovers a synthetic Jacobian to $4\times10^{-4}$; run backwards in time it
-returns \emph{exactly} zero, as a causal transformer requires; and its
-Jacobian--vector products match finite differences to $2\times10^{-5}$. Across
+tokens so the map is well defined. It passes three gates first on every
+checkpoint: a synthetic Jacobian recovered to $4\times10^{-4}$, exactly zero run
+backwards in time as a causal transformer requires, and Jacobian--vector
+products matching finite differences to $2\times10^{-5}$. Across
 \JacPanelN{} checkpoints and \JacPanelFam{} families, $q$ runs
 \JacQMin{}--\JacQMax{}. \emph{No map is a contraction:} $q<1$ in no item, in any
 checkpoint, lag or sub-stack, on either arm, and the most favourable cell
 anywhere still has a bootstrap floor of \JacBestFloor{}. Teacher-forcing removes
-the token channel, so these are \emph{lower} bounds.
+the token channel, so these are \emph{lower} bounds; perturbing layer caches
+independently biases the other way, and neither cancels the other (S5).
 
 The chain fails at both ends. The attention spread the lemma needs small is
 $\delta\le\DeltaMax{}$ nats --- a \DeltaRatio{}-fold weight ratio across the
 repeated spans, not the near-uniformity it assumes --- and the map that
-flattening licenses does not contract either. The premise also fails on the
-\emph{control} arm everywhere, so contraction was never a description of these
-decoders for any input. And $q$ \emph{grows} with scale inside Llasa (\JacQLlasaOne{},
+flattening licenses does not contract either. It also fails on the \emph{control}
+arm everywhere, so contraction never described these decoders for any input. And $q$ \emph{grows} with scale inside Llasa (\JacQLlasaOne{},
 \JacQLlasaThree{}, \JacQLlasaEight{} at 1B, 3B and 8B), while \ErrBestModel{}
 --- the one whose median count error is zero --- has $q=\JacQCounter{}$. A
 decoder with no central-tendency deficit has an equally expansive map, so
@@ -234,8 +234,8 @@ whatever separates counting from miscounting here is not $q$. The lemma's dose-r
 (S5).
 
 We keep the bound because it motivated the manipulation, and a verified
-conditional whose antecedent is measured and rejected is cleaner than an
-untested one --- but it explains nothing in Section~\ref{sec:results}.
+conditional with a measured, rejected antecedent beats an untested one --- but
+it explains nothing in Section~\ref{sec:results}.
 
 \section{Discussion}
 \label{sec:discussion}
