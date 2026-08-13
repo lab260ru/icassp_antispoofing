@@ -1334,6 +1334,15 @@ def main() -> None:
             c8 = l8.get("cells", {}).get("count|crossk|a1", {})
             if c8.get("S1_over_floor") is not None:
                 macros["PcInertRatio"] = fmt(c8["S1_over_floor"], 2)
+            # Llasa-8B's bound is quoted because it is the reason the two
+            # checkpoints must not share a sentence: at 36% of a full transfer
+            # that arm cannot resolve an effect of the size at issue, where
+            # Qwen's carrier bound is 1.46%. Reporting "no direction steers" on
+            # both without this would give equal weight to a tight bound and to
+            # an arm that could not have seen the effect.
+            if c8.get("S4_bound_as_fraction_of_transfer") is not None:
+                macros["PcInertBound"] = fmt(
+                    100 * c8["S4_bound_as_fraction_of_transfer"], 0)
             if l8.get("verdict", "").startswith("PATCH IS INERT"):
                 macros["PcInertCk"] = "Llasa-8B"
 

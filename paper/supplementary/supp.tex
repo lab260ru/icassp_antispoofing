@@ -6133,6 +6133,44 @@ identical to its reference, and median $|\Delta \log \text{duration}|$ is
 nothing at all, leaves the same footprint. The write's entire measured effect on
 the output is a re-roll.
 
+\textbf{The two checkpoints must not share a sentence.} ``No probe direction
+steers toward its donor at the published magnitude'' is true on both, and means
+very different things on each. On Qwen3-TTS-1.7B it is \emph{well bounded}: the
+carrier control qualifies (leave-one-template-out $1.00$ on all three pairs), the
+sign test is attainable at $n{=}18$, and the bound is $1.46\%$ of a full carrier
+transfer. On Llasa-8B it is \emph{weakly} bounded: the carrier control is
+disqualified by the V2 diagnostic ($0.89 / 0.78 / 0.89$ against a $0.90$ bar), so
+only the magnitude ladder speaks, and the count arm's bound at the published
+magnitude is $36\%$ of a full transfer --- an arm that could not have resolved an
+effect of the size at issue. Two checkpoints agreeing means less when one of them
+was never able to disagree.
+
+The two also differ in what a write does at all. Qwen registers the published
+write ($4.01\times$ the sampler-re-roll floor, $n{=}36$) and a probe direction
+steers it at $16\times$ that magnitude. Llasa-8B does not register it
+($1.74\times$), and its count and random directions are never detectable at any
+magnitude tested; only the carrier becomes detectable, at $16\times$, where $44\%$
+of runs are destroyed. Its pre-committed verdict is \textsc{patch is inert}. That
+verdict currently rests on a floor of $n{=}9$ and a count arm of $n{=}18$ --- the
+same configuration in which Qwen's own numbers moved from $1.98\times$ to
+$4.01\times$ when its seeds were doubled --- so a seed-1 pass is being run before
+the verdict is reported as settled.
+
+\textbf{The published Qwen arm re-derives bitwise, today.} S26 concedes above
+that the published Llasa-1B manifest is no longer bitwise re-derivable under the
+current stack, so it is worth recording that this one is. Because the seeds,
+items, donors, layer, window, protocol and hook are identical, the positive
+control's $\alpha{=}1$ count condition \emph{is} the published Qwen3-TTS-1.7B
+causal arm re-run from scratch, in a separate store and in the current
+environment, and it reproduces it in $36/36$ waveforms with an equivalence bound
+identical to five decimal places ($0.04452$ log-count). Expressed as a fraction
+of a full transfer the two read $5.8\%$ and $5.9\%$; the difference is entirely
+in the denominator, because the published scorer pools \texttt{control\_word} and
+\texttt{sentence\_rep} baselines into the same $(\text{template}, k)$ bucket as
+\texttt{word\_rep} when it computes the full-transfer gap ($n{=}6$ against $n{=}4$
+pure \texttt{word\_rep}). Neither denominator is wrong; the unpooled one is
+cleaner.
+
 \textbf{What this costs the paper.} The equivalence bounds of S26 --- down to
 $6\%$ of a full transfer --- bound an intervention this decoder does not
 register at the magnitude used. ``The decoder ignores the count coordinate'' is
