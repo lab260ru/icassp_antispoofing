@@ -5807,6 +5807,123 @@ the stop logit -- the end-of-speech decision itself -- rather than on the
 residual stream several layers upstream of it, since the stop decision, not the
 count, is what this paper's account is ultimately about.
 
+\subsection{The follow-up: a rank-1 patch, and the escape clause it rests on}
+
+The previous subsection's ``patch a narrower set of dimensions'' is what we did
+next, and it is the experiment the main text actually reports, so it is
+documented here rather than left implicit. Instead of overwriting the residual
+stream, the follow-up transfers \emph{only} the probe's count coordinate: the
+receiver's state is projected off the ridge direction and the donor's component
+along that same direction is written in its place, at every position of the
+window, leaving all other directions untouched. Everything else --- donor pool,
+cell structure, scoring rule, sanity controls --- is inherited unchanged from
+Arm A, so the two are directly comparable. The artifact is
+\texttt{data/results/causal\_count\_followup.json}.
+
+The damage does go away. Degeneracy is $0.0\%$ against a reference of $0.0\%$,
+the self-patch no-op is bitwise identical in $18/18$ runs, and the informative
+cross-$k$ cell moves the count by a median of exactly $0.0$ in
+$\log(1{+}\text{count})$ ($n{=}36$, $95\%$ CI $[-0.09,0.09]$). Steering along
+the same direction shows no dose-response.
+
+That is the reading the main text gives, and it rests on an escape clause we
+state plainly rather than bury. The pre-committed gate P1 asks that an
+\emph{unrelated} donor move the count less than half as much as an informative
+one; this arm's ratio is $1.74$, so as a ratio it \emph{fails}. What rescues it
+is that both sides of the ratio are noise: the unrelated donor's median
+$|$shift$|$ is $0.259$ and the cross-$k$ donor's $0.149$, against a full
+donor-to-receiver transfer of $0.992$ --- so the ratio is noise over noise, and
+the honest description of the arm is not ``the disruption control passed'' but
+``every cell sits at the arm's own noise floor; nothing moves, informative or
+not.'' On the published checkpoint that reading was reached \emph{after} seeing
+the numbers. We therefore did two things: we wrote the escape into the next
+experiment's pre-commitment as an explicit, falsifiable test --- the largest
+median $|$shift$|$ across all donor kinds must be below $25\%$ of a full
+transfer --- and we report below which checkpoints pass it and which do not.
+
+\subsection{Replication on a second family: four checkpoints, and one that
+returns ``cannot tell''}
+
+A null on one checkpoint is as easily a property of that checkpoint's probe
+geometry as of decoders in general. The replication puts the identical patch on
+four checkpoints across two families, $2{,}178$ scored runs in all
+(\texttt{analysis/causal\_count\_second.py}, whose docstring carries the
+pre-commitment quoted above and predates the audio;
+\texttt{data/results/causal\_count\_second\_checkpoint.json}).
+
+\begin{center}
+\begin{tabular}{@{}lrrrl@{}}
+\toprule
+checkpoint & P1 ratio & worst cell & bound & verdict \\
+\midrule
+Qwen3-TTS-0.6B & 1.38 & $14\%$ & $9\%$  & readable null \\
+Qwen3-TTS-1.7B & 1.12 & $9\%$  & $6\%$  & readable null \\
+Llasa-1B       & 0.57 & $25\%$ & $20\%$ & readable null \\
+Llasa-8B       & 0.90 & $42\%$ & ---    & cannot tell \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent ``Worst cell'' is the largest median $|$shift$|$ over all donor kinds
+as a fraction of a full transfer --- the pre-declared escape test, which passes
+below $25\%$. ``Bound'' is the $90\%$ TOST equivalence bound on the cross-$k$
+cell in the same units: the smallest effect the arm can exclude, which is the
+deliverable rather than an interval containing zero. Both Qwen bounds are
+\emph{tighter} than the published Llasa-1B one, $9\%$ and $6\%$ of a full
+transfer, TOST $p<10^{-4}$ under both a row bootstrap and one clustered by
+receiver item; the one-sided bound toward the donor is $0.000$ on both, i.e.\
+no movement toward the donor at all. In interpretable units, at $k{=}24$ the
+Qwen-1.7B bound excludes any shift larger than $1.1$ repetitions. Every
+checkpoint's no-op self-patch is bitwise identical ($18/18$; $36/36$ on
+Llasa-8B) with $\max|\delta|$ exactly $0.0$, and every $\alpha{=}0$ steering run
+is bitwise identical to its baseline. The steering sweeps are nulls throughout
+(Qwen-0.6B $\rho{=}{+}0.034$, $p{=}0.73$; Qwen-1.7B $\rho{=}{+}0.078$,
+$p{=}0.42$; Llasa-8B $\rho{=}{+}0.047$, $p{=}0.63$).
+
+\textbf{Llasa-8B fails, and the diagnostic is the decisive kind.} Its worst
+cell is $42\%$ of a full transfer, so it fails P1 as a ratio \emph{and} fails
+the noise-floor escape --- the case the pre-commitment says yields no count
+claim. The specific reading: a \emph{same-$k$, different-seed} donor, which
+carries exactly the count the receiver already has, moves the rendered count as
+much as a cross-$k$ donor does ($0.246$ vs.\ $0.217$ median $|$shift$|$). An arm
+in which a donor with the right answer is as disruptive as one with the wrong
+answer is measuring \emph{foreign state}, not \emph{different count}, and cannot
+return a null about counting. Doubling $n$ (72 pairs at the central cell, seeds
+0--3) left this unchanged, so it is not a power problem. The verdict is
+\emph{cannot tell}, which is not \emph{no}, and the main text says so.
+
+\subsection{Two things the replication learned about its own protocol}
+
+\textbf{The protocol is not interchangeable, and we can prove it.} Llasa-1B was
+run under both its published resume protocol (patch a resumed prefix, pair
+against a resume reference) and the decode-time protocol used for Qwen (patch
+during free generation, pair against the free baseline). Under its own protocol
+it reproduces its published null: median $0.0$, inside the published $90\%$
+interval, bound $0.134$. Under the decode-time protocol the \emph{same
+checkpoint, same patch, same donors} becomes uninterpretable --- worst cell
+$0.891$, bound $0.236$ against a published $0.089$. The Qwen numbers are
+therefore usable not because the decode-time protocol is safe in general, but
+because those checkpoints' own diagnostics say the arm is readable on them
+(worst cells $0.107$ and $0.071$ against full transfers of $0.740$ and $0.750$).
+That is measured per checkpoint, never assumed, and a reader who distrusts the
+decode-time protocol can discard both Qwen rows and still have the Llasa-1B
+resume replication.
+
+\textbf{The published manifest is no longer bitwise re-derivable.} Re-running
+\texttt{analysis/causal\_count.py}'s own generator today returns $873$ tokens
+where the committed manifest records $1{,}528$, on the installed stack
+(\texttt{transformers} 4.57.3, \texttt{torch} 2.11.0+cu130). The replication
+above is therefore \emph{statistical}, not bitwise: it re-runs the experiment
+and compares distributions, and it is reported that way. Three further traps
+are recorded for anyone re-running this: \texttt{qwen\_gen.eos\_trim\_length}
+indexes \texttt{hidden\_states[j+1]} over the full range and runs off the end
+(rendered frames are $\text{len}(\texttt{hidden\_states}){-}1$, verified against
+the ledger and the waveform); \texttt{soundfile.write} stores float32 input as
+PCM\_16, so a bitwise no-op gate must compare in memory and never through the
+file; and probe grids differ per checkpoint (\texttt{every3} vs.\
+\texttt{every4}), so a patch layer must be looked up in each file's own
+\texttt{probe\_layers} rather than used as a column index.
+
 
 % ============================================================
 \section{The Spanish arm: the judge replicates, the counting statistic does not}

@@ -1122,6 +1122,81 @@ def main() -> None:
             macros["CausalDegen"] = fmt(rk["patched_degenerate_pct"], 1)
             macros["CausalNoop"] = str(rk["n_noop"])
 
+    # ---- does the rank-1 null survive a second family? ---------------------
+    # The published null was one checkpoint, which is exactly the objection a
+    # reviewer should raise: a null on one model is as easily a property of that
+    # model's probe geometry as of decoders in general. This run puts the same
+    # patch on four checkpoints across two families and pre-commits the reading
+    # of each arm before looking at the counts.
+    #
+    # Two things in here weaken the paper and are reported anyway.
+    #
+    # First, the *protocol* matters and we can prove it. Llasa-1B was run under
+    # both protocols. Under its published resume protocol it reproduces its own
+    # published null; under the decode-time protocol used for Qwen it becomes
+    # too disruptive to interpret (bound 0.24 against a published 0.09). So the
+    # protocol is not interchangeable, and the Qwen numbers are only usable
+    # because their own diagnostics say the arm is readable on those
+    # checkpoints -- largest cell shift 0.07-0.11 against a full transfer of
+    # 0.74, i.e. every cell at the noise floor. That is measured per checkpoint,
+    # not assumed.
+    #
+    # Second, Llasa-8B's patch arm fails. Its diagnostic is the decisive kind:
+    # a *same-k different-seed* donor, which carries the count the receiver
+    # already has, moves the count as much as a cross-k donor (0.25 vs 0.22).
+    # An arm where a donor with the right answer is as disruptive as one with
+    # the wrong answer is measuring "foreign state", not "different count", and
+    # cannot return a null about counting. It returns "cannot tell", which is
+    # not the same as "no", and the paper says so.
+    cs_path = Path("data/results/causal_count_second_checkpoint.json")
+    if cs_path.exists():
+        cs = json.loads(cs_path.read_text()).get("checkpoints", {})
+
+        def _arm(model: str) -> dict:
+            """The arm whose protocol that checkpoint is entitled to be read under."""
+            c = cs.get(model, {})
+            return c.get("rank1_patch_published_protocol") or c.get("rank1_patch", {})
+
+        readable = [m for m in ("qwen06b", "qwen17b", "llasa1b", "llasa8b")
+                    if _arm(m).get("verdict") == "readable null"]
+        macros["CausalCkOk"] = WORDS.get(len(readable), str(len(readable)))
+        macros["CausalCkAll"] = WORDS.get(len(cs), str(len(cs)))
+        fam = {"qwen06b": "qwen", "qwen17b": "qwen",
+               "llasa1b": "llasa", "llasa8b": "llasa"}
+        macros["CausalFamN"] = WORDS.get(len({fam[m] for m in readable}),
+                                         str(len({fam[m] for m in readable})))
+
+        # The two Qwen bounds, tighter than the published Llasa-1B one. Quoted
+        # as a fraction of a full transfer because a bound in log-count units is
+        # unreadable without knowing what a real count change looks like.
+        fr = {}
+        for m, tag in (("qwen06b", "Qsm"), ("qwen17b", "Qlg"), ("llasa1b", "Lsm")):
+            e = _arm(m).get("equivalence", {})
+            if e:
+                fr[tag] = 100 * e["bound_as_fraction_of_transfer"]
+                macros[f"EqPatch{tag}Frac"] = fmt(fr[tag], 0)
+                macros[f"EqPatch{tag}Reps"] = fmt(
+                    e.get("bound_repetitions_at_k", {}).get("24", float("nan")), 1)
+        if fr:
+            macros["EqPatchBest"] = fmt(min(fr.values()), 0)
+
+        # The Llasa-8B failure, in the numbers that make it a failure.
+        l8 = cs.get("llasa8b", {}).get("rank1_patch_published_protocol", {})
+        cells = l8.get("cells", {})
+        ds = cells.get("diffseed|L16|P128", {}).get("median_abs_shift")
+        ck = cells.get("crossk|L16|P128", {}).get("median_abs_shift")
+        if ds is not None and ck is not None:
+            macros["CausalSameK"] = fmt(ds, 2)
+            macros["CausalCrossK"] = fmt(ck, 2)
+            # If the same-k donor ever stops being at least as disruptive, the
+            # sentence in the discussion is no longer true and must be rewritten
+            # rather than left standing on a stale number.
+            if ds < ck:
+                raise SystemExit(
+                    "causal: same-k donor no longer moves the count as much as "
+                    f"cross-k ({ds:.3f} < {ck:.3f}); the Llasa-8B sentence in "
+                    "discussion_body.tex is now false -- rewrite it")
+
     # ---- the judge audit's own sample sizes -------------------------------
     # The audit is the paper's justification for its central methodological
     # choice and was reported without an n. Worse, the main text had Whisper's

@@ -110,6 +110,41 @@ def main() -> int:
         if vd:
             want("S14 asymmetry A", vd["A"], 2)
 
+    # S26's replication table. Every cell of it is derived rather than copied
+    # -- the P1 ratio, the worst cell as a fraction of a full transfer, the
+    # equivalence bound as the same fraction -- so a rerun that changed any
+    # denominator would leave four rows of plausible, wrong percentages behind
+    # with nothing complaining. The percentages are checked as integers because
+    # that is how the table prints them.
+    cs = load("causal_count_second_checkpoint.json")
+    if cs:
+        for m, c in cs.get("checkpoints", {}).items():
+            a = c.get("rank1_patch_published_protocol") or c.get("rank1_patch")
+            if not a:
+                continue
+            want(f"S26 {m} P1 ratio", a["disruption_index"], 2)
+            full = a.get("full_transfer_logcount")
+            if full:
+                want(f"S26 {m} worst cell pct",
+                     100 * a["largest_median_abs_shift"] / full, 0)
+            # A bound is quoted only for the arms entitled to one. Llasa-8B's
+            # verdict is "cannot tell", and printing a bound for an arm that
+            # cannot be read would be the exact overclaim the gate exists to
+            # prevent -- so it is absent from the table on purpose.
+            eq = a.get("equivalence")
+            if eq and a.get("verdict") == "readable null":
+                want(f"S26 {m} bound pct",
+                     100 * eq["bound_as_fraction_of_transfer"], 0)
+        # The Llasa-8B diagnostic: the same-k donor must stay at least as
+        # disruptive as the cross-k one, or the sentence built on it is false.
+        l8 = cs.get("checkpoints", {}).get("llasa8b", {}).get(
+            "rank1_patch_published_protocol", {})
+        for cell, label in (("diffseed|L16|P128", "same-k"),
+                            ("crossk|L16|P128", "cross-k")):
+            v = l8.get("cells", {}).get(cell, {}).get("median_abs_shift")
+            if v is not None:
+                want(f"S26 llasa8b {label} shift", v, 3)
+
     if missing:
         print(f"  FAIL {len(missing)} supplement numbers are not in supp.tex:")
         for m in missing:

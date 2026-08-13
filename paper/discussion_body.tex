@@ -12,15 +12,16 @@ Venkatesh~\cite{venkatesh2026repeated} established the representational half of
 that in text models by probing; we add the causal half and the isolation of periodicity
 from length. The count is not erased: it stays decodable late ($R^2$ \ProbeLateMed{}), and a
 probe past the extension horizon is inconclusive (S12). Deciding needs a manipulation of
-the readout at fixed state, and we ran two. Splicing whole donor states is too disruptive to
-read, an \emph{unrelated} donor moving the count $1.3\times$ as much as one
-differing in $k$. A rank-1 patch transferring only the probe's count
-coordinate removes the damage (\CausalDegen{}\% degenerate, self-patch
-bitwise-identical \CausalNoop{}/\CausalNoop{}) and moves the count not at all
-($\CausalShift{}$ log-count $[\CausalShiftLo{},\CausalShiftHi{}]$,
-$n=\CausalN{}$); steering along it gives no dose-response. On this checkpoint the count coordinate
-transplants cleanly and the decoder ignores it (S26). The patch is a single-checkpoint
-result on Llasa-1B, where the Jacobian measurement now spans \JacPanelN{}.
+the readout at fixed state. Splicing whole donor states is too disruptive to read; a
+rank-1 patch transferring only the probe's count coordinate is not
+(\CausalDegen{}\% degenerate, self-patch bitwise-identical
+\CausalNoop{}/\CausalNoop{}), and it moves the count not at all
+($\CausalShift{}$ log-count $[\CausalShiftLo{},\CausalShiftHi{}]$, $n=\CausalN{}$)
+on \CausalCkOk{} checkpoints across \CausalFamN{} families, within
+\EqPatchQlgFrac{}--\EqPatchLsmFrac{}\% of a full transfer; steering gives no
+dose-response. The fourth, Llasa-8B, returns \emph{cannot tell}, not \emph{no}: a
+same-$k$ donor moves the count as much as a cross-$k$ one (\CausalSameK{} vs.\
+\CausalCrossK{}), so that arm measures foreign state (S26).
 
 \noindent\textbf{Related work, and what the control decides.}
 Closest is representational collapse~\cite{barbero2024glasses}, where distinct
@@ -38,6 +39,6 @@ repetition is far rarer in speech corpora than a matched distinct-word sentence,
 and an out-of-distribution account predicts the same dissociation. Inside the
 repeated arm count and text length are one variable. The duration story rests on
 one model per strategy,
-the causal patch on one checkpoint, the panel on \NFamilies{} families, and a Spanish arm was
+the causal patch on \CausalCkOk{} of \CausalCkAll{} checkpoints, the panel on \NFamilies{} families, and a Spanish arm was
 unreportable, an exact-rate contrast needing a more accurate judge (S27). Exclusions are blind to arm and score; the judge is
 validated on concatenative ground truth, not listeners.
