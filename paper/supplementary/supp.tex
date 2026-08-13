@@ -5533,6 +5533,71 @@ needing any ground truth at all. Neither is a human ear. A blind listening study
 on the released sample is the obvious thing a follow-up should do, and the sample
 exists so that it can be done without regenerating anything.
 
+\subsection{The pipeline at work, on rows nobody chose}
+
+Three review rounds have made a sharper version of the same complaint: the
+phenomenon is audible, the evidence is a number an automated pipeline produced,
+and the paper never once shows that pipeline working on a concrete generation.
+That is true and it is cheap to fix. What makes a worked example worth anything
+is that we did not pick it, so the selection rule is fixed in code
+(\texttt{analysis/worked\_examples.py}) and takes whatever it lands on: restrict
+to the reportable panel, sort by (model, item, seed), walk the outcome labels in
+a fixed order and the checkpoints in sorted order together so outcome $i$ is
+drawn from checkpoint $i \bmod N$, and take the first row of that pair. The
+checkpoint cycle exists because the simpler rule --- first row per outcome ---
+puts all six examples on Llasa-1B, which sorts first; that is a property of the
+alphabet, not of the pipeline.
+
+\begin{center}
+{\footnotesize
+\begin{tabular}{@{}llrrrrrl@{}}
+\toprule
+outcome & checkpoint & $k$ & $c_A$ & $c_B$ & dur.\ ratio & RMS & transcript \\
+\midrule
+correct    & Llasa-1B & 3 & 3 & 3  & 1.00 & 0.0028 & \texttt{THE LIGHT WAS GREEN BRIGHT PALE\ldots} \\
+undercount & Llasa-3B & 2 & 1 & 3  & 1.40 & 0.0088 & \texttt{THE LIGT WAS GREEN RED AT A SPAN} \\
+overcount  & Llasa-8B & 8 & 9 & 12 & 1.50 & 0.0585 & \texttt{THE BELL RANG TWICE\ldots}$\times 9$ \\
+loop       & Qwen-0.6B & 6 & 6 & 10 & 1.73 & 0.0635 & \texttt{HE COUNTED THE STONES\ldots} \\
+degenerate & Llasa-1B & 2 & 0 & 1  & 0.63 & 0.0015 & (empty) \\
+empty      & Llasa-1B & 8 & 0 & 29 & 3.66 & 0.0003 & (empty) \\
+\bottomrule
+\end{tabular}}
+\end{center}
+
+\noindent $c_A$ is the CTC transcript count, $c_B$ the duration-based estimate;
+\texttt{classify} reads $c_A$ and the duration ratio, and the two estimators are
+never merged into a count. Four of these rows are worth reading closely.
+
+The \textbf{loop} row is the case the conjunctive rule was built for. Its
+transcript count is $6$ against a requested $6$ --- a transcript-only judge
+would score it \emph{correct} --- but the audio ran $1.73\times$ the length six
+renditions take, so the rule refuses the label. This is the failure direction
+S9 documents at the population level, here in a single row.
+
+The \textbf{empty} row is the mirror image. Thirty-seven seconds of audio at RMS
+$0.0003$: silence. A duration-only estimator reads $c_B{=}29$ off it, which
+would have entered the table as an enormous overcount rather than as a
+generation that produced no speech. Degeneracy is therefore checked \emph{before}
+either count, and this row is why.
+
+The \textbf{undercount} row is an ASR error, not a model error, and it is on a
+\emph{control} item: ``LIGT'' for \emph{light}, one filler word lost. It is
+counted against the control arm exactly as it stands. That direction matters ---
+judge noise on controls lowers the control's exact rate and therefore
+\emph{shrinks} the reported gap, so this class of error is conservative for the
+paper's claim rather than favourable to it.
+
+The \textbf{correct} row is a control at $k{=}3$ scoring $3/3$ with a duration
+ratio of exactly $1.00$, which is what a pass looks like and is shown first for
+readers who suspect the pipeline of manufacturing failures.
+
+Two cells fell back. The cycle assigns \texttt{degenerate} to Qwen3-TTS-1.7B and
+\texttt{empty} to XTTS-v2, and neither checkpoint produced a single row with
+that label anywhere in the panel, so both fall back to the first panel row and
+the artifact records that they did. That Qwen3-TTS-1.7B never degenerates is
+consistent with its being the one checkpoint that counts correctly at
+$k\le32$; that it still shows the full period ladder (S28) is the point.
+
 
 % ============================================================
 \section{A causal intervention on the count, reported uninterpretable}

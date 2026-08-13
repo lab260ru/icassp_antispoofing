@@ -145,6 +145,23 @@ def main() -> int:
             if v is not None:
                 want(f"S26 llasa8b {label} shift", v, 3)
 
+    # S25's worked examples. This table is the one place the supplement quotes
+    # individual rows rather than aggregates, so it is the one most exposed to a
+    # rescore silently moving a cell: the selection rule is deterministic, which
+    # means a changed pipeline returns *different rows under the same rule* and
+    # the old ones would sit there looking fine. The duration ratio and RMS are
+    # checked too, since those are what `classify` reads and the prose argues
+    # from them ("1.73x the length six renditions take", "RMS 0.0003: silence").
+    we = load("worked_examples.json")
+    if we:
+        for e in we.get("examples", []):
+            tag = f"S25 {e['outcome']}"
+            want(f"{tag} duration ratio", e["duration_ratio"], 2)
+            want(f"{tag} rms", e["rms"], 4)
+            for f in ("k", "count_a", "count_b"):
+                if str(e[f]) not in supp:
+                    missing.append(f"{tag} {f} = {e[f]}")
+
     if missing:
         print(f"  FAIL {len(missing)} supplement numbers are not in supp.tex:")
         for m in missing:
