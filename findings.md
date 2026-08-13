@@ -1228,3 +1228,379 @@ The two "confirmatory" subsection headers were renamed "pre-specified" — the
 project fixed the stimulus ladder, controls and exclusion rules before
 generation (S16 dates this), but never pre-registered, so "confirmatory" was
 claiming more than that supports.
+
+---
+
+> **The entries below backfill twelve commits (`1790187`..`c24a2b1`) that
+> landed changes without a matching findings.md entry.** Added 2026-08-13
+> while reconciling this file, `research-state.yaml` and
+> `implementation-notes.md`. Every number below was re-checked directly
+> against its `data/results/*.json` during this reconciliation, not copied
+> from a commit message — where a commit message and the JSON disagreed, that
+> is called out explicitly rather than silently resolved.
+
+## 2026-08-12 (later) — the never-cycled control now covers the whole panel, and the headline moves against us
+
+The control-periodicity correction (see the 2026-08-12 "three rivals excluded"
+entry above) had only run on 4 of 6 checkpoints; `scripts/run_aperiodic_llasa.sh`
+fills in Llasa-3B and Llasa-8B (144 new generations) and
+`analysis/aperiodic_controls.py` recomputes the headline with the never-cycled
+arm substituted in for all six.
+
+    exact-rate gap, k>=6
+    by checkpoint    69.6 pts (never-cycled)   vs 76.7 (cycled)
+    by family        67.6 pts (never-cycled)   vs 75.4 (cycled)
+
+Positive in 6/6 and 3/3 either way, smallest checkpoint still +60. **The paper
+now leads with the smaller, de-confounded number** in both the abstract and
+Section 3 (verified against `paper/numbers.tex`: `\ApHeadCk`=69.6,
+`\ApHeadFam`=67.6, cycled kept alongside as `\ApHeadCkCyc`=76.7 /
+`\ApHeadFamCyc`=75.4, and the abstract text leads with `\ApHeadFam` and gives
+the cycled figure second).
+
+**But most of the ~7-point move is not periodicity, and saying so matters as
+much as the correction.** A never-cycled control at k=32 must return
+thirty-two *distinct* adverbs, and the 146-word pool's tail transcribes worse
+than the eight words the ladder cycles (0.79–0.85 against 0.98–1.00
+per-occurrence). Scored to within one unit, the substitution costs 1.7 points,
+not 7.1 — the median-error contrast (which Figure 1(a) plots) does not move at
+all. So 69.6/67.6 are a *floor*, the truth is bracketed between them and
+76.7/75.4, and both numbers are reported rather than one replacing the other.
+The old 4-checkpoint k=12..32 subset figure ("13.4 points") becomes 11.4 points
+over all six.
+
+**The hierarchical/mixed-effects fits still rest on the cycled arm, on
+purpose** — `hierarchical.py` asserts against `checkpoint_level.json`, which is
+cycled, and would abort on a substituted frame. Stated rather than papered
+over: the substituted headline sits beside the modelled one, not in its place.
+
+Traps recorded in `implementation-notes.md`: `run_aperiodic.sh` scored only the
+four models it generates into a file it overwrites, so a naive re-run would
+have deleted the Llasa-3B/8B rows; `xcodec2_decode.py` / `asr_ctc.py` needed
+`--glob` because both Llasa checkpoints carry 24 undecoded instrumentation-only
+token files that a bare decode would have vocoded into an unscored population.
+
+## 2026-08-12 (later) — the contraction refutation generalises: five checkpoints, two families, no exceptions
+
+All four r19 reviewers raised the same objection: q was measured on Llasa-1B
+alone and the conclusion was stated panel-wide. It now covers five checkpoints
+across both architecture families (`data/results/jacobian_q_panel.json`,
+verified directly): 346 items, 14,796 measurements.
+
+    llasa1b   q= 38.1 [32.9, 51.4]   control 31.8
+    llasa3b   q=118.8 [101.9,156.5]  control 86.4
+    llasa8b   q=347.7 [258.1,393.5]  control 185.4
+    qwen06b   q= 21.0 [19.7, 24.2]   control 21.9
+    qwen17b   q= 24.7 [23.1, 25.7]   control 23.6
+
+`q<1` in **zero** items, in every checkpoint, every lag, every sub-stack, on
+both arms. The most favourable cell in the entire study still has a bootstrap
+floor of 3.3, and teacher-forcing makes every one of these numbers a *lower*
+bound on the true per-repetition Lipschitz constant.
+
+**Two facts sharpen this past mere replication.** (1) `q` **grows with scale
+inside Llasa** — 38 → 119 → 348 at 1B → 3B → 8B — which excludes, in the
+strongest available direction, the reviewer's "maybe only the larger
+checkpoints contract." (2) **Qwen3-TTS-1.7B counts correctly** (the panel's
+only zero-median-count-error checkpoint) **and has q=24.7**, as expansive as
+everything else. Whatever separates counting from miscounting on this panel,
+it is not q.
+
+Per-arm: both arms are expansive in all 5×16=80 lag×sub-stack cells; the
+repeated-vs-control contrast is significant in the *wrong* direction on
+Llasa-1B only (p=0.017 — see the note below on why this p-value was later cut
+from the prose) and null on the other four (p=0.269, 0.256, 0.931, 0.177 for
+llasa3b/llasa8b/qwen06b/qwen17b respectively). So the deflationary reading
+generalises too: **contraction was never a description of any of these five
+decoders, for any input.**
+
+Getting Qwen into this estimator needed a fourth self-test gate: it has no
+token sequence to teacher-force (each step's input sums 16 RVQ codec
+embeddings plus a text term, and codec ids are never saved), so a pre-hook
+captures the actual fused input and is required to reproduce incremental
+generation to cosine 0.999 before the model is trusted. (The commit message's
+"88/88 and 90/90" ledger-agreement figure for this check could not be traced to
+a field in any committed JSON during this reconciliation — used with its
+provenance flagged, per the same convention `implementation-notes.md` already
+applies to its "~51% of steps" figure.)
+
+Reported against interest: Llasa-8B skipped 22% of its measurements at a
+700-token read window on one card. **That 22% is a mix, not one story** — a
+follow-up correction (`b86137c`) found only 236 of 365 skips are exact
+read-window truncation (fine on a causal model); **129 are plain OOM**, which
+the read-window argument does not cover. The supplement now reports both
+counts separately rather than the single explanation an earlier pass gave.
+Also: Llasa-3B ran before a `MIN_TAU` sample-rate patch that matters at Qwen's
+12.5 Hz (an 8-frame floor is 0.16 s at Llasa's 50 Hz but 0.6 s at Qwen's
+12.5 Hz, which would have silently discarded nearly every Qwen item) — the
+patch's own bias runs toward the premise, not against it.
+
+**Scope note: this supersedes the single-checkpoint caveat this file and
+`research-state.yaml` carried until this reconciliation.** Any earlier
+sentence here reading "false for the one decoder measured (Llasa-1B), not
+panel-wide" is retired by this entry.
+
+## 2026-08-12 (later) — the chain fails at both ends, and delta was measured all along
+
+A reviewer made a sharp point the paper's own page-budget cuts had made
+possible: Section 4 measures `q`, the *last* link of the derivation chain
+(bounded-delta logits → near-uniform attention → autonomous map `F` →
+contraction), and concludes the premise "was never a description of these
+decoders" — but testing only the final link cannot distinguish "the map exists
+and does not contract" from "the map the derivation constructs never applied
+at all."
+
+**The fix was not a new experiment.** Delta was measured long ago and the
+`\DeltaMax` macro had been sitting in `numbers.tex`, defined and unused, since
+an earlier page-budget squeeze removed the sentence that quoted it. Verified:
+`\DeltaMax{}` = 1.23 nats, `\DeltaRatio{}` = 3.4-fold, now quoted directly in
+`paper/main.tex` ("$\delta\le\DeltaMax{}$ nats — a $\DeltaRatio{}$-fold weight
+ratio across the repeated spans"). This is the same 1.23-nat "extreme" spread
+this file already recorded under "Lemma B's two deltas, labelled" — what
+changed is that it is now *in the paper's prose*, not just in a macro nobody
+quoted.
+
+**So the honest statement is stronger than the one the paper was making: the
+chain fails at both ends.** The flattening Lemma B needs is not there (delta
+is 1.23 nats / 3.4-fold, not the near-uniformity the lemma assumes), and the
+map that flattening would license does not contract either (q ≫ 1
+panel-wide). Do not write "the premise fails" as though the contraction
+measurement alone carried that claim.
+
+Paid for from the same section: the dilution dose-response paragraph is now a
+pointer rather than three lines — with delta reported, the lemma's premise is
+already shown to fail, and the dose-response is (per the same reviewer) a
+correlational patch on a different question.
+
+## 2026-08-12 (later) — r22: two internal contradictions, both self-inflicted
+
+Three reviewers on the ladder-era draft caught two contradictions the paper
+had made with itself.
+
+**Sections titled "Pre-specified" while the text admitted the threshold was
+not.** The two results subsections were relabelled "Pre-specified" in response
+to an earlier round, then, in response to a *later* round, the text was
+honestly amended to disclose that the k≥6 threshold was chosen after seeing
+where the arms diverge. Both were right individually; together they
+contradicted. Headers are now plain descriptions (verified: `paper/results_body.tex`
+now reads "The limit tracks periodicity, not length" and "Not the decoding
+rule, the judge, or our exclusions" — no "Pre-specified" or "Confirmatory"
+anywhere in the built paper), with the provenance staying in the prose.
+
+**The abstract led with a number the body says it does not stand behind.** The
+body reports the never-cycled gap and says "we quote the smaller"; the
+abstract opened with the cycled 75.4 instead. Now the abstract leads with 67.6
+(never-cycled, by family) and gives 75.4 second — verified directly against
+`paper/main.tex`'s abstract text, which reads `\ApHeadFam{}` before
+`\ApHeadFamCyc{}`.
+
+**A stray p-value contradicted the paper's own stated standard.** The paper
+says its claims rest on effect sizes, not p-values, then quoted p=0.017 for
+the Jacobian sign contrast. Dropped from the prose (the claim there is q ≫ 1,
+two orders of magnitude past the threshold, which does not need a p-value to
+carry it) — the `\JacQPairedP` macro still exists in `numbers.tex` (still
+0.017, matching `jacobian_q_panel.json`'s llasa1b `paired_wilcoxon_p`) but is
+no longer referenced anywhere in the built paper.
+
+## 2026-08-12/13 — the period ladder: the title stands, and it stands on evidence
+
+The sharpest objection the paper had received, raised independently by all
+four r21 reviewers: the design varies periodicity and verbatim token identity
+together (period-1 verbatim against aperiodic non-verbatim, nothing in
+between), so the title claims the first and the evidence supported only the
+pair. A ladder holding carrier, word count and requested count fixed while
+varying only the period `p ∈ {1,2,4,8}` at `k ∈ {16,24,32}`, three checkpoints
+(llasa1b, qwen06b, xtts2), settles it (`data/results/period_ladder.json`,
+verified: `kept`=1134, matching this file's `n=1134`).
+
+    p = 1     7.2% exact
+    p = 2    49.2%
+    p = 4    77.4%
+    p = 8    91.6%
+
+(These are the unweighted means across the three checkpoints of
+`exact_by_period_scan`, recomputed directly from the JSON during this
+reconciliation and reproducing to 0.1 point.)
+
+**Monotone in every one of the three checkpoints individually**, n=1134, all
+five — actually four, see below — scoring rules agree on the ordering. The
+decisive cell is p=2, where no token is ever adjacent to itself: 42.4 points
+below p=1's rate under three of the scoring rules, and roughly half the
+deficit still present. **So the title stands, and stands on evidence rather
+than assumption.**
+
+**Caution, stated at the same weight as the result.** The headline scoring
+rule (ordered scan) clears its own pre-committed "half survives" bar
+(`D(2)/D(1) ≤ 0.5`) by only **0.002** (`mean_ratio`=0.5019 in the JSON), and
+does so *only because one checkpoint carries it*: per-checkpoint ratios are
+llasa1b 0.426, xtts2 0.430 — **both below half** — with qwen06b's 0.6295 alone
+pulling the mean over the line. The two recount rules (unbounded recount,
+strict conjunction) are far more comfortable: per-checkpoint ratios span
+0.6895–0.8083 across both rules. **The paper's periodicity claim rests on the
+recount rules, not on the ordered scan clearing its bar by a hair.** The gap
+between scan and recount exists because `score_counts.py`'s ordered scan
+cannot detect an *overcount* once p>1 — a looping model reads as an overcount
+at p=1 and as spuriously exact at p=2, worth 22 points at p=2 on its own
+(51.7% scanned vs 23.9% recounted). Every rate is now reported under three
+rules for exactly this reason.
+
+**"Five scoring rules" in an earlier commit message was actually four**: the
+by-family rule reproduces the ordered scan exactly on this ladder, because
+every architecture family here has exactly one representative checkpoint.
+
+**The replication check is not uniformly exact.** qwen06b and xtts2 reproduce
+their published p=1/p=8/p=k rungs to 0.000; llasa1b — the smallest-n checkpoint
+— differs by −2.9, +2.8 and +1.7 points. Inside sampling noise, reported as
+such rather than as a blanket "reproduces exactly."
+
+**Bootstrap caution, confirmed against source.** `bootstrap_ratio` is called
+on the strict-conjunction column, so its interval (ratio [0.633, 0.824], D2
+[0.483, 0.729]) belongs to a rule whose own point estimates are 0.738 / 0.612
+— *not* to the 0.502/0.424 ordered-scan headline. Do not pair the two.
+
+**Rotations were not optional.** A p=2 arm needs two fillers, and which two is
+a lexical confound: the observed spread across the four rotations of one pool
+is 24.4% to 53.3% exact on qwen06b alone (verified in `p2_by_rotation`).
+Generating all 8/p rotations balances vocabulary and character count
+(187.8/188.6/188.8 chars) across p=2,4,8 — not planned, and worth keeping. A
+single-rotation design would have carried a ~30-point lexical confound into
+the paper's decisive cell.
+
+### And the individuation account is dead — our own proposed mechanism, tested and killed
+
+We had argued — from VITS's immunity, F5-TTS's duration split and the causal
+null — that the decoder cannot individuate identical neighbours, and that a
+minimal local disambiguator (comma, full stop, or "and" between repetitions)
+should therefore recover the count without changing it.
+`data/results/disambiguation.json`: verdict **"INDIVIDUATION FALSIFIED"**.
+
+**Number discrepancy, resolved in the JSON's favour (house rule: trust the
+JSON over the commit body).** The commit that landed the final version of this
+file says "the recovered fraction is 0.9%, not the 0.2% I quoted [earlier] —
+the JSON moved as data landed and the macro tracked it." **This does not
+match what is on disk.** The current `data/results/disambiguation.json`
+(n=465, all three checkpoints present, matches `HEAD` exactly, re-verified
+during this reconciliation) gives `R_matched = -0.00021352`, i.e. **−0.02%**,
+which is exactly what is baked into the built paper: `paper/numbers.tex:122`
+defines `\DisR{}` = **"-0.0"**, used at `paper/results_body.tex:82` ("...
+recovers `\DisR{}`%."). Neither the earlier 0.2% (itself correct for its own
+moment, computed on an n=179 two-checkpoint precursor) nor the claimed-new
+0.9% is what is on disk or built into the paper today. **The correct number is
+−0.0% — no meaningful recovery, direction if anything slightly negative.**
+Do not requote 0.9% anywhere this project's writing continues.
+
+A second account died alongside individuation: per-token repetition count
+`m = k/p` does not explain the curve by itself — repeating each of four words
+eight times each is much easier than repeating one word eight times, despite
+twice the length at the same `m`. Qualitatively supported by
+`period_ladder.json`'s `collapse_onto_m.rank_corr_E_m = −0.739` (exact rate
+falls as `m` rises); the specific "66.7% vs 0.0%" figures quoted for this
+comparison in commit prose could **not** be traced to a specific JSON field
+during this reconciliation — the ladder's `k ∈ {16,24,32}` design has no
+`p=1,k=8` cell to pair against `p=4,k=32`'s `m=8`, so the comparison likely
+draws on the separate main-panel `k=8` word-repetition rows rather than the
+period-ladder JSON itself. Recorded as unverified rather than silently
+requoted.
+
+**Traps, kept because they will bite again.** `score_counts.py` cannot see an
+overcount above p=1 (see above). `qwen_gen.py`'s `eos_trim_length` indexed
+`hidden_states[j+1]` for `j` up to `n-1`, out of range whenever generation
+stops without materialising an EOS frame — on transformers 4.57.3 that is
+*every* item, and the arm crashed on its first generation; now guarded. The
+`coqui` env can no longer import coqui-tts at all under transformers 5.15.0,
+so XTTS ran in the `coqui_es` clone, the same pin the published run used.
+Both fixes are documented in `implementation-notes.md`'s "Round 21" section.
+
+**Still open, and worth restating plainly for whoever resumes next:** the
+ladder covers only three of the six panel checkpoints. A period-ladder
+extension to llasa3b was mentioned in project chatter but **no
+`data/results/*llasa3b*period*` file exists on disk as of this reconciliation**
+— do not assume it landed. If it does, S28 in the supplement needs
+re-checking.
+
+## 2026-08-12 (late) — the listening-study kit: built, not run
+
+Five review rounds have asked for a human-vs-CTC agreement number on real
+generated audio. The paper has always said, honestly, that no listening study
+was run — this commit makes that a weaker position than it needs to be by
+reducing the remaining work to an hour of listening, not by producing a
+result.
+
+`scripts/make_listening_sheet.py` draws 60 clips from the released 165 (30
+repeated against 30 control, exactly 10 per k-band per arm — balanced on
+purpose, since an audit weighted toward controls cannot detect an
+arm-asymmetric judge error, and that is the entire objection). Blinded: the
+listener's sheet (`data/listening/listening_sheet.csv`, 60 rows, confirmed on
+disk) carries only a row id, the clip and two empty columns; model, arm, CTC
+count and transcript live in a separate `data/listening/listening_key.csv`
+that only the scorer reads. `scripts/score_listening.py` reports exact
+agreement, mean absolute difference and Cohen's kappa with bootstrap CIs,
+split by arm and k-band, plus the *signed* difference by arm — the number that
+actually separates "our judge understates the deficit" from "our judge
+manufactures it" — with its interpretation pre-committed in the docstring
+before any real data exists. It refuses to run on a half-finished sheet.
+
+**As of this reconciliation: no result file exists anywhere under
+`data/results/` with "listen" in the name** — confirmed by directory search.
+Nobody has done the hour of listening yet. **Do not report a human-agreement
+number; none exists.** This is available work for a future session, not a
+result to cite.
+
+## 2026-08-13 — reconciliation note: a live causal re-run in flight, do not quote it
+
+While reconciling this file, `research-state.yaml` was found to still describe
+the causal-intervention second-checkpoint extension as an unstarted item; it
+has since progressed and needs a caution rather than a result.
+
+`data/results/causal_count_second_checkpoint.json` (committed at `HEAD`)
+extends the rank-1-patch causal null to Qwen-0.6B, Qwen-1.7B and a re-run of
+Llasa-1B — but its first pass used protocol `"decode-time, paired against the
+free baseline"`, **not** the resume-reference pairing the original,
+*published* Llasa-1B result used (same prefix, no hook, same seed — see
+`implementation-notes.md`'s "trap that would have manufactured a causal
+result" for why this pairing exists at all: a patched run and a free baseline
+consume the sampler's random stream at different offsets and are not
+comparable even at the same seed).
+
+The file itself contains the comparison, in a `llasa1b_three_way` block:
+
+    published (resume-reference, original):    median  0.00  [-0.09, +0.09]   0.0% degenerate
+    this run, decode-time protocol, same cell:  median +0.065 [-0.258,+0.251]  3.1% degenerate
+    this run's own verdict field:               "too disruptive to interpret
+                                                   (disruption index 1.02 >= 0.5, ...)"
+    this run's resume-reference field:           null -- not yet landed
+
+(Verified directly against the JSON: `patched_degenerate_pct` 3.0864,
+central-cell `crossk|L7|P128` median 0.0645, CI [−0.2581, +0.2513].) The
+**resume-reference re-run is running now** — as of this reconciliation,
+`data/results/causal_rs_llasa1b_*`, `causal_rs_llasa8b_*` and `causal_rq_*`
+files exist uncommitted, some with timestamps within minutes of this being
+written, alongside modified `analysis/causal_count_resume_second.py` and
+`analysis/causal_count_second_score.py`.
+
+**No causal number from that file, or from `causal_rq_*` / `causal_rs_*` /
+`causal_pq_*`, may enter the paper until the comparator is clean — including
+the two Qwen "readable null" results in the same file**, which used the
+identical flawed decode-time protocol (confirmed by inspecting their
+`rank1_patch.protocol` fields directly). Do not touch the GPUs this is running
+on.
+
+## 2026-08-13 — reconciliation note: the Spanish cross-lingual arm concluded while this file was silent about it
+
+`research-state.yaml` had carried the Spanish arm (`xtts2es`,
+`analysis/crosslingual_es.py`) as "in progress" since the evening it was
+launched; this file never got an entry for it at all. It has since concluded,
+and `implementation-notes.md`'s "Cross-lingual arm" section already documents
+the mechanism in full — this is the missing pointer plus the verified verdict.
+
+`data/results/crosslingual_es.json` (tracked, matches `HEAD`): Gate 1
+(judge audit) and Gate 2 (vocabulary audit) both **pass**. Gate 3
+(informative — control-arm exact-rate must clear 0.5 for the exact-rate
+statistic to mean anything) **fails**: `control_exact` = 0.204. The Spanish
+XLSR-53 judge's own WER (~8.8%) is too high for an exact-match statistic to
+survive even on control items, since exact-match needs all `k`
+per-occurrence hits and `(0.80)^k` collapses fast. **Verdict: the judge is
+sound, the exact-rate statistic is not transportable to this judge, and the
+counting arm is not reportable** — this is `paper/supplementary/supp.tex`'s
+own Gate-3 section title. Do not quote a Spanish exact-rate gap; none is
+licensed by this data.

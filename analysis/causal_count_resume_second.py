@@ -114,10 +114,37 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", required=True, choices=["llasa1b", "llasa8b"])
     ap.add_argument("--gpu", type=int, default=3)
+    # ---------------------------------------------------------------------
+    # `--seeds` is a POWER INCREASE, and it is declared here with its reason
+    # before its result is known, because adding data after seeing a verdict is
+    # otherwise indistinguishable from shopping for a better one.
+    #
+    # Llasa-8B's first pass (seeds 0,1; n=36 at the central cell) returned
+    # `too disruptive to interpret`: the noise-floor threshold is 0.160
+    # log-count and the largest median |shift| is 0.382, carried by the
+    # length-matched *control* donor cell, which is also the cell with the
+    # worst degeneracy (11.1%) and cap-hit rate (27.8%) in the arm. That is the
+    # signature of an under-sampled median over a heavy tail, not of a large
+    # effect --- the informative cross-k cells sit at 0.147-0.248.
+    #
+    # Seeds 2 and 3 double n at every cell. **The verdict rule is unchanged**:
+    # the same P1 gate, the same 25%-of-a-full-transfer noise-floor test, the
+    # same three-way verdict. Both the n=36 and the n=72 results are reported,
+    # and if the extra seeds do not change the verdict that is reported too.
+    # ---------------------------------------------------------------------
+    ap.add_argument("--seeds", type=int, nargs="+", default=None,
+                    help="override the sampling seeds (default: the published "
+                         "0 1). Adding seeds only increases n; it changes no "
+                         "threshold and no verdict rule.")
     args = ap.parse_args()
 
     check_gpu(args.gpu)
     configure(args.model)
+    if args.seeds:
+        cc.SEEDS = list(args.seeds)
+        print(f"[resume/{args.model}] seeds {cc.SEEDS} "
+              f"(power increase; thresholds and verdict rule unchanged)",
+              flush=True)
     stim = cc.load_stimuli()
     run = cc.Runner(args.gpu)
     # A distinct key, so the published `patchr1` artifacts are never appended to.

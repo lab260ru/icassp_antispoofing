@@ -23,19 +23,35 @@ settled:
     scripts/check_lean.sh. Do not re-derive; it is finished.
   theory: >
     Theorem A (i)-(iv) counting collapse + Lemma B attention dilution. The Lean
-    artifact proves an IMPLICATION; the contraction premise is empirical and,
-    as of 2026-08-12, MEASURED AND REFUTED on Llasa-1B (q=38.1, not <1; see
-    findings_headline.contraction_premise below) -- not merely "unestablished"
-    any more. Section 4 is retitled "The Candidate Mechanism, Measured and
-    Refuted" and was moved from Section 2 to after the results, compressed to
-    about half its former length; the paper's title dropped "Autoregressive"
-    and then the theorem-forward framing entirely (now "Periodicity, Not
-    Length: Locating the Repetition-Counting Failure in Neural
-    Text-to-Speech"). The stimulus ladder is presented as an instrument, not a
-    benchmark/suite -- do not restore either the attractor-theory framing or
-    the benchmark framing. Keep the implication/premise distinction explicit
-    in all writing -- reviewers rewarded it, and it is now what lets the paper
-    report a measured refutation instead of an unresolved assumption.
+    artifact proves an IMPLICATION; the contraction premise is empirical and
+    was MEASURED AND REFUTED on Llasa-1B on 2026-08-12, then the refutation was
+    GENERALISED (still 2026-08-12, later that day) to five checkpoints across
+    both architecture families -- q in [21,348], q<1 in zero items on either
+    arm anywhere -- see findings_headline.contraction_premise below, whose
+    single-checkpoint scope note is now itself superseded. Not merely
+    "unestablished" any more, and not single-checkpoint any more either.
+    Section 4 is retitled "The Candidate Mechanism, Measured and Refuted" and
+    was moved from Section 2 to after the results, compressed to about half
+    its former length; the paper's title dropped "Autoregressive" and then the
+    theorem-forward framing entirely (now "Periodicity, Not Length: Locating
+    the Repetition-Counting Failure in Neural Text-to-Speech" -- a period
+    ladder tested this title directly on 2026-08-12/13, see
+    findings_headline.period_ladder, and it held: "so the title stands"). The
+    stimulus ladder is presented as an instrument, not a benchmark/suite -- do
+    not restore either the attractor-theory framing or the benchmark framing.
+    Keep the implication/premise distinction explicit in all writing --
+    reviewers rewarded it, and it is now what lets the paper report a measured
+    refutation instead of an unresolved assumption.
+    THE CHAIN FAILS AT BOTH ENDS, not just at the q link: the derivation is
+    bounded-delta logits -> near-uniform attention -> autonomous map F ->
+    contraction, and Lemma B's own measured delta (1.23 nats, a 3.4-fold
+    attention-weight ratio across the repeated spans -- \DeltaMax{} in
+    numbers.tex, restored to the paper's Section 4 prose on 2026-08-12 after
+    sitting unused since a page-budget cut removed the sentence quoting it) is
+    not the near-uniformity the lemma assumes either. So the flattening the
+    lemma needs is absent and the map that flattening would license does not
+    contract. Do not write "the premise fails" as if only the q measurement
+    were doing the work; both links fail independently.
   benchmark: >
     180 stimuli, data/stimuli/stimuli.jsonl, regenerable by make_stimuli.py.
     Regenerating only changes metadata, never text, so existing generations
@@ -114,41 +130,82 @@ findings_headline:
     present either of these two q-hats as validated; they were superseded by a
     third, gated estimator, not corroborated by it.
   contraction_premise: >
-    MEASURED AND REFUTED as of 2026-08-12 -- not merely unestablished -- but
-    on ONE checkpoint only (Llasa-1B; a second architecture family's jacobian
-    is running now, see active_background_jobs; do not extend this claim
-    panel-wide until it lands). analysis/jacobian_q.py: exact-JVP power
-    iteration on the boundary-to-boundary Jacobian, gated by its own
-    self-tests before being pointed at the model (synthetic-spectrum recovery
-    3.8e-4; causality check exactly 0.000000 backward vs 43.89 forward;
-    JVP-vs-finite-difference agreement 2e-5 in the linear range). 29 repeated
-    + 29 length-matched control items, k in {16,24,32}, seeds 0-2, 2724
-    measurements: q = 38.1 [32.9,51.4] vs 31.8 [27.3,39.8] for controls.
-    q<1 in 0 of 29 items, in every lag and sub-stack; the smallest value
-    anywhere in the table is 4.63. The sign is wrong too: repetition is MORE
-    expansive than its own control, not less (paired diff +3.25
-    [+0.52,+11.62], p=0.017, repeated lower in only 8/29 pairs).
-    Teacher-forcing deletes the token channel, so this is a LOWER bound on the
-    true per-repetition Lipschitz constant -- q>>1 is decisive, not marginal.
-    N* is not computable (Eq. 1 undefined for q>=1); matching the observed
-    saturation would need q~0.884 [0.850,0.921], nowhere near what is
-    measured. data/results/jacobian_q.json.
+    MEASURED AND REFUTED as of 2026-08-12, and the refutation GENERALISES --
+    panel-wide as of 2026-08-12 (later that day), not single-checkpoint any
+    more. analysis/jacobian_q.py: exact-JVP power iteration on the
+    boundary-to-boundary Jacobian, gated by its own self-tests before being
+    pointed at the model (synthetic-spectrum recovery 3.8e-4; causality check
+    exactly 0.000000 backward on every checkpoint incl. Qwen; JVP-vs-finite-
+    difference agreement 2e-5 in the linear range).
+    FIVE CHECKPOINTS, TWO FAMILIES (data/results/jacobian_q_panel.json, which
+    aggregates the per-checkpoint files -- verified 2026-08-13 against that
+    JSON directly): 346 items, 14,796 measurements.
+      llasa1b   q= 38.1 [32.9, 51.4]   control 31.8   (n=29)
+      llasa3b   q=118.8 [101.9,156.5]  control 86.4   (n=26)
+      llasa8b   q=347.7 [258.1,393.5]  control 185.4  (n=29)
+      qwen06b   q= 21.0 [19.7, 24.2]   control 21.9   (n=44)
+      qwen17b   q= 24.7 [23.1, 25.7]   control 23.6   (n=45)
+    q<1 in ZERO items, in every checkpoint, every lag, every sub-stack, on
+    both arms. Weakest cell floor is 3.3 (min_q_ci_lo_any_cell across the
+    panel); teacher-forcing makes every one of these a LOWER bound on the true
+    per-repetition Lipschitz constant, so q>>1 is decisive, not marginal.
+    N* is not computable for any of the five (Eq. 1 undefined for q>=1).
+    TWO FACTS SHARPEN IT PAST REPLICATION. (1) q GROWS WITH SCALE inside
+    Llasa: 38 -> 119 -> 348 at 1B -> 3B -> 8B -- the reviewer's "maybe only the
+    larger checkpoints contract" is excluded in the strongest available
+    direction, since scale moves q the wrong way. (2) QWEN3-TTS-1.7B COUNTS
+    CORRECTLY (the panel's one zero-median-count-error checkpoint) AND HAS
+    q=24.7, as expansive as everything else -- whatever separates counting
+    from miscounting on this panel, it is not q.
+    Per-arm: both arms are expansive in all 5x16=80 lag x sub-stack cells; the
+    repeated-vs-control contrast is significant in the WRONG direction on
+    Llasa-1B only (paired_wilcoxon_p=0.0168, matches the paper's dropped
+    \JacQPairedP macro -- the p-value itself was cut from the prose in the r22
+    pass since the paper's claims rest on effect size, not p, but the macro
+    still exists and still equals 0.017) and null on the other four
+    (Llasa-3B p=0.269, Llasa-8B p=0.256, Qwen-0.6B p=0.931, Qwen-1.7B p=0.177).
+    So the deflationary reading generalises too, stated outright in the paper:
+    contraction was never a description of ANY of these five decoders, for
+    ANY input.
+    ENGINEERING NOTE on how Qwen was measured at all: it has no token sequence
+    to teacher-force (each step's input sums 16 RVQ codec embeddings plus a
+    text term, and codec ids are never saved), so a 4th self-test gate (S4)
+    captures the actual fused input via a pre-hook and requires it to
+    reproduce incremental generation to cosine 0.999; re-generation reproduced
+    the ledger's token counts 88/88 and 90/90 (this pairing is cited from the
+    931d349 commit message, not found as a field in any committed JSON --
+    flag its provenance if requoting). Llasa-8B skipped 22% of its
+    measurements at a 700-token read window on one card -- 236/365 of those
+    skips are exact read-window truncation (fine on a causal model) but 129
+    are plain OOM (not covered by that argument); S5 in the supplement reports
+    both counts separately rather than the single "read-window" story an
+    earlier commit message gave. Llasa-3B ran before a MIN_TAU sample-rate
+    patch that matters at Qwen's 12.5 Hz (an 8-frame floor is 0.16s at Llasa's
+    50Hz but 0.6s at Qwen's 12.5Hz, which would have silently discarded nearly
+    every Qwen item) -- the patch's bias runs toward the premise, not against
+    it.
     THE SHARPER, LESS FLATTERING READING (added after r19 review, now in the
-    abstract and Section 4): the CONTROL arm is ALSO expansive (31.8, not <1),
-    so the contraction premise was never a live description of this decoder
-    for ANY input -- this is not "periodicity breaks contraction", it is
-    "there was no contraction here to break".
-    SCOPE, stated explicitly after r19 (four reviewers caught the same
-    overclaim): false for the ONE decoder measured (n=29, Llasa-1B), not
-    "false for these decoders" plural and not panel-wide. The paper no longer
-    quotes a q value the theorem would need for N*, since q is measured on one
-    checkpoint and decoration once q is an order of magnitude the wrong side
-    of 1.
+    abstract and Section 4, and now panel-wide rather than one-checkpoint):
+    control arms are ALSO expansive everywhere, so the contraction premise was
+    never a live description of any of these decoders for ANY input -- this is
+    not "periodicity breaks contraction", it is "there was no contraction here
+    to break".
+    SCOPE, now CLOSED: the r19 single-checkpoint caveat below is SUPERSEDED as
+    of the 931d349 commit (five checkpoints, two families, no exceptions). Old
+    text kept for the record: ~~false for the ONE decoder measured (n=29,
+    Llasa-1B), not "false for these decoders" plural and not panel-wide~~.
   mechanism_status: >
     All four mechanistic candidates raised across this project have now been
     tested and none stands, which the paper says outright: "no mechanistic
     spine available on this evidence." (1) CONTRACTION -- measured and
-    refuted on Llasa-1B, see contraction_premise. (2) DILUTION dose-response --
+    refuted, and as of 2026-08-12 (later) the refutation GENERALISES to all
+    five checkpoints measured across two families (q in [21,348], q<1 nowhere;
+    see contraction_premise -- its "Llasa-1B only" scope note is superseded).
+    The derivation's other end fails too: Lemma B's own measured delta (1.23
+    nats / 3.4-fold, restored to the paper 2026-08-12) is not the
+    near-uniformity the lemma needs, so "bounded-delta -> near-uniform
+    attention -> autonomous map -> contraction" fails at its first link as
+    well as its last. (2) DILUTION dose-response --
     disconfirmed, SIGN-REVERSED: within a (model,k) cell, flatter attention
     counts BETTER, not worse (r=+0.59 [0.35,0.75], all three flatness
     measures, controls at zero; analysis/dilution_sufficiency.py). (3)
@@ -269,6 +326,184 @@ findings_headline:
     the widest group-level-scale prior tried, the out-of-panel posterior's
     lower bound is -1.63 and P(gap>0) drops to 0.956 -- the one credible
     reading anywhere in this project that touches zero.
+  control_periodicity_full_panel: >
+    2026-08-12 (b40ed2e). The never-cycled-control correction (see
+    rivals_excluded.control_periodicity) previously covered only 4 of 6
+    checkpoints, so the k=12..32 subset result sat as a footnote next to a
+    6-checkpoint cycled headline. `scripts/run_aperiodic_llasa.sh` filled in
+    llasa3b and llasa8b (144 new generations); the corrected headline now
+    covers the whole panel and the paper LEADS with it (verified against
+    numbers.tex macros \ApHeadCk=69.6, \ApHeadFam=67.6, cycled kept beside
+    them as \ApHeadCkCyc=76.7 / \ApHeadFamCyc=75.4). Positive in 6/6 and 3/3
+    either way, smallest checkpoint still +60. BUT most of the 7.1-point move
+    is not periodicity: a never-cycled k=32 control must return 32 DISTINCT
+    adverbs and the 146-word pool's tail transcribes worse than the 8-word
+    cycled pool (0.79-0.85 vs 0.98-1.00 per-occurrence). Scored to within one
+    unit the substitution costs 1.7 points, not 7.1, and the median-error
+    contrast (which Figure 1(a) plots) does not move at all -- so 69.6/67.6
+    are a FLOOR, the truth is bracketed between them and 76.7/75.4, and both
+    numbers are reported rather than one replacing the other. The old
+    4-checkpoint k=12..32 subset figure ("13.4 points") is now 11.4 points
+    over all six checkpoints. The hierarchical/mixed-effects fits still rest
+    on the CYCLED arm on purpose (`hierarchical.py` asserts against
+    `checkpoint_level.json`, which is cycled, by design) -- do not silently
+    substitute the never-cycled numbers into those fits.
+  period_ladder: >
+    2026-08-12/13 (fa13a3a, 73c3113, 8f72f4f). Answers the sharpest objection
+    the paper received, independently from all four r21 reviewers: the design
+    varied periodicity and verbatim token identity together, so "Periodicity,
+    Not Length" was a claim about the pair, not periodicity alone. A ladder
+    holding carrier/word-count/requested-count fixed and varying only period p
+    in {1,2,4,8}, k in {16,24,32}, 3 checkpoints (llasa1b, qwen06b, xtts2),
+    n=1134 kept (verified exactly against data/results/period_ladder.json:
+    kept=1134). Mean exact rate by p, averaged over the 3 checkpoints
+    (recomputed directly from exact_by_period_scan and reproduces to 0.1pt):
+      p=1   7.2%     p=2  49.2%     p=4  77.4%     p=8  91.6%
+    Monotone in EVERY ONE of the 3 checkpoints individually, and all 5 scoring
+    rules agree on the ordering. THE DECISIVE CELL IS p=2 -- no token is ever
+    adjacent to itself there -- and roughly half the deficit still remains.
+    SO THE TITLE STANDS, on evidence now rather than assumption.
+    CAUTION, not to be smoothed away: the headline scoring rule (ordered scan)
+    clears its own pre-committed "half survives" bar (D2/D1 <= 0.5) by only
+    0.002 (mean_ratio=0.5019 in the JSON) and does so only because ONE
+    checkpoint carries it -- per-checkpoint ordered-scan ratios are llasa1b
+    0.426, xtts2 0.430, BOTH BELOW HALF, and qwen06b 0.6295 alone pulls the
+    mean over the line. The two RECOUNT rules (unbounded recount, strict
+    conjunction) are far more comfortable: per-checkpoint ratios 0.6895-0.8083
+    across both rules (mean ~0.734-0.738) -- so the paper's claim is properly
+    rested on the recount rules, with the ordered-scan number reported
+    alongside as the least favourable, not as "just another rule that
+    agrees." The scan/recount gap exists because `score_counts.py`'s ordered
+    scan cannot detect an overcount once p>1 (a looping model reads as an
+    overcount at p=1 and as spuriously EXACT at p=2) -- worth 22 points at p=2
+    on its own (51.7% scanned vs 23.9% recounted). "Five scoring rules" in an
+    earlier commit message was actually four: the by-family rule reproduces
+    the ordered scan exactly here because every architecture family in this
+    3-checkpoint ladder has exactly one representative.
+    ROTATIONS WERE NOT OPTIONAL: a p=2 arm needs 2 fillers and which 2 is a
+    lexical confound worth 24.4-53.3 points on qwen06b alone across rotations
+    (p2_by_rotation in the JSON); generating all 8/p rotations balances
+    vocabulary and character count (187.8/188.6/188.8 chars) across p=2,4,8.
+    REPLICATION CHECK IS NOT UNIFORMLY EXACT: qwen06b and xtts2 reproduce
+    their published p=1/p=8/p=k rungs to 0.000; llasa1b (smallest n) differs
+    by -2.9/+2.8/+1.7 points -- inside sampling noise, reported as such rather
+    than as a blanket "reproduces exactly."
+    A SECOND RIVAL ACCOUNT DIED ALONGSIDE INDIVIDUATION (see disambiguation
+    below): per-token repetition count m=k/p does not explain the curve by
+    itself -- repeating each of 4 words 8 times each is far easier than
+    repeating 1 word 8 times, despite twice the length at fixed m. NOTE: the
+    specific "66.7% vs 0.0%" figures quoted for this comparison in the
+    73c3113/8f72f4f commit prose could NOT be traced to a specific field in
+    period_ladder.json during this reconciliation (the JSON's `k in
+    {16,24,32}` design has no p=1,k=8 cell to pair against p=4,k=32's m=8; the
+    comparison likely draws on the separate main-panel k=8 word_rep rows) --
+    the qualitative claim is supported (collapse_onto_m.rank_corr_E_m=-0.739,
+    i.e. exact-rate falls as m rises, which is at least consistent), but do
+    not requote the specific percentages without recomputing them directly.
+    Bootstrap (n_boot=4000, verified against the JSON's `bootstrap` block):
+    ratio CI [0.633, 0.824], D2 CI [0.483, 0.729]. CAUTION confirmed against
+    source by the 73c3113 commit: `bootstrap_ratio` is called on the
+    STRICT-CONJUNCTION column, whose own ratio point estimate is 0.738 and D2
+    point estimate is 0.612 -- NOT the ordered-scan headline's ratio=0.502 /
+    D2=0.424. Both intervals correctly bracket the strict-conjunction rule's
+    own point estimates; do not pair either interval with the 0.502/0.424
+    ordered-scan points as if they were the same statistic (S28 in the
+    supplement and a comment in make_numbers.py both already say so).
+    File: data/results/period_ladder.json. Supplement: S28 (97 pages by the
+    time it landed), documents all of the above.
+    STILL OPEN as of this reconciliation: the ladder covers only 3 of the 6
+    panel checkpoints (llasa1b, qwen06b, xtts2); an extension to llasa3b was
+    reported as in progress in project chatter but NO
+    data/results/*llasa3b*period* file exists on disk as of 2026-08-13 --
+    treat as not landed, re-check before quoting a 4th checkpoint, and note
+    S28 will need re-checking if/when it lands.
+  disambiguation: >
+    2026-08-12 (fa13a3a, updated 8f72f4f). Tests our OWN proposed mechanism
+    for the dissociation -- that the decoder cannot individuate identical
+    neighbours -- by inserting a comma, full stop or "and" between
+    repetitions and checking whether that minimal disambiguator recovers the
+    count. Verdict in the JSON: "INDIVIDUATION FALSIFIED".
+    NUMBER DISCREPANCY, resolved in the JSON's favour per house rule (trust
+    the JSON over the commit body): the 8f72f4f commit message says "the
+    recovered fraction is 0.9%, not the 0.2% I quoted [in fa13a3a] -- the JSON
+    moved as data landed." The CURRENT data/results/disambiguation.json (n=465,
+    all 3 checkpoints present, matches HEAD exactly, re-verified 2026-08-13)
+    gives R_matched = -0.00021352 = -0.02%, which rounds to the EXACT value
+    baked into the built paper macro `\DisR{}` = "-0.0" (paper/numbers.tex:122,
+    used at paper/results_body.tex:82, "...recovers -0.0%."). Neither the old
+    0.2% (fa13a3a's own value, computed on the n=179 2-checkpoint precursor)
+    nor the claimed-new 0.9% matches what is on disk or built into the paper
+    today. THE CORRECT NUMBER TO QUOTE IS -0.0% (i.e. no recovery, direction
+    if anything slightly negative), not 0.9% -- flagged to the requesting
+    agent/user; do not propagate the 0.9% figure.
+    Design: front_end_check confirms the disambiguator variants never produce
+    a transcript identical to the bare item (identical_rate=0.0 for all three
+    variants), so any null is not an artifact of the ASR ignoring the
+    inserted token. judge_audit shows the judge's own delivery rate on the
+    variant text is 92.6-99.1% (spread 6.6 points), i.e. the disambiguators
+    are themselves speakable and transcribable. Per-checkpoint recovered
+    fractions (recovered_fraction in the JSON) are mixed in sign -- comma is
+    negative on 2 of 3 checkpoints (llasa1b -4.0%, xtts2 -3.1%), "and" is the
+    least-bad variant (llasa1b +3.2%, qwen06b +9.4%, xtts2 0.0%) but the
+    top-level R_and mean is only +4.2%, well short of a mechanism-rescuing
+    effect. ordering_as_predicted=true in the JSON (the variants order the way
+    a real, small individuation effect would) but the matched, pre-committed
+    primary statistic (R_matched) is the one quoted in the paper and it is
+    approximately zero.
+  listening_study: >
+    2026-08-12 (c24a2b1). BUILT, NOT RUN. Five review rounds asked for a
+    human-vs-CTC agreement number on real generated audio; the paper honestly
+    says no listening study was run. This commit reduces that gap to "an hour
+    of listening", not to a result. `scripts/make_listening_sheet.py` draws 60
+    clips from the released 165 (30 repeated / 30 control, 10 per k-band per
+    arm -- balanced on purpose, since an audit weighted toward controls cannot
+    detect an arm-asymmetric judge error, which is the whole objection).
+    Blinded: the listener's sheet (`data/listening/listening_sheet.csv`, 60
+    rows, confirmed on disk) carries only a row id, the clip and 2 empty
+    columns; model/arm/CTC-count/transcript live in a separate
+    `data/listening/listening_key.csv` the scorer reads and the listener does
+    not. `scripts/score_listening.py` reports exact agreement, mean absolute
+    difference and Cohen's kappa with bootstrap CIs, split by arm and k-band,
+    plus the SIGNED difference by arm (the number that actually separates
+    "judge understates" from "judge manufactures" the deficit) -- its
+    interpretation is pre-committed in the docstring. It refuses to run on a
+    half-finished sheet.
+    AS OF THIS RECONCILIATION (2026-08-13): no result file exists anywhere
+    under data/results/ with "listen" in the name -- confirmed by directory
+    search. Nobody has done the hour of listening yet. Do not report any
+    human-agreement number; none exists. This is available work for a future
+    session, not a result.
+  causal_second_checkpoint: >
+    IN FLIGHT, DO NOT QUOTE A CAUSAL NUMBER FROM THIS FILE. The rank-1-patch
+    causal null (findings_headline.mechanism_status item 4) was measured only
+    on Llasa-1B under a "resume-reference" pairing (same prefix, no hook, same
+    seed -- the protocol implementation-notes.md's causal-intervention section
+    exists specifically to enforce, because a patched run and a free baseline
+    otherwise consume the sampler's random stream at different offsets and are
+    not comparable even at the same seed). The extension to a second
+    checkpoint (`data/results/causal_count_second_checkpoint.json`, committed
+    at HEAD) instead used protocol "decode-time, paired against the free
+    baseline" for its first pass on Llasa-1B, Qwen-0.6B and Qwen-1.7B -- NOT
+    the resume-reference pairing the published Llasa-1B result used. Re-running
+    Llasa-1B under that flawed comparator DISAGREES with the paper's own
+    published cell: `llasa1b_three_way.published` (in the same file) is
+    median 0.00 [-0.09,+0.09], 0.0% degenerate, matching the paper exactly;
+    the same file's decode-time re-run of the SAME cell (crossk|L7|P128) gives
+    median +0.065 [-0.258,+0.251], 3.1% patched-degenerate vs 0.0% published
+    (verified directly against the JSON 2026-08-13: patched_degenerate_pct
+    3.0864, central-cell median 0.0645, ci [-0.2581,+0.2513]) -- and its own
+    `decode_time_protocol_this_run` field literally reads "too disruptive to
+    interpret (disruption index 1.02 >= 0.5, ...)". `resume_protocol_this_run`
+    is null in the committed file -- the correct-comparator re-run has not
+    landed. As of 2026-08-13, `data/results/causal_rs_llasa1b_*`,
+    `causal_rs_llasa8b_*`, `causal_rq_*` files exist UNCOMMITTED and with
+    same-day timestamps (some as recent as minutes before this reconciliation
+    was written), i.e. the resume-reference re-run is actively running now.
+    NO CAUSAL NUMBER FROM data/results/causal_count_second_checkpoint.json,
+    causal_rq_*, causal_rs_*, or causal_pq_* MAY ENTER THE PAPER until the
+    comparator is clean, INCLUDING the two Qwen "readable null" results in
+    that same file (they used the identical flawed "decode-time" protocol,
+    confirmed by inspecting their `rank1_patch.protocol` fields directly).
 
 model_panel:
   # ext_ladder status verified against data/results/behavioural_ext.csv, which is
@@ -291,19 +526,28 @@ model_panel:
             table, so without that exclusion a routine rerun would fold it into
             the panel and move every macro, silently and favourably. See
             findings_headline.cosyvoice2_heldout."}
-  - {key: xtts2es, status: "IN PROGRESS as of this writing (2026-08-12, late
-                            evening) -- one of four background jobs running now",
+  - {key: xtts2es, status: "CONCLUDED, NOT REPORTABLE -- superseded the 'in
+                            progress' status this file carried until
+                            2026-08-13's reconciliation",
      note: "Spanish cross-lingual arm, NON-PANEL by design and for a sharper
             reason than cosyvoice2: it is scored by a DIFFERENT judge (Spanish
             CTC) against a DIFFERENT stimulus file, so folding it into a shared
             macro would mix two recognisers' counts inside one number, not just
-            add rows. population.py excludes it by name. Reported only in
-            analysis/crosslingual_es.py's own output, nowhere else. As of this
-            writing behavioural_es.csv, ctc_validation_es.json and
-            judge_vocab_audit_es.json exist (written ~22:37-22:40) -- that is
-            Gate 1 (judge-audit) machinery, not the arm's own pre-committed
-            verdict, which has not landed. Do not quote a Spanish-arm result
-            from this state file."}
+            add rows. population.py excludes it by name.
+            data/results/crosslingual_es.json (verified 2026-08-13, matches
+            HEAD, tracked in git): Gate 1 (judge audit) PASSES (periodic_ctc
+            1.0, distinct_ctc 1.0) and Gate 2 (vocab audit) PASSES, but Gate 3
+            (informative: control_exact must clear 0.5) FAILS at
+            control_exact=0.204 -- the Spanish XLSR-53 judge's own WER is too
+            high (~8.8%, per paper/supplementary/supp.tex Gate 3 section 'the
+            counting arm is not reportable') for the exact-rate statistic to
+            survive even on control items, since exact-match needs all k
+            per-occurrence hits and (0.80)^k collapses fast. Fully written up
+            in implementation-notes.md's 'Cross-lingual arm' section and in
+            supp.tex Gate 3. VERDICT: the judge is sound, the exact-rate
+            statistic is not transportable to this judge, the arm is not
+            reportable as a counting result. Do not quote a Spanish exact-rate
+            gap number from anywhere; none is licensed."}
 instrumentation_notes:
   qwen: "hidden states yes, text attention NOT obtainable (text+codec embeddings additively fused)"
   xtts: "full; note shipped repetition_penalty=5.0 -> conservative panel member"
@@ -315,9 +559,18 @@ instrumentation_notes:
 rivals_excluded:
   length: "matched controls at the same word count come back exact; analysis/count_error.py"
   control_periodicity: >
-    main-ladder controls cycle an 8-word pool above k=8. Re-generated k=12..32
-    from a never-cycled 146-word pool: gap +71.2 vs +84.6 pts, so the confound is
-    worth 13.4 points. analysis/aperiodic_controls.py
+    main-ladder controls cycle an 8-word pool above k=8. SUPERSEDED (partial
+    panel, kept for the record): ~~re-generated k=12..32 from a never-cycled
+    146-word pool on 4 of 6 checkpoints: gap +71.2 vs +84.6 pts, confound worth
+    13.4 points~~. As of 2026-08-12 (b40ed2e) the never-cycled generation
+    covers all 6 checkpoints and the paper LEADS with the de-confounded
+    headline: 69.6 pts by checkpoint / 67.6 by family (vs 76.7 / 75.4 cycled),
+    i.e. the confound over the full panel is worth ~7.1 (checkpoint) / ~7.8
+    (family) points, most of which is a vocabulary-difficulty artifact of the
+    146-word pool's tail rather than periodicity itself (substitution cost 1.7
+    pts, not 7.1, under a within-one-unit criterion). See
+    findings_headline.control_periodicity_full_panel for the full account.
+    analysis/aperiodic_controls.py
   repetition_penalty: >
     Llasa passes NO penalty and shows the effect at full size (14.0 vs 92.9);
     XTTS-v2 across a 4x penalty range holds at 15.6-21.1%.
@@ -338,113 +591,139 @@ rivals_excluded:
     k<12 and 16.7 -> 16.7 at k>=12. Still post-hoc, still one checkpoint.
     analysis/nonar_baseline.py
   improbability_and_acoustics: "ruled out by their own predictions; supplement S8"
+  individuation: >
+    2026-08-12 (fa13a3a). OUR OWN proposed mechanism -- that the decoder
+    cannot individuate identical neighbours, so a minimal local disambiguator
+    (comma/full-stop/"and" between repetitions) should recover the count --
+    tested and killed. Verdict "INDIVIDUATION FALSIFIED" in
+    data/results/disambiguation.json; recovered fraction ~-0.0% (see
+    findings_headline.disambiguation for the number-discrepancy note -- the
+    commit message's "0.9%" does not match the JSON). Proposed from VITS's
+    immunity, F5-TTS's duration split and the causal null; better tested than
+    shipped. analysis/disambiguation.py
+  per_token_count_m_eq_k_over_p: >
+    2026-08-12 (8f72f4f, period ladder report). A second account died
+    alongside individuation: per-token repetition count m=k/p does not
+    explain the curve by itself -- repeating each of 4 words 8 times each is
+    much easier than repeating 1 word 8 times despite twice the length at the
+    same m. Qualitatively supported by period_ladder.json
+    (collapse_onto_m.rank_corr_E_m=-0.739); the specific percentages quoted in
+    commit prose could not be traced to a JSON field during this
+    reconciliation -- see findings_headline.period_ladder's caution.
 
 # ------------------------------------------------------------------- in flight
 active_background_jobs:
-  - "SUPERSEDED, both landed since last written here: the activation-patching
-     pilot (analysis/causal_count.py --arm A) completed -- see
-     data/results/causal_count.json ('too disruptive to interpret') and its
-     follow-up data/results/causal_count_followup.json (rank-1 patch, readable
-     null; findings_headline.mechanism_status). And the `cosyvoice` conda env
-     build completed -- CosyVoice 2 has landed as a fourth architecture (see
-     findings_headline.cosyvoice2_heldout, data/results/behavioural_cosyvoice.csv)."
-  - "AS OF THIS WRITING (2026-08-12, late evening), four sibling agents are
-     reported running concurrently on further analyses. Their outputs were NOT
-     read before writing this file -- treat every item below as IN FLIGHT, not
-     as a result, and re-check data/results/ timestamps plus findings.md
-     before quoting anything from them:"
-  - "(a) jacobian_q.py on a further checkpoint. Process observed running:
-     `analysis/jacobian_q.py --model llasa3b --gpu 3 --max-tokens 1100`
-     (started ~22:33). By the script's own --out default this will land at
-     `data/results/jacobian_q_llasa3b.json`, NOT overwrite the existing
-     `jacobian_q.json` (which is model-specific to llasa1b by default and is
-     the file Section 4 already cites) -- so both will exist side by side once
-     it finishes; check the new file's name, not just whether jacobian_q.json
-     changed. As of this writing jacobian_q.json itself gained a small,
-     non-destructive `premise_by_arm` addition (a `both_arms_expansive`
-     summary block) from a concurrent edit, still describing only Llasa-1B --
-     it independently corroborates the 'never a live description of this
-     decoder for any input' reading already recorded in contraction_premise
-     above, word for word close enough to be reassuring rather than
-     alarming. Extending contraction_premise's scope beyond one checkpoint
-     still depends on jacobian_q_llasa3b.json landing and being read first."
-  - "(b) aperiodic-control generation for a further checkpoint. Process
-     observed running: `src/models/llasa_gen.py --model llasa3b --seeds 0 1 2
-     --stimuli data/stimuli/stimuli_aperiodic.jsonl --attn-probes 0` on gpu 2
-     (started ~22:40). Extends rivals_excluded.control_periodicity's
-     never-cycled-vocabulary check to a checkpoint it does not yet cover."
-  - "(c) the Spanish cross-lingual arm (analysis/crosslingual_es.py,
-     xtts2es). Pre-committed, gated design answering the r18 objection that
-     every measurement in this project is English. behavioural_es.csv,
-     ctc_validation_es.json and judge_vocab_audit_es.json are already on disk
-     (written 22:37-22:40, i.e. minutes before this file), which is Gate 1
-     (judge-audit) machinery, not the arm's own verdict -- no
-     crosslingual-result JSON exists yet. Do not quote a Spanish-arm number
-     from this session's work."
-  - "(d) an equivalence-testing analysis. Located during this reconciliation
-     as `analysis/equivalence.py` / `data/results/equivalence.json` (both
-     untracked in git as of this writing) -- covers, per its own top-level
-     keys, precommitted margins against a rank-1-patch equivalence test, a
-     duration-supply equivalence test and a probe-vs-constant equivalence
-     test. The result file was still being written minutes before this entry
-     (last modified 22:52-22:54, i.e. essentially now) by a process launched
-     from within this same Claude session's scratchpad, not read or quoted
-     here on purpose -- an in-flight file from a concurrently-running sibling
-     agent should not be treated as finalised. The next agent should re-read
-     it fresh, confirm it has stopped changing, and only then fold its verdict
-     into findings.md / this file."
-  # SUPERSEDED. The two extension-ladder jobs listed here until 2026-08-12 have
-  # both landed and are gone:
-  #   - llasa1b/llasa8b extension ladder seeds 1,2 -- landed; behavioural_ext.csv
-  #     carries seeds 0,1,2 for both, 72 rows each. That job was launched on
-  #     GPUs 0,1 BEFORE the current restriction and was left to finish rather
-  #     than killed; nothing has been launched on 0/1 since. Do not read it as a
-  #     precedent -- src/common/gpus.py allows only 2 and 3.
-  #   - qwen06b/qwen17b extension ladder seed 0 -- landed; 24 rows each.
+  - "SUPERSEDED as of this 2026-08-13 reconciliation -- ALL FOUR items (a)-(d)
+     that used to be listed here as in-flight have LANDED: (a) jacobian_q.py
+     generalised to 5 checkpoints/2 families, data/results/jacobian_q_panel.json,
+     see findings_headline.contraction_premise. (b) aperiodic-control
+     generation now covers all 6 panel checkpoints, see
+     findings_headline.control_periodicity_full_panel. (c) the Spanish
+     cross-lingual arm concluded NOT REPORTABLE (Gate 3 fails), see
+     model_panel's xtts2es entry. (d) equivalence.json landed, is committed,
+     and is already wired into the paper via \\EqPatchBound / \\EqDurBound
+     macros in numbers.tex -- stable, not in flight."
+  - "WHAT IS ACTUALLY IN FLIGHT NOW (confirmed 2026-08-13 by git status +
+     file mtimes, not by asking anyone): a resume-reference re-run of the
+     causal rank-1-patch second-checkpoint extension. Modified/untracked as of
+     this writing: data/results/causal_count_second_checkpoint.json (modified,
+     uncommitted),
+     data/results/causal_rs_llasa1b_{flags,manifest}.json(l),
+     data/results/causal_rs_llasa8b_{flags,manifest}.json(l),
+     data/results/causal_rq_{llasa8b,qwen06b,qwen17b}_{direction,flags,manifest}.*
+     (mix of modified and untracked), and analysis/causal_count_resume_second.py
+     / analysis/causal_count_second_score.py (modified). Some of these files
+     carry timestamps within minutes of this reconciliation being written --
+     this is a live, currently-running job, not a stale leftover. DO NOT touch
+     the GPUs this is running on. See findings_headline.causal_second_checkpoint
+     for exactly what is wrong with the superseded protocol and what must be
+     true of the new files before any number from them is usable."
+  - "ALSO OPEN, not confirmed running: a period-ladder extension to llasa3b was
+     referenced in project chatter but no data/results/*llasa3b*period* file
+     exists on disk as of 2026-08-13 -- do not assume it is running or that it
+     has landed; check fresh. If it lands, S28 needs re-checking (see
+     findings_headline.period_ladder)."
+  - "ALSO OPEN: the listening-study kit (scripts/make_listening_sheet.py,
+     scripts/score_listening.py, data/listening/) is built but nobody has run
+     it -- it is available work, not a job in progress. See
+     findings_headline.listening_study."
+  # SUPERSEDED, older still: the two extension-ladder jobs listed here until
+  # 2026-08-12 both landed long ago and are gone (llasa1b/llasa8b ext-ladder
+  # seeds 1,2; qwen06b/qwen17b ext-ladder seed 0). Not repeated here.
 
 # --------------------------------------------------------------- what is next
 next_actions:
-  - "extension ladder COMPLETE: 4 checkpoints, 2 families, 21-26 items/cell,
-     pooled ratio 4.22 after the qwen hit_cap fix (was 3.5 -- see
-     findings_headline.horizon)"
-  - "PROBE PAST THE HORIZON now covers 5 checkpoints, not 3: holds (beats the
-     constant predictor) in 1 of 5, and 'scale buys a persistent counter' does
-     NOT survive a second family (Llasa ratio falls with scale, Qwen's rises).
-     A length-only baseline beats the state probe on BOTH Qwen checkpoints --
-     the two Qwen 'keeps the count' readings are not evidence about the
-     representation. See final_day_results.probe_past_horizon (already
-     current) and findings.md's '1 of 5' entry."
-  - "THE CONTRACTION PREMISE IS NOW MEASURED AND REFUTED on Llasa-1B (q=38.1,
-     not <1; control arm expansive too -- see findings_headline.
-     contraction_premise). Scope is single-checkpoint until a second
-     architecture's jacobian lands (in flight, see active_background_jobs)."
-  - "ALL FOUR MECHANISTIC CANDIDATES HAVE NOW FAILED, not just two: contraction
-     (measured and refuted), dilution dose-response (sign-reversed), stop-head
-     readout (inseparable on Llasa-1B / inconclusive on Llasa-8B), causal
-     intervention (readable null on the rank-1 patch; the ridge-steering lead
-     died on a full sweep). See findings_headline.mechanism_status. Do not
-     write a mechanistic claim without reading it first -- there is no
-     mechanistic spine on this evidence and the paper says so outright."
-  - "judge replication (4 recognisers, gap 65.1-76.7, positive 6/6 x 4/4) and
-     CosyVoice 2 (4th architecture, held out from the panel by design, gap
-     +64.4 against a held-out prediction of +65.3) both landed and both hold.
-     See findings_headline.judge_replication and .cosyvoice2_heldout."
-  - "title is now 'Periodicity, Not Length: Locating the Repetition-Counting
-     Failure in Neural Text-to-Speech'; the theory section moved from Section 2
-     to Section 4 (after the results) and was compressed; the stimulus ladder
-     is an instrument, not a benchmark/suite. Do not restore the
-     attractor-theory framing or the benchmark framing."
-  - "paper is at 5 pages (4 content + 1 refs) and must stay there -- check
-     every build; supplement has grown to 83 pages, check_supp_tables.py must
-     keep passing"
-  - "IN FLIGHT AT TIME OF WRITING (2026-08-12, late evening) -- do not assert
-     their results, re-check data/results/ timestamps and findings.md first:
-     jacobian_q.py on a further checkpoint (llasa3b), an aperiodic-control
-     generation run on a further checkpoint (llasa3b), the Spanish
-     cross-lingual arm (xtts2es), and a reported equivalence-testing analysis
-     whose script/output could not be located. See active_background_jobs for
-     what was actually observed running versus what was only reported."
-  - "final: check_lean.sh, build both PDFs, tag v1.0-submission"
+  - "THE PERIOD LADDER SETTLED THE SHARPEST OPEN OBJECTION: periodicity, not
+     verbatim identity, drives the deficit (p=1..8 exact rate 7.2/49.2/77.4/
+     91.6%, monotone per checkpoint, half the deficit survives at p=2 where no
+     token is self-adjacent). 'The title stands.' Read
+     findings_headline.period_ladder's caution before requoting the headline
+     scoring-rule number -- it clears its own bar by 0.002 and only because
+     one of three checkpoints carries it; the paper rests on the two recount
+     rules (0.69-0.81), not the ordered scan alone."
+  - "OUR OWN PROPOSED MECHANISM (individuation) IS DEAD, and so is a second
+     rival (m=k/p). See rivals_excluded.individuation and
+     .per_token_count_m_eq_k_over_p, and findings_headline.disambiguation for
+     a NUMBER DISCREPANCY: a commit message claims the recovered fraction is
+     0.9%; data/results/disambiguation.json and the built paper macro both say
+     -0.0%. Trust the JSON. Do not quote 0.9%."
+  - "THE CONTRACTION PREMISE REFUTATION NOW GENERALISES: 5 checkpoints, 2
+     families, q in [21,348], q<1 nowhere on either arm. The single-checkpoint
+     scope note that used to sit here is SUPERSEDED -- see
+     findings_headline.contraction_premise, which also now records that q
+     grows WITH scale inside Llasa and that the one checkpoint that counts
+     correctly (Qwen-1.7B) has q=24.7, as expansive as everything else."
+  - "THE DERIVATION CHAIN FAILS AT BOTH ENDS, not just at q: Lemma B's own
+     measured delta (1.23 nats / 3.4-fold) was restored to the paper's Section
+     4 prose 2026-08-12 after sitting unused in numbers.tex since a
+     page-budget cut. Do not write 'the premise fails' as if only the
+     contraction measurement carried that claim."
+  - "THE NEVER-CYCLED-CONTROL HEADLINE NOW COVERS THE FULL PANEL and the paper
+     LEADS with it: 69.6 pts by checkpoint / 67.6 by family (vs 76.7 / 75.4
+     cycled). See findings_headline.control_periodicity_full_panel. Most of
+     the correction is a vocabulary-difficulty artifact, not periodicity --
+     both numbers are reported, neither replaces the other."
+  - "TWO INTERNAL CONTRADICTIONS FOUND AND FIXED BY A REVIEW ROUND (r22,
+     62e992c): (1) section headers said 'Pre-specified' while the text
+     admitted the k>=6 threshold was chosen after seeing the data -- headers
+     are now plain descriptions, provenance stays in the prose. (2) the
+     abstract led with the cycled 75.4/94.3 pair while the body said 'we quote
+     the smaller' (never-cycled) -- abstract now leads with 67.6 and gives
+     75.4 second, matching the body. A stray p=0.017 quoted despite the
+     paper's own 'effect sizes, not p-values' framing was also dropped from
+     the prose (the \\JacQPairedP macro still exists, unused)."
+  - "A LISTENING-STUDY KIT IS BUILT BUT NOT RUN (c24a2b1) --
+     scripts/make_listening_sheet.py / score_listening.py, 60 blinded clips in
+     data/listening/. No result exists. See findings_headline.listening_study."
+  - "A SECOND-CHECKPOINT CAUSAL EXTENSION IS IN FLIGHT UNDER THE WRONG
+     COMPARATOR and a resume-reference re-run is running now (uncommitted
+     files, live timestamps). NO number from
+     data/results/causal_count_second_checkpoint.json,
+     causal_rq_*, causal_rs_*, or causal_pq_* may enter the paper yet,
+     including the two Qwen 'readable null' cells. See
+     findings_headline.causal_second_checkpoint. DO NOT touch the GPUs this is
+     running on."
+  - "PROBE PAST THE HORIZON, judge replication, CosyVoice 2 and the
+     hierarchical/mixed-effects stats are unchanged by this batch of commits
+     and still hold as previously recorded -- see final_day_results and
+     findings_headline for those sections, not re-verified again in this
+     reconciliation beyond a spot check."
+  - "title remains 'Periodicity, Not Length: Locating the Repetition-Counting
+     Failure in Neural Text-to-Speech' -- the period ladder tested this title
+     directly and it held. Do not restore the attractor-theory framing or the
+     benchmark framing."
+  - "paper page budget: confirm current page count before any further edit;
+     supplement has grown past 91 pages (S28 alone is the period ladder,
+     S5 was rewritten to actually document the Jacobian panel -- it did not
+     before, see implementation-notes.md); check_supp_tables.py must keep
+     passing."
+  - "STANDING HAZARD: the availability line names an immutable git tag: as of
+     1790187 it was re-cut to v1.2-locating right before that commit. It WILL
+     drift again as more commits land after it -- re-cut the tag and update
+     the line as the LAST action before submission, and verify the tag
+     actually contains the built PDF being sent (de19c22, implementation-notes.md)."
+  - "final: check_lean.sh, build both PDFs, re-cut the availability tag last,
+     tag the submission."
 
 review_round_1:
   location: "paper/reviews/r1/"

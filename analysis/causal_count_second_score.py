@@ -102,6 +102,16 @@ def load_rows(key: str, stim: dict) -> list[dict]:
         degen = bool(dur < 0.25 or fl.get("rms", 1.0) < 1e-3
                      or fl.get("spectral_flatness", 0.0) > 0.35
                      or not a.get("text", "").strip())
+        # `analysis/causal_count.py`'s manifest schema predates the `stopped`
+        # field, so resume-protocol rows carry no explicit stop flag. Deriving
+        # it as "did not hit the budget" is that file's own semantics -- a run
+        # ends either because the model emitted the end-of-speech token or
+        # because we truncated it -- and without this the stop rate would read
+        # as a flat 0% for every resume cell, which is not a measurement but a
+        # missing key.
+        if r.get("stopped") is None:
+            r["stopped"] = (not bool(r["hit_cap"])) if r.get("hit_cap") is not None \
+                else None
         r.update(count=int(cnt), y=float(math.log1p(cnt)), duration_s=dur,
                  degenerate=degen, family=it["family"],
                  spectral_flatness=fl.get("spectral_flatness", float("nan")))

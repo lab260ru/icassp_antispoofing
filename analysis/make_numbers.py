@@ -1216,7 +1216,12 @@ def main() -> None:
     ds_path = Path("data/results/disambiguation.json")
     if ds_path.exists():
         ds = json.loads(ds_path.read_text())
-        macros["DisR"] = fmt(100 * ds["R_matched"], 1)
+        # Two decimals: the recovered fraction is a hair either side of zero,
+        # and one decimal renders it "-0.0", which reads as a formatting fault
+        # rather than as a measurement. The prose carries the claim ("none of
+        # it") and this carries the number.
+        macros["DisR"] = fmt(100 * ds["R_matched"], 2)
+        macros["DisN"] = str(ds.get("n", ""))
         macros["DisNVar"] = WORDS.get(len(ds.get("exact_by_variant", {})) - 1,
                                       str(len(ds.get("exact_by_variant", {})) - 1))
 

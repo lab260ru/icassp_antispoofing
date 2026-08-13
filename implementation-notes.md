@@ -642,3 +642,131 @@ seed 2 has since been flagged `hit_cap` and is now excluded by rule 4. That is
 0.015 pt on the panel mean and changes no reported figure, but
 `aperiodic_controls.py` asserts against that file and its tolerance is set at
 0.005 so a *real* population difference still fails loudly.
+
+## Round 21 -- the period ladder, and what it does to the title
+
+The objection four reviewers made independently is correct: the design varied
+periodicity and verbatim token identity together, so "Periodicity, Not Length"
+was not a claim the corpus could support either way. `stimuli_period.jsonl`
+(`data/stimuli/make_stimuli_period.py`) fills in the missing rungs -- p = 1, 2,
+4, 8, k at k = 16, 24, 32 -- and `analysis/period_ladder.py` reads them. The
+answer is that the deficit is **graded in the period and does not collapse at
+p=2**, so the reviewers' alternative -- that the effect is verbatim-token
+repetition -- is the one the data refuse.
+
+Design decisions that turned out to matter more than expected:
+
+* **Rotations, not a single word pair.** A p=2 arm needs two fillers, and which
+  two is a lexical confound: the observed spread across the four rotations of
+  one pool is 24.4% to 53.3% exact on qwen06b alone. Generating all 8/p
+  rotations makes the p = 2, 4, 8 arms use the same eight words the same number
+  of times, and it does the same for character count -- 187.8, 188.6, 188.8 --
+  which was not planned and is worth keeping. A single-rotation design would
+  have carried a ~30-point lexical confound into the headline.
+* **k = 16, 24, 32 and not k = 12.** Every period has to divide every k or the
+  last cycle is partial and the pool words stop being balanced. 8 does not
+  divide 12, so k=12 was dropped despite the published aperiodic arm covering
+  it. One extra k was not worth reintroducing the imbalance the rotations exist
+  to remove.
+* **Re-render the published rungs rather than splice them in.** p=1, p=8 and
+  p=k are character-identical to `wr_*`, `ct_*` and `ap_*`, generated in the
+  same run on the same seeds. qwen06b and xtts2 reproduce their published
+  numbers to +0.0 points on all three rungs; llasa1b lands within 2.9. That
+  check is the only reason the ladder can be set beside the paper's numbers.
+
+Traps, in the order they bit:
+
+* **`score_counts.py` cannot see an overcount above p=1.** An all-identical unit
+  list takes the unbounded-occurrence branch; a mixed one takes a monotone scan
+  capped at k. So a looping model reads as an overcount at p=1 and as *exact* at
+  p=2, which manufactures precisely the collapse the verbatim reading predicts.
+  It is worth 22 points at p=2 (51.7% by the scan, 23.9% recounted). Every rate
+  is now reported under three rules -- scan, unbounded recount, and the strict
+  conjunction of the two -- and the conclusion is the same under all three, but
+  it would not have been safe to quote the scan alone.
+* **`qwen_gen.py` was dead in the current `qwen` env.** `eos_trim_length`
+  indexes `hidden_states[j+1]` for j up to n-1, which is out of range whenever
+  generation stops without materializing an EOS frame -- on transformers 4.57.3
+  that is every item, and the arm crashed on its first generation. Guarded;
+  `est_duration_s` against `wav_duration_s` agrees to under one frame, so
+  `n_speech_tokens` still means what it meant.
+* **The `coqui` env cannot import coqui-tts at all** (transformers 5.15.0). XTTS
+  ran in `coqui_es`, which is the same pin the published run used.
+* **`population.py` had no item-level rule.** The period ladder is the panel's
+  own checkpoints on a different stimulus file, so no model key marks it;
+  `NON_PANEL_ITEM_PREFIXES` states the rule that `score_counts.py`'s control
+  flow was previously enforcing by accident.
+* **The vocabulary audit must not overwrite `judge_vocab_audit.json`.**
+  `population.panel()` reads that file to decide which templates the whole paper
+  may report. The period arm's audit writes to `_period.json`.
+
+## Extending `jacobian_q.py` to a checkpoint the estimator was not written for
+
+The refutation generalised to five checkpoints across two families
+(`data/results/jacobian_q_panel.json`), and three things had to be solved to
+get there that are easy to rediscover the hard way if a sixth checkpoint is
+added later.
+
+**Qwen has no token sequence to teacher-force.** Llasa's estimator assumes a
+discrete codec-id stream it can replay through the embedding table. Qwen's
+per-step input is a *sum* of sixteen RVQ codec embeddings plus a text term,
+computed inside the model, and the ids that produced it are never saved to
+disk. The fix is a pre-hook that captures the actual fused input tensor at
+generation time rather than trying to reconstruct it from saved ids
+afterward. This needed a **fourth self-test gate (S4)**, beyond the three
+Llasa gates (synthetic-spectrum recovery, causality check, JVP-vs-finite-
+difference agreement): replaying the captured inputs must reproduce
+incremental generation to cosine similarity 0.999 before the model is
+trusted. Any future estimator that tries to read `h_l(t_m) -> h_l(t_{m+1})`
+from saved token ids on an architecture with a fused/summed embedding input
+will silently measure the wrong map — check whether the architecture's
+`forward` sums multiple embedding sources before assuming ids alone
+determine the input.
+
+**The boundary floor is sample-rate-dependent, and the old value would have
+gutted the Qwen arm.** The original 8-frame floor for locating repetition
+boundaries is 0.16 s at Llasa's 50 Hz codec but 0.6 s at Qwen's 12.5 Hz —
+loose enough there to silently discard nearly every Qwen item, the very
+checkpoint the whole extension exists to measure. `MIN_TAU` is now set per
+architecture's frame rate, not as one constant across families. Its bias
+runs toward the premise being tested (a looser floor is more forgiving of
+short apparent boundaries), so tightening it was a correction against the
+result the paper wanted, not for it — worth stating explicitly if this floor
+is loosened again for a new checkpoint.
+
+**A read-window skip rate is not automatically "exact and harmless."** Truncating
+teacher-forcing at a fixed read window (Llasa-8B: 700 tokens on one card) is
+provably exact on a causal model *when the truncation is actually the read
+window* — but a skip counter that just says "N items skipped" conflates that
+with plain OOM, which is a different failure with a different bias (it
+removes items non-uniformly by however memory pressure happened to land, not
+by a principled cutoff). Llasa-8B's 22% skip rate at the 700-token window is
+236 read-window truncations and 129 OOMs, roughly a 2:1 mix, not a single
+story — the two must be counted and reported separately (`data/results/
+jacobian_q_llasa8b.json`'s per-item flags), and an "exact by construction"
+argument only covers the read-window share.
+
+## The causal second-checkpoint extension re-broke a trap this file already named
+
+"The trap that would have manufactured a causal result" (above) exists
+specifically because a patched run and a free baseline consume the sampler's
+random stream at different offsets and are not comparable even at the same
+seed — which is why every published causal cell is paired against a
+*resume-reference* (same prefix, no hook, same seed), not a fresh free
+baseline. The second-checkpoint extension
+(`data/results/causal_count_second_checkpoint.json`) shipped its first pass
+under protocol `"decode-time, paired against the free baseline"` — the exact
+comparator this section warns against — for all three of Llasa-1B, Qwen-0.6B
+and Qwen-1.7B. Re-running Llasa-1B's already-published cell under that
+protocol disagrees with the published number (median +0.065 [-0.258,+0.251],
+3.1% degenerate, against the published +0.00 [-0.09,+0.09], 0.0% degenerate)
+and its own disruption gate independently flags it: `"too disruptive to
+interpret (disruption index 1.02 >= 0.5, ...)"`.
+
+**The lesson is not new; the trap bit again anyway.** If you extend a causal
+result to a new checkpoint, grep the new script for how it pairs patched
+against baseline *before* trusting anything it prints, even if the original
+script got this right — a follow-up script is a new implementation, not a
+guarantee of the same protocol. As of this writing a resume-reference re-run
+is in progress; no number from the decode-time-protocol files should be used
+until it lands and the published-cell reproduction check passes again.
