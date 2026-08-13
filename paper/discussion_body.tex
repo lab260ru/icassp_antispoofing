@@ -10,9 +10,8 @@ With contraction refuted, the live question is where the count fails: erased
 from the state, or surviving there while the policy reading it fails.
 Venkatesh~\cite{venkatesh2026repeated} established the representational half of
 that in text models by probing; we add the causal half and the isolation of periodicity
-from length. The count is not erased: it stays decodable
-late ($R^2$ \ProbeLateMed{}), and a probe past the extension horizon is
-inconclusive at $n=\PhNCk{}$ (S12). Deciding needs a manipulation of
+from length. The count is not erased: it stays decodable late ($R^2$ \ProbeLateMed{}), and a
+probe past the extension horizon is inconclusive (S12). Deciding needs a manipulation of
 the readout at fixed state, and we ran two. Splicing whole donor states is too disruptive to
 read, an \emph{unrelated} donor moving the count $1.3\times$ as much as one
 differing in $k$. A rank-1 patch transferring only the probe's count
@@ -30,21 +29,16 @@ Counting-specific expressivity results agree by another route --- transformers
 count only under conditions on precision, depth and positional
 encoding~\cite{yehudai2024when,salzer2025counting,zhang2024counting}, with
 single-pass~\cite{hahn2020theoretical,strobl2024formal} and state-tracking
-bounds~\cite{li2025statetracking} bracketing it. The two predict differently,
-which is the point of the control: an inductive-bias limit is a property of the
-model and survives at fixed periodicity, a contraction limit is a property of
-the \emph{conditioning}. Ours varies periodicity at fixed length, and the
-result is periodicity-specific.
+bounds~\cite{li2025statetracking} bracketing it. Those are properties of the model, invariant to
+period; ours moves with it.
 
 \noindent\textbf{What the design does not separate, and other limits.}
-Periodicity and \emph{verbatim token identity} vary together here, so
-``periodicity'' is the pair, and neither is separated from \emph{training-set
-frequency}: $k$-fold repetition is far rarer in speech corpora than a matched
-distinct-word sentence, and an out-of-distribution account predicts the same
-dissociation. Inside the repeated arm count and text length are one variable, so
-a probe decoding $k$ may be decoding length. The duration story rests on one model per strategy,
-the causal patch on one checkpoint, the panel on \NFamilies{} families; a Spanish
-arm was unreportable, an exact-rate contrast needing a judge accurate enough to
-pin the control side near one (S27).
-Exclusions are rule-based and blind to arm and score, and the judge is
-validated against concatenative ground truth, not listeners.
+Periodicity is not separated from \emph{training-set frequency}: $k$-fold
+repetition is far rarer in speech corpora than a matched distinct-word sentence,
+and an out-of-distribution account predicts the same dissociation. Inside the
+repeated arm count and text length are one variable. The duration story rests
+on one model per strategy,
+the causal patch on one checkpoint, the panel on \NFamilies{} families, and a
+Spanish arm was unreportable, an exact-rate contrast needing a judge accurate
+enough to pin the control side near one (S27). Exclusions are blind to arm and score, and the judge is
+validated on concatenative ground truth, not listeners.

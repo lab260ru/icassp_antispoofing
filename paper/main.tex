@@ -56,15 +56,18 @@ from \NFamilies{} architectures, models render repeated text exactly in
 \ExactRep{}\% of generations against \ExactCtl{}\% for their controls at
 $k\ge6$: a gap of \FamExact{} points $[\FamExactLo{},\FamExactHi{}]$ by
 architecture family ($n{=}\FamExactN{}$; \ApHeadFam{} with never-cycled control
-fillers throughout), favouring the control in all \CkExactN{} checkpoints, and
-\FullLadderGap{} points over the whole ladder from $k{=}1$. The limit tracks \emph{periodicity, not length}. It survives greedy decoding, an
+fillers), favouring the control in all \CkExactN{} checkpoints, and
+\FullLadderGap{} points over the whole ladder from $k{=}1$. A period ladder separates
+periodicity from verbatim identity: exact rates climb \PerPOne{}, \PerPTwo{},
+\PerPFour{}, \PerPEight{}\% as the period goes $1,2,4,8$, and half the deficit
+survives at period two, where no token is adjacent to itself. The limit tracks \emph{periodicity, not length}. It survives greedy decoding, an
 order-of-magnitude penalty sweep and every exclusion rule switched off (\ExSensAll{} points), and replicates at
 \IndGapLo{}--\IndGapHi{} points across \IndNJudges{} recognisers, ruling out
 the judge-side artifact that would otherwise explain it. Measuring it needs care: the obvious judge, Whisper,
 is autoregressive and biased \emph{against} the phenomenon, scoring
 \WhisperValPer{} of the true count on periodic ground truth where a CTC
-recogniser scores \CtcValPer{}. Nor is the failure peculiar to autoregressive
-decoding --- of two non-autoregressive baselines one is immune, one is not.
+recogniser scores \CtcValPer{}. Nor is the failure peculiar to autoregressive decoding: of two
+non-autoregressive baselines one is immune, one is not.
 A Lean-4-verified bound says that if the per-repetition state map contracts, no
 Lipschitz readout can separate counts past a computable horizon. We measure that premise
 across \JacPanelN{} checkpoints with a validated estimator and reject it:
@@ -198,34 +201,30 @@ implication holds; its antecedent does not.
 \noindent\textbf{Measuring $q$.}
 We estimate the top singular value of the boundary-to-boundary Jacobian by power
 iteration with exact directional derivatives, teacher-forcing the generated
-tokens so the map is well defined. It passes three gates on every checkpoint
-first: it recovers a synthetic Jacobian of known spectrum to $4\times10^{-4}$;
-run backwards in time it returns \emph{exactly} zero, as a causal transformer
-requires; and its Jacobian--vector products match finite differences to
-$2\times10^{-5}$ where the map is linear. Across
+tokens so the map is well defined. It passes three gates on every checkpoint first:
+it recovers a synthetic Jacobian to $4\times10^{-4}$; run backwards in time it
+returns \emph{exactly} zero, as a causal transformer requires; and its
+Jacobian--vector products match finite differences to $2\times10^{-5}$. Across
 \JacPanelN{} checkpoints and \JacPanelFam{} families, $q$ runs
 \JacQMin{}--\JacQMax{}. \emph{No map is a contraction:} $q<1$ in no item, in any
 checkpoint, lag or sub-stack, on either arm, and the most favourable cell
 anywhere still has a bootstrap floor of \JacBestFloor{}. Teacher-forcing removes
 the token channel, so these are \emph{lower} bounds.
 
-Two readings are forced, both worse for the theorem than a simple null. The
-premise fails on the \emph{control} arm everywhere too, so this is not something
-periodicity breaks: contraction was never a description of these decoders for
-any input. And $q$ \emph{grows} with scale inside Llasa
+Two readings are forced, both worse for the theorem than a null. The premise
+fails on the \emph{control} arm everywhere too, so contraction was never a
+description of these decoders for any input. And $q$ \emph{grows} with scale inside Llasa
 (\JacQLlasaOne{}, \JacQLlasaThree{}, \JacQLlasaEight{} at 1B, 3B and 8B), while
 \ErrBestModel{} --- the one checkpoint that counts correctly, at zero median
 error --- has $q=\JacQCounter{}$. A decoder that renders the count perfectly has
 an equally expansive map, so whatever separates counting from miscounting here
-is not $q$. The dilution lemma fails the same way: within a
-$(\text{model},k)$ cell flatter attention goes with \emph{better} counting
-($r=\DilR{}$ $[\DilRLo{},\DilRHi{}]$; S12). A third objection is structural and
-is in S5: the theorem's $s_m$ has no single-layer realisation in a causal
-transformer at all.
+is not $q$. The dilution lemma fails the same way: flatter attention goes with \emph{better}
+counting within a $(\text{model},k)$ cell ($r=\DilR{}$
+$[\DilRLo{},\DilRHi{}]$; S12). A third objection is structural, in S5.
 
 We keep the bound because it motivated the manipulation, and a verified
-conditional whose antecedent is measured and rejected is a cleaner object than
-an untested one --- but it explains nothing in Section~\ref{sec:results}.
+conditional whose antecedent is measured and rejected is cleaner than an
+untested one --- but it explains nothing in Section~\ref{sec:results}.
 
 \section{Discussion}
 \label{sec:discussion}

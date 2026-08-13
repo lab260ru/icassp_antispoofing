@@ -67,17 +67,24 @@ sign. These are not independent tests and we correct across none of them: the
 curve is a robustness envelope over one comparison, not a family of hypotheses,
 and our claims rest on effect sizes, not $p$-values (S11).
 
-Above $k\!=\!8$ the control's fillers cycle a pool of eight, making the contrast
-period-$1$ against period-$8$ rather than periodic against aperiodic. Re-running every checkpoint with a
-never-cycled $146$-word pool wherever cycling occurs
-puts the gap at \ApHeadCk{} by checkpoint and \ApHeadFam{} by family against
-\ApHeadCkCyc{} and \ApHeadFamCyc{} cycled, positive throughout, and we quote
-the smaller. Most of that \ApHeadDrop{} points is
-vocabulary: a never-cycled control at $k\!=\!32$ must return
-thirty-two \emph{distinct} adverbs and the pool's tail transcribes worse, its
-failures missing one filler where the cycled arm's drop whole cycles. Within one
-unit the substitution costs \ApHeadTolDrop{} points; the median-error contrast
-does not move.
+\emph{Periodicity, or verbatim identity?} The two vary together above, so we ran
+a ladder holding carrier, word count and requested count fixed and varying only
+the period $p$. The deficit is \emph{graded}: exact rates rise \PerPOne{},
+\PerPTwo{}, \PerPFour{}, \PerPEight{}\% at $p=1,2,4,8$, monotone in each of
+\PerNCk{} checkpoints ($n=\PerNKept{}$). The decisive cell is $p\!=\!2$,
+where no token is ever adjacent to itself and half the deficit remains
+(\PerDTwo{} points against \PerDOne{} at $p\!=\!1$;
+\PerDTwoLo{}--\PerDTwoHi{} across \PerNRules{} scoring rules,
+\PerAllAgree{} agreeing). So it is periodicity, not verbatim identity --- nor a
+failure to tell neighbours apart: a comma, full stop or ``and'' between
+repetitions, distinguishing successive spans without changing the count,
+recovers \DisR{}\% of it.
+
+Never-cycled control fillers throughout put the gap at \ApHeadCk{} by checkpoint
+and \ApHeadFam{} by family against \ApHeadCkCyc{} and \ApHeadFamCyc{} cycled,
+positive throughout, and we quote the smaller --- though most of that
+\ApHeadDrop{} points is vocabulary rather than periodicity, the substitution
+costing \ApHeadTolDrop{} within one unit and nothing at all on median error.
 
 \subsection{Pre-specified: not the decoding rule, judge, or exclusions}
 
@@ -86,7 +93,7 @@ penalty suppresses repeated tokens directly. Swept on \PenNArch{} architectures
 the deficit stays put (XTTS-v2 \PenRepLo{}--\PenRepHi{}\% exact over a
 \PenFold{}-fold range, Qwen3-TTS-0.6B \PenQRepLo{}--\PenQRepHi{}\% over
 \PenQFold{}-fold, S15), and the \PenNoneN{} Llasa checkpoints pass \emph{no}
-penalty and show it at full size, \PenNoneRep{}\% against \PenNoneCtl{}\%. Nor is it
+penalty and show it at full size. Nor is it
 sampling: greedy decoding gives \GreedyGap{} points against \GreedySampGap{}
 sampled (S22). Nor our exclusions: with every rule off the gap is
 \ExSensAll{} points against \ExSensPanel{}, and the one rule falling unevenly --- our token
@@ -109,28 +116,22 @@ rate --- and leaves the arm they get wrong fixed, where a judge-side collapse
 predicts the reverse. Disagreements do concentrate on repeated items, but with
 the \emph{opposite} sign to the confound --- $+\IndAsym{}$ where the artifact
 requires $\IndAsymThresh{}$ --- so our judge under-states the deficit rather
-than manufacturing it (S14). VITS~\cite{kim2021vits}
-shows \emph{no} dissociation through the same recogniser on the same strings
-(\VitsRep{}\% against \VitsCtl{}\%, $n=90$, a gap of \VitsGap{} against the
-panel's $+\ARPoolGap{}$), and not for want of competence: at
-$k\!=\!6\text{--}8$ it renders \NonARMidRep{}\% against \NonARMidCtl{}\%, the
-other way round (S13). Blank-collapse would have depressed its repeated items
-too.
+than manufacturing it (S14). VITS~\cite{kim2021vits} shows \emph{no} dissociation
+through the same recogniser on the same strings (\VitsRep{}\% against
+\VitsCtl{}\%, $n=90$, a gap of \VitsGap{} against the panel's
+$+\ARPoolGap{}$), and not for want of competence (S13); blank-collapse would
+have depressed its repeated items too.
 
 F5-TTS~\cite{chen2024f5tts}, flow-matching rather than recurrent, \emph{does}
 show it: \FivettsRep{}\% against \FivettsCtl{}\%, $+\FivettsGap{}$, growing
 with $k$ as the panel's does. Absence of an autoregressive decoder confers no
 immunity, and we withdraw the architectural claim an earlier draft made. What
 plausibly separates the two is where the count must live: VITS gives each input token its own duration, while F5-TTS estimates
-one total duration and so must represent how much speech to make. Supplying
-F5-TTS the duration a correct rendering takes splits the deficit: below
-$k\!=\!\DurSplit{}$ it lifts exact renderings \DurLoFree{}\% to
-\DurLoFixed{}\% ($n=\DurLoN{}$), at or above it the gain is \DurHiGain{}
-($n=\DurHiN{}$, with any gain above \EqDurBound{} points excluded). Handed the
-right length the model still cannot place thirty-two repetitions inside it
-(S13). CosyVoice~2 says the same from the other side, over-producing
-(median $+\CosyMedErr{}$\%) and still losing the count; S20 lists three further
-rivals.
+one total duration and so must represent how much speech to make. Supplying F5-TTS the duration a correct rendering
+takes splits the deficit: below $k\!=\!\DurSplit{}$ it lifts exact renderings
+\DurLoFree{}\% to \DurLoFixed{}\%, at or above it the gain is \DurHiGain{}
+($n=\DurHiN{}$, any gain above \EqDurBound{} points excluded) --- handed the
+right length the model still cannot place thirty-two repetitions in it (S13). S20 lists three further rivals.
 
 \begin{table}[t]
 \centering

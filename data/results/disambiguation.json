@@ -1,0 +1,111 @@
+{
+  "n": 179,
+  "front_end_check": [
+    {
+      "variant": "comma",
+      "identical_rate": 0.0,
+      "n": 45
+    },
+    {
+      "variant": "stop",
+      "identical_rate": 0.0,
+      "n": 44
+    },
+    {
+      "variant": "and",
+      "identical_rate": 0.0,
+      "n": 45
+    }
+  ],
+  "judge_audit": [
+    {
+      "variant": "bare",
+      "delivery": 1.0,
+      "n": 45
+    },
+    {
+      "variant": "comma",
+      "delivery": 1.0,
+      "n": 45
+    },
+    {
+      "variant": "stop",
+      "delivery": 1.0,
+      "n": 44
+    },
+    {
+      "variant": "and",
+      "delivery": 0.8888888888888888,
+      "n": 45
+    }
+  ],
+  "judge_delivery_spread": 0.11111111111111116,
+  "exact_by_variant": {
+    "bare": {
+      "xtts2": 0.1111111111
+    },
+    "comma": {
+      "xtts2": 0.0888888889
+    },
+    "stop": {
+      "xtts2": 0.1363636364
+    },
+    "and": {
+      "xtts2": 0.1111111111
+    }
+  },
+  "n_by_variant": {
+    "bare": {
+      "xtts2": 45
+    },
+    "comma": {
+      "xtts2": 45
+    },
+    "stop": {
+      "xtts2": 44
+    },
+    "and": {
+      "xtts2": 45
+    }
+  },
+  "recovered_fraction": [
+    {
+      "model": "xtts2",
+      "E8": 0.8222222222,
+      "E_bare": 0.1111111111111111,
+      "R_comma": -0.03125000000097655,
+      "R_stop": 0.03551136363747336,
+      "R_and": 0.0
+    }
+  ],
+  "R_matched": 0.0021306818182484054,
+  "verdict": "INDIVIDUATION FALSIFIED",
+  "R_and": 0.0,
+  "ordering_as_predicted": true,
+  "per_arm_length": [
+    {
+      "variant": "bare",
+      "words": 31.8,
+      "chars": 171.0,
+      "duration_s": 12.073007407407406
+    },
+    {
+      "variant": "comma",
+      "words": 31.8,
+      "chars": 194.0,
+      "duration_s": 15.864414814814813
+    },
+    {
+      "variant": "stop",
+      "words": 31.636363636363637,
+      "chars": 192.72727272727272,
+      "duration_s": 14.216727272727274
+    },
+    {
+      "variant": "and",
+      "words": 54.8,
+      "chars": 263.0,
+      "duration_s": 17.490251851851855
+    }
+  ]
+}

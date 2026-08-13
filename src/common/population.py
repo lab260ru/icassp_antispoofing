@@ -8,7 +8,7 @@ folded the three repetition-penalty arms into the panel without anything
 complaining. Exclusions belong in one place where they can be read and audited
 together, so they live here and every analysis calls `panel()`.
 
-The four rules, and why each exists:
+The five rules, and why each exists:
 
 * **Ablations and baselines are not panel members.** The `xtts2*` and
   `qwen06brp*` arms are panel checkpoints under altered decoding, run to sweep a
@@ -28,7 +28,11 @@ The four rules, and why each exists:
   error is -0.44 against -0.08 for the rest: that is our budget truncating the
   audio, not the model failing to count.
 
-`panel()` applies all four and returns the frame plus a record of what each rule
+* **Off-panel item arms.** The period ladder (`pd_*`) re-renders the published
+  repeated and control arms under new ids on the *same* checkpoints, so nothing
+  in the `model` column marks it out. See `NON_PANEL_ITEM_PREFIXES`.
+
+`panel()` applies all five and returns the frame plus a record of what each rule
 removed, so the counts can be reported instead of quietly vanishing.
 """
 from __future__ import annotations
@@ -58,6 +62,22 @@ ABLATIONS = {"xtts2norp", "xtts2rp2", "xtts2rp3", "xtts2rp8",
              # inside one macro. It is reported on its own in
              # `analysis/crosslingual_es.py` and nowhere else.
              "xtts2es"}
+
+# Arms that are not panel *items*, keyed by item-id prefix rather than by model.
+# `cosyvoice2` and `xtts2es` could be excluded by model key because they are
+# separate checkpoints; the period ladder is not -- it is the *panel's own*
+# checkpoints rendering a different stimulus file, so nothing in the `model`
+# column distinguishes it. What protects the panel today is that
+# `score_counts.py` emits rows only for item ids present in the `--stimuli`
+# file it was given, so a run over `stimuli.jsonl` cannot pick these up. That is
+# a property of one script's control flow, not a stated rule, and it stops
+# holding the moment someone scores a merged stimulus file -- which the period
+# analysis does, deliberately, to recover the duration fits that need low-k
+# anchors. So the rule is stated here too: `pd_*` is the period ladder
+# (`data/stimuli/make_stimuli_period.py`), it re-renders the published repeated
+# and control arms under new ids, and folding it into the English panel would
+# count every cell it replicates twice.
+NON_PANEL_ITEM_PREFIXES = ("pd_",)
 DEGENERATE = {"empty", "degenerate"}
 AUDIT = REPO / "data/results/judge_vocab_audit.json"
 META_DIR = Path("/home/kirill/mnt/hdd_6tb_1/icassp_tts/tokens")
@@ -96,6 +116,7 @@ def cap_flags() -> dict[tuple[str, str, int], bool]:
 
 def panel(d: pd.DataFrame, *, ablations: bool = False, degenerate: bool = False,
           bad_templates: bool = True, cap_hits: bool = True,
+          period_arm: bool = False,
           audit: Path | str | None = None) -> tuple[pd.DataFrame, dict]:
     """Restrict `d` to the reportable population.
 
@@ -110,6 +131,10 @@ def panel(d: pd.DataFrame, *, ablations: bool = False, degenerate: bool = False,
     if not ablations:
         keep = ~d.model.isin(ABLATIONS)
         drop["ablations"] = int((~keep).sum())
+        d = d[keep]
+    if not period_arm and "item_id" in d.columns:
+        keep = ~d.item_id.astype(str).str.startswith(NON_PANEL_ITEM_PREFIXES)
+        drop["period_arm"] = int((~keep).sum())
         d = d[keep]
     if not degenerate and "outcome" in d.columns:
         keep = ~d.outcome.isin(DEGENERATE)

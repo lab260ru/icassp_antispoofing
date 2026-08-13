@@ -1140,6 +1140,55 @@ def main() -> None:
             macros["AuditCtcN"] = str(cp["n_trials"])
             macros["AuditCtcMean"] = fmt(cp["mean_ratio"], 3)
 
+    # ---- the period ladder: is it periodicity, or verbatim identity? -------
+    # Four reviewers in one round objected that the design varies periodicity
+    # and verbatim token identity together, so the title claims the first while
+    # the evidence supports the pair. The ladder holds length and total count
+    # fixed and varies only the period. The answer is that the deficit is
+    # graded and monotone in period, and half of it survives at p=2 where no
+    # token is ever adjacent to itself -- so it is periodicity, not identity.
+    pl_path = Path("data/results/period_ladder.json")
+    if pl_path.exists():
+        pl = json.loads(pl_path.read_text())
+        scan = pl.get("exact_by_period_scan", {})
+        for p, tag in (("1", "One"), ("2", "Two"), ("4", "Four"), ("8", "Eight")):
+            cell = scan.get(p, {})
+            if cell:
+                macros[f"PerP{tag}"] = fmt(100 * sum(cell.values()) / len(cell), 1)
+        macros["PerNCk"] = WORDS.get(len(scan.get("1", {})),
+                                     str(len(scan.get("1", {}))))
+        # Quote the spread ACROSS scoring rules, not the bootstrap. The stored
+        # bootstrap interval belongs to the recount rules (D2 ~ 0.61) while the
+        # headline point comes from the ordered scan (D2 = 0.42), so pairing
+        # them would put the point estimate outside its own interval. The
+        # across-rule range is both consistent and the more conservative thing
+        # to report, and every rule agrees on the ordering anyway.
+        rules = [x for x in pl.get("verdicts", []) if "mean_D2" in x]
+        if rules:
+            base = next((x for x in rules if x.get("label") == "ordered scan"), rules[0])
+            macros["PerDOne"] = fmt(100 * base["mean_D1"], 1)
+            macros["PerDTwo"] = fmt(100 * base["mean_D2"], 1)
+            macros["PerDFour"] = fmt(100 * base["mean_D4"], 1)
+            d2s = [x["mean_D2"] for x in rules]
+            macros["PerDTwoLo"] = fmt(100 * min(d2s), 1)
+            macros["PerDTwoHi"] = fmt(100 * max(d2s), 1)
+            macros["PerNRules"] = WORDS.get(len(rules), str(len(rules)))
+            macros["PerAllAgree"] = ("all" if all(
+                x.get("verdict") == base.get("verdict") for x in rules) else "not all")
+        macros["PerNKept"] = str(pl.get("kept", ""))
+
+    # ---- and the disambiguator arm, which falsified our own account --------
+    # If the failure were an inability to individuate identical neighbours, a
+    # minimal edit that makes successive spans locally distinguishable --- a
+    # comma, a full stop, "and" --- should recover it without changing the
+    # count. It recovers nothing.
+    ds_path = Path("data/results/disambiguation.json")
+    if ds_path.exists():
+        ds = json.loads(ds_path.read_text())
+        macros["DisR"] = fmt(100 * ds["R_matched"], 1)
+        macros["DisNVar"] = WORDS.get(len(ds.get("exact_by_variant", {})) - 1,
+                                      str(len(ds.get("exact_by_variant", {})) - 1))
+
     # ---- the contraction premise, measured across the panel ----------------
     # The single-checkpoint measurement drew the same objection from all four
     # reviewers in one round. It now covers five checkpoints and two families,

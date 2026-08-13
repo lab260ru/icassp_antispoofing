@@ -165,8 +165,24 @@ def eos_trim_length(result, eos_id: int) -> int:
     fidelity to the library's own semantics.
     """
     n = decode_step_count(result)
+    hs = result.hidden_states
     for j in range(n):
-        codec_ids = result.hidden_states[j + 1][-1]  # frame finalized at call j+1
+        # The last generated frame is finalized by a call that was never made,
+        # so `hs[j+1]` does not exist at j = n-1 and the scan simply ends there.
+        # Without this guard the function raises `IndexError` on *every* item
+        # whose generation stops without materializing an EOS frame -- which,
+        # on transformers 4.57.3 in the `qwen` env today, is every item: the
+        # whole Qwen arm crashed on its first generation. It cannot always have
+        # done so, since the panel has Qwen rows, so the library used to issue
+        # one further forward call and this loop used to return from inside.
+        # Both paths report the same number of *real* frames -- the early
+        # return gave the index of the EOS frame, the fall-through gives the
+        # call count when no EOS frame exists -- so `n_speech_tokens` means the
+        # same thing before and after. `est_duration_s` against `wav_duration_s`
+        # is the check that it does, and it agrees to under a frame.
+        if j + 1 >= len(hs):
+            break
+        codec_ids = hs[j + 1][-1]  # frame finalized at call j+1
         if codec_ids is not None and int(codec_ids[0, 0].item()) == eos_id:
             return j
     return n
