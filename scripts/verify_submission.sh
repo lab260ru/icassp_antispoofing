@@ -83,6 +83,27 @@ sys.exit(1 if missing else 0)
 PY
 [ $? -ne 0 ] && FAIL=1
 
+note "The availability tag in the paper points at what the paper reports"
+# main.tex names a git tag as the artifact readers will fetch. Nothing else in
+# this suite looks at it, so the tag can silently go stale: it was cut before
+# the period ladder and the causal replication landed, and a submission built
+# today would have pointed a reviewer at a tree missing both experiments it
+# cites. Staleness here is worse than a broken build, because it fails only for
+# the reader. This is a WARNING and not a hard failure so the check is usable
+# mid-iteration; the last action before submission is to re-cut the tag.
+TAG=$(grep -o 'texttt{v[0-9][^}]*}' paper/main.tex | head -1 | sed 's/texttt{//;s/}//')
+if [ -z "$TAG" ]; then
+  bad "no availability tag found in paper/main.tex"
+elif ! git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+  bad "paper/main.tex cites tag $TAG, which does not exist"
+elif [ "$(git rev-list -n1 "$TAG")" = "$(git rev-parse HEAD)" ]; then
+  ok "tag $TAG is at HEAD"
+else
+  BEHIND=$(git rev-list --count "$TAG..HEAD")
+  printf '  WARN tag %s is %s commits behind HEAD -- re-cut it before submitting\n' \
+         "$TAG" "$BEHIND"
+fi
+
 note "Working tree is committed"
 # Build outputs are excluded: this script rebuilds both PDFs a few lines above,
 # so including them would make the check unpassable by construction. What must
