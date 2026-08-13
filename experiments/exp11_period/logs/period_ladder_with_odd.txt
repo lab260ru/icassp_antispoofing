@@ -1,0 +1,179 @@
+  (465 `pd_` rows are not period-ladder items -- disambiguator arm, read by analysis/disambiguation.py)
+  (533 `pd_` rows are not period-ladder items -- disambiguator arm, read by analysis/disambiguation.py)
+population 2880 -> 2690 (dropped: degenerate=23, cap_hits=167, templates=t2)
+checkpoints: llasa1b, qwen06b, qwen17b, xtts2
+k: [np.int64(16), np.int64(24), np.int64(32)]   templates: ['t1', 't3', 't4', 't5', 't6']
+
+exact rate by period -- ordered scan (the published rule)
+  checkpoint  p= 1  p= 2  p= 4  p= 8  p= k      (n per cell)
+  llasa1b       3.6   54.6   83.3   92.5   75.0      (28,130,84,40,44)
+  qwen06b       6.8   41.3   73.3  100.0   86.7      (44,179,90,45,45)
+  qwen17b      20.0   43.9   62.2   97.8   97.8      (45,180,90,45,45)
+  xtts2        11.1   51.7   75.6   82.2   57.8      (45,180,90,45,45)
+  MEAN         10.4   47.9   73.6   93.1   79.3
+
+exact rate by period -- unbounded recount (same rule at every p)
+  checkpoint  p= 1  p= 2  p= 4  p= 8  p= k      (n per cell)
+  llasa1b       3.6   26.9   66.7   92.5   70.5      (28,130,84,40,44)
+  qwen06b       6.8   35.8   74.4  100.0   93.3      (44,179,90,45,45)
+  qwen17b      20.0   32.8   62.2   97.8   97.8      (45,180,90,45,45)
+  xtts2        11.1   25.0   68.9   77.8   57.8      (45,180,90,45,45)
+  MEAN         10.4   30.1   68.1   92.0   79.8
+
+exact rate by period -- STRICT: in order AND no extras
+  checkpoint  p= 1  p= 2  p= 4  p= 8  p= k      (n per cell)
+  llasa1b       3.6   26.9   66.7   92.5   61.4      (28,130,84,40,44)
+  qwen06b       6.8   35.8   73.3  100.0   86.7      (44,179,90,45,45)
+  qwen17b      20.0   31.1   62.2   97.8   97.8      (45,180,90,45,45)
+  xtts2        11.1   23.9   66.7   77.8   48.9      (45,180,90,45,45)
+  MEAN         10.4   29.4   67.2   92.0   73.7
+
+  [ordered scan] mean D(1)=82.7 pts, D(2)=45.2 pts, D(4)=19.5 pts   ->  D(2)/D(1) = 0.547   PERIODICITY
+
+  [unbounded recount] mean D(1)=81.6 pts, D(2)=61.9 pts, D(4)=24.0 pts   ->  D(2)/D(1) = 0.758   PERIODICITY
+
+  [strict conjunction] mean D(1)=81.6 pts, D(2)=62.6 pts, D(4)=24.8 pts   ->  D(2)/D(1) = 0.767   PERIODICITY
+  cluster bootstrap over (template,k) cells: D(1) [72.5, 89.2] pts, D(2) [52.1, 72.1] pts, D(2)/D(1) [0.685, 0.833]
+
+--- paired within (model, template, k, seed): mean exact rate ---
+  checkpoint   cells p= 1  p= 2  p= 4  p= 8
+  llasa1b         23   4.3   56.2   73.9   91.3
+  qwen06b         44   6.8   40.3   72.7  100.0
+  qwen17b         45  20.0   43.9   62.2   97.8
+  xtts2           45  11.1   51.7   75.6   82.2
+
+exact rate by period -- cap hits KEPT (censored, bound only)
+  checkpoint  p= 1  p= 2  p= 4  p= 8  p= k      (n per cell)
+  llasa1b       4.8   44.9   78.9   86.0   73.3      (42,176,90,43,45)
+  qwen06b       6.7   41.1   73.3  100.0   86.7      (45,180,90,45,45)
+  qwen17b      20.0   43.9   62.2   97.8   97.8      (45,180,90,45,45)
+  xtts2        11.1   51.7   75.6   82.2   57.8      (45,180,90,45,45)
+  MEAN         10.6   45.4   72.5   91.5   78.9
+
+  [cap hits kept] mean D(1)=80.9 pts, D(2)=46.1 pts, D(4)=19.0 pts   ->  D(2)/D(1) = 0.570   PERIODICITY
+
+exact rate by period and k (pooled over checkpoints, ordered scan)
+arm      1      2      4      8      k
+k                                     
+16   0.151  0.577  0.883  0.966  0.883
+24   0.089  0.504  0.752  0.930  0.850
+32   0.094  0.333  0.564  0.898  0.644
+
+exact rate by period -- by family
+  checkpoint  p= 1  p= 2  p= 4  p= 8  p= k      (n per cell)
+  Llasa         3.6   54.6   83.3   92.5   75.0      (28,130,84,40,44)
+  Qwen3-TTS    13.5   42.6   67.8   98.9   92.2      (89,359,180,90,90)
+  XTTS         11.1   51.7   75.6   82.2   57.8      (45,180,90,45,45)
+  MEAN          9.4   49.6   75.6   91.2   75.0
+
+  [by family] mean D(1)=81.8 pts, D(2)=41.6 pts, D(4)=15.6 pts   ->  D(2)/D(1) = 0.508   PERIODICITY
+
+p=2 exact rate by rotation (spread = size of the lexical confound a single-rotation design would have carried)
+rotation     0     1     2     3
+model                           
+llasa1b   69.7  55.6  42.9  51.4
+qwen06b   24.4  48.9  38.6  53.3
+qwen17b   60.0  28.9  46.7  40.0
+xtts2     57.8  55.6  53.3  40.0
+
+--- rung replication: today's re-render vs the published arm (same text, same seeds) ---
+  checkpoint   arm     new  published   delta   n_new  n_pub
+  llasa1b        1    3.6%       6.5%   -2.9      28     31
+  llasa1b        8   92.5%      89.7%   +2.8      40     39
+  llasa1b        k   75.0%      73.3%   +1.7      44     45
+  qwen06b        1    6.8%       6.8%   +0.0      44     44
+  qwen06b        8  100.0%     100.0%   +0.0      45     45
+  qwen06b        k   86.7%      86.7%   +0.0      45     45
+  qwen17b        1   20.0%      20.0%   +0.0      45     45
+  qwen17b        8   97.8%      97.8%   +0.0      45     45
+  qwen17b        k   97.8%      97.8%   +0.0      45     45
+  xtts2          1   11.1%      11.1%   +0.0      45     45
+  xtts2          8   82.2%      82.2%   +0.0      45     45
+  xtts2          k   57.8%      57.8%   +0.0      45     45
+  worst disagreement: llasa1b p=1 -2.9 pts
+
+--- does the ladder collapse onto m = k/p, the per-token repetition count? ---
+  checkpoint    p   k   m   E(p,k)  E_pub(1,m)  residual     n  n_pub
+  llasa1b       1  16  16    12.5%        0.0%    +12.5     8     12
+  llasa1b       1  24  24     0.0%       22.2%    -22.2    12      9
+  llasa1b       1  32  32     0.0%        0.0%     +0.0     8     10
+  llasa1b       2  16   8    75.0%       20.0%    +55.0    48     10
+  llasa1b       2  24  12    63.0%       18.2%    +44.9    46     11
+  llasa1b       2  32  16    16.7%        0.0%    +16.7    36     12
+  llasa1b       3  24   8    76.0%       20.0%    +56.0    96     10
+  llasa1b       4  16   4    93.3%       50.0%    +43.3    30      6
+  llasa1b       4  24   6    74.1%       25.0%    +49.1    27      8
+  llasa1b       4  32   8    81.5%       20.0%    +61.5    27     10
+  llasa1b       6  24   4    90.2%       50.0%    +40.2    51      6
+  llasa1b       8  16   2    92.9%       25.0%    +67.9    14     12
+  llasa1b       8  24   3    91.7%        0.0%    +91.7    12      9
+  llasa1b       8  32   4    92.9%       50.0%    +42.9    14      6
+  llasa1b      16  16   1    66.7%       35.7%    +31.0    15     14
+  llasa1b      24  24   1    80.0%       35.7%    +44.3    15     14
+  llasa1b      32  32   1    78.6%       35.7%    +42.9    14     14
+  qwen06b       1  16  16     0.0%        0.0%     +0.0    15     15
+  qwen06b       1  24  24     7.1%        7.1%     +0.0    14     14
+  qwen06b       1  32  32    13.3%       13.3%     +0.0    15     15
+  qwen06b       2  16   8    39.0%        0.0%    +39.0    59     15
+  qwen06b       2  24  12    43.3%       13.3%    +30.0    60     15
+  qwen06b       2  32  16    41.7%        0.0%    +41.7    60     15
+  qwen06b       3  24   8    58.0%        0.0%    +58.0   119     15
+  qwen06b       4  16   4    80.0%       93.3%    -13.3    30     15
+  qwen06b       4  24   6    73.3%       13.3%    +60.0    30     15
+  qwen06b       4  32   8    66.7%        0.0%    +66.7    30     15
+  qwen06b       6  24   4   100.0%       93.3%     +6.7    60     15
+  qwen06b       8  16   2   100.0%      100.0%     +0.0    15     15
+  qwen06b       8  24   3   100.0%      100.0%     +0.0    15     15
+  qwen06b       8  32   4   100.0%       93.3%     +6.7    15     15
+  qwen06b      16  16   1   100.0%      100.0%     +0.0    15     15
+  qwen06b      24  24   1   100.0%      100.0%     +0.0    15     15
+  qwen06b      32  32   1    60.0%      100.0%    -40.0    15     15
+  qwen17b       1  16  16    26.7%       26.7%     +0.0    15     15
+  qwen17b       1  24  24    13.3%       13.3%     +0.0    15     15
+  qwen17b       1  32  32    20.0%       20.0%     +0.0    15     15
+  qwen17b       2  16   8    61.7%       66.7%     -5.0    60     15
+  qwen17b       2  24  12    48.3%       13.3%    +35.0    60     15
+  qwen17b       2  32  16    21.7%       26.7%     -5.0    60     15
+  qwen17b       3  24   8    43.3%       66.7%    -23.3   120     15
+  qwen17b       4  16   4    93.3%      100.0%     -6.7    30     15
+  qwen17b       4  24   6    80.0%       93.3%    -13.3    30     15
+  qwen17b       4  32   8    13.3%       66.7%    -53.3    30     15
+  qwen17b       6  24   4    98.3%      100.0%     -1.7    60     15
+  qwen17b       8  16   2   100.0%      100.0%     +0.0    15     15
+  qwen17b       8  24   3   100.0%      100.0%     +0.0    15     15
+  qwen17b       8  32   4    93.3%      100.0%     -6.7    15     15
+  qwen17b      16  16   1   100.0%      100.0%     +0.0    15     15
+  qwen17b      24  24   1   100.0%      100.0%     +0.0    15     15
+  qwen17b      32  32   1    93.3%      100.0%     -6.7    15     15
+  xtts2         1  16  16    20.0%       20.0%     +0.0    15     15
+  xtts2         1  24  24    13.3%       13.3%     +0.0    15     15
+  xtts2         1  32  32     0.0%        0.0%     +0.0    15     15
+  xtts2         2  16   8    58.3%       33.3%    +25.0    60     15
+  xtts2         2  24  12    50.0%        6.7%    +43.3    60     15
+  xtts2         2  32  16    46.7%       20.0%    +26.7    60     15
+  xtts2         3  24   8    71.7%       33.3%    +38.3   120     15
+  xtts2         4  16   4    86.7%       66.7%    +20.0    30     15
+  xtts2         4  24   6    73.3%       26.7%    +46.7    30     15
+  xtts2         4  32   8    66.7%       33.3%    +33.3    30     15
+  xtts2         6  24   4    71.7%       66.7%     +5.0    60     15
+  xtts2         8  16   2    93.3%      100.0%     -6.7    15     15
+  xtts2         8  24   3    80.0%       86.7%     -6.7    15     15
+  xtts2         8  32   4    73.3%       66.7%     +6.7    15     15
+  xtts2        16  16   1    86.7%      100.0%    -13.3    15     15
+  xtts2        24  24   1    60.0%      100.0%    -40.0    15     15
+  xtts2        32  32   1    26.7%      100.0%    -73.3    15     15
+
+  mean |residual| 23.9 pts, mean signed +14.0 pts, rank corr(E, m) = -0.782
+  at fixed m, residual vs total length k: -0.11 pts per unit k (n=44 cells)
+
+--- per-arm hygiene (cap hits are excluded from the tables above) ---
+   arm  n_kept   cap%   words   chars   dur_s  degen%
+     1     162   8.5%    31.8   170.5   14.13    0.0%
+     2     669   6.6%    31.7   188.1   15.48    0.0%
+     4     354   1.7%    31.7   188.7   15.40    0.0%
+     8     175   1.7%    31.8   188.8   15.30    0.0%
+     k     179   0.6%    31.8   215.0   16.72    0.0%
+
+=== PERIODICITY (all three counting rules agree)
+The word for this effect is 'periodicity'.
+wrote /home/kirill/icassp_antispoofing/data/results/period_ladder_with_odd.json

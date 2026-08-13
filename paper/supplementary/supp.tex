@@ -5994,6 +5994,92 @@ file; and probe grids differ per checkpoint (\texttt{every3} vs.\
 \texttt{every4}), so a patch layer must be looked up in each file's own
 \texttt{probe\_layers} rather than used as a column index.
 
+\subsection{The positive control, and why it demotes everything above}
+
+A reviewer named the alternative the null above cannot exclude, and named it
+correctly: a patch that moves the count ``not at all'' is equally consistent
+with the decoder ignoring the count coordinate and with \emph{the patch not
+carrying enough to matter on any checkpoint}. Our own diagnostics sharpen the
+worry rather than answering it --- \texttt{posthoc\_all\_cells\_at\_noise\_floor}
+being true means nothing moved, informative donor and uninformative donor alike,
+which is what an inert write looks like from the inside.
+
+The control is the same intervention with one thing changed: which direction is
+written. \texttt{analysis/causal\_positive\_control.py} fits directions the same
+way the count probe was fit --- same activations, layer, window, ridge
+estimator, normalisation, hook, protocol, reference, judge and seeds --- and
+writes them with the identical rank-1 procedure at the identical magnitude, with
+a gate proving the loader reproduces the published count vector bitwise in
+float32 and another proving the scaled hook is bitwise the published one at
+scale~1. Realised write magnitudes at $\alpha{=}1$ differ by $2.2\%$ between the
+count and carrier arms. The noise floor is a \texttt{diffseed} cell: the same
+donor item at seed${+}100$, i.e.\ a pure sampler re-roll, measured inside this
+same run.
+
+\textbf{Provenance, stated exactly.} The verdict table and thresholds were fixed
+before any audio of this experiment existed. Four operationalisations were then
+repaired after 35--41 pilot rows, each recorded in the file at the point of
+change rather than backfilled, and one of them mattered a great deal: the
+detection statistic was the \emph{median} word-level edit distance, whose floor
+value is exactly $0$ because a re-roll moves timing rather than words --- so
+``at least $2\times$ the floor'' would have made every cell detectable by
+construction, handing us the answer we wanted. It was changed to the mean, which
+makes the bar harder, and no threshold value moved. The other three (a collapse
+guard, carrying the published opposite-directions condition across, and a
+declared fallback) can also only make a ``live'' verdict harder to reach. This
+is therefore \emph{not} a fully pre-registered result and is not described as
+one: thresholds pre-registered, three operationalisations repaired at pilot stage
+in the conservative direction, all disclosed in-file.
+
+\textbf{What it found, on Qwen3-TTS-1.7B (complete grid).} At $\alpha{=}1$, the
+magnitude the published patch uses, no direction clears the detection bar --- the
+count write reaches $1.98\times$ the re-roll floor against a bar of $2.0$, the
+carrier $1.67\times$, a random matched-magnitude direction $1.39\times$. That the
+count write sits at $1.98$ against a bar of $2.0$ is a knife-edge and is reported
+as one. At $\alpha{=}2$ all three become detectable, and at $\alpha{=}16$ the
+count write destroys most runs, so the ladder does have range: this decoder
+responds to how hard a rank-1 write pushes, not to which direction it pushes
+along.
+
+\textbf{The load-bearing measurement is a bound, not a failed test.} The carrier
+direction is one this checkpoint encodes perfectly (leave-one-template-out sign
+accuracy $1.00$ across all three folds, separation 4.2--4.7). Transplanting it at
+the published magnitude moves the output toward the donor's carrier by at most
+$1.3\%$ of what a full donor-to-receiver carrier transfer would (90\% bootstrap
+interval $[-0.011, +0.026]$ against a full transfer of $1.973$), and at most
+$1.9\%$ even at $16\times$ the magnitude.
+
+We quote that bound rather than the direction-appropriateness test, and the
+distinction is not pedantic. At $n{=}9$ with ties dropped the carrier cell has
+$n_{\text{eff}}{=}7$, and at that $n$ \emph{no} sign agreement whatsoever clears
+Holm correction across five $\alpha$ levels: the cell did not fail the test, it
+could not take it. Reading ``no direction steers'' off a test that cannot reject
+would be the same error as reading a wide confidence interval as evidence of
+absence --- the error this supplement spends S26 warning about. The JSON now
+carries \texttt{S4\_sign\_test\_can\_reject}, \texttt{S4\_n\_effective} and
+\texttt{S4\_min\_agreement\_that\_could\_reject} per cell, and the scorer prints
+an explicit \textsc{underpowered} line naming the cells concerned.
+
+\textbf{The half that needed no new audio, and is the objection measured
+directly.} On the published arms themselves, the informative cross-$k$ write is
+statistically indistinguishable from a pure sampler re-roll on every readout
+tested --- rendered count, log duration, and word-level edit distance --- at
+$p \ge 0.38$. The patch is not literally inert: no patched run is bitwise
+identical to its reference, and median $|\Delta \log \text{duration}|$ is
+0.12--0.21. But the \texttt{diffseed} cell, which carries information about
+nothing at all, leaves the same footprint. The write's entire measured effect on
+the output is a re-roll.
+
+\textbf{What this costs the paper.} The equivalence bounds of S26 --- down to
+$6\%$ of a full transfer --- bound an intervention this decoder does not
+register at the magnitude used. ``The decoder ignores the count coordinate'' is
+not supported by them. What is supported, and what the main text now says, is
+that rank-1 probe-direction patching at this magnitude is not a working
+instrument on these decoders. That is a weaker claim than we set out to make,
+and a methodological result in its own right: a causal null from this family of
+interventions needs a positive control before it means anything, and ours did
+not have one until a reviewer asked for it.
+
 
 % ============================================================
 \section{The Spanish arm: the judge replicates, the counting statistic does not}
@@ -6598,5 +6684,81 @@ $16.93$s) because the $146$-word extension pool skews toward longer words,
 consistent with its already-flagged vocabulary caveat. Degenerate-output rate
 is $0.0\%$ at every arm: none of the differences above are outputs the judge
 failed to score at all.
+
+\subsection{The odd rungs: is the ladder periodicity, or powers of two?}
+
+Everything above tests $p \in \{1, 2, 4, 8\}$, and a reviewer named the gap that
+leaves: those are all powers of two, and the filler pool has eight words. A
+decoder with structure tied to power-of-two block sizes, or an effect driven by
+how an eight-word pool happens to cycle, would produce the same graded ladder
+without periodicity being the operative variable. The rivals make a sharp
+prediction --- a period that is neither a power of two nor a divisor-friendly
+fraction of the pool should \emph{not} interpolate between its neighbours.
+
+$k{=}24$ is the only rung of the main ladder that admits such periods, so
+$p{=}3$ (odd) and $p{=}6$ (even, not a power of two) were rendered there on the
+ladder's four checkpoints (Llasa-1B, Qwen3-TTS-0.6B, Qwen3-TTS-1.7B, XTTS-v2),
+720 generations, everything else held as above.
+
+\textbf{Pre-committed, before any audio.} Written into
+\texttt{data/stimuli/make\_stimuli\_period.py}: \textsc{periodicity confirmed}
+iff $E(2) < E(3) < E(4)$ and $E(4) < E(6) < E(8)$ pooled; \textsc{refuted} iff
+either odd rung reaches $E(8)$ or falls below $E(2)$; \textsc{ambiguous}
+otherwise, with the failing test and checkpoints named. The baseline is the
+$k{=}24$-only ladder, not the pooled one quoted in the main text, and the two
+differ ($E(1)$ $8.5$ against $10.4$, $E(2)$ $51.2$ against $47.9$); the $k{=}24$
+values were fixed in the docstring before generation.
+
+\textbf{Result: both tests pass.} Pooled exact rates under the published ordered
+scan run $8.5$, $51.2$, $62.3$, $75.2$, $90.0$, $92.9\%$ at
+$p = 1, 2, 3, 4, 6, 8$. Test~A: $51.2 < 62.3 < 75.2$. Test~B:
+$75.2 < 90.0 < 92.9$. Monotone across all six periods, both tests holding under
+all four counting rules and under every leave-one-checkpoint-out fit. Cluster
+bootstrap over the five carriers: $E(3)-E(2) = +10.9$ $[+2.1, +16.8]$,
+$E(4)-E(3) = +12.9$ $[+3.6, +21.2]$, $E(6)-E(4) = +14.7$ $[+2.2, +28.3]$. An odd
+period lands where periodicity predicts and where both rivals predict it should
+not.
+
+\textbf{Four things that weaken it, and are not in the main text for space.}
+
+First, $E(8) - E(6) = +2.7$ points, bootstrap $[-2.4, +7.7]$, which includes
+zero. The top of the ladder is saturated, so Test~B's upper inequality holds on
+point estimates but is not separable from noise. Every other adjacent gap
+excludes zero.
+
+Second, under the published ordered-scan rule \emph{no single checkpoint passes
+both tests individually}. Three of the four failures are ties or sub-2-point
+inversions at ceiling (Llasa-1B $E(3){=}76.0$ vs $E(4){=}74.1$; Qwen3-TTS-0.6B
+$E(6){=}E(8){=}100.0$; XTTS-v2 $E(6){=}71.7$ vs $E(4){=}73.3$). The fourth is
+substantial and is the one to know about: Qwen3-TTS-1.7B inverts Test~A,
+$E(3){=}43.3$ against $E(2){=}48.3$, a $5.0$-point reversal. Under the unbounded
+recount and the strict rule, Test~A passes in all four checkpoints individually
+and only the two ceiling ties remain.
+
+Third, $p{=}3$ is the noisiest point on the ladder: spread across rotations is
+$32$ points, against $9$ at $p{=}2$, $6$ at $p{=}4$ and $3$ at $p{=}6$. With
+three distinct fillers one word's delivery is a third of the item. Results are
+averaged over all eight rotations by construction, but the variance is real.
+Relatedly, $3$ and $6$ do not divide $8$, so the stride-based rotation scheme
+used for $p \in \{2,4,8\}$ is unusable and consecutive windows were used
+instead; which pool words co-occur inside an item therefore differs from the
+power-of-two rungs, though each pool word is used equally often per arm and the
+delivery audit puts every pool word at $\ge 0.95$, so this is not a lexical
+confound.
+
+Fourth, XTTS-v2's environment drifted mid-experiment: \texttt{transformers} was
+upgraded to 5.15.0 after its published rungs were rendered, removing a symbol
+Coqui TTS imports, and its new rungs were produced under an in-process
+compatibility shim (\texttt{src/models/xtts\_gen\_compat.py}) rather than the
+original stack. The direction matters: if drift depresses the new rungs it works
+\emph{against} the confirming verdict, and dropping XTTS-v2 entirely makes both
+tests cleaner ($E(6){=}96.2$, $E(8){=}97.2$). It is kept in.
+
+\textbf{Provenance note.} The published rungs were not regenerated: the
+generators resume on \texttt{(item\_id, seed)}, so passing the extended stimulus
+file produced only the 720 new rows and left the 135 published items
+byte-identical. Scoring was written to a side file rather than over
+\texttt{period\_ladder.json}, and \texttt{count\_a} was verified to differ in
+$0$ of $4608$ pre-existing rows.
 
 \end{document}

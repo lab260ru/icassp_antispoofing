@@ -1,0 +1,38 @@
+{
+  "model": "llasa8b",
+  "layer": 16,
+  "patch_pos": 128,
+  "protocol": "resume",
+  "alphas": [
+    1.0,
+    2.0,
+    4.0,
+    8.0,
+    16.0
+  ],
+  "seeds": [
+    0
+  ],
+  "mean_pos_norm": 37.83323526486191,
+  "count": {
+    "loto_sign_accuracy": 0.8703703703703703,
+    "separation": 4.939628332429668
+  },
+  "carrier": {
+    "t1->t3": {
+      "n_items": 18,
+      "loto_sign_accuracy": 0.8888888888888888,
+      "separation": 7.850359950519198
+    },
+    "t3->t5": {
+      "n_items": 18,
+      "loto_sign_accuracy": 0.7777777777777778,
+      "separation": 7.324407858198663
+    },
+    "t5->t1": {
+      "n_items": 18,
+      "loto_sign_accuracy": 0.8888888888888888,
+      "separation": 9.83496136078368
+    }
+  }
+}

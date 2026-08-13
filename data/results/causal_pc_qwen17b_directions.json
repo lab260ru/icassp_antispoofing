@@ -1,0 +1,39 @@
+{
+  "model": "qwen17b",
+  "layer": 12,
+  "patch_pos": 32,
+  "protocol": "decode",
+  "alphas": [
+    1.0,
+    2.0,
+    4.0,
+    8.0,
+    16.0
+  ],
+  "seeds": [
+    0,
+    1
+  ],
+  "mean_pos_norm": 27.066482113112002,
+  "count": {
+    "loto_sign_accuracy": 0.9814814814814815,
+    "separation": 2.517187613126592
+  },
+  "carrier": {
+    "t1->t3": {
+      "n_items": 18,
+      "loto_sign_accuracy": 1.0,
+      "separation": 4.229344909435197
+    },
+    "t3->t5": {
+      "n_items": 18,
+      "loto_sign_accuracy": 1.0,
+      "separation": 4.711738664691412
+    },
+    "t5->t1": {
+      "n_items": 18,
+      "loto_sign_accuracy": 1.0,
+      "separation": 4.73172311620166
+    }
+  }
+}

@@ -5,22 +5,20 @@
 % rival account the evidence currently favours. Kept tight: the page budget is
 % hard and main.tex ends with \vfill\pagebreak, so a spilled line costs a page.
 
-\noindent\textbf{The rival the evidence favours.}
+\noindent\textbf{The rival we could not decide.}
 With contraction refuted, the live question is where the count fails: erased
 from the state, or surviving there while the policy reading it fails.
-Venkatesh~\cite{venkatesh2026repeated} established the representational half of
-that in text models by probing; we add the causal half. The count is not
-erased: it stays decodable late ($R^2$ \ProbeLateMed{}), and a
-probe past the extension horizon is inconclusive (S12). Deciding needs a manipulation of
-the readout at fixed state. Splicing whole donor states is too disruptive to read; a
-rank-1 patch transferring only the probe's count coordinate is not
-(\CausalDegen{}\% degenerate, self-patch bitwise-identical
-\CausalNoop{}/\CausalNoop{}), and it moves the count not at all on
-\CausalCkOk{} checkpoints across \CausalFamN{} families: equivalence bounds of
-\EqPatchQlgFrac{}--\EqPatchLsmFrac{}\% of a full transfer, $n=\CausalN{}$ per
-cell. Steering gives no dose-response. The fourth, Llasa-8B, returns \emph{cannot tell}, not \emph{no}: a
-same-$k$ donor moves the count as much as a cross-$k$ one (\CausalSameK{} vs.\
-\CausalCrossK{}), so that arm measures foreign state (S26).
+Venkatesh~\cite{venkatesh2026repeated} established the representational half in
+text models, and the count is not erased here either --- it stays
+decodable late ($R^2$ \ProbeLateMed{}; S12). Deciding needs a manipulation of the
+readout at fixed state, and we could not build one. A rank-1 patch transplanting
+the probe's count coordinate moves the count not at all
+(\EqPatchQlgFrac{}--\EqPatchLsmFrac{}\% of a full transfer on \CausalCkOk{}
+checkpoints) --- but so does a \emph{carrier} direction the checkpoint encodes
+perfectly (leave-one-out \PcCarrierLoto{}; within \PcCarrierBound{}\% of its own
+full transfer), and the informative write is indistinguishable from a sampler
+re-roll on all \PcRerollNTests{} readouts ($p\ge\PcRerollPMin{}$). The bound
+bounds an intervention the decoder does not register (S26).
 
 \noindent\textbf{Related work, and what the control decides.}
 Closest is representational collapse~\cite{barbero2024glasses}, which our control
@@ -41,7 +39,6 @@ obvious form of it predicts the wrong arm: under an independent LM the
 \emph{control} is the less probable text in \NllIndCtlHigherPct{}\% of pairs
 (S8). Text likelihood is not corpus frequency, so it is weakened, not closed.
 Count and length covary inside the repeated arm. The duration story rests on
-one model per strategy, the causal patch on \CausalCkOk{} of \CausalCkAll{}
-checkpoints, the panel on \NFamilies{} families, and the Spanish arm was
-unreportable, needing a more accurate judge (S27). Exclusions are blind to the
-count; the judge is validated on concatenative audio, not listeners.
+one model per strategy, the panel on \NFamilies{} families, and the Spanish arm was
+unreportable, needing a better judge (S27). Exclusions are blind to the count,
+and the judge is validated on concatenative audio, not on listeners.

@@ -19,7 +19,9 @@ repeating block:
 
     p = 1     A A A A A A A A A A A A          (the published repeated arm)
     p = 2     A B A B A B A B A B A B
+    p = 3     A B C A B C A B C A B C          (added later; see ODD RUNGS below)
     p = 4     A B C D A B C D A B C D
+    p = 6     A B C D E F A B C D E F          (added later; see ODD RUNGS below)
     p = 8     A B C D E F G H A B C D          (the published cycled control)
     p = k     twelve distinct words            (the published never-cycled control)
 
@@ -102,6 +104,83 @@ WHAT WOULD MAKE THE ANSWER UNINTERPRETABLE
    `population.panel()`. If the arms differ in cap-hit rate the comparison is
    between differently censored populations; report the rate per arm.
 
+ODD RUNGS: p = 3 AND p = 6 AT k = 24  (second pre-commitment, written and
+committed before any p=3 or p=6 audio existed; nothing below was adjusted after
+the fact)
+---------------------------------------------------------------------------
+A reviewer objected, correctly, that the ladder above tests **only powers of
+two** -- p in {1, 2, 4, 8} -- and contains no odd period at all. Two rivals to
+"periodicity" survive that design untouched:
+
+  * **Power-of-two block structure.** A decoder whose bookkeeping is tied to
+    block sizes that are powers of two would produce a monotone ladder over
+    exactly these four rungs and nothing else.
+  * **Pool cycling / loop attractor.** The p in {2,4,8} arms all cycle a pool
+    whose size divides the pool of eight the rotation scheme partitions, so
+    "how the filler pool cycles" and "the period" are not separated either.
+
+Under either rival the observed ladder would look identical. The only way to
+separate them from period is to put rungs *between* the powers of two, so this
+file adds, **at k = 24 only** (the sole k in K_LADDER divisible by 3):
+
+    p = 3   odd, not a power of two, strictly between p=2 and p=4
+    p = 6   even, not a power of two, strictly between p=4 and p=8
+
+Everything else is held exactly as above: same five carriers, same word count,
+same k, same three seeds, same eight-word filler pools, same `pd_` id scheme,
+same four checkpoints already in the ladder (llasa1b, qwen06b, qwen17b, xtts2).
+llasa3b is deliberately absent from the ladder: it fails its replication gate on
+the p=1 rung, and adding it here would import that failure.
+
+Vocabulary balance is preserved by the same rotation argument, generalised: 3
+and 6 do not divide 8, so the stride scheme in `rotations()` cannot be used, and
+`window_rotations()` below takes p *consecutive* pool words mod 8 instead. The
+number of rotations is the smallest that balances the pool exactly -- eight for
+p=3, four for p=6 -- so pooled over rotations every pool word is used the same
+number of times in each new arm, exactly as for p in {2,4,8}. This is asserted,
+not hoped (see `build()`).
+
+The comparison must be made **within k = 24**, not against the ladder pooled
+over k in {16,24,32}, because the deficit depends on k as well as p. The k=24
+values recomputed from `data/results/behavioural_period.csv` through
+`population.panel()` and the paper's own exact-rate statistic (the ordered scan,
+cap hits excluded), pooled as the unweighted mean over the four checkpoints, are
+
+    E(1) = 8.5%   E(2) = 51.2%   E(4) = 75.2%   E(8) = 92.9%   E(24) = 85.0%
+
+and these -- not the all-k pooled 10.4 / 47.9 / 73.6 / 93.1 -- are the numbers
+the two tests below are stated against.
+
+The two tests are interpolation tests, pre-registered here:
+
+    TEST A:  E(2) < E(3) < E(4)     i.e.  51.2% < E(3) < 75.2%
+    TEST B:  E(4) < E(6) < E(8)     i.e.  75.2% < E(6) < 92.9%
+
+both at k=24, pooled as the unweighted mean over the four checkpoints, under
+the paper's exact-rate statistic.
+
+* **PERIODICITY CONFIRMED (interpolation holds).** Both tests pass: E(3) falls
+  between E(2) and E(4), and E(6) falls between E(4) and E(8). Then the deficit
+  is a smooth monotone function of the period with no special status for powers
+  of two, the pool-cycling / loop-attractor rival is refuted -- a decoder
+  cycling a pool has no reason to place an odd period neatly between its two
+  power-of-two neighbours -- and the title stands.
+
+* **PERIODICITY REFUTED / POWER-OF-TWO ARTIFACT.** E(3) or E(6) lands at or
+  above E(8) = 92.9% (the non-power-of-two rungs behave like the no-deficit
+  ceiling), or below E(2) = 51.2%. Either way the ordering is not monotone in
+  the period and something other than the period is driving the ladder. This
+  must be reported loudly and first; it forces a retitle.
+
+* **AMBIGUOUS.** Anything else -- E(3) inside its band but E(6) outside it (or
+  the reverse), or pooled interpolation that holds while it inverts within a
+  checkpoint. The report must state exactly which of the two tests failed and
+  on which checkpoints.
+
+Per-checkpoint rates are reported alongside the pooled ones in every case. A
+pooled interpolation that holds while two checkpoints individually invert is a
+different result and is not to be hidden behind the mean.
+
 Output: data/stimuli/stimuli_period.jsonl
 Usage:  python data/stimuli/make_stimuli_period.py
 """
@@ -128,6 +207,14 @@ K_LADDER = [16, 24, 32]
 # "period p" a half-truth and would put more of one word than another into the
 # item. p=1 (the repeated arm) and p="k" (never cycled) are added separately.
 PERIODS = [2, 4, 8]
+
+# The odd/non-power-of-two rungs, added to answer the "only powers of two were
+# tested" objection. Keyed by k because they exist at k=24 only: 3 divides
+# neither 16 nor 32, so a p=3 rung there would be a partial final cycle and
+# "period 3" would be a half-truth. The value is the list of periods and the
+# number of consecutive-window rotations that balances the eight-word pool for
+# each (see `window_rotations`): eight rotations for p=3, four for p=6.
+ODD_PERIODS: dict[int, list[int]] = {24: [3, 6]}
 
 # Carriers, targets and filler pools copied verbatim from `make_stimuli.py`, so
 # the rendered text of the p=1 and p=8 rungs is character-for-character the
@@ -172,6 +259,35 @@ def rotations(pool: list[str], p: int) -> list[list[str]]:
     return [[pool[r + j * step] for j in range(p)] for r in range(step)]
 
 
+def window_rotations(pool: list[str], p: int) -> list[list[str]]:
+    """Balanced p-word rotations of an 8-word pool when p does not divide 8.
+
+    `rotations()` above takes every (8/p)-th word, which needs p | 8 and so
+    covers p in {1,2,4,8} and nothing else. The odd rungs need p = 3 and p = 6,
+    for which no stride exists, so this takes p *consecutive* words starting at
+    r, wrapping mod 8.
+
+    The number of starts is chosen as the smallest s such that starts
+    {0, 8/s, 2*8/s, ...} use every pool word the same number of times, i.e. the
+    smallest s dividing 8 with s*p divisible by 8: s = 8 for p=3, s = 4 for
+    p=6. Pooled over those rotations each of the eight words appears in exactly
+    (s*p)/8 rotations, so the p=3 and p=6 arms are vocabulary-matched to each
+    other and to p in {2,4,8} in aggregate, which is the whole point of
+    rotating at all. Balance is asserted in `build()` rather than trusted.
+
+    Consecutive rather than strided is a real difference from the arms above:
+    it changes *which* words co-occur inside one item, not how often each word
+    is used across the arm. Since the pooled comparison is over rotations, and
+    every word appears equally often in every arm, that difference cannot move
+    the arm-level exact rate lexically -- but it is stated here so nobody has
+    to infer it from the code.
+    """
+    n = len(pool)
+    starts = next(s for s in (1, 2, 4, 8) if s <= n and (s * p) % n == 0)
+    step = n // starts
+    return [[pool[(r * step + j) % n] for j in range(p)] for r in range(starts)]
+
+
 def build(ks: list[int]) -> list[dict]:
     items: list[dict] = []
     for tid, prefix, target, suffix, pool in WORD_TEMPLATES:
@@ -199,6 +315,28 @@ def build(ks: list[int]) -> list[dict]:
             for p in PERIODS:
                 assert k % p == 0, f"k={k} is not a whole number of period-{p} cycles"
                 for r, words in enumerate(rotations(pool, p)):
+                    used = [words[i % p] for i in range(k)]
+                    ctext = f"{prefix} {' '.join(used)} {suffix}"
+                    items.append(dict(
+                        item_id=f"pd_{target}_{tid}_k{k:02d}_p{p:02d}_r{r}",
+                        family="control_word", template=tid, text=ctext,
+                        target_unit=target, k=k, expected_count=0,
+                        expected_words=len(ctext.split()),
+                        control_of=f"pd_{target}_{tid}_k{k:02d}_p01_r0",
+                        boundary_units=list(used), control_units=list(used),
+                        ladder="period", period=p, rotation=r, pool_id="main8",
+                        n_distinct=p,
+                    ))
+
+            # --- p in {3, 6} at k=24: the odd / non-power-of-two rungs. Same
+            # family, same fields and the same id scheme as the interior above,
+            # so every downstream reader treats them identically; only the
+            # rotation scheme differs, because 3 and 6 do not divide 8.
+            for p in ODD_PERIODS.get(k, []):
+                assert k % p == 0, f"k={k} is not a whole number of period-{p} cycles"
+                assert p not in PERIODS and p != 1, f"p={p} is already in the ladder"
+                for r, words in enumerate(window_rotations(pool, p)):
+                    assert len(set(words)) == p, f"p={p} r={r}: repeated word in rotation"
                     used = [words[i % p] for i in range(k)]
                     ctext = f"{prefix} {' '.join(used)} {suffix}"
                     items.append(dict(
@@ -266,6 +404,19 @@ def main() -> None:
                 use.update(i["boundary_units"])
         assert len(set(use.values())) == 1, (
             f"{tid} k={k}: rotations do not balance the pool: {use}")
+        # Per *arm*, not only per cell. The cell-level check above can be
+        # satisfied by two arms whose imbalances cancel, which would leave each
+        # individual rung lexically confounded while the cell looked clean --
+        # and the arm is the unit every rate in this experiment is computed
+        # over. Every main8 rung must use each of its template's eight pool
+        # words the same number of times, on its own.
+        by_arm: dict[int, Counter] = defaultdict(Counter)
+        for i in group:
+            if i["pool_id"] == "main8":
+                by_arm[i["period"]].update(i["boundary_units"])
+        for p, u in by_arm.items():
+            assert len(u) == 8 and len(set(u.values())) == 1, (
+                f"{tid} k={k} p={p}: arm does not balance the pool: {dict(u)}")
 
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)

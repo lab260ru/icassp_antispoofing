@@ -15,13 +15,13 @@
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{figs/fig_main.pdf}
-\caption{(a) Relative count error $(\hat c-k)/k$ against requested repetitions
-$k$ under the CTC judge, repeated items (solid) against their length-matched
-controls (dashed), one pair per checkpoint: control medians sit at zero
-throughout. (b) Exact renderings against period $p$ at fixed carrier and word
-count ($n=\PerNKept{}$, ordered scan, no interval): graded and monotone, not a
-step at $p\!>\!1$. Rungs $p=2,4,8$ share one 8-word pool; hollow markers past
-the rule are the $p\!=\!k$ arm, matched to neither in vocabulary nor length.}
+\caption{(a) Relative count error $(\hat c-k)/k$ against $k$ under the CTC
+judge: repeated items (solid) against length-matched controls (dashed), one pair
+per checkpoint; control medians sit at zero throughout. (b) Exact renderings
+against period $p$ at fixed carrier and word count ($n=\PerNKept{}$, ordered
+scan, no interval): graded and monotone, not a step at $p\!>\!1$. Rungs
+$p=2,4,8$ share one 8-word pool; hollow markers are the $p\!=\!k$ arm, matched
+to neither in vocabulary nor length.}
 \label{fig:main}
 \end{figure}
 
@@ -74,8 +74,12 @@ is ever adjacent to itself and half the deficit remains: \PerDTwo{} against
 strictest of \PerNRules{} rules and \PerRatioRecLo{}--\PerRatioRecHi{} on the
 recount rules, where we rest the claim: pooled by family the strict figure is
 \PerRatioFam{}, and the two architectures outside Qwen fall below one half
-individually (S28). So it is periodicity, not verbatim identity, nor a
-failure to tell neighbours apart: a comma, full stop or ``and'' between
+individually (S28). Nor a power-of-two artifact: at $k{=}\OddK{}$ an \emph{odd}
+period lands between its neighbours (\OddPThree{}\% at $p{=}3$) and so does
+$p{=}6$ (\OddPSix{}\%), both pre-committed tests passing in all \OddLooPass{}
+leave-one-out fits, with only the saturated top rung not separating from zero
+(S28). So it is periodicity, not verbatim identity,
+nor a failure to tell neighbours apart: a comma, full stop or ``and'' between
 repetitions recovers none of it ($n{=}\DisN{}$).
 
 Never-cycled control fillers throughout put the gap at \ApHeadCk{} by checkpoint

@@ -1207,6 +1207,145 @@ def main() -> None:
                     f"cross-k ({ds:.3f} < {ck:.3f}); the Llasa-8B sentence in "
                     "discussion_body.tex is now false -- rewrite it")
 
+    # ---- the odd rungs: periodicity, or a power-of-two artifact? -----------
+    # A reviewer put the sharpest remaining objection to the title: the ladder
+    # tested p = 1, 2, 4, 8 and nothing else, so "the deficit is graded in the
+    # period" is indistinguishable from a decoder with structure tied to
+    # power-of-two blocks, or to how an eight-word filler pool happens to cycle.
+    # Both rivals predict that a period which is neither -- an odd one -- should
+    # NOT interpolate between its neighbours.
+    #
+    # p=3 (odd) and p=6 (even, not a power of two) at k=24, with the
+    # interpolation tests fixed in the generator docstring before any audio
+    # existed. Both pass pooled and under every leave-one-checkpoint-out, so the
+    # rivals are refuted rather than argued away.
+    po_path = Path("data/results/period_odd.json")
+    if po_path.exists():
+        po = json.loads(po_path.read_text())
+        t = po.get("tests", {}).get("exact", {})
+        E = t.get("E_pooled", {})
+        for p, tag in (("1", "One"), ("2", "Two"), ("3", "Three"), ("4", "Four"),
+                       ("6", "Six"), ("8", "Eight")):
+            if p in E:
+                macros[f"OddP{tag}"] = fmt(100 * E[p], 1)
+        macros["OddK"] = str(po.get("k"))
+        macros["OddNCk"] = WORDS.get(len(po.get("checkpoints", [])),
+                                     str(len(po.get("checkpoints", []))))
+        macros["OddNKept"] = str(po.get("kept"))
+        # Every leave-one-checkpoint-out must also pass, or the pooled result is
+        # one checkpoint's doing. Reported as a count rather than asserted.
+        loo = po.get("leave_one_out", {})
+        drops = {k: v for k, v in loo.items() if k != "(none)"}
+        macros["OddLooPass"] = WORDS.get(
+            sum(1 for v in drops.values() if v.get("test_A") and v.get("test_B")),
+            "0")
+        macros["OddLooN"] = WORDS.get(len(drops), str(len(drops)))
+        # The gap that does NOT clear zero, quoted because the top of the ladder
+        # is saturated and a reader should not be told otherwise.
+        g = po.get("bootstrap_gaps", {}).get("6->8", {})
+        if g:
+            macros["OddTopGap"] = fmt(100 * g["mean"], 1)
+            macros["OddTopGapLo"] = fmt(100 * g["lo"], 1)
+            macros["OddTopGapHi"] = fmt(100 * g["hi"], 1)
+        # The smallest lower bound among the gaps that DO clear zero: the
+        # weakest link in the monotone chain the title rests on.
+        clear = [v for k, v in po.get("bootstrap_gaps", {}).items()
+                 if v.get("excludes_zero")]
+        if clear:
+            macros["OddGapWorstLo"] = fmt(100 * min(v["lo"] for v in clear), 1)
+        if t.get("test_A") is False or t.get("test_B") is False:
+            raise SystemExit(
+                "period ladder: an interpolation test now FAILS on the published "
+                "rule; the title claim is in question and the paper must be "
+                "rewritten rather than re-macroed")
+
+    # ---- the positive control, which went against us -----------------------
+    # A reviewer named the alternative the causal null could not exclude: that
+    # the rank-1 patch simply does not carry enough to matter, on any
+    # checkpoint, with Llasa-8B's failure being the tell. The control tests it
+    # directly -- same intervention, same magnitude, different direction -- and
+    # the reviewer is closer to right than we were.
+    #
+    # Two findings, and the second is the one that decides the paper's wording.
+    #
+    # At the published magnitude no direction clears the detection bar, the
+    # count write included, at 1.98x the sampler-re-roll floor against a bar of
+    # 2.0. That is a knife-edge and is reported as one. But no direction is
+    # DIRECTION-APPROPRIATE at any magnitude either -- not even a carrier
+    # direction the checkpoint encodes perfectly (leave-one-out 1.00). So the
+    # decoder responds to how hard the write pushes, not to which direction is
+    # written, and a null about the count direction says nothing about counting.
+    #
+    # The zero-GPU half is the objection measured on the published arms
+    # themselves: the informative cross-k write is statistically
+    # indistinguishable from a pure sampler re-roll on every readout. The patch
+    # is not literally inert -- no patched run is bitwise identical to its
+    # reference -- but its entire measured effect on the output is a re-roll,
+    # which is exactly what an uninformative intervention looks like.
+    pc_path = Path("data/results/causal_positive_control.json")
+    if pc_path.exists():
+        pc = json.loads(pc_path.read_text())
+        cks = pc.get("checkpoints", {})
+        macros["PcBar"] = fmt(pc.get("thresholds", {}).get("detect_S1_factor"), 1)
+
+        q = cks.get("qwen17b", {})
+        if q:
+            cell = q.get("cells", {}).get("count|crossk|a1", {})
+            if cell:
+                macros["PcCountRatio"] = fmt(cell["S1_over_floor"], 2)
+            car = q.get("cells", {}).get("carrier|crosstemplate|a1", {})
+            if car:
+                macros["PcCarrierRatio"] = fmt(car["S1_over_floor"], 2)
+            fd = q.get("first_detectable_alpha", {})
+            if fd.get("count"):
+                macros["PcDetectAlpha"] = fmt(fd["count"], 0)
+            # The load-bearing negative: a direction this checkpoint encodes
+            # perfectly still steers nothing. Quoted as the worst of the three
+            # leave-one-template-out folds, not the best.
+            loto = q.get("V2_carrier_loto", {})
+            if loto:
+                macros["PcCarrierLoto"] = fmt(min(loto.values()), 2)
+            fa = q.get("first_direction_appropriate_alpha", {})
+            # None at any alpha, for any direction. Assert rather than assume:
+            # if one ever steers, the paper's sentence is false.
+            if fa and any(v is not None for v in fa.values()):
+                raise SystemExit(
+                    "positive control: some direction is now direction-appropriate "
+                    f"({fa}); the discussion's claim is false and must be "
+                    "rewritten, not re-macroed")
+
+            # The paper quotes the BOUND, not the failed sign test, and the
+            # distinction is not pedantic. At n=9 with ties dropped the carrier
+            # cell has n_eff=7, and no sign agreement whatsoever clears Holm
+            # across five alpha levels at that n -- the cell did not fail the
+            # test, it could not take it. Quoting "no direction steers" off a
+            # test that cannot reject would be the same error as reading a wide
+            # confidence interval as evidence of absence. The bootstrap bound is
+            # a real measurement at any n, and it is the stronger statement
+            # anyway: the write transfers at most this fraction of what a full
+            # donor-to-receiver transfer along the same direction would.
+            for cell, tag in (("carrier|crosstemplate|a1", "PcCarrierBound"),
+                              ("carrier|crosstemplate|a16", "PcCarrierBoundMax"),
+                              ("count|crossk|a1", "PcCountBound")):
+                c = q.get("cells", {}).get(cell, {})
+                if c.get("S4_bound_as_fraction_of_transfer") is not None:
+                    macros[tag] = fmt(
+                        100 * c["S4_bound_as_fraction_of_transfer"], 1)
+
+        # The published arms against a pure re-roll, over every checkpoint that
+        # has the comparison and every readout. The paper quotes the SMALLEST
+        # p, because the claim is that none of them separates.
+        ps = [m["mannwhitney_p"]
+              for c in cks.values()
+              for m in c.get("published_arm_vs_reroll", {}).get("metrics", {}).values()
+              if m.get("mannwhitney_p") is not None]
+        if ps:
+            macros["PcRerollPMin"] = fmt(min(ps), 2)
+            macros["PcRerollNTests"] = str(len(ps))
+            macros["PcRerollNCk"] = WORDS.get(
+                sum(1 for c in cks.values() if c.get("published_arm_vs_reroll")),
+                str(len(cks)))
+
     # ---- the judge audit's own sample sizes -------------------------------
     # The audit is the paper's justification for its central methodological
     # choice and was reported without an n. Worse, the main text had Whisper's

@@ -1,0 +1,153 @@
+  (465 `pd_` rows are not period-ladder items -- disambiguator arm, read by analysis/disambiguation.py)
+  (533 `pd_` rows are not period-ladder items -- disambiguator arm, read by analysis/disambiguation.py)
+population 2880 -> 2690 (dropped: degenerate=23, cap_hits=167, templates=t2)
+k = 24 only.  checkpoints: llasa1b, qwen06b, qwen17b, xtts2
+templates: ['t1', 't3', 't4', 't5', 't6']   arms: ['1', '2', '3', '4', '6', '8', 'k']
+
+exact rate by period at k=24 -- ordered scan (the published rule)
+  checkpoint  p= 1  p= 2  p= 3  p= 4  p= 6  p= 8  p=24      (n per cell)
+  llasa1b       0.0   63.0   76.0   74.1   90.2   91.7   80.0      (12,46,96,27,51,12,15)
+  qwen06b       7.1   43.3   58.0   73.3  100.0  100.0  100.0      (14,60,119,30,60,15,15)
+  qwen17b      13.3   48.3   43.3   80.0   98.3  100.0  100.0      (15,60,120,30,60,15,15)
+  xtts2        13.3   50.0   71.7   73.3   71.7   80.0   60.0      (15,60,120,30,60,15,15)
+  POOLED        8.5   51.2   62.3   75.2   90.0   92.9   85.0      (unweighted mean over checkpoints)
+
+  [ordered scan (the published rule)] pooled: E(1)=8.5  E(2)=51.2  E(3)=62.3  E(4)=75.2  E(6)=90.0  E(8)=92.9
+    TEST A  E(2) < E(3) < E(4):  51.2 < 62.3 < 75.2   PASS
+    TEST B  E(4) < E(6) < E(8):  75.2 < 90.0 < 92.9   PASS
+    monotone over p in {1,2,3,4,6,8}: True
+    per-checkpoint failures: ['llasa1b', 'qwen06b', 'qwen17b', 'xtts2']
+      llasa1b   TEST A: 63.0 < 76.0 < 74.1  FAIL
+      qwen06b   TEST B: 73.3 < 100.0 < 100.0  FAIL
+      qwen17b   TEST A: 48.3 < 43.3 < 80.0  FAIL
+      xtts2     TEST B: 73.3 < 71.7 < 80.0  FAIL
+    -> PERIODICITY CONFIRMED
+
+exact rate by period at k=24 -- unbounded recount (same rule at every p)
+  checkpoint  p= 1  p= 2  p= 3  p= 4  p= 6  p= 8  p=24      (n per cell)
+  llasa1b       0.0   28.3   45.8   51.9   90.2   91.7   80.0      (12,46,96,27,51,12,15)
+  qwen06b       7.1   36.7   54.6   73.3  100.0  100.0  100.0      (14,60,119,30,60,15,15)
+  qwen17b      13.3   35.0   38.3   80.0   98.3  100.0  100.0      (15,60,120,30,60,15,15)
+  xtts2        13.3   20.0   42.5   73.3   70.0   80.0   46.7      (15,60,120,30,60,15,15)
+  POOLED        8.5   30.0   45.3   69.6   89.6   92.9   81.7      (unweighted mean over checkpoints)
+
+  [unbounded recount (same rule at every p)] pooled: E(1)=8.5  E(2)=30.0  E(3)=45.3  E(4)=69.6  E(6)=89.6  E(8)=92.9
+    TEST A  E(2) < E(3) < E(4):  30.0 < 45.3 < 69.6   PASS
+    TEST B  E(4) < E(6) < E(8):  69.6 < 89.6 < 92.9   PASS
+    monotone over p in {1,2,3,4,6,8}: True
+    per-checkpoint failures: ['qwen06b', 'xtts2']
+      qwen06b   TEST B: 73.3 < 100.0 < 100.0  FAIL
+      xtts2     TEST B: 73.3 < 70.0 < 80.0  FAIL
+    -> PERIODICITY CONFIRMED
+
+exact rate by period at k=24 -- strict: in order AND no extras
+  checkpoint  p= 1  p= 2  p= 3  p= 4  p= 6  p= 8  p=24      (n per cell)
+  llasa1b       0.0   28.3   44.8   51.9   90.2   91.7   73.3      (12,46,96,27,51,12,15)
+  qwen06b       7.1   36.7   54.6   73.3  100.0  100.0  100.0      (14,60,119,30,60,15,15)
+  qwen17b      13.3   35.0   38.3   80.0   98.3  100.0  100.0      (15,60,120,30,60,15,15)
+  xtts2        13.3   18.3   41.7   70.0   70.0   80.0   40.0      (15,60,120,30,60,15,15)
+  POOLED        8.5   29.6   44.9   68.8   89.6   92.9   78.3      (unweighted mean over checkpoints)
+
+  [strict: in order AND no extras] pooled: E(1)=8.5  E(2)=29.6  E(3)=44.9  E(4)=68.8  E(6)=89.6  E(8)=92.9
+    TEST A  E(2) < E(3) < E(4):  29.6 < 44.9 < 68.8   PASS
+    TEST B  E(4) < E(6) < E(8):  68.8 < 89.6 < 92.9   PASS
+    monotone over p in {1,2,3,4,6,8}: True
+    per-checkpoint failures: ['qwen06b', 'xtts2']
+      qwen06b   TEST B: 73.3 < 100.0 < 100.0  FAIL
+      xtts2     TEST B: 70.0 < 70.0 < 80.0  FAIL
+    -> PERIODICITY CONFIRMED
+
+exact rate by period at k=24 -- cap hits KEPT (censored bound)
+  checkpoint  p= 1  p= 2  p= 3  p= 4  p= 6  p= 8  p=24      (n per cell)
+  llasa1b       0.0   52.5   65.2   66.7   79.3   78.6   80.0      (15,59,115,30,58,14,15)
+  qwen06b       6.7   43.3   57.5   73.3  100.0  100.0  100.0      (15,60,120,30,60,15,15)
+  qwen17b      13.3   48.3   43.3   80.0   98.3  100.0  100.0      (15,60,120,30,60,15,15)
+  xtts2        13.3   50.0   71.7   73.3   71.7   80.0   60.0      (15,60,120,30,60,15,15)
+  POOLED        8.3   48.6   59.4   73.3   87.3   89.6   85.0      (unweighted mean over checkpoints)
+
+  [cap hits kept] pooled: E(1)=8.3  E(2)=48.6  E(3)=59.4  E(4)=73.3  E(6)=87.3  E(8)=89.6
+    TEST A  E(2) < E(3) < E(4):  48.6 < 59.4 < 73.3   PASS
+    TEST B  E(4) < E(6) < E(8):  73.3 < 87.3 < 89.6   PASS
+    monotone over p in {1,2,3,4,6,8}: True
+    per-checkpoint failures: ['llasa1b', 'qwen06b', 'qwen17b', 'xtts2']
+      llasa1b   TEST B: 66.7 < 79.3 < 78.6  FAIL
+      qwen06b   TEST B: 73.3 < 100.0 < 100.0  FAIL
+      qwen17b   TEST A: 48.3 < 43.3 < 80.0  FAIL
+      xtts2     TEST B: 73.3 < 71.7 < 80.0  FAIL
+    -> PERIODICITY CONFIRMED
+
+--- leave one checkpoint out (pooled mean recomputed each time) ---
+  dropped     E( 1)  E( 2)  E( 3)  E( 4)  E( 6)  E( 8)  E( k)   TEST A  TEST B
+  (none)        8.5   51.2   62.3   75.2   90.0   92.9   85.0    PASS    PASS
+  llasa1b      11.3   47.2   57.7   75.6   90.0   93.3   86.7    PASS    PASS
+  qwen06b       8.9   53.8   63.7   75.8   86.7   90.6   80.0    PASS    PASS
+  qwen17b       6.8   52.1   68.6   73.6   87.3   90.6   80.0    PASS    PASS
+  xtts2         6.8   51.6   59.1   75.8   96.2   97.2   93.3    PASS    PASS
+
+  adjacent gaps, cluster bootstrap over the five carrier templates (gap > 0 means the ladder rises with p)
+    E(2) - E(1) =  +43.0 pts  [ +31.4,  +49.4]  (excludes 0)
+    E(3) - E(2) =  +10.9 pts  [  +2.1,  +16.8]  (excludes 0)
+    E(4) - E(3) =  +12.9 pts  [  +3.6,  +21.2]  (excludes 0)
+    E(6) - E(4) =  +14.7 pts  [  +2.2,  +28.3]  (excludes 0)
+    E(8) - E(6) =   +2.7 pts  [  -2.4,   +7.7]
+
+  adjacent gaps, cluster bootstrap over the five carrier templates (gap > 0 means the ladder rises with p)
+    E(2) - E(1) =  +21.3 pts  [ +13.7,  +28.8]  (excludes 0)
+    E(3) - E(2) =  +15.3 pts  [  +1.8,  +26.5]  (excludes 0)
+    E(4) - E(3) =  +23.9 pts  [ +12.7,  +34.3]  (excludes 0)
+    E(6) - E(4) =  +20.7 pts  [  +4.0,  +37.8]  (excludes 0)
+    E(8) - E(6) =   +3.2 pts  [  -2.4,   +8.8]
+
+--- paired within (model, template, seed), rotations averaged first ---
+  checkpoint   cells p= 1  p= 2  p= 3  p= 4  p= 6  p= 8
+  llasa1b          9   0.0   64.8   74.7   66.7   88.0  100.0
+  qwen06b         14   7.1   41.1   58.9   71.4  100.0  100.0
+  qwen17b         15  13.3   48.3   43.3   80.0   98.3  100.0
+  xtts2           15  13.3   50.0   71.7   73.3   71.7   80.0
+  POOLED               8.5   51.1   62.2   72.9   89.5   95.0
+  paired TEST A PASS, TEST B PASS
+
+--- exact rate by rotation (spread = the lexical confound rotation removes) ---
+  p= 2  r0=56  r1=49  r2=51  r3=47   spread 9 pts
+  p= 3  r0=67  r1=73  r2=76  r3=68  r4=59  r5=45  r6=45  r7=58   spread 32 pts
+  p= 4  r0=72  r1=78   spread 6 pts
+  p= 6  r0=88  r1=89  r2=91  r3=91   spread 3 pts
+
+--- per-arm hygiene at k=24 (cap hits excluded from the tables above) ---
+   arm  n_kept   cap%   words   chars   dur_s  degen%
+     1      56   6.7%    31.8   169.2   14.17    0.0%
+     2     226   5.4%    31.8   188.4   16.13    0.0%
+     3     455   4.2%    31.8   188.5   15.57    0.0%
+     4     117   2.5%    31.8   189.1   15.86    0.0%
+     6     231   2.9%    31.8   188.7   15.35    0.0%
+     8      57   3.4%    31.8   188.2   15.70    0.0%
+    24      60   0.0%    31.8   215.4   16.17    0.0%
+  cap-hit rate by checkpoint: llasa1b 15.4%, qwen06b 0.6%, qwen17b 0.0%, xtts2 0.0%
+
+--- the new rungs against the published bare ladder at m = k/p ---
+  checkpoint    p   m  E(p,24)  E_pub(1,m)  residual    n  n_pub
+  llasa1b       2  12    63.0%       18.2%    +44.9    46     11
+  llasa1b       3   8    76.0%       20.0%    +56.0    96     10
+  llasa1b       4   6    74.1%       25.0%    +49.1    27      8
+  llasa1b       6   4    90.2%       50.0%    +40.2    51      6
+  llasa1b       8   3    91.7%        0.0%    +91.7    12      9
+  qwen06b       2  12    43.3%       13.3%    +30.0    60     15
+  qwen06b       3   8    58.0%        0.0%    +58.0   119     15
+  qwen06b       4   6    73.3%       13.3%    +60.0    30     15
+  qwen06b       6   4   100.0%       93.3%     +6.7    60     15
+  qwen06b       8   3   100.0%      100.0%     +0.0    15     15
+  qwen17b       2  12    48.3%       13.3%    +35.0    60     15
+  qwen17b       3   8    43.3%       66.7%    -23.3   120     15
+  qwen17b       4   6    80.0%       93.3%    -13.3    30     15
+  qwen17b       6   4    98.3%      100.0%     -1.7    60     15
+  qwen17b       8   3   100.0%      100.0%     +0.0    15     15
+  xtts2         2  12    50.0%        6.7%    +43.3    60     15
+  xtts2         3   8    71.7%       33.3%    +38.3   120     15
+  xtts2         4   6    73.3%       26.7%    +46.7    30     15
+  xtts2         6   4    71.7%       66.7%     +5.0    60     15
+  xtts2         8   3    80.0%       86.7%     -6.7    15     15
+  mean |residual|: new rungs (p=3,6) 28.7 pts, published rungs 35.1 pts
+
+=== PERIODICITY CONFIRMED   (pre-committed label, ordered-scan rule at k=24)
+    by counting rule: exact: PERIODICITY CONFIRMED, exact_u: PERIODICITY CONFIRMED, exact_both: PERIODICITY CONFIRMED, exact_caps_kept: PERIODICITY CONFIRMED
+wrote /home/kirill/icassp_antispoofing/data/results/period_odd.json
