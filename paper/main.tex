@@ -211,16 +211,18 @@ checkpoint, lag or sub-stack, on either arm, and the most favourable cell
 anywhere still has a bootstrap floor of \JacBestFloor{}. Teacher-forcing removes
 the token channel, so these are \emph{lower} bounds.
 
-Two readings are forced, both worse for the theorem than a null. The premise
-fails on the \emph{control} arm everywhere too, so contraction was never a
-description of these decoders for any input. And $q$ \emph{grows} with scale inside Llasa
-(\JacQLlasaOne{}, \JacQLlasaThree{}, \JacQLlasaEight{} at 1B, 3B and 8B), while
-\ErrBestModel{} --- the one checkpoint that counts correctly, at zero median
-error --- has $q=\JacQCounter{}$. A decoder that renders the count perfectly has
-an equally expansive map, so whatever separates counting from miscounting here
-is not $q$. The dilution lemma fails the same way: flatter attention goes with \emph{better}
-counting within a $(\text{model},k)$ cell ($r=\DilR{}$
-$[\DilRLo{},\DilRHi{}]$; S12). A third objection is structural, in S5.
+The chain fails at both ends. The attention spread the lemma needs small is
+$\delta\le\DeltaMax{}$ nats --- a \DeltaRatio{}-fold weight ratio across the
+repeated spans, not the near-uniformity it assumes --- and the map that
+flattening licenses does not contract either. The premise also fails on the
+\emph{control} arm everywhere, so contraction was never a description of these
+decoders for any input. And $q$ \emph{grows} with scale inside Llasa (\JacQLlasaOne{},
+\JacQLlasaThree{}, \JacQLlasaEight{} at 1B, 3B and 8B), while \ErrBestModel{}
+--- the one checkpoint that counts correctly --- has $q=\JacQCounter{}$. A
+decoder that renders the count perfectly has an equally expansive map, so
+whatever separates counting from miscounting here is not $q$. The lemma's dose-response points the wrong way too, flatter attention going with
+\emph{better} counting ($r=\DilR{}$; S12), and a third objection is structural
+(S5).
 
 We keep the bound because it motivated the manipulation, and a verified
 conditional whose antecedent is measured and rejected is cleaner than an

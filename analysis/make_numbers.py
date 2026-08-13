@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 from pathlib import Path
 
 import numpy as np
@@ -1139,6 +1140,19 @@ def main() -> None:
         if cp:
             macros["AuditCtcN"] = str(cp["n_trials"])
             macros["AuditCtcMean"] = fmt(cp["mean_ratio"], 3)
+
+    # The dilution lemma's own premise, in interpretable units. A reviewer
+    # pointed out that measuring q tests only the last link of the derivation
+    # chain (bounded delta -> near-uniform attention -> autonomous F ->
+    # contraction), and that a large delta would mean the chain never applied
+    # rather than that the map fails to contract. We have delta, so report it:
+    # e^delta is the max/min weight ratio across the repeated spans, and a
+    # 3.4-fold spread is not the near-uniformity the lemma assumes.
+    if "DeltaMax" in macros:
+        try:
+            macros["DeltaRatio"] = fmt(math.exp(float(macros["DeltaMax"])), 1)
+        except (ValueError, OverflowError):
+            pass
 
     # ---- the period ladder: is it periodicity, or verbatim identity? -------
     # Four reviewers in one round objected that the design varies periodicity
