@@ -11,8 +11,8 @@ the state or survives there while the policy reading it fails. It is not erased:
 it stays decodable late ($R^2$ \ProbeLateMed{}; S12), as
 Venkatesh~\cite{venkatesh2026repeated} found in text models. Deciding needs a manipulation of the
 readout at fixed state, and we could not build one. A rank-1 patch transplanting
-the probe's count coordinate moves the count not at all
-(\EqPatchQlgFrac{}--\EqPatchLsmFrac{}\% of a full transfer), but on
+the probe's count coordinate moves the count not at all on \CausalCkOk{}
+checkpoints (\EqPatchQlgFrac{}--\EqPatchLsmFrac{}\% of a full transfer), but on
 \ErrBestModel{} neither does a \emph{carrier} direction it decodes perfectly
 (\PcCarrierBound{}\%), and the write matches a sampler re-roll on all
 \PcRerollNTests{} readouts ($p\ge\PcRerollPMin{}$). It is registered but carries nothing; on \PcInertCk{} it is
@@ -32,7 +32,7 @@ bounds~\cite{li2025statetracking} bracketing it --- model properties, invariant
 to period; ours moves with it.
 
 \noindent\textbf{What the design does not separate, and other limits.}
-Periodicity is not separated from \emph{training-set frequency}, though the
+Repetition is not separated from \emph{training-set frequency}, though the
 obvious form of it predicts the wrong arm: under an independent LM the
 \emph{control} is the less probable text in \NllIndCtlHigherPct{}\% of pairs
 (S8) --- text likelihood is not corpus frequency, so weakened, not closed.
