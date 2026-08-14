@@ -1414,6 +1414,14 @@ def main() -> None:
             if c8.get("S4_bound_as_fraction_of_transfer") is not None:
                 macros["PcInertBound"] = fmt(
                     100 * c8["S4_bound_as_fraction_of_transfer"], 0)
+            # The sample size travels with the claim. A reviewer inspected the
+            # repository, found that this checkpoint's verdict rests on cells
+            # our own process had already flagged for re-running, and asked for
+            # provisional labelling. Attaching n is the smallest honest version
+            # of that: it is the number that moved Qwen's own reading from
+            # marginal to unambiguous when it doubled.
+            if c8.get("n"):
+                macros["PcInertN"] = str(c8["n"])
             if l8.get("verdict", "").startswith("PATCH IS INERT"):
                 macros["PcInertCk"] = "Llasa-8B"
 
