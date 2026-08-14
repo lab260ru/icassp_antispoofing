@@ -184,6 +184,14 @@ def main() -> int:
         if p2:
             want("S28 shuffle p=2 adjacency rate",
                  p2["shuffled_adjacent_repeat_rate"], 3)
+        # The order-insensitive recount on XTTS-v2, which is what makes its
+        # collapse a rendering failure rather than an artifact of the ordered
+        # scan. It is the sentence that keeps that checkpoint in the analysis.
+        eu = sh.get("rates", {}).get("exact_u", {})
+        for a in ("periodic", "shuffled"):
+            v = eu.get(a, {}).get("4", {}).get("xtts2")
+            if v is not None:
+                want(f"S28 xtts2 recount p=4 {a}", 100 * v, 1)
 
     # S26's positive control, same reasoning: it demoted the causal null, and
     # its matched-n comparison is quoted in the body as well, so a drift here

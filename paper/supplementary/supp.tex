@@ -6957,12 +6957,12 @@ XTTS-v2. Dropping XTTS-v2 gives $R(4) = +0.473$. This is a real architecture
 split, and the paper reports it as one rather than quoting the mean.
 
 \textbf{XTTS-v2 is not broken, and we checked before saying so.} On its shuffled
-arm: $0.0\%$ empty, $0.0\%$ degenerate, $0.0\%$ cap hits, at every $p$; duration
-$15.7$s against $16.5$s periodic, $28.2$ words against $29.6$. It produces clean
-fluent speech and renders the wrong sequence, sampling a plausible mixture of the
-pool rather than tracking the requested order, and the collapse survives the
-order-insensitive recount ($73.3 \to 44.4$ at $p{=}4$), so it is not an artifact
-of the ordered scan. The environment-drift worry raised for the odd rungs is also
+arm, over all $315$ rows: $0$ empty, $0$ degenerate, $0$ cap hits, at every $p$.
+It produces speech of the same length as its periodic twin's ($15.3$s against
+$15.5$s, $29.1$ words against $30.0$) and renders the wrong sequence, sampling a
+plausible mixture of the pool rather than tracking the requested order. The
+collapse also survives the order-insensitive recount ($73.3 \to 44.4$ at
+$p{=}4$), so it is not an artifact of the ordered scan. The environment-drift worry raised for the odd rungs is also
 empirically dead: the re-rendered periodic controls are byte-identical (md5) to
 the published audio for all four checkpoints \emph{including} XTTS-v2 under the
 compatibility shim, reproducing the published rates to $0.0$ points on every
