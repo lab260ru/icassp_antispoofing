@@ -32,24 +32,25 @@ note "The figure is current with the data it plots"
 # PDFs embed timestamps, so bytes cannot be compared -- this compares the drawing
 # content streams, which change only when what is drawn changes.
 python3 - <<'PY'
-import shutil, subprocess, sys, tempfile, pathlib, pypdf
+import subprocess, sys, tempfile, pathlib, pypdf
 fig = pathlib.Path('paper/figs/fig_main.pdf')
 def content(p):
     return b"".join(pg.get_contents().get_data() for pg in pypdf.PdfReader(str(p)).pages)
 if not fig.exists():
     print("  FAIL paper/figs/fig_main.pdf is missing"); sys.exit(1)
-before = content(fig)
+# Redraw into a temporary directory, never over the tree. figures.py writes six
+# PDFs and every one gets a fresh timestamp, so running it in place left all six
+# modified and made this script fail its own "working tree is committed" check --
+# a verification script that mutates the repository is one nobody can trust.
 with tempfile.TemporaryDirectory() as td:
-    keep = pathlib.Path(td) / 'fig_main.pdf'
-    shutil.copy(fig, keep)
-    r = subprocess.run([sys.executable, 'analysis/figures.py'],
+    r = subprocess.run([sys.executable, 'analysis/figures.py', '--outdir', td],
                        capture_output=True, text=True)
     if r.returncode != 0:
-        shutil.copy(keep, fig)
         print(f"  FAIL analysis/figures.py failed:\n{r.stderr[-400:]}"); sys.exit(1)
-    after = content(fig)
-    if after != before:
-        shutil.copy(keep, fig)   # leave the tree as we found it; the diff is the finding
+    fresh = pathlib.Path(td) / 'fig_main.pdf'
+    if not fresh.exists():
+        print("  FAIL analysis/figures.py did not write fig_main.pdf"); sys.exit(1)
+    if content(fresh) != content(fig):
         print("  FAIL fig_main.pdf is stale: regenerating it changes what is drawn. "
               "Run analysis/figures.py and commit the result.")
         sys.exit(1)
