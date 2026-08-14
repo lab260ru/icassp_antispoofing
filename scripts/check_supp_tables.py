@@ -162,6 +162,44 @@ def main() -> int:
                 if str(e[f]) not in supp:
                     missing.append(f"{tag} {f} = {e[f]}")
 
+    # S28's shuffled-order control. This section cost the paper its old title, so
+    # it is the one a sceptical reviewer will check line by line, and every
+    # number in it is hand-typed from a JSON that has been rescored four times.
+    # The per-checkpoint table is the load-bearing part: the pooled null is only
+    # honest because the split beneath it is reported, and a stale cell there
+    # would turn a reported architecture split back into a clean null.
+    sh = load("period_shuffled.json")
+    if sh:
+        rec = sh.get("recovery", {}).get("exact", {}).get("vs_rerendered", {})
+        for p in ("2", "4"):
+            if p in rec.get("R", {}):
+                want(f"S28 shuffle R(p={p})", rec["R"][p], 3)
+        for ck, v in rec.get("per_checkpoint", {}).items():
+            want(f"S28 shuffle {ck} E_per(4)", 100 * v["E_per"]["4"], 1)
+            want(f"S28 shuffle {ck} E_shuf(4)", 100 * v["E_shuf"]["4"], 1)
+        bs = sh.get("bootstrap", {})
+        if bs:
+            want("S28 shuffle P[confirm]", bs["p_confirm"], 3)
+        p2 = sh.get("p2_uninformative", {}).get("2", {})
+        if p2:
+            want("S28 shuffle p=2 adjacency rate",
+                 p2["shuffled_adjacent_repeat_rate"], 3)
+
+    # S26's positive control, same reasoning: it demoted the causal null, and
+    # its matched-n comparison is quoted in the body as well, so a drift here
+    # would put the two documents in disagreement -- which has already happened
+    # once in this project, in this exact section.
+    pc = load("causal_positive_control.json")
+    if pc:
+        for ck, c in pc.get("checkpoints", {}).items():
+            cell = c.get("cells", {}).get("count|crossk|a1", {})
+            if cell.get("S1_over_floor") is not None:
+                want(f"S26 pc {ck} count ratio", cell["S1_over_floor"], 2)
+            car = c.get("cells", {}).get("carrier|crosstemplate|a1", {})
+            if car.get("S4_bound_as_fraction_of_transfer") is not None:
+                want(f"S26 pc {ck} carrier bound",
+                     100 * car["S4_bound_as_fraction_of_transfer"], 1)
+
     if missing:
         print(f"  FAIL {len(missing)} supplement numbers are not in supp.tex:")
         for m in missing:
