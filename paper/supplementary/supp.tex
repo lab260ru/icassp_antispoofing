@@ -6094,15 +6094,25 @@ is therefore \emph{not} a fully pre-registered result and is not described as
 one: thresholds pre-registered, three operationalisations repaired at pilot stage
 in the conservative direction, all disclosed in-file.
 
-\textbf{What it found, on Qwen3-TTS-1.7B (complete grid).} At $\alpha{=}1$, the
-magnitude the published patch uses, no direction clears the detection bar --- the
-count write reaches $1.98\times$ the re-roll floor against a bar of $2.0$, the
-carrier $1.67\times$, a random matched-magnitude direction $1.39\times$. That the
-count write sits at $1.98$ against a bar of $2.0$ is a knife-edge and is reported
-as one. At $\alpha{=}2$ all three become detectable, and at $\alpha{=}16$ the
-count write destroys most runs, so the ladder does have range: this decoder
-responds to how hard a rank-1 write pushes, not to which direction it pushes
-along.
+\textbf{What it found, on Qwen3-TTS-1.7B (complete grid), and what doubling the
+seeds changed.} At seed 0 alone, no direction cleared the detection bar at
+$\alpha{=}1$: the count write reached $1.98\times$ the sampler-re-roll floor
+against a bar of $2.0$, a knife-edge that was reported as one. With the seed-1
+pass folded in --- floor $n{:}\,9\to18$, count $n{:}\,18\to36$ --- it is
+$4.01\times$. The write is detectable at the published magnitude, the
+checkpoint's pre-committed verdict moves from \textsc{i-b} to \textsc{i-c}, and
+the reading built on the seed-0 numbers is withdrawn.
+
+This is recorded rather than silently replaced because the size of the move is
+the point: a marginal call at $n{=}18$ became an unambiguous one at $n{=}36$,
+with no change of threshold or method. It is also why Llasa-8B's verdict below,
+which still rests on $n{=}9$ and $n{=}18$, is being re-run at doubled seeds
+before it is reported as settled rather than as provisional.
+
+At $\alpha{=}16$ the count write destroys most runs, so the ladder does have
+range: this decoder responds to how hard a rank-1 write pushes, and the question
+the control exists to answer is whether it responds to \emph{which direction} is
+pushed.
 
 \textbf{The load-bearing measurement is a bound, not a failed test.} The carrier
 direction is one this checkpoint encodes perfectly (leave-one-template-out sign
@@ -6171,12 +6181,24 @@ in the denominator, because the published scorer pools \texttt{control\_word} an
 pure \texttt{word\_rep}). Neither denominator is wrong; the unpooled one is
 cleaner.
 
-\textbf{What this costs the paper.} The equivalence bounds of S26 --- down to
-$6\%$ of a full transfer --- bound an intervention this decoder does not
-register at the magnitude used. ``The decoder ignores the count coordinate'' is
-not supported by them. What is supported, and what the main text now says, is
-that rank-1 probe-direction patching at this magnitude is not a working
-instrument on these decoders. That is a weaker claim than we set out to make,
+\textbf{What this costs the paper.} An earlier draft of this section said the
+equivalence bounds ``bound an intervention this decoder does not register'', and
+the seed-1 pass falsified that: Qwen3-TTS-1.7B \emph{does} register the write at
+the published magnitude, at $4.01\times$ the sampler-re-roll floor. The
+correction matters and is left visible rather than quietly overwritten, because
+the earlier sentence was written from $n{=}9$ and $n{=}18$ cells, the same
+sample sizes Llasa-8B's \textsc{inert} verdict still rests on.
+
+The claim that survives is narrower. The bounds of S26 --- down to $6\%$ of a
+full transfer --- bound a write that \emph{is} registered but that carries
+nothing directional: at the published magnitude it moves the output no more than
+a re-roll of the sampler does, and no probe direction, including one the
+checkpoint decodes perfectly, steers the output toward its donor. ``The decoder
+ignores the count coordinate'' is not supported by them, because a null from an
+intervention that transfers nothing along \emph{any} direction is not evidence
+about the count direction specifically. What is supported, and what the main
+text now says, is that rank-1 probe-direction patching at this magnitude is not
+a working instrument on these decoders. That is a weaker claim than we set out to make,
 and a methodological result in its own right: a causal null from this family of
 interventions needs a positive control before it means anything, and ours did
 not have one until a reviewer asked for it.
