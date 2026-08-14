@@ -103,16 +103,18 @@ median error).
 
 The families ship repetition penalties differing by an order of magnitude, and a
 penalty suppresses repeated tokens directly. Swept on \PenNArch{} architectures
-the deficit stays put (XTTS-v2 \PenRepLo{}--\PenRepHi{}\% exact over a
-\PenFold{}-fold range, Qwen3-TTS-0.6B \PenQRepLo{}--\PenQRepHi{}\% over
-\PenQFold{}-fold, S15), and the \PenNoneN{} Llasa checkpoints pass \emph{no}
-penalty and show it at full size. Nor is it
+the deficit stays put (XTTS-v2
+\PenRepLo{}--\PenRepHi{}\% exact over \PenFold{}-fold, Qwen3-TTS-0.6B
+\PenQRepLo{}--\PenQRepHi{}\% over \PenQFold{}, S15), and the \PenNoneN{} Llasa
+checkpoints pass \emph{no} penalty and show it at full size. Nor is it
 sampling: on Qwen3-TTS-0.6B greedy decoding gives \GreedyGap{} points against
-\GreedySampGap{} sampled (S22). Nor our exclusions: with every rule off the gap is
-\ExSensAll{} points against \ExSensPanel{}, and the one rule falling unevenly --- our token
-budget, dropping \ExclCapRep{}\% of repeated generations against
-\ExclCapCtl{}\% of controls --- works against the contrast, truncated counts
-being censored downward (S18).
+\GreedySampGap{} sampled, and VALL-E~2's repetition-aware
+sampling~\cite{chen2024valle2}, firing on \RasFireRep{}\% of steps, leaves
+\RasOnGap{} against \RasOffGap{} (S22, S29). Nor our exclusions: with every rule off the gap is
+\ExSensAll{} points against \ExSensPanel{}, and the one rule falling unevenly ---
+our token budget, at \ExclCapRep{}\% of repeated generations against
+\ExclCapCtl{}\% of controls --- censors counts downward, against the contrast
+(S18).
 
 Nor is it the recogniser, the objection this design most must answer: CTC
 blank-collapse merges adjacent identical words, depressing repeated but not

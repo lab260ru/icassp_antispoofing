@@ -1,0 +1,515 @@
+{
+  "kmin": 6,
+  "checkpoint": "Qwen3-TTS-12Hz-0.6B-Base",
+  "precommit_provenance": {
+    "precommit_file": "src/common/ras.py",
+    "precommit_written_utc": "2026-08-14T16:38:13",
+    "first_ras_waveform_utc": "2026-08-14T16:42:50",
+    "this_file_written_utc": "2026-08-14T16:46:36",
+    "note": "thresholds and gates are a verbatim copy of the pre-commit file's; six k<=2 smoke waveforms existed when this file was written and none had been transcribed or scored"
+  },
+  "method": "Repetition Aware Sampling, VALL-E 2 (arXiv:2406.05370), our implementation of the published description",
+  "thresholds": {
+    "survives_at": 66.7,
+    "mitigates_at": 33.4,
+    "min_fire_rate": 0.01,
+    "min_control_exact": 0.5
+  },
+  "sanity_gate": {
+    "model": "qwen06b",
+    "seed": 0,
+    "device": "cuda:2",
+    "n_items": 8,
+    "max_new_tokens": 2048,
+    "A_pass": true,
+    "B_pass": true,
+    "wiring_pass": true,
+    "noop_never_fired": true,
+    "stored_matches_fresh_all": true,
+    "mean_fire_rate": 0.3179762156693351,
+    "gate": "PASS",
+    "reason": "RAS at its no-op threshold reproduces the stock decoder bitwise (token sequences and wav bytes), on a path shown reproducible"
+  },
+  "reference_sweep": {
+    "qwen06brp30": {
+      "label": "repetition_penalty 3.0",
+      "gap_points_precommitted": 66.7,
+      "gap_points_recomputed": 66.66666666666667,
+      "drifted": false
+    },
+    "qwen06brp15": {
+      "label": "repetition_penalty 1.5",
+      "gap_points_precommitted": 70.0,
+      "gap_points_recomputed": 70.0,
+      "drifted": false
+    },
+    "qwen06bgreedy": {
+      "label": "greedy (do_sample=False)",
+      "gap_points_precommitted": 90.0,
+      "gap_points_recomputed": 90.0,
+      "drifted": false
+    },
+    "qwen06brp10": {
+      "label": "repetition_penalty 1.0",
+      "gap_points_precommitted": 90.0,
+      "gap_points_recomputed": 90.0,
+      "drifted": false
+    },
+    "qwen06b": {
+      "label": "repetition_penalty 1.05 (shipped, published, 3 seeds)",
+      "gap_points_precommitted": 92.1,
+      "gap_points_recomputed": 92.13483146067416,
+      "drifted": false
+    }
+  },
+  "reference_band": [
+    66.7,
+    92.1
+  ],
+  "arms_present": [
+    "qwen06brasoff",
+    "qwen06bras",
+    "qwen06brasgr"
+  ],
+  "n_generations": {
+    "qwen06brasoff": 540,
+    "qwen06bras": 540,
+    "qwen06brasgr": 540
+  },
+  "seeds": {
+    "qwen06brasoff": [
+      0,
+      1,
+      2
+    ],
+    "qwen06bras": [
+      0,
+      1,
+      2
+    ],
+    "qwen06brasgr": [
+      0,
+      1,
+      2
+    ]
+  },
+  "cap_hits": {
+    "qwen06brasoff": {
+      "all": {
+        "n": 540,
+        "rate": 0.001851851851851852
+      },
+      "control_word": {
+        "n": 162,
+        "rate": 0.0
+      },
+      "numbers": {
+        "n": 30,
+        "rate": 0.0
+      },
+      "sentence_rep": {
+        "n": 96,
+        "rate": 0.0
+      },
+      "twisters": {
+        "n": 72,
+        "rate": 0.0
+      },
+      "word_rep": {
+        "n": 180,
+        "rate": 0.005555555555555556
+      }
+    },
+    "qwen06bras": {
+      "all": {
+        "n": 540,
+        "rate": 0.005555555555555556
+      },
+      "control_word": {
+        "n": 162,
+        "rate": 0.0
+      },
+      "numbers": {
+        "n": 30,
+        "rate": 0.0
+      },
+      "sentence_rep": {
+        "n": 96,
+        "rate": 0.0
+      },
+      "twisters": {
+        "n": 72,
+        "rate": 0.0
+      },
+      "word_rep": {
+        "n": 180,
+        "rate": 0.016666666666666666
+      }
+    },
+    "qwen06brasgr": {
+      "all": {
+        "n": 540,
+        "rate": 0.005555555555555556
+      },
+      "control_word": {
+        "n": 162,
+        "rate": 0.0
+      },
+      "numbers": {
+        "n": 30,
+        "rate": 0.0
+      },
+      "sentence_rep": {
+        "n": 96,
+        "rate": 0.020833333333333332
+      },
+      "twisters": {
+        "n": 72,
+        "rate": 0.0
+      },
+      "word_rep": {
+        "n": 180,
+        "rate": 0.005555555555555556
+      }
+    }
+  },
+  "outcomes": {
+    "qwen06brasoff": {
+      "correct": 97,
+      "undercount": 80,
+      "truncation": 52,
+      "overcount": 35,
+      "loop": 5,
+      "miscount": 1,
+      "degenerate_or_empty_rate": 0.0
+    },
+    "qwen06bras": {
+      "correct": 106,
+      "undercount": 88,
+      "truncation": 46,
+      "overcount": 25,
+      "loop": 5,
+      "degenerate_or_empty_rate": 0.0
+    },
+    "qwen06brasgr": {
+      "correct": 98,
+      "undercount": 66,
+      "truncation": 54,
+      "overcount": 24,
+      "loop": 15,
+      "miscount": 13,
+      "degenerate_or_empty_rate": 0.0
+    }
+  },
+  "exact": {
+    "qwen06brasoff": {
+      "model": "qwen06brasoff",
+      "rep": 0.07865168539325842,
+      "n_rep": 89,
+      "ctl": 1.0,
+      "n_ctl": 90,
+      "gap_points": 92.13483146067416,
+      "n": 233,
+      "dropped": {
+        "n_input": 270,
+        "bad_templates": 36,
+        "cap_hits": 1,
+        "n_output": 233
+      },
+      "gap_ci95": [
+        86.51685393258427,
+        97.75280898876404
+      ],
+      "fire": {
+        "word_rep": {
+          "n_items": 108,
+          "steps": 13388,
+          "fired": 0,
+          "fire_rate": 0.0,
+          "fire_rate_alt_reading": 0.0,
+          "items_never_fired": 108
+        },
+        "control_word": {
+          "n_items": 108,
+          "steps": 13847,
+          "fired": 0,
+          "fire_rate": 0.0,
+          "fire_rate_alt_reading": 0.0,
+          "items_never_fired": 108
+        }
+      }
+    },
+    "qwen06bras": {
+      "model": "qwen06bras",
+      "rep": 0.05747126436781609,
+      "n_rep": 87,
+      "ctl": 1.0,
+      "n_ctl": 90,
+      "gap_points": 94.25287356321839,
+      "n": 231,
+      "dropped": {
+        "n_input": 270,
+        "bad_templates": 36,
+        "cap_hits": 3,
+        "n_output": 231
+      },
+      "gap_ci95": [
+        89.65517241379311,
+        98.85057471264368
+      ],
+      "fire": {
+        "word_rep": {
+          "n_items": 108,
+          "steps": 18367,
+          "fired": 8972,
+          "fire_rate": 0.48848478249033594,
+          "fire_rate_alt_reading": 0.2506669570425219,
+          "items_never_fired": 0
+        },
+        "control_word": {
+          "n_items": 108,
+          "steps": 13983,
+          "fired": 1510,
+          "fire_rate": 0.10798827147250233,
+          "fire_rate_alt_reading": 0.005006078809983551,
+          "items_never_fired": 0
+        }
+      }
+    },
+    "qwen06brasgr": {
+      "model": "qwen06brasgr",
+      "rep": 0.12359550561797752,
+      "n_rep": 89,
+      "ctl": 1.0,
+      "n_ctl": 90,
+      "gap_points": 87.64044943820225,
+      "n": 231,
+      "dropped": {
+        "n_input": 270,
+        "bad_templates": 36,
+        "cap_hits": 3,
+        "n_output": 231
+      },
+      "gap_ci95": [
+        80.89887640449437,
+        94.3820224719101
+      ],
+      "fire": {
+        "word_rep": {
+          "n_items": 108,
+          "steps": 14109,
+          "fired": 7383,
+          "fire_rate": 0.5232830108441421,
+          "fire_rate_alt_reading": 0.2941384931603941,
+          "items_never_fired": 0
+        },
+        "control_word": {
+          "n_items": 108,
+          "steps": 14239,
+          "fired": 1605,
+          "fire_rate": 0.11271858978860876,
+          "fire_rate_alt_reading": 0.0066718168410703,
+          "items_never_fired": 0
+        }
+      }
+    }
+  },
+  "by_k": {
+    "qwen06brasoff": {
+      "6": {
+        "rep": 0.13333333333333333,
+        "n_rep": 15,
+        "ctl": 1.0,
+        "n_ctl": 15,
+        "gap_points": 86.66666666666667
+      },
+      "8": {
+        "rep": 0.0,
+        "n_rep": 15,
+        "ctl": 1.0,
+        "n_ctl": 15,
+        "gap_points": 100.0
+      },
+      "12": {
+        "rep": 0.13333333333333333,
+        "n_rep": 15,
+        "ctl": 1.0,
+        "n_ctl": 15,
+        "gap_points": 86.66666666666667
+      },
+      "16": {
+        "rep": 0.0,
+        "n_rep": 15,
+        "ctl": 1.0,
+        "n_ctl": 15,
+        "gap_points": 100.0
+      },
+      "24": {
+        "rep": 0.07142857142857142,
+        "n_rep": 14,
+        "ctl": 1.0,
+        "n_ctl": 15,
+        "gap_points": 92.85714285714286
+      },
+      "32": {
+        "rep": 0.13333333333333333,
+        "n_rep": 15,
+        "ctl": 1.0,
+        "n_ctl": 15,
+        "gap_points": 86.66666666666667
+      }
+    },
+    "qwen06bras": {
+      "6": {
+        "rep": 0.2,
+        "n_rep": 15,
+        "ctl": 1.0,
+        "n_ctl": 15,
+        "gap_points": 80.0
+      },
+      "8": {
+        "rep": 0.06666666666666667,
+        "n_rep": 15,
+        "ctl": 1.0,
+        "n_ctl": 15,
+        "gap_points": 93.33333333333333
+      },
+      "12": {
+        "rep": 0.0,
+        "n_rep": 15,
+        "ctl": 1.0,
+        "n_ctl": 15,
+        "gap_points": 100.0
+      },
+      "16": {
+        "rep": 0.06666666666666667,
+        "n_rep": 15,
+        "ctl": 1.0,
+        "n_ctl": 15,
+        "gap_points": 93.33333333333333
+      },
+      "24": {
+        "rep": 0.0,
+        "n_rep": 14,
+        "ctl": 1.0,
+        "n_ctl": 15,
+        "gap_points": 100.0
+      },
+      "32": {
+        "rep": 0.0,
+        "n_rep": 13,
+        "ctl": 1.0,
+        "n_ctl": 15,
+        "gap_points": 100.0
+      }
+    },
+    "qwen06brasgr": {
+      "6": {
+        "rep": 0.2,
+        "n_rep": 15,
+        "ctl": 1.0,
+        "n_ctl": 15,
+        "gap_points": 80.0
+      },
+      "8": {
+        "rep": 0.26666666666666666,
+        "n_rep": 15,
+        "ctl": 1.0,
+        "n_ctl": 15,
+        "gap_points": 73.33333333333334
+      },
+      "12": {
+        "rep": 0.14285714285714285,
+        "n_rep": 14,
+        "ctl": 1.0,
+        "n_ctl": 15,
+        "gap_points": 85.71428571428572
+      },
+      "16": {
+        "rep": 0.0,
+        "n_rep": 15,
+        "ctl": 1.0,
+        "n_ctl": 15,
+        "gap_points": 100.0
+      },
+      "24": {
+        "rep": 0.13333333333333333,
+        "n_rep": 15,
+        "ctl": 1.0,
+        "n_ctl": 15,
+        "gap_points": 86.66666666666667
+      },
+      "32": {
+        "rep": 0.0,
+        "n_rep": 15,
+        "ctl": 1.0,
+        "n_ctl": 15,
+        "gap_points": 100.0
+      }
+    }
+  },
+  "paired": {
+    "qwen06bras": {
+      "n_paired": 87,
+      "fixed": 4,
+      "broken": 6,
+      "both_right": 1,
+      "both_wrong": 76,
+      "median_counted_over_k_baseline": 0.875,
+      "median_counted_over_k_arm": 0.875
+    },
+    "qwen06brasgr": {
+      "n_paired": 88,
+      "fixed": 8,
+      "broken": 4,
+      "both_right": 3,
+      "both_wrong": 73,
+      "median_counted_over_k_baseline": 0.875,
+      "median_counted_over_k_arm": 0.875
+    }
+  },
+  "gates": {
+    "engagement": {
+      "fire_rate_rep": 0.48848478249033594,
+      "fire_rate_ctl": 0.10798827147250233,
+      "threshold": 0.01,
+      "pass_": true
+    },
+    "informative": {
+      "control_exact": 1.0,
+      "threshold": 0.5,
+      "pass_": true
+    }
+  },
+  "headline": {
+    "arm": "qwen06bras",
+    "gap_points": 94.25287356321839,
+    "gap_ci95": [
+      89.65517241379311,
+      98.85057471264368
+    ],
+    "baseline_arm": "qwen06brasoff",
+    "baseline_gap_points": 92.13483146067416,
+    "change_points": 2.118042102544223
+  },
+  "verdict": "DEFICIT SURVIVES RAS",
+  "reason": "the exact-rate gap under RAS is +94.3 points, +2.2 points above the top of the [+66.7, +92.1] range the penalty and greedy arms already span on this checkpoint, and at or above its +66.7 floor; the robustness claim extends to the repetition-history-aware axis",
+  "baseline_vs_published": {
+    "n_paired": 233,
+    "same_count_a": 1.0,
+    "stored_gap_points": 92.13483146067416,
+    "regenerated_gap_points": 92.13483146067416,
+    "gap_shift_points": 0.0,
+    "reproduces_published": true
+  },
+  "strengthens": [
+    "The no-op arm reproduces the published qwen06b rows exactly -- identical count_a on 233 paired items and the same +92.1 point gap -- so the RAS arms differ from the paper's landed result in the sampling rule and in nothing else."
+  ],
+  "weakens": [
+    "The printed repetition ratio sums from k = 0, which includes the token compared with itself; taken literally the rule fires when the candidate occurs at least once in the previous K, and that is what was run (48.8% of steps on repeated items). Under the other reading (sum from k = 1, so at least twice) it would have fired on 25.1% of steps. Only the literal reading drove generation.",
+    "The fallback branch is the literal reading of 'random sampling': the untruncated, untempered model distribution. That is the flattest available reading and so the one most able to escape a loop; a tempered fallback would fire the same but escape less.",
+    "VALL-E 2 sweeps top-p from 0.0 to 0.8; we ran two points, the checkpoint's shipped nucleus and v = 0.0. A minimum of the gap somewhere inside that interval is not excluded by these arms.",
+    "One checkpoint. RAS was tested on Qwen3-TTS-0.6B only, for the reasons in src/common/ras.py; it is not a claim about RAS on VALL-E 2's own architecture, which we do not have.",
+    "Ours is an implementation of a published description, not the authors' code, which was not released. Section 'WHAT WE IMPLEMENTED' in src/common/ras.py lists every decision the description leaves open."
+  ]
+}

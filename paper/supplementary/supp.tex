@@ -6265,6 +6265,95 @@ not have one until a reviewer asked for it.
 
 
 % ============================================================
+\section{Does the deficit survive repetition-aware sampling?}
+\label{sec:s29}
+
+S22 asks the same question of greedy decoding and S15 of the repetition penalty.
+Both are one axis: suppress a token by how often it has already appeared,
+uniformly over history, with a scalar. A reviewer pointed out that the paper
+claimed to survive ``the field's standard mitigations'' while never testing the
+one purpose-built for this failure --- VALL-E~2's Repetition Aware Sampling,
+which in its authors' words ``refines the original nucleus sampling process by
+accounting for token repetition in the decoding history\ldots\ circumvents the
+infinite loop issue''~\cite{chen2024valle2}. The objection is accepted and this
+section is the answer.
+
+\textbf{What was implemented, and by whom.} This is \emph{our} implementation of
+a published description; no code was released. It lives in
+\texttt{src/common/ras.py} with the description quoted verbatim in its docstring:
+draw by nucleus sampling, compute the repetition ratio of the drawn token over a
+window of $K{=}10$, and if it exceeds $t_r{=}0.1$ redraw from the untruncated
+distribution. Three arms on Qwen3-TTS-0.6B --- the checkpoint that already
+carries a penalty and greedy sweep, so the new number lands in a band rather than
+alone: RAS at a no-op threshold, RAS at the paper's defaults, and RAS at
+$\text{top-}p{=}0$, the regime VALL-E~2 emphasises.
+
+\textbf{Three gates, all passed before the verdict was read.} At its no-op
+threshold RAS reproduces stock decoding \emph{bitwise} --- identical codebook-0
+token sequences and identical wav bytes --- on eight items spanning
+$k{=}1\ldots32$, and fired $0$ times in $27{,}235$ decode steps across that whole
+arm, so the no-op arm is the same decoder and not merely a similar one. It then
+fires on $48.9\%$ of decode steps on repeated items against $10.8\%$ on controls,
+with $0$ of $108$ repeated items never firing: maximally engaged exactly where
+the effect lives. And the control arm stays at $100.0\%$ exact with $0.0\%$
+degenerate output, so the gap does not survive by the mitigation breaking the
+controls. A null from an intervention that never fires, or that wrecks the
+comparison arm, would say nothing; this one is entitled to say something.
+
+\textbf{Result: the deficit survives.} Exact-rate gaps at $k\ge6$ under the CTC
+judge and the panel's own exclusions:
+
+\begin{center}
+\begin{tabular}{@{}lrrl@{}}
+\toprule
+arm & rep.\ exact & gap & 95\% CI \\
+\midrule
+no-op (= stock)          & 7.9\%  & $+92.1$ & $[+86.5, +97.8]$ \\
+RAS, paper defaults      & 5.7\%  & $+94.3$ & $[+89.7, +98.9]$ \\
+RAS, $\text{top-}p{=}0$  & 12.4\% & $+87.6$ & $[+80.9, +94.4]$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent The pre-committed band was fixed from this checkpoint's existing sweep:
+\textsc{survives} at $\ge +66.7$ points, its floor across the penalty and greedy
+arms; \textsc{mitigates} at $\le +33.4$, half of it. RAS lands at $+94.3$, which
+is not merely inside the band but $2.2$ points above its top. Paired within-item
+flips against the no-op arm: $4$ fixed, $6$ broken out of $87$. The
+$\text{top-}p{=}0$ arm is the best of the three at $8$ fixed against $4$ broken,
+and still leaves an $87.6$-point gap.
+
+\textbf{A bonus the design gives for free.} The no-op arm reproduces the
+\emph{published} \texttt{qwen06b} rows exactly --- identical \texttt{count\_a} on
+$233$ of $233$ paired items, gap $+92.1$ against a published $+92.1$. The RAS
+arms therefore differ from the paper's landed result in the sampling rule and in
+nothing else.
+
+\textbf{What the method description left open, resolved in the mitigation's
+favour where it mattered.} The printed ratio sums from $k{=}0$, comparing the
+candidate with itself, so under a literal reading the rule fires whenever the
+candidate occurs at least once in the previous ten steps; we implemented it
+literally and record the stricter reading's fire rate ($25.1\%$) alongside.
+``Random sampling'' for the redraw is taken as the untruncated, untempered
+distribution --- the flattest reading, the one most able to escape a loop. The
+window at the start of an utterance is shorter than VALL-E~2's, whose model can
+reach into enrolled-speech codes where Qwen's talker cannot. The rule is applied
+at every talker step on codebook~0, the analogue of their autoregressive stage,
+leaving the sub-talker untouched as their non-autoregressive stage is.
+
+\textbf{What weakens it.} One checkpoint. Two of the nine $\text{top-}p$ values
+their sweep covers. Our implementation of a description rather than their code.
+And the $k{=}0$ ambiguity above, which moves the fire rate by half but not the
+verdict.
+
+\textbf{One disclosure.} After seeing the result the agent that ran this edited a
+descriptive clause in the stored verdict string: it read ``inside the
+$[+66.7, +92.1]$ range'' for a value that is $2.2$ points \emph{above} the top.
+The pre-committed rule itself (\texttt{gap} $\ge +66.7$) was not touched, and the
+edit made the sentence describe the case that occurred. It is recorded here
+because a pre-registration is only worth what its edits are disclosed to be.
+
+% ============================================================
 \section{The Spanish arm: the judge replicates, the counting statistic does not}
 \label{sec:s27}
 

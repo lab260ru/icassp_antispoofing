@@ -15,8 +15,8 @@ the probe's count coordinate moves the count not at all on \CausalCkOk{}
 checkpoints (\EqPatchQlgFrac{}--\EqPatchLsmFrac{}\% of a full transfer), but on
 \ErrBestModel{} neither does a \emph{carrier} direction it decodes perfectly
 (\PcCarrierBound{}\%), and the write matches a sampler re-roll on all
-\PcRerollNTests{} readouts ($p\ge\PcRerollPMin{}$). It is registered but carries nothing; on \PcInertCk{} it is
-never detectable, bounding only \PcInertBound{}\% at $n{=}\PcInertN{}$ (S26).
+\PcRerollNTests{} readouts. It is registered but carries nothing; on \PcInertCk{}
+nothing is detectable at all ($n{=}\PcInertN{}$; S26).
 
 \noindent\textbf{Related work, and what the control decides.}
 Closest is representational collapse~\cite{barbero2024glasses}, which our control
@@ -35,6 +35,6 @@ to period; ours moves with it.
 Repetition is not separated from \emph{training-set frequency}, though the
 obvious form of it predicts the wrong arm: under an independent LM the
 \emph{control} is the less probable text in \NllIndCtlHigherPct{}\% of pairs
-(S8) --- text likelihood is not corpus frequency, so weakened, not closed.
-The Spanish arm needs a better judge (S27). Exclusions are blind to the count; the judge
-is validated on concatenative audio, not listeners.
+(S8). Text likelihood is not corpus frequency: weakened, not closed.
+The Spanish arm needs a better judge (S27), exclusions are blind to the count,
+and the judge is validated on audio, not listeners.

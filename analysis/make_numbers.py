@@ -1265,6 +1265,46 @@ def main() -> None:
                 "rule; the title claim is in question and the paper must be "
                 "rewritten rather than re-macroed")
 
+    # ---- the mitigation axis we had never swept ----------------------------
+    # A reviewer found that "survives the field's standard mitigations" covered
+    # penalty magnitude and greedy-versus-sampled, and not VALL-E 2's
+    # Repetition Aware Sampling -- which is published, and engineered around
+    # exactly the variable this paper isolates. This is that axis, on the
+    # checkpoint that already carries a decoding-rule sweep, so the new number
+    # sits in a band rather than alone.
+    #
+    # The null is only worth reporting because three gates passed first. RAS at
+    # its no-op threshold reproduces stock decoding BITWISE and fired zero times
+    # in 27,235 decode steps, so the arm is the same decoder. It then fires on
+    # 49% of steps on repeated items against 11% on controls, so it is maximally
+    # engaged exactly where the effect lives. And the control arm stays at 100%
+    # exact with no degeneracy, so the gap did not survive by the mitigation
+    # breaking the controls instead.
+    ras_path = Path("data/results/rep_aware_sampling.json")
+    if ras_path.exists():
+        ras = json.loads(ras_path.read_text())
+        ex = ras.get("exact", {})
+        for arm, tag in (("qwen06brasoff", "RasOff"), ("qwen06bras", "RasOn"),
+                         ("qwen06brasgr", "RasGr")):
+            a = ex.get(arm)
+            if a:
+                macros[f"{tag}Gap"] = fmt(a["gap_points"], 1)
+        band = ras.get("reference_band")
+        if band:
+            macros["RasBandLo"] = fmt(band[0], 1)
+            macros["RasBandHi"] = fmt(band[1], 1)
+        g = ras.get("gates", {}).get("engagement", {})
+        if g:
+            macros["RasFireRep"] = fmt(100 * g["fire_rate_rep"], 0)
+            macros["RasFireCtl"] = fmt(100 * g["fire_rate_ctl"], 0)
+        # The verdict is a pre-committed band test, so a flip has to rewrite the
+        # sentence rather than move a macro.
+        if ras.get("verdict") and not ras["verdict"].startswith("DEFICIT SURVIVES"):
+            raise SystemExit(
+                f"RAS verdict is now {ras['verdict']!r}; the paper says the "
+                "deficit survives repetition-aware sampling and must be "
+                "rewritten, not re-macroed")
+
     # ---- shuffling the order at fixed multiset: the title's hardest test ----
     # The period ladder varies the period, but it varies two things with it:
     # how many distinct types an item contains, and how many times each recurs.
