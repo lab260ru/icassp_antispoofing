@@ -70,10 +70,10 @@ with a \emph{length-matched control} of the same carrier and word count whose
 repeated token is replaced by distinct fillers. Across \NModels{} checkpoints
 from \NFamilies{} architectures, models render repeated text exactly in
 \ExactRep{}\% of generations against \ExactCtl{}\% for their cycled controls at
-$k\ge6$: a gap of \ApHeadFam{} points by architecture family
-($n{=}\FamExactN{}$) with never-cycled control fillers, \ApHeadFamCyc{} with
-the cycled pool the ladder ships, favouring the control in all \CkExactN{}
-checkpoints and \FullLadderGap{} points over the whole ladder from $k{=}1$. A period ladder separates periodicity
+$k\ge6$, a threshold set after seeing the data: a gap of \ApHeadFam{} points by
+family with never-cycled control fillers, \ApHeadFamCyc{} with the cycled pool
+the ladder ships, favouring the control in all \CkExactN{} checkpoints and
+\FullLadderGap{} points over the whole ladder from $k{=}1$. A period ladder separates periodicity
 from verbatim identity: exact rates climb \PerPOne{}, \PerPTwo{}, \PerPFour{},
 \PerPEight{}\% as the period goes $1,2,4,8$, an odd period interpolating, and
 half the deficit surviving at period two where no token is adjacent to itself.
@@ -82,11 +82,12 @@ shuffling the same tokens at fixed composition gains \ShufUpGain{} points on
 both Qwen checkpoints and loses \ShufDownLoss{} on \ShufDownCk{}. The limit tracks \emph{repetition, not length}. It survives greedy decoding, an
 order-of-magnitude penalty sweep and every exclusion rule switched off (\ExSensAll{} points), and replicates at
 \IndGapLo{}--\IndGapHi{} points across \IndNJudges{} recognisers, ruling out
-the judge-side artifact that would otherwise explain it. Measuring it needs care: the obvious judge, Whisper,
+the judge-side artifact that would otherwise explain it. Measuring it needs care: Whisper
 is autoregressive and biased \emph{against} the phenomenon, scoring
 \WhisperValPer{} of the true count on periodic ground truth where a CTC
 recogniser scores \CtcValPer{}. Nor is the failure peculiar to autoregressive decoding: of two
-non-autoregressive baselines one is immune, one is not.
+non-autoregressive baselines one is immune, one is not, though at one model per
+strategy that is suggestive rather than isolating.
 A Lean-4-verified bound says that if the per-repetition state map contracts, no
 Lipschitz readout can separate counts past a computable horizon. We measure that premise
 across \JacPanelN{} checkpoints with a validated estimator and reject it:
