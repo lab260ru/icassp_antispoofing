@@ -58,6 +58,9 @@ print("  OK   fig_main.pdf redraws identically from current data")
 PY
 [ $? -ne 0 ] && FAIL=1
 
+note "Pre-committed scoring rules have not moved"
+python3 scripts/check_precommit_frozen.py || FAIL=1
+
 note "The exclusion rules are blind to the comparison they feed"
 python3 scripts/check_exclusions_blind.py || FAIL=1
 

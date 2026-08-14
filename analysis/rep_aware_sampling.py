@@ -435,10 +435,15 @@ def main() -> None:
     # ------------------------------------------------------------------
     weak: list[str] = []
 
-    # How much does the library drift actually move the statistic? The
-    # regenerated stock baseline against the stored panel rows, same items,
-    # same seeds, same judge. If these two agree the drift is cosmetic; if they
-    # do not, the size of the disagreement is the size of the caveat.
+    # The regenerated stock baseline against the stored panel rows, same items,
+    # same seeds, same judge. This started as a drift caveat -- the first
+    # version of the gate's stored-audio check compared an in-memory float32
+    # array against a PCM-16 file read-back and so reported a mismatch on every
+    # item unconditionally. With that fixed the check passes, and this block
+    # became the arm's strongest end-to-end validation instead of its largest
+    # caveat: if `qwen06brasoff` reproduces the published `qwen06b` numbers, the
+    # whole new path -- processor, sampler, generator, judge, scorer -- lands
+    # exactly on the paper's landed result before a single rule is switched on.
     drift: dict = {}
     en = REPO / "data/results/behavioural_ctc.csv"
     if en.exists() and BASELINE in present:
@@ -455,14 +460,27 @@ def main() -> None:
             regenerated_gap_points=res["exact"][BASELINE]["gap_points"])
         drift["gap_shift_points"] = (drift["regenerated_gap_points"]
                                      - drift["stored_gap_points"])
-        print("\n=== Library drift: stored qwen06b vs the baseline regenerated today ===")
+        drift["reproduces_published"] = bool(
+            drift["n_paired"] > 0 and drift["same_count_a"] == 1.0
+            and abs(drift["gap_shift_points"]) < 0.05)
+        print("\n=== The regenerated baseline against the published panel rows ===")
         print(f"  paired items {drift['n_paired']}, identical count_a on "
               f"{100*drift['same_count_a']:.1f}% of them")
         print(f"  exact-rate gap {drift['stored_gap_points']:+.1f} (stored, published) -> "
               f"{drift['regenerated_gap_points']:+.1f} (regenerated) "
               f"= {drift['gap_shift_points']:+.1f} points")
-        res["library_drift"] = drift
+        print("  -> the new path reproduces the paper's landed result exactly"
+              if drift["reproduces_published"] else
+              "  -> the new path does NOT reproduce the paper's landed result; "
+              "the RAS arms are read against the regenerated baseline only")
+        res["baseline_vs_published"] = drift
 
+    if drift.get("reproduces_published"):
+        res["strengthens"] = [
+            "The no-op arm reproduces the published qwen06b rows exactly -- identical "
+            f"count_a on {drift['n_paired']} paired items and the same "
+            f"{drift['stored_gap_points']:+.1f} point gap -- so the RAS arms differ from "
+            "the paper's landed result in the sampling rule and in nothing else."]
     if gate.get("stored_matches_fresh_all") is False:
         weak.append(
             "The stored qwen06b panel audio does not reproduce byte-for-byte in today's "

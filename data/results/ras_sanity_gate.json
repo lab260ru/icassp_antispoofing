@@ -29,8 +29,10 @@
       "wiring_mismatched_steps": 0,
       "wiring_ok": true,
       "stored_wav_sha": "ddc24ba9ca7e2f94",
-      "stored_matches_fresh": false,
-      "stored_n_samples": 72960
+      "fresh_wav_roundtrip_sha": "ddc24ba9ca7e2f94",
+      "stored_matches_fresh": true,
+      "stored_n_samples": 72960,
+      "fresh_n_samples": 72960
     },
     {
       "item_id": "wr_very_t1_k08",
@@ -56,8 +58,10 @@
       "wiring_mismatched_steps": 0,
       "wiring_ok": true,
       "stored_wav_sha": "11220d8864b188a0",
-      "stored_matches_fresh": false,
-      "stored_n_samples": 119040
+      "fresh_wav_roundtrip_sha": "11220d8864b188a0",
+      "stored_matches_fresh": true,
+      "stored_n_samples": 119040,
+      "fresh_n_samples": 119040
     },
     {
       "item_id": "wr_very_t1_k16",
@@ -83,8 +87,10 @@
       "wiring_mismatched_steps": 0,
       "wiring_ok": true,
       "stored_wav_sha": "fb6eddeca7c43c7b",
-      "stored_matches_fresh": false,
-      "stored_n_samples": 216960
+      "fresh_wav_roundtrip_sha": "fb6eddeca7c43c7b",
+      "stored_matches_fresh": true,
+      "stored_n_samples": 216960,
+      "fresh_n_samples": 216960
     },
     {
       "item_id": "wr_very_t1_k24",
@@ -110,8 +116,10 @@
       "wiring_mismatched_steps": 0,
       "wiring_ok": true,
       "stored_wav_sha": "fc6697324214790e",
-      "stored_matches_fresh": false,
-      "stored_n_samples": 247680
+      "fresh_wav_roundtrip_sha": "fc6697324214790e",
+      "stored_matches_fresh": true,
+      "stored_n_samples": 247680,
+      "fresh_n_samples": 247680
     },
     {
       "item_id": "wr_very_t1_k32",
@@ -137,8 +145,10 @@
       "wiring_mismatched_steps": 0,
       "wiring_ok": true,
       "stored_wav_sha": "222ee8b9601cfb3f",
-      "stored_matches_fresh": false,
-      "stored_n_samples": 309120
+      "fresh_wav_roundtrip_sha": "222ee8b9601cfb3f",
+      "stored_matches_fresh": true,
+      "stored_n_samples": 309120,
+      "fresh_n_samples": 309120
     },
     {
       "item_id": "ct_very_t1_k08",
@@ -164,8 +174,10 @@
       "wiring_mismatched_steps": 0,
       "wiring_ok": true,
       "stored_wav_sha": "fa2eb3206b374e5c",
-      "stored_matches_fresh": false,
-      "stored_n_samples": 172800
+      "fresh_wav_roundtrip_sha": "fa2eb3206b374e5c",
+      "stored_matches_fresh": true,
+      "stored_n_samples": 172800,
+      "fresh_n_samples": 172800
     },
     {
       "item_id": "ct_very_t1_k24",
@@ -191,8 +203,10 @@
       "wiring_mismatched_steps": 0,
       "wiring_ok": true,
       "stored_wav_sha": "8e7f74c0a82f960c",
-      "stored_matches_fresh": false,
-      "stored_n_samples": 334080
+      "fresh_wav_roundtrip_sha": "8e7f74c0a82f960c",
+      "stored_matches_fresh": true,
+      "stored_n_samples": 334080,
+      "fresh_n_samples": 334080
     },
     {
       "item_id": "ct_very_t1_k32",
@@ -218,15 +232,17 @@
       "wiring_mismatched_steps": 0,
       "wiring_ok": true,
       "stored_wav_sha": "cd3fe72678349105",
-      "stored_matches_fresh": false,
-      "stored_n_samples": 495360
+      "fresh_wav_roundtrip_sha": "cd3fe72678349105",
+      "stored_matches_fresh": true,
+      "stored_n_samples": 495360,
+      "fresh_n_samples": 495360
     }
   ],
   "A_pass": true,
   "B_pass": true,
   "wiring_pass": true,
   "noop_never_fired": true,
-  "stored_matches_fresh_all": false,
+  "stored_matches_fresh_all": true,
   "mean_fire_rate": 0.3179762156693351,
   "gate": "PASS",
   "reason": "RAS at its no-op threshold reproduces the stock decoder bitwise (token sequences and wav bytes), on a path shown reproducible"
