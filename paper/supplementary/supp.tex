@@ -6151,20 +6151,46 @@ sign test is attainable at $n{=}18$, and the bound is $1.46\%$ of a full carrier
 transfer. On Llasa-8B it is \emph{weakly} bounded: the carrier control is
 disqualified by the V2 diagnostic ($0.89 / 0.78 / 0.89$ against a $0.90$ bar), so
 only the magnitude ladder speaks, and the count arm's bound at the published
-magnitude is $36\%$ of a full transfer --- an arm that could not have resolved an
-effect of the size at issue. Two checkpoints agreeing means less when one of them
+magnitude is $19\%$ of a full transfer at $n{=}36$ --- tighter than it was at
+half the seeds, and still an order of magnitude looser than Qwen's. Two checkpoints agreeing means less when one of them
 was never able to disagree.
 
-The two also differ in what a write does at all. Qwen registers the published
-write ($4.01\times$ the sampler-re-roll floor, $n{=}36$) and a probe direction
-steers it at $16\times$ that magnitude. Llasa-8B does not register it
-($1.74\times$), and its count and random directions are never detectable at any
-magnitude tested; only the carrier becomes detectable, at $16\times$, where $44\%$
-of runs are destroyed. Its pre-committed verdict is \textsc{patch is inert}. That
-verdict currently rests on a floor of $n{=}9$ and a count arm of $n{=}18$ --- the
-same configuration in which Qwen's own numbers moved from $1.98\times$ to
-$4.01\times$ when its seeds were doubled --- so a seed-1 pass is being run before
-the verdict is reported as settled.
+The two also differ in what a write does at all, and the comparison is now at
+matched $n$ on both:
+
+\begin{center}
+\begin{tabular}{@{}lrrrl@{}}
+\toprule
+checkpoint (count, $\alpha{=}1$, $n{=}36$) & $S_1$ & floor & ratio & detectable? \\
+\midrule
+Qwen3-TTS-1.7B & 0.218 & 0.054 & $4.01\times$ & yes \\
+Llasa-8B       & 0.433 & 0.314 & $1.38\times$ & no \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent Qwen registers the published write and a probe direction steers it at
+$16\times$ that magnitude. Llasa-8B does not register it at any magnitude, in any
+direction, and its pre-committed verdict is \textsc{patch is inert}.
+
+That verdict was first reached on a floor of $n{=}9$ and a count arm of $n{=}18$
+--- the same configuration in which Qwen's own reading moved from $1.98\times$ to
+$4.01\times$ when its seeds were doubled --- so it was re-measured at doubled
+seeds before being reported, and it got \emph{stronger}: the count ratio fell
+from $1.74\times$ to $1.38\times$, its bound tightened from $36\%$ to $19\%$ of a
+full transfer, and the one cell that had been detectable at $n{=}9$ (carrier at
+$\alpha{=}16$, $2.96\times$) fell to $1.99\times$ and dropped below the bar. No
+cell is underpowered at this $n$: every sign test could have fired, so these are
+real negatives rather than untakeable tests.
+
+One caveat belongs with it. Llasa-8B's two carrier cells sit at $1.93\times$ and
+$1.99\times$ against a $2.0$ bar --- within $4\%$ of threshold, the same
+knife-edge Qwen's count showed at $1.98\times$ before more data moved it. Those
+cells are V2-disqualified and cannot carry a verdict in either direction, and the
+cells that do carry it are clear of the bar (count $1.35$--$1.69\times$, random
+$1.14$--$1.48\times$). If asked whether Llasa-8B's carrier is truly below
+threshold, the honest answer is that we cannot say, because its probe never
+qualified as a control.
 
 \textbf{The published Qwen arm re-derives bitwise, today.} S26 concedes above
 that the published Llasa-1B manifest is no longer bitwise re-derivable under the

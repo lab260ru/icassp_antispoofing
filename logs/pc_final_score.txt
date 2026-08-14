@@ -1,0 +1,59 @@
+
+=== qwen17b (decode protocol, L12, P32) ===
+  re-roll floor (diffseed, n=18): S1 mean=0.0543 median=0.0657 any-word-change=78%  S2=0.149  destroyed=0.0%
+  cell                           n     S1 xfloor |dlogT| dstr% relmag       S4  p_holm  det appr
+  carrier|crosstemplate|a1      18  0.064   1.17   0.173   0.0  0.029   +0.002   1.000  .   .
+  carrier|crosstemplate|a2      18  0.475   8.75   0.107   5.6  0.058   +0.000   1.000  Y   .
+  carrier|crosstemplate|a4      18  0.061   1.13   0.098   0.0  0.116   +0.001   1.000  .   .
+  carrier|crosstemplate|a8      18  0.133   2.44   0.107   0.0  0.231   +0.001   1.000  Y   .
+  carrier|crosstemplate|a16     18  0.161   2.96   0.167   5.6  0.463   +0.030   0.021  Y   Y
+  count|crossk|a1               36  0.218   4.01   0.142   2.8  0.028   +0.000   1.000  Y   .
+  count|diffseed|a1             18  0.054   1.00   0.149   0.0  0.037     +nan     nan  .   .
+  count|crossk|a2               36  0.219   4.03   0.112   5.6  0.056   +0.000   1.000  Y   .
+  count|crossk|a4               36  0.248   4.57   0.123   8.3  0.112   +0.000   1.000  Y   .
+  count|crossk|a8               36  0.294   5.42   0.183  22.2  0.225   +0.000   1.000  Y   .
+  count|crossk|a16              36  0.850  15.65   2.917  88.9  0.449   +2.630   1.000  Y   .
+  rand|crossk|a1                36  0.123   2.26   0.119   2.8  0.029     +nan     nan  Y   .
+  rand|crossk|a2                36  0.156   2.88   0.122   2.8  0.058     +nan     nan  Y   .
+  rand|crossk|a4                36  0.396   7.29   0.136   5.6  0.116     +nan     nan  Y   .
+  rand|crossk|a8                36  0.115   2.11   0.098   0.0  0.231     +nan     nan  Y   .
+  rand|crossk|a16               36  0.147   2.71   0.145   2.8  0.463     +nan     nan  Y   .
+  first DETECTABLE alpha:            {'carrier': 2.0, 'count': 1.0, 'rand': 1.0}
+  first DIRECTION-APPROPRIATE alpha: {'carrier': 16.0, 'count': None, 'rand': None}
+  -- the PUBLISHED arm (pq_qwen17b, L12): is the informative write distinguishable from a sampler re-roll?
+     abs_count   crossk median 0.057 (n=36)  diffseed median 0.052 (n=18)  mean ratio 2.11  Mann-Whitney p=0.376
+     abs_logdur  crossk median 0.142 (n=36)  diffseed median 0.149 (n=18)  mean ratio 1.01  Mann-Whitney p=0.388
+     wer         crossk median 0.047 (n=36)  diffseed median 0.066 (n=18)  mean ratio 4.01  Mann-Whitney p=0.934
+     indistinguishable from a re-roll on every readout: True
+  VERDICT: INTERMEDIATE I-c (a probe direction steers this decoder, but only at alpha>=16)
+
+=== llasa8b (resume protocol, L16, P128) ===
+  re-roll floor (diffseed, n=18): S1 mean=0.3138 median=0.2739 any-word-change=94%  S2=0.226  destroyed=16.7%
+  cell                           n     S1 xfloor |dlogT| dstr% relmag       S4  p_holm  det appr
+  carrier|crosstemplate|a1      18  0.606   1.93   0.261  27.8  0.027   -0.038   1.000  .   .
+  carrier|crosstemplate|a2      18  0.382   1.22   0.218  16.7  0.054   -0.004   1.000  .   .
+  carrier|crosstemplate|a4      18  0.428   1.36   0.168  22.2  0.109   +0.001   1.000  .   .
+  carrier|crosstemplate|a8      18  0.525   1.67   0.221  16.7  0.217   +0.017   1.000  .   .
+  carrier|crosstemplate|a16     18  0.623   1.99   0.380  38.9  0.434   +0.060   1.000  .   .
+  count|crossk|a1               36  0.433   1.38   0.246  19.4  0.027   -0.060   1.000  .   .
+  count|diffseed|a1             18  0.314   1.00   0.226  16.7  0.028     +nan     nan  .   .
+  count|crossk|a2               36  0.436   1.39   0.171  11.1  0.054   +0.026   1.000  .   .
+  count|crossk|a4               36  0.468   1.49   0.298  27.8  0.109   +0.000   1.000  .   .
+  count|crossk|a8               36  0.422   1.35   0.220  19.4  0.218   +0.022   1.000  .   .
+  count|crossk|a16              36  0.530   1.69   0.209  30.6  0.436   +0.039   1.000  .   .
+  rand|crossk|a1                36  0.356   1.14   0.206  22.2  0.027     +nan     nan  .   .
+  rand|crossk|a2                36  0.464   1.48   0.214  22.2  0.054     +nan     nan  .   .
+  rand|crossk|a4                36  0.364   1.16   0.151  16.7  0.109     +nan     nan  .   .
+  rand|crossk|a8                36  0.393   1.25   0.264  22.2  0.217     +nan     nan  .   .
+  rand|crossk|a16               36  0.433   1.38   0.236  22.2  0.434     +nan     nan  .   .
+  first DETECTABLE alpha:            {'carrier': None, 'count': None, 'rand': None}
+  first DIRECTION-APPROPRIATE alpha: {'carrier': None, 'count': None, 'rand': None}
+  V2: the carrier control DID NOT QUALIFY on this checkpoint (LOTO sign accuracy {'t1->t3': 0.89, 't3->t5': 0.78, 't5->t1': 0.89}, bar 0.9); its cells are reported but cannot carry a PATCH IS LIVE verdict
+  -- the PUBLISHED arm (rs_llasa8b, L16): is the informative write distinguishable from a sampler re-roll?
+     abs_count   crossk median 0.217 (n=72)  diffseed median 0.246 (n=36)  mean ratio 1.24  Mann-Whitney p=0.616
+     abs_logdur  crossk median 0.185 (n=72)  diffseed median 0.219 (n=36)  mean ratio 0.94  Mann-Whitney p=0.607
+     wer         crossk median 0.280 (n=72)  diffseed median 0.238 (n=36)  mean ratio 1.09  Mann-Whitney p=0.504
+     indistinguishable from a re-roll on every readout: True
+  VERDICT: PATCH IS INERT (null is uninformative)
+
+wrote /home/kirill/icassp_antispoofing/data/results/causal_positive_control.json
