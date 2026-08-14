@@ -5115,10 +5115,21 @@ The paragraph above --- ``only the original ladder and the matched-control
 design were fixed in advance'' --- describes the study as it stood then, and it
 is no longer the whole story. Every experiment run since carries a
 pre-commitment written into its own script's docstring before any of its audio
-existed, and the docstrings are in the repository at commits that predate the
-corresponding manifests. The point of listing them together is not that they
-were pre-committed but that the commitments had teeth: one of them cost us a
-claim.
+existed. The point of listing them together is not that they were pre-committed
+but that the commitments had teeth: one of them cost us a claim.
+
+\emph{How much of that a reader can check, and how much they must take on
+trust.} For three of the four, version control corroborates the ordering: the
+script carrying the pre-commitment is committed in an earlier commit than the
+manifest it constrains (period ladder \texttt{9f9bedd} before
+\texttt{51eb280}, causal replication \texttt{fa13a3a} before \texttt{1ec8259},
+positive control \texttt{9f9bedd} before \texttt{269c6d6}). For the other two
+--- the odd rungs and the shuffled-order control --- the script and its results
+landed in the \emph{same} commit, so git establishes nothing about their order
+and the claim rests on the file's own record and the run logs. We say so rather
+than let four cases inherit the credibility of three. An earlier draft of this
+paragraph asserted that all the docstrings sit at commits predating their
+manifests; that is true of three of them.
 
 \begin{center}
 \begin{tabular}{@{}lp{3.4cm}p{2.6cm}@{}}
