@@ -111,7 +111,7 @@ loop. The behaviour is documented as a stability
 problem~\cite{song2024ellav,wang2023valle} and usually attributed to
 exposure bias or to the absence of a monotonic alignment constraint, with fixes
 proposed at the level of attention supervision or decoding
-rules~\cite{xin2024ralle,du2024cosyvoice2} --- the speech analogue of neural text
+rules~\cite{xin2024ralle,du2024cosyvoice2,chen2024valle2} --- the speech analogue of neural text
 degeneration~\cite{holtzman2020curious,welleck2020neural}.
 
 Reports of this behaviour confound two things, because repeating a phrase $k$
@@ -130,8 +130,9 @@ result in its own right.
 
 We contribute, in order of what the evidence supports: a controlled manipulation
 isolating repetition from length across \NModels{} checkpoints and two
-non-autoregressive baselines, on which the deficit survives the field's standard
-mitigations; a judge methodology for repetitive
+non-autoregressive baselines, on which the deficit survives a penalty sweep and
+greedy decoding (VALL-E~2's repetition-aware sampling~\cite{chen2024valle2} we
+did not test); a judge methodology for repetitive
 speech, the obvious judge shown disqualified; and a measurement closing off the
 mechanism we proposed for it, the contraction premise of a Lean-verified bound
 being not merely untested but false in every decoder we could measure. The work is a companion to a spectral study of hallucination in
