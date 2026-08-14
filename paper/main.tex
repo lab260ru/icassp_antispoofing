@@ -69,10 +69,10 @@ ladder: \NStimuli{} stimuli in which a target word recurs $k$ times, each paired
 with a \emph{length-matched control} of the same carrier and word count whose
 repeated token is replaced by distinct fillers. Across \NModels{} checkpoints
 from \NFamilies{} architectures the repeated-versus-control gap is
-\FullLadderGap{} points over the whole ladder, rising to \ApHeadFam{} by family
-at $k\ge6$ where the arms diverge --- a threshold set after seeing the data, so
-we quote both --- and \ApHeadFamCyc{} with the cycled filler pool the ladder
-ships, favouring the control in all \CkExactN{} checkpoints. There, models
+\FullLadderGap{} points over the whole ladder and \ApHeadFamCyc{} at $k\ge6$
+where the arms diverge, a threshold set after seeing the data, so we quote both
+(\ApHeadFam{} if the control's fillers are never cycled, and we quote the
+smaller). It favours the control in all \CkExactN{} checkpoints, where models
 render repeated text exactly in \ExactRep{}\% of generations against
 \ExactCtl{}\%. A period ladder separates periodicity
 from verbatim identity: exact rates climb \PerPOne{}, \PerPTwo{}, \PerPFour{},
