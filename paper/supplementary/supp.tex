@@ -1451,7 +1451,30 @@ gained strictly more distinguishable states than its matched repeated twin.
 \label{sec:s5}
 
 This section expands the main paper's Section~4, which measures the theorem's
-premise and rejects it. We consider it a real contribution of the project, not a
+premise and rejects it.
+
+\textbf{What is new here, and what is not.} The closest formal antecedent is
+rank collapse in pure attention: Dong, Cordonnier and
+Loukas~\cite{dong2021attention} prove that a network of self-attention alone,
+without skip connections or MLPs, converges doubly exponentially in depth to a
+rank-one matrix, so token representations become mutually indistinguishable. A
+reviewer was right that the main paper engaged with the less foundational
+over-squashing result~\cite{barbero2024glasses} and not with this one.
+
+Three things differ, and only the third is a contribution. Our map is indexed by
+\emph{repetition}, not by depth: it takes the state at one repetition boundary to
+the state at the next, within a fixed network, so the collapse it describes is a
+property of the input rather than of the architecture's depth. It is stated for
+a decoder that \emph{has} skips and MLPs, which is exactly the regime the pure
+attention result excludes and which their own paper identifies as what stops
+rank collapse in practice. And it is conditional: the contraction premise is an
+assumption we then measure and reject, on five checkpoints, rather than a
+consequence we derive.
+
+The Lean formalisation is a contribution of a different kind -- not that the
+implication is surprising, but that it is machine-checked and its antecedent is
+then measured, so the failure is located in the premise rather than argued about
+in the conclusion. We consider it a real contribution of the project, not a
 discarded attempt, and document it at the level of detail a reviewer wanting
 to check the diagnosis would need. The relevant code is
 \texttt{src/common/boundaries.py} (explicitly marked, in its own module

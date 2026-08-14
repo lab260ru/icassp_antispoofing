@@ -131,8 +131,8 @@ result in its own right.
 We contribute, in order of what the evidence supports: a controlled manipulation
 isolating repetition from length across \NModels{} checkpoints and two
 non-autoregressive baselines, on which the deficit survives a penalty sweep and
-greedy decoding (VALL-E~2's repetition-aware sampling~\cite{chen2024valle2} we
-did not test); a judge methodology for repetitive
+greedy decoding (VALL-E~2's repetition-aware sampling~\cite{chen2024valle2}
+untested); a judge methodology for repetitive
 speech, the obvious judge shown disqualified; and a measurement closing off the
 mechanism we proposed for it, the contraction premise of a Lean-verified bound
 being not merely untested but false in every decoder we could measure. The work is a companion to a spectral study of hallucination in
@@ -217,8 +217,10 @@ profile flattens and the decoder meets the same conditioning at every
 \emph{repetition boundary}; the map $F$ between boundary states is then
 autonomous, and if it contracts with factor $q<1$ no Lipschitz readout --- the
 stop head included --- separates counts beyond $N^\ast=\log(\mu/2LC)/\log q$. Both are machine-checked in Lean~4 over
-\texttt{mathlib}, free of \texttt{sorry} and with an axiom audit (S1--S2). The
-implication holds; its antecedent does not.
+\texttt{mathlib}, free of \texttt{sorry} and with an axiom audit (S1--S2; S5
+contrasts it with rank collapse in pure
+attention~\cite{dong2021attention}). The implication holds; its antecedent does
+not.
 
 \noindent\textbf{Measuring $q$.}
 We estimate the top singular value of the boundary-to-boundary Jacobian by power
@@ -240,13 +242,13 @@ never described these decoders for any input. And $q$ \emph{grows} with scale in
 \JacQLlasaThree{}, \JacQLlasaEight{} at 1B, 3B and 8B), while \ErrBestModel{}
 --- the one whose median count error is zero --- has $q=\JacQCounter{}$. A
 decoder with no central-tendency deficit has an equally expansive map, so
-whatever separates counting from miscounting here is not $q$. The lemma's dose-response points the wrong way too, flatter attention going with
-\emph{better} counting ($r=\DilR{}$; S12), and a third objection is structural
-(S5).
+whatever separates counting from miscounting here is not $q$. The lemma's dose-response points the wrong way too --- flatter
+attention goes with \emph{better} counting ($r=\DilR{}$) --- and a third
+objection is structural (S5, S12).
 
-We keep the bound because it motivated the manipulation, and a verified
-conditional with a measured, rejected antecedent beats an untested one --- but
-it explains nothing in Section~\ref{sec:results}.
+We keep the bound because it motivated the manipulation and a measured, rejected
+antecedent beats an untested one --- but it explains nothing in
+Section~\ref{sec:results}.
 
 \section{Discussion}
 \label{sec:discussion}
@@ -255,6 +257,18 @@ it explains nothing in Section~\ref{sec:results}.
 
 \vfill\pagebreak
 
+% Two citations added in the last review round -- VALL-E 2's repetition-aware
+% sampling and the pure-attention rank-collapse result -- pushed the 22nd
+% reference onto a sixth page. Tightening the inter-entry spacing fits all 22 on
+% page 5, which is the ICASSP allowance (4 pages + 1 of references). This changes
+% no content and no font size; it removes the vertical padding LaTeX puts between
+% bibliography items, which the IEEEbib style leaves at list defaults.
+\let\oldthebibliography\thebibliography
+\renewcommand{\thebibliography}[1]{%
+  \oldthebibliography{#1}%
+  \setlength{\itemsep}{0pt}%
+  \setlength{\parsep}{0pt}%
+  \setlength{\parskip}{0pt}}
 \bibliographystyle{IEEEbib}
 \bibliography{refs}
 
