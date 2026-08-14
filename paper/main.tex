@@ -68,12 +68,13 @@ phrase many times. We isolate what drives it with a parametric repetition
 ladder: \NStimuli{} stimuli in which a target word recurs $k$ times, each paired
 with a \emph{length-matched control} of the same carrier and word count whose
 repeated token is replaced by distinct fillers. Across \NModels{} checkpoints
-from \NFamilies{} architectures, models render repeated text exactly in
-\ExactRep{}\% of generations against \ExactCtl{}\% for their cycled controls at
-$k\ge6$, a threshold set after seeing the data: a gap of \ApHeadFam{} points by
-family with never-cycled control fillers, \ApHeadFamCyc{} with the cycled pool
-the ladder ships, favouring the control in all \CkExactN{} checkpoints and
-\FullLadderGap{} points over the whole ladder from $k{=}1$. A period ladder separates periodicity
+from \NFamilies{} architectures the repeated-versus-control gap is
+\FullLadderGap{} points over the whole ladder, rising to \ApHeadFam{} by family
+at $k\ge6$ where the arms diverge --- a threshold set after seeing the data, so
+we quote both --- and \ApHeadFamCyc{} with the cycled filler pool the ladder
+ships, favouring the control in all \CkExactN{} checkpoints. There, models
+render repeated text exactly in \ExactRep{}\% of generations against
+\ExactCtl{}\%. A period ladder separates periodicity
 from verbatim identity: exact rates climb \PerPOne{}, \PerPTwo{}, \PerPFour{},
 \PerPEight{}\% as the period goes $1,2,4,8$, an odd period interpolating, and
 half the deficit surviving at period two where no token is adjacent to itself.
