@@ -1290,6 +1290,10 @@ def main() -> None:
         rec = sh.get("recovery", {}).get("exact", {}).get("vs_rerendered", {})
         if rec:
             macros["ShufR"] = fmt(rec["R"]["4"], 3)
+            # Also as a percentage. "recovers 0.006 of a 17.7-point deficit"
+            # invites the reader to take 0.006 for points; a percentage of a
+            # deficit measured in points cannot be misread the same way.
+            macros["ShufRPct"] = fmt(100 * rec["R"]["4"], 1)
             macros["ShufDeficit"] = fmt(100 * rec["D"]["4"], 1)
             macros["ShufPerFour"] = fmt(100 * rec["E_per"]["4"], 1)
             macros["ShufShufFour"] = fmt(100 * rec["E_shuf"]["4"], 1)
