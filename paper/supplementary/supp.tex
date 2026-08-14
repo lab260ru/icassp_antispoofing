@@ -6877,6 +6877,92 @@ original stack. The direction matters: if drift depresses the new rungs it works
 \emph{against} the confirming verdict, and dropping XTTS-v2 entirely makes both
 tests cleaner ($E(6){=}96.2$, $E(8){=}97.2$). It is kept in.
 
+\subsection{Shuffling the order at fixed composition: the test the title did
+not survive}
+
+The ladder varies the period, and it varies two other things with it: how many
+distinct types an item contains, and how many times each recurs. A reviewer
+named the confound --- a decoder failing on low type-token ratio rather than on
+periodic \emph{ordering} produces exactly this ladder --- and it is the same
+criticism that produced the ladder itself, one level up. The test holds each
+item's multiset of filler tokens fixed, token for token, and destroys only the
+order (\texttt{data/stimuli/make\_stimuli\_period\_shuffled.py}, pre-commitment
+in its docstring; \texttt{data/results/period\_shuffled.json}).
+
+\textbf{$p{=}2$ is uninformative by construction, and that is a theorem.} A
+binary string of twelve A's and twelve B's with no two adjacent symbols equal is
+determined by its first symbol, so exactly two exist --- ABAB\ldots and
+BABA\ldots --- and both \emph{are} the periodic item. Aperiodicity at $p{=}2$
+therefore \emph{forces} adjacent verbatim repetition, the very structure the
+ladder identifies as most damaging. Realised adjacent-repeat rate is $0.461$
+against $0.000$ in the twin, and the floor over $200{,}000$ random
+near-baseline arrangements is $0.22$, never zero. $R(2)=-0.780$ measures
+adjacency, not periodicity, and is not read. At $p{=}8$ there is no deficit left
+to recover. Everything rests on $p{=}4$, where zero adjacency is constructible
+and was achieved exactly.
+
+\textbf{Pooled, shuffling recovers nothing; the pre-committed confirmation band
+is excluded.} $E$ goes $75.2\% \to 75.3\%$ against a $17.7$-point deficit:
+$R(4) = +0.006$, and a cluster bootstrap over carriers puts
+$P[\bar R \ge 0.50] = 0.010$. Under the pre-commitment as written the outcome is
+\textsc{intermediate}, tripped from \textsc{lexical} by the sign-split rule on a
+nominally positive null.
+
+\textbf{But the pooled figure is arithmetic, not consensus.} Three of the four
+per-checkpoint intervals exclude zero, in opposite directions:
+
+\begin{center}
+\begin{tabular}{@{}lrrrl@{}}
+\toprule
+checkpoint & $E$ periodic & $E$ shuffled & $\Delta$ & 95\% CI \\
+\midrule
+Qwen3-TTS-1.7B & 80.0 & 97.8 & $+17.8$ & $[+5.6, +34.4]$ \\
+Qwen3-TTS-0.6B & 73.3 & 91.1 & $+17.8$ & $[+6.7, +32.2]$ \\
+Llasa-1B       & 74.1 & 68.9 & $-5.2$  & $[-22.0, +11.3]$ \\
+XTTS-v2        & 73.3 & 43.3 & $-30.0$ & $[-53.3, -6.7]$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent Destroying the order recovers most of the deficit on both Qwen
+checkpoints --- the periodicity signature --- and destroys performance on
+XTTS-v2. Dropping XTTS-v2 gives $R(4) = +0.473$. This is a real architecture
+split, and the paper reports it as one rather than quoting the mean.
+
+\textbf{XTTS-v2 is not broken, and we checked before saying so.} On its shuffled
+arm: $0.0\%$ empty, $0.0\%$ degenerate, $0.0\%$ cap hits, at every $p$; duration
+$15.7$s against $16.5$s periodic, $28.2$ words against $29.6$. It produces clean
+fluent speech and renders the wrong sequence, sampling a plausible mixture of the
+pool rather than tracking the requested order, and the collapse survives the
+order-insensitive recount ($73.3 \to 44.4$ at $p{=}4$), so it is not an artifact
+of the ordered scan. The environment-drift worry raised for the odd rungs is also
+empirically dead: the re-rendered periodic controls are byte-identical (md5) to
+the published audio for all four checkpoints \emph{including} XTTS-v2 under the
+compatibility shim, reproducing the published rates to $0.0$ points on every
+cell.
+
+\textbf{The placebo correction is declined.} The pre-commitment defined
+$R_{\text{adj}}$ to fire if $\Delta(8) \le -5$ points, attributing a uniform
+additive cost to the manipulation itself; $\Delta(8) = -5.0$ tripped it by
+$0.0$ points. We report the unadjusted $R(4)$. The placebo cell is the thinnest
+in the study ($57$ periodic rows), its pooled $\Delta(8)$ has a CI spanning zero,
+and its per-checkpoint values run $-17.9$ to $+4.4$ --- nothing like the uniform
+cost the correction assumes. It changes no conclusion either way:
+$R_{\text{adj}}(4) = +0.289$ and $\bar R_{\text{adj}} = -0.186$ both sit far
+below the $0.50$ band.
+
+\textbf{What this costs the title.} ``Periodicity, not length'' asserted that
+periodic ordering drives the deficit. On the one rung where that can be asked
+cleanly, it drives it on two checkpoints, does not on a third, and reverses on a
+fourth. The length-matched dissociation, by contrast, holds on all six panel
+checkpoints and on a held-out architecture. The title now carries the claim that
+survives everywhere --- \emph{repetition}, not length --- and the periodicity
+result is reported as the architecture-dependent finding it is. Two further
+weaknesses belong with it: only $p{=}4$ carries the test, so the study rests on
+one rung ($n{=}117$ periodic, $344$ shuffled); and within-twin spread across the
+three shuffles is $13$--$16$ points, which the per-checkpoint effects survive but
+the pooled null does not exceed.
+
 \textbf{Provenance note.} The published rungs were not regenerated: the
 generators resume on \texttt{(item\_id, seed)}, so passing the extended stimulus
 file produced only the 720 new rows and left the 135 published items

@@ -1,0 +1,387 @@
+population 4560 -> 4279 (dropped: degenerate=35, cap_hits=246, templates=t2)
+rows at k=24: periodic_pub=400, periodic=400, shuffled=1189
+
+--- resume check: 2880 pre-existing pd_ rows shared with behavioural_period.csv
+  count_a identical on 2880/2880   duration identical on 2880/2880
+
+--- realised sequence statistics (the shuffled arm's aperiodicity, verifiable rather than asserted) ---
+  arm             p                 rho(p)                     PI               adj-rate                 maxper                 LZnorm                    TTR                     H1                   H2|1
+  context         1      1.000 [1.00,1.00]      0.000 [0.00,0.00]      1.000 [1.00,1.00]   24.000 [24.00,24.00]      0.382 [0.38,0.38]      0.042 [0.04,0.04]    0.000 [-0.00,-0.00]      0.000 [0.00,0.00]
+  context         3      1.000 [1.00,1.00]      0.696 [0.70,0.70]      0.000 [0.00,0.00]   24.000 [24.00,24.00]      0.482 [0.48,0.48]      0.125 [0.12,0.12]      1.585 [1.58,1.58]      0.000 [0.00,0.00]
+  context         6      1.000 [1.00,1.00]      0.870 [0.87,0.87]      0.000 [0.00,0.00]   24.000 [24.00,24.00]      0.517 [0.52,0.52]      0.250 [0.25,0.25]      2.585 [2.58,2.58]      0.000 [0.00,0.00]
+  context        24          nan [nan,nan]      0.000 [0.00,0.00]      0.000 [0.00,0.00]   24.000 [24.00,24.00]      1.000 [1.00,1.00]      1.000 [1.00,1.00]      4.585 [4.58,4.58]      0.000 [0.00,0.00]
+  periodic        2      1.000 [1.00,1.00]      0.522 [0.52,0.52]      0.000 [0.00,0.00]   24.000 [24.00,24.00]      0.573 [0.57,0.57]      0.083 [0.08,0.08]      1.000 [1.00,1.00]      0.000 [0.00,0.00]
+  periodic        4      1.000 [1.00,1.00]      0.783 [0.78,0.78]      0.000 [0.00,0.00]   24.000 [24.00,24.00]      0.478 [0.48,0.48]      0.167 [0.17,0.17]      2.000 [2.00,2.00]      0.000 [0.00,0.00]
+  periodic        8      1.000 [1.00,1.00]      0.913 [0.91,0.91]      0.000 [0.00,0.00]   24.000 [24.00,24.00]      0.573 [0.57,0.57]      0.333 [0.33,0.33]      3.000 [3.00,3.00]      0.000 [0.00,0.00]
+  periodic_pub    2      1.000 [1.00,1.00]      0.522 [0.52,0.52]      0.000 [0.00,0.00]   24.000 [24.00,24.00]      0.573 [0.57,0.57]      0.083 [0.08,0.08]      1.000 [1.00,1.00]      0.000 [0.00,0.00]
+  periodic_pub    4      1.000 [1.00,1.00]      0.783 [0.78,0.78]      0.000 [0.00,0.00]   24.000 [24.00,24.00]      0.478 [0.48,0.48]      0.167 [0.17,0.17]      2.000 [2.00,2.00]      0.000 [0.00,0.00]
+  periodic_pub    8      1.000 [1.00,1.00]      0.913 [0.91,0.91]      0.000 [0.00,0.00]   24.000 [24.00,24.00]      0.573 [0.57,0.57]      0.333 [0.33,0.33]      3.000 [3.00,3.00]      0.000 [0.00,0.00]
+  shuffled        2      0.441 [0.41,0.55]      0.088 [0.05,0.10]      0.461 [0.39,0.52]      4.000 [4.00,4.00]      1.426 [1.15,1.53]      0.083 [0.08,0.08]      1.000 [1.00,1.00]      0.989 [0.96,1.00]
+  shuffled        4      0.223 [0.15,0.30]      0.089 [0.07,0.10]      0.000 [0.00,0.00]      5.867 [5.00,8.00]      1.092 [0.96,1.24]      0.167 [0.17,0.17]      2.000 [2.00,2.00]      1.450 [1.16,1.57]
+  shuffled        8      0.100 [0.00,0.12]      0.088 [0.07,0.09]      0.000 [0.00,0.00]     9.000 [8.00,10.00]      0.947 [0.83,1.02]      0.333 [0.33,0.33]      3.000 [3.00,3.00]      1.389 [1.27,1.53]
+
+exact rate at k=24 -- ordered scan (the published rule) -- PRIMARY
+  checkpoint            periodic_pub                periodic                shuffled      (n per cell)
+                    p=2   p=4   p=8         p=2   p=4   p=8         p=2   p=4   p=8 
+  llasa1b             63    74    92          63    74    92          27    69    74      (46,27,12,46,27,12,130,74,42)
+  qwen06b             43    73   100          43    73   100          19    91    96      (60,30,15,60,30,15,179,90,45)
+  qwen17b             48    80   100          48    80   100          28    98    98      (60,30,15,60,30,15,179,90,45)
+  xtts2               50    73    80          50    73    80           1    43    84      (60,30,15,60,30,15,180,90,45)
+  MEAN              51.2  75.2  92.9        51.2  75.2  92.9        18.6  75.3  87.9
+
+  [exact vs re-rendered periodic (PRIMARY)]
+    p=2:  E_per= 51.2  E_shuf= 18.6  Delta= -32.6 pts  D= 41.7 pts   R(2) = -0.780  
+    p=4:  E_per= 75.2  E_shuf= 75.3  Delta=  +0.1 pts  D= 17.7 pts   R(4) = +0.006  
+    p=8:  E_per= 92.9  E_shuf= 87.9  Delta=  -5.0 pts  D=  0.0 pts  PLACEBO
+    Rbar = -0.387   (offset-corrected -0.186, placebo Delta(8) = -5.0 pts)
+
+  [exact vs published periodic]
+    p=2:  E_per= 51.2  E_shuf= 18.6  Delta= -32.6 pts  D= 41.7 pts   R(2) = -0.780  
+    p=4:  E_per= 75.2  E_shuf= 75.3  Delta=  +0.1 pts  D= 17.7 pts   R(4) = +0.006  
+    p=8:  E_per= 92.9  E_shuf= 87.9  Delta=  -5.0 pts  D=  0.0 pts  PLACEBO
+    Rbar = -0.387   (offset-corrected -0.186, placebo Delta(8) = -5.0 pts)
+
+exact_u rate at k=24 -- unbounded recount, order-insensitive -- CO-PRIMARY
+  checkpoint            periodic_pub                periodic                shuffled      (n per cell)
+                    p=2   p=4   p=8         p=2   p=4   p=8         p=2   p=4   p=8 
+  llasa1b             28    52    92          28    52    92          22    54    64      (46,27,12,46,27,12,130,74,42)
+  qwen06b             37    73   100          37    73   100          22    91    96      (60,30,15,60,30,15,179,90,45)
+  qwen17b             35    80   100          35    80   100          21    94    98      (60,30,15,60,30,15,179,90,45)
+  xtts2               20    73    80          20    73    80          13    44    78      (60,30,15,60,30,15,180,90,45)
+  MEAN              30.0  69.6  92.9        30.0  69.6  92.9        19.7  71.0  83.8
+
+  [exact_u vs re-rendered periodic (PRIMARY)]
+    p=2:  E_per= 30.0  E_shuf= 19.7  Delta= -10.3 pts  D= 62.9 pts   R(2) = -0.164  
+    p=4:  E_per= 69.6  E_shuf= 71.0  Delta=  +1.4 pts  D= 23.3 pts   R(4) = +0.059  
+    p=8:  E_per= 92.9  E_shuf= 83.8  Delta=  -9.1 pts  D=  0.0 pts  PLACEBO
+    Rbar = -0.052   (offset-corrected +0.214, placebo Delta(8) = -9.1 pts)
+
+  [exact_u vs published periodic]
+    p=2:  E_per= 30.0  E_shuf= 19.7  Delta= -10.3 pts  D= 62.9 pts   R(2) = -0.164  
+    p=4:  E_per= 69.6  E_shuf= 71.0  Delta=  +1.4 pts  D= 23.3 pts   R(4) = +0.059  
+    p=8:  E_per= 92.9  E_shuf= 83.8  Delta=  -9.1 pts  D=  0.0 pts  PLACEBO
+    Rbar = -0.052   (offset-corrected +0.214, placebo Delta(8) = -9.1 pts)
+
+exact_both rate at k=24 -- strict: in order AND no extras
+  checkpoint            periodic_pub                periodic                shuffled      (n per cell)
+                    p=2   p=4   p=8         p=2   p=4   p=8         p=2   p=4   p=8 
+  llasa1b             28    52    92          28    52    92          12    53    64      (46,27,12,46,27,12,130,74,42)
+  qwen06b             37    73   100          37    73   100          15    91    96      (60,30,15,60,30,15,179,90,45)
+  qwen17b             35    80   100          35    80   100          13    94    98      (60,30,15,60,30,15,179,90,45)
+  xtts2               18    70    80          18    70    80           1    36    78      (60,30,15,60,30,15,180,90,45)
+  MEAN              29.6  68.8  92.9        29.6  68.8  92.9        10.1  68.5  83.8
+
+  [exact_both vs re-rendered periodic (PRIMARY)]
+    p=2:  E_per= 29.6  E_shuf= 10.1  Delta= -19.4 pts  D= 63.4 pts   R(2) = -0.307  
+    p=4:  E_per= 68.8  E_shuf= 68.5  Delta=  -0.3 pts  D= 24.1 pts   R(4) = -0.014  
+    p=8:  E_per= 92.9  E_shuf= 83.8  Delta=  -9.1 pts  D=  0.0 pts  PLACEBO
+    Rbar = -0.160   (offset-corrected +0.099, placebo Delta(8) = -9.1 pts)
+
+  [exact_both vs published periodic]
+    p=2:  E_per= 29.6  E_shuf= 10.1  Delta= -19.4 pts  D= 63.4 pts   R(2) = -0.307  
+    p=4:  E_per= 68.8  E_shuf= 68.5  Delta=  -0.3 pts  D= 24.1 pts   R(4) = -0.014  
+    p=8:  E_per= 92.9  E_shuf= 83.8  Delta=  -9.1 pts  D=  0.0 pts  PLACEBO
+    Rbar = -0.160   (offset-corrected +0.099, placebo Delta(8) = -9.1 pts)
+
+exact_ms rate at k=24 -- exact multiset: every word its exact count
+  checkpoint            periodic_pub                periodic                shuffled      (n per cell)
+                    p=2   p=4   p=8         p=2   p=4   p=8         p=2   p=4   p=8 
+  llasa1b             28    52    92          28    52    92          15    53    64      (46,27,12,46,27,12,130,74,42)
+  qwen06b             37    73   100          37    73   100          16    91    96      (60,30,15,60,30,15,179,90,45)
+  qwen17b             35    80   100          35    80   100          16    94    98      (60,30,15,60,30,15,179,90,45)
+  xtts2               18    70    80          18    70    80           4    37    78      (60,30,15,60,30,15,180,90,45)
+  MEAN              29.6  68.8  92.9        29.6  68.8  92.9        12.7  68.7  83.8
+
+  [exact_ms vs re-rendered periodic (PRIMARY)]
+    p=2:  E_per= 29.6  E_shuf= 12.7  Delta= -16.8 pts  D= 63.4 pts   R(2) = -0.266  
+    p=4:  E_per= 68.8  E_shuf= 68.7  Delta=  -0.1 pts  D= 24.1 pts   R(4) = -0.003  
+    p=8:  E_per= 92.9  E_shuf= 83.8  Delta=  -9.1 pts  D=  0.0 pts  PLACEBO
+    Rbar = -0.134   (offset-corrected +0.125, placebo Delta(8) = -9.1 pts)
+
+  [exact_ms vs published periodic]
+    p=2:  E_per= 29.6  E_shuf= 12.7  Delta= -16.8 pts  D= 63.4 pts   R(2) = -0.266  
+    p=4:  E_per= 68.8  E_shuf= 68.7  Delta=  -0.1 pts  D= 24.1 pts   R(4) = -0.003  
+    p=8:  E_per= 92.9  E_shuf= 83.8  Delta=  -9.1 pts  D=  0.0 pts  PLACEBO
+    Rbar = -0.134   (offset-corrected +0.125, placebo Delta(8) = -9.1 pts)
+
+  [exact vs re-rendered, CAP HITS KEPT]
+    p=2:  E_per= 48.6  E_shuf= 17.2  Delta= -31.4 pts  D= 41.1 pts   R(2) = -0.764  
+    p=4:  E_per= 73.3  E_shuf= 73.0  Delta=  -0.3 pts  D= 16.3 pts   R(4) = -0.021  
+    p=8:  E_per= 89.6  E_shuf= 86.7  Delta=  -3.0 pts  D=  0.0 pts  PLACEBO
+    Rbar = -0.392   (offset-corrected -0.265, placebo Delta(8) = -3.0 pts)
+
+  [exact_u vs re-rendered, CAP HITS KEPT]
+    p=2:  E_per= 28.4  E_shuf= 18.5  Delta=  -9.9 pts  D= 61.2 pts   R(2) = -0.162  
+    p=4:  E_per= 68.3  E_shuf= 69.3  Delta=  +0.9 pts  D= 21.3 pts   R(4) = +0.045  
+    p=8:  E_per= 89.6  E_shuf= 83.3  Delta=  -6.3 pts  D=  0.0 pts  PLACEBO
+    Rbar = -0.059   (offset-corrected +0.141, placebo Delta(8) = -6.3 pts)
+
+--- re-rendered periodic control vs the published ladder rows ---
+  checkpoint  p=2  pub  rr   diff  p=4  pub  rr   diff  p=8  pub  rr   diff
+  llasa1b            63   63    +0       74   74    +0       92   92    +0
+  qwen06b            43   43    +0       73   73    +0      100  100    +0
+  qwen17b            48   48    +0       80   80    +0      100  100    +0
+  xtts2              50   50    +0       73   73    +0       80   80    +0
+  pooled diffs p=2: +0.0  p=4: +0.0  p=8: +0.0   -> REPLICATES (tolerance 10 pts)
+
+--- can the shuffle match the periodic arm's zero adjacency? ---
+  p=2: zero adjacency achievable = False   realised adj-rate  periodic 0.000 vs shuffled 0.461   -> rung is UNINFORMATIVE BY CONSTRUCTION
+  p=4: zero adjacency achievable = True    realised adj-rate  periodic 0.000 vs shuffled 0.000   -> rung is INFORMATIVE
+  p=8: zero adjacency achievable = True    realised adj-rate  periodic 0.000 vs shuffled 0.000   -> rung is INFORMATIVE
+  At p=2 the only zero-adjacency arrangement of 12+12 IS the alternation,
+  i.e. the periodic item itself, so aperiodicity forces adjacent repeats and
+  R(2) confounds them. The clean rungs are p=4 and p=8.
+
+--- audio health on RAW rows (is a collapsed cell broken, or just wrong?) ---
+  checkpoint  p arm          n  empty  degen    cap   dur_s  n_words  count_a
+  llasa1b     2 periodic    60   0.0%   1.7%  21.7%   27.12     27.3    19.08
+  llasa1b     2 shuffled   180   0.0%   3.9%  27.2%   28.26     24.7    15.88
+  llasa1b     4 periodic    30   0.0%   0.0%  10.0%   24.09     28.7    20.33
+  llasa1b     4 shuffled    90   0.0%   3.3%  17.8%   26.23     27.4    18.84
+  llasa1b     8 periodic    15   0.0%   6.7%  20.0%   25.82     26.1    19.87
+  llasa1b     8 shuffled    45   0.0%   0.0%   6.7%   22.97     29.5    20.49
+  qwen06b     2 periodic    60   0.0%   0.0%   0.0%   12.32     30.9    21.33
+  qwen06b     2 shuffled   180   0.0%   0.0%   0.6%   13.91     30.6    17.73
+  qwen06b     4 periodic    30   0.0%   0.0%   0.0%   13.43     31.0    22.90
+  qwen06b     4 shuffled    90   0.0%   0.0%   0.0%   13.68     31.6    23.61
+  qwen06b     8 periodic    15   0.0%   0.0%   0.0%   13.77     31.7    24.00
+  qwen06b     8 shuffled    45   0.0%   0.0%   0.0%   14.05     31.8    23.58
+  qwen17b     2 periodic    60   0.0%   0.0%   0.0%   14.23     30.8    22.27
+  qwen17b     2 shuffled   180   0.0%   0.0%   0.6%   15.08     31.3    19.42
+  qwen17b     4 periodic    30   0.0%   0.0%   0.0%   13.91     31.1    23.00
+  qwen17b     4 shuffled    90   0.0%   0.0%   0.0%   14.15     31.7    23.88
+  qwen17b     8 periodic    15   0.0%   0.0%   0.0%   14.76     31.7    24.00
+  qwen17b     8 shuffled    45   0.0%   0.0%   0.0%   14.43     31.7    23.78
+  xtts2       2 periodic    60   0.0%   0.0%   0.0%   16.52     29.6    20.63
+  xtts2       2 shuffled   180   0.0%   0.0%   0.0%   15.69     28.2    14.86
+  xtts2       4 periodic    30   0.0%   0.0%   0.0%   14.51     30.8    22.60
+  xtts2       4 shuffled    90   0.0%   0.0%   0.0%   15.08     29.9    20.12
+  xtts2       8 periodic    15   0.0%   0.0%   0.0%   13.51     30.3    22.87
+  xtts2       8 shuffled    45   0.0%   0.0%   0.0%   14.06     30.8    23.16
+
+--- Delta(p) per checkpoint with 95% template-cluster CI (exact) ---
+  checkpoint  p  n_per  n_shuf   E_per  E_shuf   Delta  95% CI
+  llasa1b     2     46     130    63.0    26.9   -36.1  [ -65.1, -10.8]  <- excludes 0
+  llasa1b     4     27      74    74.1    68.9    -5.2  [ -22.0, +11.3]
+  llasa1b     8     12      42    91.7    73.8   -17.9  [ -34.1,  -2.0]  <- excludes 0
+  qwen06b     2     60     179    43.3    19.0   -24.3  [ -49.3,  +0.6]
+  qwen06b     4     30      90    73.3    91.1   +17.8  [  +6.7, +32.2]  <- excludes 0
+  qwen06b     8     15      45   100.0    95.6    -4.4  [  -8.9,  +0.0]
+  qwen17b     2     60     179    48.3    27.9   -20.4  [ -30.0,  -8.3]  <- excludes 0
+  qwen17b     4     30      90    80.0    97.8   +17.8  [  +5.6, +34.4]  <- excludes 0
+  qwen17b     8     15      45   100.0    97.8    -2.2  [  -6.7,  +0.0]
+  xtts2       2     60     180    50.0     0.6   -49.4  [ -56.1, -41.1]  <- excludes 0
+  xtts2       4     30      90    73.3    43.3   -30.0  [ -53.3,  -6.7]  <- excludes 0
+  xtts2       8     15      45    80.0    84.4    +4.4  [ -17.8, +26.7]
+
+--- Delta(p) per checkpoint with 95% template-cluster CI (exact_u) ---
+  checkpoint  p  n_per  n_shuf   E_per  E_shuf   Delta  95% CI
+  llasa1b     2     46     130    28.3    22.3    -6.0  [ -15.2,  +1.7]
+  llasa1b     4     27      74    51.9    54.1    +2.2  [ -27.1, +29.5]
+  llasa1b     8     12      42    91.7    64.3   -27.4  [ -39.5,  -7.5]  <- excludes 0
+  qwen06b     2     60     179    36.7    21.8   -14.9  [ -36.7,  +1.1]
+  qwen06b     4     30      90    73.3    91.1   +17.8  [  +6.7, +32.2]  <- excludes 0
+  qwen06b     8     15      45   100.0    95.6    -4.4  [  -8.9,  +0.0]
+  qwen17b     2     60     179    35.0    21.2   -13.8  [ -27.1,  -0.4]  <- excludes 0
+  qwen17b     4     30      90    80.0    94.4   +14.4  [  +0.0, +33.3]
+  qwen17b     8     15      45   100.0    97.8    -2.2  [  -6.7,  +0.0]
+  xtts2       2     60     180    20.0    13.3    -6.7  [ -17.8,  +4.4]
+  xtts2       4     30      90    73.3    44.4   -28.9  [ -52.2,  -4.4]  <- excludes 0
+  xtts2       8     15      45    80.0    77.8    -2.2  [ -20.0, +17.8]
+
+--- every arm at k=24 against the two non-periodicity variables (exact; descriptive, written after the result) ---
+  arm          p  types  adj-rate  rho(p)      E     n   per checkpoint
+  periodic     1      1     1.000  1.000    8.9    56   llasa1b=0 qwen06b=7 qwen17b=13 xtts2=13
+  periodic     2      2     0.000  1.000   50.4   226   llasa1b=63 qwen06b=43 qwen17b=48 xtts2=50
+  shuffled     2      2     0.461  0.441   18.0   668   llasa1b=27 qwen06b=19 qwen17b=28 xtts2=1
+  periodic     3      3     0.000  1.000   61.5   455   llasa1b=76 qwen06b=58 qwen17b=43 xtts2=72
+  periodic     4      4     0.000  1.000   75.2   117   llasa1b=74 qwen06b=73 qwen17b=80 xtts2=73
+  shuffled     4      4     0.000  0.223   75.6   344   llasa1b=69 qwen06b=91 qwen17b=98 xtts2=43
+  periodic     6      6     0.000  1.000   90.0   231   llasa1b=90 qwen06b=100 qwen17b=98 xtts2=72
+  periodic     8      8     0.000  1.000   93.0    57   llasa1b=92 qwen06b=100 qwen17b=100 xtts2=80
+  shuffled     8      8     0.000  0.100   88.1   177   llasa1b=74 qwen06b=96 qwen17b=98 xtts2=84
+  periodic    24     24     0.000   n/a    85.0    60   llasa1b=80 qwen06b=100 qwen17b=100 xtts2=60
+
+--- every arm at k=24 against the two non-periodicity variables (exact_u; descriptive, written after the result) ---
+  arm          p  types  adj-rate  rho(p)      E     n   per checkpoint
+  periodic     1      1     1.000  1.000    8.9    56   llasa1b=0 qwen06b=7 qwen17b=13 xtts2=13
+  periodic     2      2     0.000  1.000   30.1   226   llasa1b=28 qwen06b=37 qwen17b=35 xtts2=20
+  shuffled     2      2     0.461  0.441   19.5   668   llasa1b=22 qwen06b=22 qwen17b=21 xtts2=13
+  periodic     3      3     0.000  1.000   45.3   455   llasa1b=46 qwen06b=55 qwen17b=38 xtts2=42
+  periodic     4      4     0.000  1.000   70.1   117   llasa1b=52 qwen06b=73 qwen17b=80 xtts2=73
+  shuffled     4      4     0.000  0.223   71.8   344   llasa1b=54 qwen06b=91 qwen17b=94 xtts2=44
+  periodic     6      6     0.000  1.000   89.6   231   llasa1b=90 qwen06b=100 qwen17b=98 xtts2=70
+  periodic     8      8     0.000  1.000   93.0    57   llasa1b=92 qwen06b=100 qwen17b=100 xtts2=80
+  shuffled     8      8     0.000  0.100   84.2   177   llasa1b=64 qwen06b=96 qwen17b=98 xtts2=78
+  periodic    24     24     0.000   n/a    81.7    60   llasa1b=80 qwen06b=100 qwen17b=100 xtts2=47
+
+--- recovery fraction inside each checkpoint (exact) ---
+  checkpoint  p=2: E_per E_shuf  Delta   D    R  p=4: E_per E_shuf  Delta   D    R
+  llasa1b            63.0  26.9  -36.1  28.6  -1.26        74.1  68.9   -5.2  17.6  -0.29 
+  qwen06b            43.3  19.0  -24.3  56.7  -0.43        73.3  91.1  +17.8  26.7  +0.67 
+  qwen17b            48.3  27.9  -20.4  51.7  -0.39        80.0  97.8  +17.8  20.0  +0.89 
+  xtts2              50.0   0.6  -49.4  30.0  -1.65        73.3  43.3  -30.0   6.7  -4.50*
+  * denominator D(p) < 10 pts: that checkpoint has almost no deficit to recover at this rung, so its R is unstable and should not be quoted.
+
+--- recovery fraction inside each checkpoint (exact_u) ---
+  checkpoint  p=2: E_per E_shuf  Delta   D    R  p=4: E_per E_shuf  Delta   D    R
+  llasa1b            28.3  22.3   -6.0  63.4  -0.09        51.9  54.1   +2.2  39.8  +0.06 
+  qwen06b            36.7  21.8  -14.9  63.3  -0.23        73.3  91.1  +17.8  26.7  +0.67 
+  qwen17b            35.0  21.2  -13.8  65.0  -0.21        80.0  94.4  +14.4  20.0  +0.72 
+  xtts2              20.0  13.3   -6.7  60.0  -0.11        73.3  44.4  -28.9   6.7  -4.33*
+  * denominator D(p) < 10 pts: that checkpoint has almost no deficit to recover at this rung, so its R is unstable and should not be quoted.
+
+--- leave one checkpoint out (does the call rest on one model?) ---
+  without_llasa1b      Rbar=-0.288  R(2)=-0.681 R(4)=+0.104   LEXICAL DIVERSITY, NOT PERIODICITY
+  without_qwen06b      Rbar=-0.677  R(2)=-0.961 R(4)=-0.393   LEXICAL DIVERSITY, NOT PERIODICITY
+  without_qwen17b      Rbar=-0.647  R(2)=-0.953 R(4)=-0.341   LEXICAL DIVERSITY, NOT PERIODICITY
+  without_xtts2        Rbar=-0.059  R(2)=-0.590 R(4)=+0.473   LEXICAL DIVERSITY, NOT PERIODICITY
+
+--- paired within (model, template, rotation, seed) ---
+  p=2: n=224 pairs  mean(shuf - per) =  -32.6 pts (SE 3.5)  14% of pairs positive, 39% tied
+  p=4: n=117 pairs  mean(shuf - per) =   +0.3 pts (SE 4.8)  18% of pairs positive, 57% tied
+  p=8: n= 57 pairs  mean(shuf - per) =   -4.1 pts (SE 3.9)  5% of pairs positive, 74% tied
+
+--- paired within (model, template, rotation, seed) ---
+  p=2: n=224 pairs  mean(shuf - per) =  -10.8 pts (SE 3.3)  27% of pairs positive, 45% tied
+  p=4: n=117 pairs  mean(shuf - per) =   +2.4 pts (SE 4.8)  21% of pairs positive, 50% tied
+  p=8: n= 57 pairs  mean(shuf - per) =   -7.6 pts (SE 4.1)  5% of pairs positive, 68% tied
+
+--- spread across the three shuffles (a large spread means the result is a permutation, not a period) ---
+  p=2: pooled per shuffle 20.5  15.7  19.8  (range 4.8 pts)   mean within-twin sd across shuffles 15.6 pts
+  p=4: pooled per shuffle 77.6  73.4  74.8  (range 4.2 pts)   mean within-twin sd across shuffles 13.8 pts
+  p=8: pooled per shuffle 83.3  85.0  95.0  (range 11.7 pts)   mean within-twin sd across shuffles 13.0 pts
+
+--- spread across the three shuffles (a large spread means the result is a permutation, not a period) ---
+  p=2: pooled per shuffle 19.2  22.2  17.5  (range 4.7 pts)   mean within-twin sd across shuffles 18.8 pts
+  p=4: pooled per shuffle 74.4  68.8  70.0  (range 5.6 pts)   mean within-twin sd across shuffles 16.5 pts
+  p=8: pooled per shuffle 81.7  81.7  88.3  (range 6.7 pts)   mean within-twin sd across shuffles 12.4 pts
+
+--- cluster bootstrap over the 5 templates: Rbar 95% CI [-3.678, -0.023]  (median -0.387, P[Rbar>=0.50] = 0.010, P[Rbar<=0.20] = 0.990)
+
+--- cap-hit rate by (checkpoint, arm, period) ---
+period                   1      2      3      4      6      8    24
+model   arm                                                        
+llasa1b context       0.200    NaN  0.165    NaN  0.121    NaN  0.0
+        periodic        NaN  0.220    NaN  0.100    NaN  0.143  NaN
+        periodic_pub    NaN  0.220    NaN  0.100    NaN  0.143  NaN
+        shuffled        NaN  0.249    NaN  0.149    NaN  0.067  NaN
+qwen06b context       0.067    NaN  0.008    NaN  0.000    NaN  0.0
+        periodic        NaN  0.000    NaN  0.000    NaN  0.000  NaN
+        periodic_pub    NaN  0.000    NaN  0.000    NaN  0.000  NaN
+        shuffled        NaN  0.006    NaN  0.000    NaN  0.000  NaN
+qwen17b context       0.000    NaN  0.000    NaN  0.000    NaN  0.0
+        periodic        NaN  0.000    NaN  0.000    NaN  0.000  NaN
+        periodic_pub    NaN  0.000    NaN  0.000    NaN  0.000  NaN
+        shuffled        NaN  0.006    NaN  0.000    NaN  0.000  NaN
+xtts2   context       0.000    NaN  0.000    NaN  0.000    NaN  0.0
+        periodic        NaN  0.000    NaN  0.000    NaN  0.000  NaN
+        periodic_pub    NaN  0.000    NaN  0.000    NaN  0.000  NaN
+        shuffled        NaN  0.000    NaN  0.000    NaN  0.000  NaN
+
+--- mean duration_s by (checkpoint, arm, period) ---
+period                   1      2      3      4      6      8      24
+model   arm                                                          
+llasa1b context       20.39    NaN  21.65    NaN  19.47    NaN  19.78
+        periodic        NaN  23.07    NaN  22.21    NaN  22.04    NaN
+        periodic_pub    NaN  23.07    NaN  22.21    NaN  22.04    NaN
+        shuffled        NaN  23.38    NaN  23.05    NaN  21.68    NaN
+qwen06b context       10.71    NaN  13.04    NaN  13.67    NaN  14.52
+        periodic        NaN  12.32    NaN  13.43    NaN  13.77    NaN
+        periodic_pub    NaN  12.32    NaN  13.43    NaN  13.77    NaN
+        shuffled        NaN  13.07    NaN  13.68    NaN  14.05    NaN
+qwen17b context       15.55    NaN  13.73    NaN  14.60    NaN  16.22
+        periodic        NaN  14.23    NaN  13.91    NaN  14.76    NaN
+        periodic_pub    NaN  14.23    NaN  13.91    NaN  14.76    NaN
+        shuffled        NaN  14.25    NaN  14.15    NaN  14.43    NaN
+xtts2   context       11.05    NaN  15.04    NaN  14.28    NaN  14.17
+        periodic        NaN  16.52    NaN  14.51    NaN  13.51    NaN
+        periodic_pub    NaN  16.52    NaN  14.51    NaN  13.51    NaN
+        shuffled        NaN  15.69    NaN  15.08    NaN  14.06    NaN
+
+--- mean n_words by (checkpoint, arm, period) ---
+period                   1      2      3      4      6      8      24
+model   arm                                                          
+llasa1b context       25.83    NaN  31.94    NaN  31.47    NaN  31.87
+        periodic        NaN  30.46    NaN  31.04    NaN  31.08    NaN
+        periodic_pub    NaN  30.46    NaN  31.04    NaN  31.08    NaN
+        shuffled        NaN  29.83    NaN  30.66    NaN  30.45    NaN
+qwen06b context       30.79    NaN  30.59    NaN  31.75    NaN  31.53
+        periodic        NaN  30.90    NaN  31.03    NaN  31.73    NaN
+        periodic_pub    NaN  30.90    NaN  31.03    NaN  31.73    NaN
+        shuffled        NaN  30.59    NaN  31.62    NaN  31.78    NaN
+qwen17b context       35.60    NaN  30.47    NaN  31.73    NaN  31.80
+        periodic        NaN  30.83    NaN  31.07    NaN  31.73    NaN
+        periodic_pub    NaN  30.83    NaN  31.07    NaN  31.73    NaN
+        shuffled        NaN  31.11    NaN  31.74    NaN  31.71    NaN
+xtts2   context       27.73    NaN  30.62    NaN  29.75    NaN  29.87
+        periodic        NaN  29.58    NaN  30.83    NaN  30.27    NaN
+        periodic_pub    NaN  29.58    NaN  30.83    NaN  30.27    NaN
+        shuffled        NaN  28.19    NaN  29.93    NaN  30.78    NaN
+
+--- mean count_a by (checkpoint, arm, period) ---
+period                   1      2      3      4      6      8      24
+model   arm                                                          
+llasa1b context       18.42    NaN  22.75    NaN  23.55    NaN  23.40
+        periodic        NaN  21.70    NaN  22.04    NaN  23.75    NaN
+        periodic_pub    NaN  21.70    NaN  22.04    NaN  23.75    NaN
+        shuffled        NaN  19.22    NaN  21.31    NaN  21.48    NaN
+qwen06b context       22.29    NaN  22.24    NaN  24.00    NaN  24.00
+        periodic        NaN  21.33    NaN  22.90    NaN  24.00    NaN
+        periodic_pub    NaN  21.33    NaN  22.90    NaN  24.00    NaN
+        shuffled        NaN  17.79    NaN  23.61    NaN  23.58    NaN
+qwen17b context       27.80    NaN  21.90    NaN  23.90    NaN  24.00
+        periodic        NaN  22.27    NaN  23.00    NaN  24.00    NaN
+        periodic_pub    NaN  22.27    NaN  23.00    NaN  24.00    NaN
+        shuffled        NaN  19.45    NaN  23.88    NaN  23.78    NaN
+xtts2   context       21.60    NaN  22.03    NaN  21.90    NaN  22.47
+        periodic        NaN  20.63    NaN  22.60    NaN  22.87    NaN
+        periodic_pub    NaN  20.63    NaN  22.60    NaN  22.87    NaN
+        shuffled        NaN  14.86    NaN  20.12    NaN  23.16    NaN
+
+--- mean count_u by (checkpoint, arm, period) ---
+period                   1      2      3      4      6      8      24
+model   arm                                                          
+llasa1b context       18.42    NaN  24.34    NaN  23.57    NaN  23.67
+        periodic        NaN  23.00    NaN  23.56    NaN  23.83    NaN
+        periodic_pub    NaN  23.00    NaN  23.56    NaN  23.83    NaN
+        shuffled        NaN  22.53    NaN  23.62    NaN  22.95    NaN
+qwen06b context       22.29    NaN  22.51    NaN  24.00    NaN  24.00
+        periodic        NaN  21.58    NaN  23.00    NaN  24.00    NaN
+        periodic_pub    NaN  21.58    NaN  23.00    NaN  24.00    NaN
+        shuffled        NaN  22.44    NaN  23.81    NaN  23.96    NaN
+qwen17b context       27.80    NaN  22.32    NaN  23.98    NaN  24.00
+        periodic        NaN  22.60    NaN  23.07    NaN  24.00    NaN
+        periodic_pub    NaN  22.60    NaN  23.07    NaN  24.00    NaN
+        shuffled        NaN  23.07    NaN  23.98    NaN  23.98    NaN
+xtts2   context       21.60    NaN  23.39    NaN  22.65    NaN  22.73
+        periodic        NaN  21.88    NaN  23.27    NaN  22.87    NaN
+        periodic_pub    NaN  21.88    NaN  23.27    NaN  22.87    NaN
+        shuffled        NaN  21.12    NaN  22.63    NaN  23.49    NaN
+
+--- outcome mix by (arm, period) ---
+outcome              correct   loop  miscount  overcount  truncation  undercount
+arm          period                                                             
+context      1         0.089  0.036     0.000      0.393       0.304       0.179
+             3         0.281  0.077     0.020      0.000       0.464       0.158
+             6         0.398  0.078     0.004      0.000       0.476       0.043
+             24        0.450  0.067     0.000      0.000       0.400       0.083
+periodic     2         0.274  0.102     0.013      0.000       0.407       0.204
+             4         0.308  0.077     0.034      0.000       0.470       0.111
+             8         0.491  0.053     0.018      0.000       0.404       0.035
+periodic_pub 2         0.274  0.102     0.013      0.000       0.407       0.204
+             4         0.308  0.077     0.034      0.000       0.470       0.111
+             8         0.491  0.053     0.018      0.000       0.404       0.035
+shuffled     2         0.070  0.090     0.000      0.000       0.425       0.415
+             4         0.328  0.093     0.003      0.000       0.442       0.134
+             8         0.379  0.056     0.028      0.000       0.469       0.068
+
+==============================================================================
+=== INTERMEDIATE
+    Rbar (ordered scan) = -0.387   Rbar (order-insensitive) = -0.052   min R(p) = -0.780
+    pre-committed bands applied to Rbar and min R(p); R(2) and R(4) disagree in sign; NOTE Rbar is strongly NEGATIVE -- the shuffled arm is worse than its periodic twin, which the pre-committed LEXICAL band formally covers but does not describe. Read the placebo and the adjacent-repeat rates before interpreting
+    against the published periodic rows instead: INTERMEDIATE (Rbar -0.387)
+    with cap hits kept (censored bound): LEXICAL DIVERSITY, NOT PERIODICITY (Rbar -0.392)
+==============================================================================
+
+wrote /home/kirill/icassp_antispoofing/data/results/period_shuffled.json

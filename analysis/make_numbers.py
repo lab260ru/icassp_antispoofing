@@ -1259,6 +1259,77 @@ def main() -> None:
                 "rule; the title claim is in question and the paper must be "
                 "rewritten rather than re-macroed")
 
+    # ---- shuffling the order at fixed multiset: the title's hardest test ----
+    # The period ladder varies the period, but it varies two things with it:
+    # how many distinct types an item contains, and how many times each recurs.
+    # A reviewer named the confound -- a decoder failing on low type-token ratio
+    # rather than on periodic ordering produces the same ladder -- and it is the
+    # same criticism that produced the ladder itself, one level up.
+    #
+    # The test holds the multiset of filler tokens fixed item by item and
+    # destroys only the order. It has one informative rung, and it does not
+    # confirm the title.
+    #
+    # p=2 is uninformative BY CONSTRUCTION, which is a theorem rather than a
+    # limitation: a binary string of 12+12 with no two adjacent symbols equal is
+    # determined by its first symbol, so exactly two exist and both ARE the
+    # periodic item. Aperiodicity at p=2 therefore forces adjacent verbatim
+    # repetition -- realised at 0.46 against 0.00 in the twin -- so that rung
+    # measures adjacency and is not read. p=8 has no deficit left to recover.
+    # Everything rests on p=4.
+    #
+    # There, pooled, shuffling recovers nothing (R=0.006 on a 17.7-point
+    # deficit) and the pre-committed confirmation band is excluded outright
+    # (bootstrap P[Rbar>=0.5]=0.01). But the pooled figure is arithmetic, not
+    # consensus: three of four checkpoints have intervals excluding zero and
+    # they point in opposite directions. Order matters on both Qwen checkpoints
+    # and anti-matters on XTTS-v2. The paper reports the split, not the mean.
+    sh_path = Path("data/results/period_shuffled.json")
+    if sh_path.exists():
+        sh = json.loads(sh_path.read_text())
+        rec = sh.get("recovery", {}).get("exact", {}).get("vs_rerendered", {})
+        if rec:
+            macros["ShufR"] = fmt(rec["R"]["4"], 3)
+            macros["ShufDeficit"] = fmt(100 * rec["D"]["4"], 1)
+            macros["ShufPerFour"] = fmt(100 * rec["E_per"]["4"], 1)
+            macros["ShufShufFour"] = fmt(100 * rec["E_shuf"]["4"], 1)
+            # Classified by whether the interval excludes zero, NOT by the
+            # sign of a point estimate. A -5.2-point null and a -30.0-point
+            # significant loss are different findings, and a +/-5-point cutoff
+            # would file them together and let the paper say "two checkpoints
+            # got worse" when one of them did not measurably move.
+            ci = sh.get("delta_ci", {}).get("exact", {})
+            pc = rec.get("per_checkpoint", {})
+            up, dn = [], []
+            for m in sorted(pc):
+                c = ci.get(f"{m}_p4", {})
+                if not c.get("excludes_zero"):
+                    continue
+                (up if c["delta"] > 0 else dn).append(m)
+            macros["ShufNUp"] = WORDS.get(len(up), str(len(up)))
+            macros["ShufNDown"] = WORDS.get(len(dn), str(len(dn)))
+            macros["ShufNNull"] = WORDS.get(len(pc) - len(up) - len(dn), "0")
+            if up:
+                macros["ShufUpGain"] = fmt(
+                    100 * min(ci[f"{m}_p4"]["delta"] for m in up), 1)
+            if dn:
+                macros["ShufDownLoss"] = fmt(
+                    100 * abs(min(ci[f"{m}_p4"]["delta"] for m in dn)), 1)
+                macros["ShufDownCk"] = ", ".join(LABEL.get(m, m) for m in dn)
+        bs = sh.get("bootstrap", {})
+        if bs:
+            macros["ShufPConfirm"] = fmt(bs["p_confirm"], 3)
+        p2 = sh.get("p2_uninformative", {}).get("2", {})
+        if p2:
+            macros["ShufAdjRate"] = fmt(p2["shuffled_adjacent_repeat_rate"], 2)
+        # If p=2 ever becomes constructible without adjacency the argument for
+        # dropping that rung disappears and the section must be rewritten.
+        if p2 and p2.get("zero_adjacency_possible"):
+            raise SystemExit(
+                "shuffle: p=2 is now reported as constructible with zero "
+                "adjacency; the 'uninformative by construction' argument in "
+                "S28 is false and must be rewritten, not re-macroed")
+
     # ---- the positive control, which went against us -----------------------
     # A reviewer named the alternative the causal null could not exclude: that
     # the rank-1 patch simply does not carry enough to matter, on any
