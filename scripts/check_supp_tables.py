@@ -44,9 +44,20 @@ def main() -> int:
     supp = SUPP.read_text()
     missing: list[str] = []
 
-    def want(label: str, value: float, nd: int = 1) -> None:
-        if f"{value:.{nd}f}" not in supp:
-            missing.append(f"{label} = {value:.{nd}f}")
+    def want(label: str, value: float, nd: int = 1, suffix: str = "") -> None:
+        """Assert the formatted value appears in supp.tex.
+
+        `suffix` narrows the match, and it matters more than it looks. The check
+        is a substring search, so a two-digit integer is nearly toothless: a
+        percentage of 87 was verified against a supplement that also contains
+        61.7, 8.7 and a dozen other strings with those digits in them, and
+        perturbing it to 61 still passed. Passing "\\%" pins the number to its
+        unit and restores the teeth for exactly the values where the crude
+        version had none.
+        """
+        needle = f"{value:.{nd}f}{suffix}"
+        if needle not in supp:
+            missing.append(f"{label} = {needle}")
 
     hf = load("horizon_forms.json")
     if hf:
@@ -161,6 +172,34 @@ def main() -> int:
             for f in ("k", "count_a", "count_b"):
                 if str(e[f]) not in supp:
                     missing.append(f"{tag} {f} = {e[f]}")
+
+    # S8's naturalness table. This was supporting detail until the body started
+    # leaning on it: the limits paragraph now reports that the CONTROL is the
+    # less probable text in 87% of pairs, which is what turns the
+    # out-of-distribution rival from a conceded confound into one that predicts
+    # the wrong arm. A drift in the scorer would quietly reverse that argument.
+    for f, tag in (("text_nll.json", "S8 nll panel-backbone"),
+                   ("text_nll_independent.json", "S8 nll independent")):
+        nll = load(f)
+        if not nll:
+            continue
+        want(f"{tag} rep mean", nll["rep_mean"], 2)
+        want(f"{tag} ctl mean", nll["ctl_mean"], 2)
+        want(f"{tag} gap", nll["diff_mean"], 2)
+        want(f"{tag} ctl-higher pct", 100 * nll["frac_ctl_higher"], 0, "\\%")
+
+    # S8's capacity gain, for the same reason: it is the paper's only positive
+    # mechanistic measurement and moved into the body this week.
+    cap = load("capacity.json")
+    if cap and cap.get("ratio_median") is not None:
+        want("S8 capacity ratio", cap["ratio_median"], 2)
+    cc = load("capacity_confound.json")
+    if cc:
+        for k, lbl in (("ratio_raw_median", "raw"),
+                       ("ratio_adjusted_median", "adjusted"),
+                       ("ratio_correct_only_median", "correct-only")):
+            if cc.get(k) is not None:
+                want(f"S8 capacity {lbl}", cc[k], 2)
 
     # S28's odd rungs. Audited by hand once and clean, which is exactly the
     # state a number is in just before it drifts: the ladder has been rescored
