@@ -23,6 +23,40 @@ fi
 note "Every reported number is generated, not typed"
 if python3 scripts/check_numbers.py; then :; else bad "check_numbers.py failed"; fi
 
+note "The figure is current with the data it plots"
+# build.sh regenerates every number from its result JSONs, but not the figure --
+# fig_main.pdf is a committed artifact, so it can silently fall behind. It did:
+# it was cut before Qwen3-TTS-1.7B joined the period ladder, so panel (b) showed
+# three curves for two days while the text beside it said four checkpoints. A
+# reader counting lines in the figure would have caught us; nothing here would.
+# PDFs embed timestamps, so bytes cannot be compared -- this compares the drawing
+# content streams, which change only when what is drawn changes.
+python3 - <<'PY'
+import shutil, subprocess, sys, tempfile, pathlib, pypdf
+fig = pathlib.Path('paper/figs/fig_main.pdf')
+def content(p):
+    return b"".join(pg.get_contents().get_data() for pg in pypdf.PdfReader(str(p)).pages)
+if not fig.exists():
+    print("  FAIL paper/figs/fig_main.pdf is missing"); sys.exit(1)
+before = content(fig)
+with tempfile.TemporaryDirectory() as td:
+    keep = pathlib.Path(td) / 'fig_main.pdf'
+    shutil.copy(fig, keep)
+    r = subprocess.run([sys.executable, 'analysis/figures.py'],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        shutil.copy(keep, fig)
+        print(f"  FAIL analysis/figures.py failed:\n{r.stderr[-400:]}"); sys.exit(1)
+    after = content(fig)
+    if after != before:
+        shutil.copy(keep, fig)   # leave the tree as we found it; the diff is the finding
+        print("  FAIL fig_main.pdf is stale: regenerating it changes what is drawn. "
+              "Run analysis/figures.py and commit the result.")
+        sys.exit(1)
+print("  OK   fig_main.pdf redraws identically from current data")
+PY
+[ $? -ne 0 ] && FAIL=1
+
 note "The exclusion rules are blind to the comparison they feed"
 python3 scripts/check_exclusions_blind.py || FAIL=1
 
