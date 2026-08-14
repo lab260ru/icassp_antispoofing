@@ -68,6 +68,19 @@ def main() -> int:
                 if v and v not in ALLOWED:
                     warnings.append(f"{rel}:{i}: bare number {v!r} -- "
                                     f"should this be a macro? {line.strip()[:70]}")
+            # Maths was stripped above, and that is where a hand-typed number
+            # hides: `$n=90$` sat in the body for weeks, the one experimental
+            # value in the paper that was not a macro, and this check could not
+            # see it. Decimals inside maths are almost always measurements;
+            # integers inside maths are almost always the design (k values,
+            # periods, model counts), so only decimals are flagged, and
+            # exponents like 4\times10^{-4} are excluded by the guard on ^{.
+            for m in re.finditer(r"\$([^$]*)\$", line):
+                for n in re.finditer(r"(?<![\\A-Za-z0-9.^{])(\d+\.\d+)", m.group(1)):
+                    if n.group(1) not in ALLOWED:
+                        warnings.append(
+                            f"{rel}:{i}: bare number {n.group(1)!r} inside maths -- "
+                            f"should this be a macro? {line.strip()[:70]}")
 
     missing = sorted(used - defined)
     if missing:

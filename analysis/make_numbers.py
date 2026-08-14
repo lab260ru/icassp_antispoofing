@@ -508,6 +508,12 @@ def main() -> None:
                 macros[f"{tag}Rep"] = fmt(100 * v["exact_rep"], 1)
                 macros[f"{tag}Ctl"] = fmt(100 * v["exact_ctl"], 1)
                 macros[f"{tag}Gap"] = fmt(100 * v["exact_gap"], 1)
+                # The n as well. It was hand-typed in the body as $n=90$ --
+                # the one experimental number in the paper that was not a
+                # macro, invisible to check_numbers.py because that check
+                # strips maths before looking, which is exactly where a
+                # hand-typed number hides.
+                macros[f"{tag}N"] = str(v["n_rep"])
         macros["NonARAbove"] = str(nb.get("n_ar_above_nonar", 0))
         # The mid band is quoted for the baseline that shows NO dissociation,
         # where the floor-effect question actually arises.
