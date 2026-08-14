@@ -173,6 +173,29 @@ def main() -> int:
                 if str(e[f]) not in supp:
                     missing.append(f"{tag} {f} = {e[f]}")
 
+    # S29's repetition-aware sampling arm. Newest section, hand-typed from its
+    # JSON, and the third in a row where a number reached the supplement from an
+    # agent's report rather than from the artifact -- the fire rate went in at
+    # 48.9% against 48.8% on disk. That is small and it is the same failure as
+    # the two before it, so the table gets a tripwire like its neighbours.
+    ras = load("rep_aware_sampling.json")
+    if ras:
+        for arm, v in ras.get("exact", {}).items():
+            want(f"S29 {arm} rep exact", 100 * v["rep"], 1, r"\%")
+            want(f"S29 {arm} gap", v["gap_points"], 1)
+            for b in v.get("gap_ci95", []):
+                want(f"S29 {arm} CI bound", b, 1)
+        g = ras.get("gates", {}).get("engagement", {})
+        if g:
+            # The two rates that make the null informative rather than vacuous:
+            # if the rule stops firing on repeated items, the arm stops being
+            # evidence and the section's argument has to be rewritten.
+            want("S29 fire rate repeated", 100 * g["fire_rate_rep"], 1, r"\%")
+            want("S29 fire rate control", 100 * g["fire_rate_ctl"], 1, r"\%")
+        for arm, v in ras.get("paired", {}).items():
+            want(f"S29 {arm} fixed", v["fixed"], 0)
+            want(f"S29 {arm} broken", v["broken"], 0)
+
     # S8's naturalness table. This was supporting detail until the body started
     # leaning on it: the limits paragraph now reports that the CONTROL is the
     # less probable text in 87% of pairs, which is what turns the
