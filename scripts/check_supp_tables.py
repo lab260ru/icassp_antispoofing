@@ -162,6 +162,36 @@ def main() -> int:
                 if str(e[f]) not in supp:
                     missing.append(f"{tag} {f} = {e[f]}")
 
+    # S28's odd rungs. Audited by hand once and clean, which is exactly the
+    # state a number is in just before it drifts: the ladder has been rescored
+    # whenever a checkpoint or rung was added, and the pooled rates here are
+    # what the body quotes for the interpolation claim.
+    po = load("period_odd.json")
+    if po:
+        E = po.get("tests", {}).get("exact", {}).get("E_pooled", {})
+        for p in ("1", "2", "3", "4", "6", "8"):
+            if p in E:
+                want(f"S28 odd E(p={p})", 100 * E[p], 1)
+        # The adjacent gaps the two interpolation tests are built from. 1->2 is
+        # deliberately not among them: it is the published ladder's own first
+        # step, quoted in the main-ladder discussion rather than in the odd-rung
+        # subsection, and demanding it here would push a number into a section
+        # that has no argument for it. Checking it and finding it absent is how
+        # this exclusion got made explicitly instead of by omission.
+        for k in ("2->3", "3->4", "4->6", "6->8"):
+            v = po.get("bootstrap_gaps", {}).get(k)
+            if not v:
+                continue
+            want(f"S28 odd gap {k}", 100 * v["mean"], 1)
+            want(f"S28 odd gap {k} lo", 100 * v["lo"], 1)
+            want(f"S28 odd gap {k} hi", 100 * v["hi"], 1)
+        # The two figures that carry "dropping XTTS-v2 makes both tests
+        # cleaner", i.e. the reason it is kept in rather than dropped.
+        x = po.get("leave_one_out", {}).get("xtts2", {}).get("E", {})
+        for p in ("6", "8"):
+            if p in x:
+                want(f"S28 odd without-xtts2 E(p={p})", 100 * x[p], 1)
+
     # S28's shuffled-order control. This section cost the paper its old title, so
     # it is the one a sceptical reviewer will check line by line, and every
     # number in it is hand-typed from a JSON that has been rescored four times.
