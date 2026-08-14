@@ -415,10 +415,18 @@ def main() -> None:
                          "this axis and RAS is reported as a working mitigation")
     elif gap >= SURVIVES_AT:
         res["verdict"] = "DEFICIT SURVIVES RAS"
-        res["reason"] = (f"the exact-rate gap under RAS is {gap:+.1f} points, inside the "
-                         f"[{SURVIVES_AT:+.1f}, {res['reference_band'][1]:+.1f}] range the "
-                         "penalty and greedy arms already span on this checkpoint; the "
-                         "robustness claim extends to the repetition-history-aware axis")
+        # The pre-committed test is one-sided -- gap >= SURVIVES_AT -- so a gap
+        # above the sweep's top passes it. The sentence says which case
+        # occurred rather than asserting "inside the range" for a value that
+        # may sit above it; the rule itself is untouched.
+        top = res["reference_band"][1]
+        where = ("inside" if gap <= top else
+                 f"{gap - top:+.1f} points above the top of")
+        res["reason"] = (f"the exact-rate gap under RAS is {gap:+.1f} points, {where} the "
+                         f"[{SURVIVES_AT:+.1f}, {top:+.1f}] range the penalty and greedy "
+                         "arms already span on this checkpoint, and at or above its "
+                         f"{SURVIVES_AT:+.1f} floor; the robustness claim extends to the "
+                         "repetition-history-aware axis")
     else:
         res["verdict"] = "INCONCLUSIVE"
         res["reason"] = (f"the exact-rate gap under RAS is {gap:+.1f} points: below the "
