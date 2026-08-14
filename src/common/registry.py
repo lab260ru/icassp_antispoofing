@@ -97,6 +97,25 @@ PANEL = [
               12.5, 24000, "every3", False, "Qwen3-TTS-0.6B, repetition_penalty=1.5"),
     ModelSpec("qwen06brp30", "Qwen/Qwen3-TTS-12Hz-0.6B-Base", "qwen", "0.6B", "qwen",
               12.5, 24000, "every3", False, "Qwen3-TTS-0.6B, repetition_penalty=3.0"),
+    # Repetition Aware Sampling (VALL-E 2, arXiv:2406.05370). A reviewer found
+    # prior art the paper had not engaged with: the sweep above is
+    # repetition-penalty *magnitude*, which is one axis, and RAS is a different
+    # one -- a sampler that looks at the repetition history and re-draws. Same
+    # checkpoint as the penalty sweep so the two are directly comparable. The
+    # pre-commitment, the hyperparameters and every decision the published
+    # method description leaves open are in `src/common/ras.py`.
+    ModelSpec("qwen06brasoff", "Qwen/Qwen3-TTS-12Hz-0.6B-Base", "qwen", "0.6B", "qwen",
+              12.5, 24000, "every3", False,
+              "Qwen3-TTS-0.6B, RAS plumbing at its no-op threshold (t_r=2.0): "
+              "the sanity-gate arm, bitwise identical to the stock path"),
+    ModelSpec("qwen06bras", "Qwen/Qwen3-TTS-12Hz-0.6B-Base", "qwen", "0.6B", "qwen",
+              12.5, 24000, "every3", False,
+              "Qwen3-TTS-0.6B, RAS at the paper's K=10, t_r=0.1 over the "
+              "checkpoint's shipped nucleus"),
+    ModelSpec("qwen06brasgr", "Qwen/Qwen3-TTS-12Hz-0.6B-Base", "qwen", "0.6B", "qwen",
+              12.5, 24000, "every3", False,
+              "Qwen3-TTS-0.6B, RAS at K=10, t_r=0.1 over a top-p=0.0 nucleus -- "
+              "the small-v regime VALL-E 2 emphasises"),
     # Greedy decoding. The theorem bounds a readout, so no property of the
     # sampling rule enters the proof -- it covers greedy, sampled and beam
     # alike. Whether the *deficit* survives greedy decoding is a separate,

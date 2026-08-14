@@ -11,9 +11,10 @@ together, so they live here and every analysis calls `panel()`.
 The five rules, and why each exists:
 
 * **Ablations and baselines are not panel members.** The `xtts2*` and
-  `qwen06brp*` arms are panel checkpoints under altered decoding, run to sweep a
-  mitigation; pooling them would count XTTS-v2 five times and Qwen3-TTS-0.6B
-  four. `vits` is the non-autoregressive baseline, which the theorem makes no
+  `qwen06b*` non-panel arms are panel checkpoints under altered decoding, run to
+  sweep a mitigation; pooling them would count XTTS-v2 five times and
+  Qwen3-TTS-0.6B eight (three penalties, greedy, three repetition-aware-sampling
+  settings, and the checkpoint itself). `vits` is the non-autoregressive baseline, which the theorem makes no
   claim about and which exists precisely to contrast with the panel.
 * **Degenerate and empty audio has no count.** Folding it in as a large negative
   error would let a failure to produce speech masquerade as a failure to count;
@@ -46,6 +47,13 @@ REPO = Path(__file__).resolve().parent.parent.parent
 
 ABLATIONS = {"xtts2norp", "xtts2rp2", "xtts2rp3", "xtts2rp8",
              "qwen06brp10", "qwen06brp15", "qwen06brp30", "qwen06bgreedy",
+             # The repetition-aware-sampling arms (VALL-E 2's RAS, tested
+             # because the penalty sweep only covers penalty *magnitude*). Same
+             # reason as the penalty arms, and one sharper one: `qwen06brasoff`
+             # is the *stock* decoder rerun today under a no-op version of the
+             # rule, so it duplicates `qwen06b` item for item. Folding it into
+             # the panel would count Qwen3-TTS-0.6B twice with the same audio.
+             "qwen06bras", "qwen06brasoff", "qwen06brasgr",
              "vits", "vitsdur", "vitsrate", "f5tts", "f5fix",
              # CosyVoice 2 is not an ablation; it is a fourth architecture,
              # added after the panel's numbers were fixed and reported
