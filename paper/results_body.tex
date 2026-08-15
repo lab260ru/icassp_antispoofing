@@ -47,7 +47,7 @@ checkpoint \CkExact{} $[\CkExactLo{},\CkExactHi{}]$, positive in all
 renders repeated items exactly \CkRevExact{} points less often than its controls
 (Table~\ref{tab:models}). A mixed-effects linear probability model with
 architecture as a random effect and checkpoint nested inside it puts the gap at
-\MixArm{} points, and \MixAllClear{} six interval constructions exclude zero,
+\MixArm{} points, and \MixAllClear{} six interval constructions (S21) exclude zero,
 the widest being $[\MixLo{},\MixHi{}]$. Partial pooling puts the posterior
 predictive gap for an architecture \emph{outside} the panel at \BayesNewFam{}
 $[\BayesNewFamLo{},\BayesNewFamHi{}]$, but three groups barely identify a
@@ -163,5 +163,5 @@ text alone (S8, S10, S17). Within $k\le32$ the deficit is proportional, not
 saturating (RSS \ShapePropSSE{} against \ShapeSatSSE{}), so no horizon lies in
 this ladder; extending to $k\!\le\!128$ lowers the fitted saturation
 scale \HzRatio{}-fold, but form-dependently (\HzFormLo{}--\HzFormHi{}) and not
-unanimously (\HzRevNames{} inverts it). Neither that nor the rate of
+unanimously (\HzRevNames{} inverts it, S23). Neither that nor the rate of
 effective-rank gain distinguishes a horizon from any saturating process.

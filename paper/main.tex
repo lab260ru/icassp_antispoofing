@@ -147,7 +147,7 @@ target word repeated $k \in \{1,2,3,4,6,8,12,16,24,32\}$ times, plus
 sentence-repetition, tongue-twister and number-phrase families. Every item at
 $k\ge2$ has a
 \emph{length-matched control}: same carrier and word count, the repeated token
-replaced by fillers from a per-template pool of eight, cycled above $k\!=\!8$.
+replaced by fillers from a per-template pool of eight, cycled above $k\!=\!8$ (S3, S4).
 
 \noindent\textbf{Models.}
 The panel is \NModels{} checkpoints but only \NFamilies{} designs, scale
@@ -183,7 +183,7 @@ and $3$-of-$32$ alike. Of \MainNGen{} panel generations we exclude
 \MainExclTmpl{} in one template whose fillers the judge never transcribes,
 \MainExclCap{} stopped by our token budget rather than by the model, and
 \MainExclDegen{} degenerate, leaving \MainKept{}; S10 gives per-condition
-rates and S25 worked examples.
+rates, S24 sizes and S25 examples.
 
 \noindent\textbf{State measurement.}
 For each instrumented generation we record per-step hidden states at probe
@@ -193,10 +193,10 @@ is ridge regression on mean-pooled states, the layer chosen by
 leave-one-template-out $R^2$ (S6).
 
 \noindent\textbf{Code, data, settings.}
-Lean development, stimuli, code, per-item tables, the full supplement and both
+Lean development, stimuli, code, per-item tables, the supplement and both
 transcript sets are archived at tag \texttt{v1.9-isolating} of
 \url{https://github.com/lab260ru/icassp_antispoofing}, public on acceptance. \texttt{build.sh} regenerates every number here from pinned revisions
-(S19), and a stratified \SampleN{}-clip sample spanning every model, $k$ band
+(S7, S19), and a stratified \SampleN{}-clip sample spanning every model, $k$ band
 and outcome ships with each clip's transcript and scoring decision, so a
 judgement can be checked by ear. Sampling uses each system's shipped defaults,
 listed in S19; they make Qwen3-TTS the \emph{most} stochastic family, so its
