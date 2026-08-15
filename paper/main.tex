@@ -85,8 +85,8 @@ specifications the gap runs \SpecLo{}--\SpecHi{}, none reversing sign. It replic
 \IndGapLo{}--\IndGapHi{} points across \IndNJudges{} recognisers, ruling out
 the judge-side artifact that would otherwise explain it. Measuring it needs care: Whisper
 is autoregressive and biased \emph{against} the phenomenon, scoring
-\WhisperValPer{} of the true count on periodic ground truth where a CTC
-recogniser scores \CtcValPer{}. Nor is the failure peculiar to autoregressive decoding: of two
+\JudgeScaleWhisperMed{} of the true count on periodic ground truth where a CTC
+recogniser scores \JudgeScaleCtcMed{}. Nor is the failure peculiar to autoregressive decoding: of two
 non-autoregressive baselines one is immune, one is not, though at one model per
 strategy that is suggestive rather than isolating.
 A Lean-4-verified bound says that if the per-repetition state map contracts, no
@@ -194,7 +194,7 @@ leave-one-template-out $R^2$ (S6).
 
 \noindent\textbf{Code, data, settings.}
 Lean development, stimuli, code, per-item tables, the supplement and both
-transcript sets are archived at tag \texttt{v2.0-isolating} of
+transcript sets are archived at tag \texttt{v2.1-isolating} of
 \url{https://github.com/lab260ru/icassp_antispoofing}, public on acceptance. \texttt{build.sh} regenerates every number here from pinned revisions
 (S7, S19), and a stratified \SampleN{}-clip sample spanning every model, $k$ band
 and outcome ships with each clip's transcript and scoring decision, so a
