@@ -92,6 +92,9 @@ note "Supplement builds"
 SPAGES=$(python3 -c "import pypdf;print(len(pypdf.PdfReader('paper/supplementary/build/supp.pdf').pages))" 2>/dev/null || echo "?")
 if [ "$SPAGES" != "?" ]; then ok "supp.pdf is $SPAGES pages"; else bad "supp.pdf did not build"; fi
 
+note "Supplement pointers land on the section they mean"
+python3 scripts/check_pointer_targets.py || FAIL=1
+
 note "Every supplement pointer in the paper resolves"
 python3 - <<'PY'
 import re, pathlib, sys
