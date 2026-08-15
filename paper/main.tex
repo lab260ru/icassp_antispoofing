@@ -78,10 +78,10 @@ render repeated text exactly in \ExactRep{}\% of generations against
 from verbatim identity: exact rates climb \PerPOne{}, \PerPTwo{}, \PerPFour{},
 \PerPEight{}\% as the period goes $1,2,4,8$, an odd period interpolating, and
 half the deficit surviving at period two where no token is adjacent to itself.
-Whether periodic \emph{ordering} does that work is unresolved: shuffling the
-same tokens at fixed composition gains \ShufUpGain{} points on both Qwen
-checkpoints and loses \ShufDownLoss{} on \ShufDownCk{}. The limit tracks \emph{repetition, not length}. It survives greedy decoding, an
-order-of-magnitude penalty sweep and every exclusion rule switched off (\ExSensAll{} points), and replicates at
+Whether \emph{ordering} or composition does that work is unresolved: the
+shuffled control splits by checkpoint. The limit tracks \emph{repetition, not length}. It survives greedy decoding, an
+order-of-magnitude penalty sweep and every exclusion rule switched off (\ExSensAll{} points); across \SpecN{}
+specifications the gap runs \SpecLo{}--\SpecHi{}, none reversing sign. It replicates at
 \IndGapLo{}--\IndGapHi{} points across \IndNJudges{} recognisers, ruling out
 the judge-side artifact that would otherwise explain it. Measuring it needs care: Whisper
 is autoregressive and biased \emph{against} the phenomenon, scoring
