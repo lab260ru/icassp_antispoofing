@@ -173,6 +173,39 @@ def main() -> int:
                 if str(e[f]) not in supp:
                     missing.append(f"{tag} {f} = {e[f]}")
 
+    # S14.1's enlarged instrument audit. Every number in that subsection was
+    # typed from the artifact, including two -- the 9 trials where Whisper does
+    # NOT collapse to exactly one, and the 60 of 108 where it returns nothing --
+    # that exist to weaken a claim the paper used to make universally. Those are
+    # exactly the numbers a rerun would move and nobody would notice moving.
+    ja = load("judge_audit_scaled.json")
+    if ja:
+        # Whole-document search has no power for a small integer: "9" occurs on
+        # nearly every page of a 111-page document, so a stale 9 would pass
+        # against any artifact. This block searches only the subsection the
+        # numbers belong to, found by its heading. That is what makes the
+        # tripwire mean anything here, and it was added after a negative test
+        # showed the unscoped version accepting a value changed to 77.
+        head = "\\subsection{The instrument audit, enlarged from one donor"
+        i = supp.find(head)
+        scope = supp[i:supp.find("\\subsection", i + 10)] if i >= 0 else ""
+        if not scope:
+            missing.append("S14.1 subsection not found in supp.tex")
+        c, w = ja["judges"]["ctc"], ja["judges"]["whisper"]
+        for label, v, dp in (("ctc median", c["median_ratio"], 2),
+                             ("whisper median", w["median_ratio"], 2)):
+            if f"{v:.{dp}f}" not in scope:
+                missing.append(f"S14.1 {label} = {v:.{dp}f}")
+        for label, v in (("ctc n", c["n_usable"]), ("whisper usable", w["n_usable"]),
+                         ("whisper unusable", w["n_unusable"]),
+                         ("whisper trials", w["n_trials"]),
+                         ("whisper exactly-one", w["exactly_one"]),
+                         ("whisper more-than-one", w["more_than_one"]),
+                         ("atoms valid", ja["atoms_valid"]),
+                         ("atoms total", ja["atoms_total"])):
+            if str(v) not in scope:
+                missing.append(f"S14.1 {label} = {v}")
+
     # S29's repetition-aware sampling arm. Newest section, hand-typed from its
     # JSON, and the third in a row where a number reached the supplement from an
     # agent's report rather than from the artifact -- the fire rate went in at
