@@ -211,6 +211,9 @@ else
          "$TAG" "$BEHIND"
 fi
 
+note "Both PDFs satisfy what the submission portal rejects on"
+python3 scripts/check_pdf_submittable.py || FAIL=1
+
 note "Working tree is committed"
 # Build outputs are excluded: this script rebuilds both PDFs a few lines above,
 # so including them would make the check unpassable by construction. What must
