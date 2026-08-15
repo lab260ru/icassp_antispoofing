@@ -101,6 +101,9 @@ python3 scripts/check_citations_resolve.py || FAIL=1
 note "Supplement pointers land on the section they mean"
 python3 scripts/check_pointer_targets.py || FAIL=1
 
+note "Every supplement section is reachable from the paper"
+python3 scripts/check_supp_reachable.py || FAIL=1
+
 note "Every supplement pointer in the paper resolves"
 python3 - <<'PY'
 import re, pathlib, sys
