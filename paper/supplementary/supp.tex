@@ -5610,6 +5610,47 @@ audible speech was still generated. Section~3's total is generations attempted;
 every $n$ here is rows that survived to be scored.
 
 
+\subsection{Numbers the main text quotes and this supplement did not}
+
+A macro audit found thirteen values printed in the four pages whose digits appear
+nowhere in these hundred-odd pages. Every one is generated from a committed
+artifact and none is wrong, but a reader checking the paper against the
+supplement would have found nothing to check them against --- including the
+abstract's \emph{leading} figure, the whole-ladder gap, which the paper promotes
+precisely because it is the one no threshold was chosen for.
+
+They are gathered here with their sources rather than woven into the sections
+they belong to, because at this stage a table a reader can scan is worth more
+than thirteen sentences they would have to find.
+
+\begin{center}
+{\footnotesize
+\begin{tabular}{@{}lrll@{}}
+\toprule
+quantity & value & unit & source \\
+\midrule
+whole-ladder gap, $k\ge1$ & 46.8 & points & \texttt{hierarchical.json}, spec.\ curve at \texttt{kmin}=1 \\
+gap by checkpoint, never-cycled & 69.6 & points & \texttt{aperiodic\_control.json} \\
+period ladder, $p{=}4$ & 73.6 & \% & \texttt{period\_ladder.json} \\
+deficit at $p{=}2$ & 45.2 & points & \texttt{period\_ladder.json} \\
+surviving fraction, strict & 0.547 & --- & \texttt{period\_ladder.json} \\
+surviving fraction, recount & 0.69 & --- & \texttt{period\_ladder.json} \\
+period-ladder rows kept & 1539 & --- & \texttt{period\_ladder.json} \\
+disambiguation rows & 465 & --- & \texttt{period\_ladder.json} \\
+panel rows kept & 1558 & --- & \texttt{panel()} on the CTC table \\
+dropped on the token budget & 133 & --- & \texttt{panel()} \texttt{cap\_hits} \\
+cap-hit rate, repeated arm & 10.6 & \% & \texttt{exclusion\_sensitivity.json} \\
+attention spread $\delta$ & 1.23 & nats & \texttt{attention\_spread.json} \\
+$q$ at Llasa-8B & 348 & --- & \texttt{jacobian\_q\_llasa8b.json} \\
+\bottomrule
+\end{tabular}}
+\end{center}
+
+\noindent The two surviving-fraction figures are the strict and recount readings
+of one quantity, discussed in Section~\ref{sec:s28}. The panel and cap-hit counts
+are \texttt{src/common/population.py}'s rules applied to the CTC table.
+
+% ============================================================
 \section{What we did not listen to}
 
 The released sample is 165 clips, stratified over every checkpoint, $k$ band and
