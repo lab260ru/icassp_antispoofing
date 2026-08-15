@@ -1,0 +1,59 @@
+{
+  "what": "judge audit enlarged from one donor system to six, atoms gated on presence",
+  "gate": "an atom is used only if the CTC judge finds its target exactly once in the unconcatenated clip -- a transcription question, not a counting one",
+  "donors": [
+    "llasa1b",
+    "llasa3b",
+    "llasa8b",
+    "qwen06b",
+    "qwen17b",
+    "xtts2"
+  ],
+  "atoms_valid": 27,
+  "atoms_total": 36,
+  "atoms_rejected_by_donor": {
+    "llasa1b": 4,
+    "llasa3b": 1,
+    "llasa8b": 4,
+    "qwen06b": 0,
+    "qwen17b": 0,
+    "xtts2": 0
+  },
+  "cell": "periodic, k>=4, mirrors the reported cell of the original audit",
+  "judges": {
+    "ctc": {
+      "n_trials": 108,
+      "n_unusable": 0,
+      "n_usable": 108,
+      "median_ratio": 1.0,
+      "mean_ratio": 0.999,
+      "exactly_one": 0,
+      "more_than_one": 108
+    },
+    "whisper": {
+      "n_trials": 108,
+      "n_unusable": 60,
+      "n_usable": 48,
+      "median_ratio": 0.25,
+      "mean_ratio": 0.331,
+      "exactly_one": 39,
+      "more_than_one": 9
+    }
+  },
+  "per_donor_median_ctc": {
+    "llasa1b": 1.0,
+    "llasa3b": 1.0,
+    "llasa8b": 1.0,
+    "qwen06b": 1.0,
+    "qwen17b": 1.0,
+    "xtts2": 1.0
+  },
+  "per_donor_median_whisper": {
+    "llasa1b": 0.25,
+    "llasa3b": 0.25,
+    "llasa8b": 1.0,
+    "qwen06b": 0.25,
+    "qwen17b": 0.25,
+    "xtts2": 0.188
+  }
+}

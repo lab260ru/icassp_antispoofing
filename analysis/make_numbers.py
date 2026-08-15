@@ -301,6 +301,48 @@ def main() -> None:
         macros["ExactRepKLoVal"] = "6"
         macros["ExactRepKHiVal"] = "32"
 
+    # ---- the judge audit, enlarged from one donor system to six ------------
+    # Three of four r32 reviewers objected that the instrument choice rests on
+    # n=12 and n=24. The n was bounded by the design, not by a cap we chose: six
+    # k=1 items exist, and the audit drew atoms from one source model. Every
+    # checkpoint has its own k=1 renderings and the ground truth is exact by
+    # construction regardless of which system produced the atom.
+    #
+    # Gating matters and is not optional. Two checkpoints do not render the
+    # target word at k=1 at all -- Llasa-1B says "TER" for *very* and "BARE" for
+    # *blue* -- so an ungated pool asks the judge to count a word that was never
+    # spoken and scores its correct answer of zero as a failure. Ungated, the CTC
+    # judge appears to collapse to a median of 0.0 on those two donors; gated, it
+    # is 1.0 on all six.
+    js_path = Path("data/results/judge_audit_scaled.json")
+    if js_path.exists():
+        js = json.loads(js_path.read_text())
+        c, w = js["judges"]["ctc"], js["judges"]["whisper"]
+        macros["JudgeScaleDonors"] = str(len(js["donors"]))
+        macros["JudgeScaleAtoms"] = str(js["atoms_valid"])
+        macros["JudgeScaleAtomsAll"] = str(js["atoms_total"])
+        macros["JudgeScaleNCtc"] = str(c["n_usable"])
+        macros["JudgeScaleCtcMed"] = fmt(c["median_ratio"], 2)
+        macros["JudgeScaleNWhisper"] = str(w["n_usable"])
+        macros["JudgeScaleNWhisperAll"] = str(w["n_trials"])
+        macros["JudgeScaleNWhisperErr"] = str(w["n_unusable"])
+        macros["JudgeScaleWhisperMed"] = fmt(w["median_ratio"], 2)
+        macros["JudgeScaleWhisperOne"] = str(w["exactly_one"])
+        macros["JudgeScaleWhisperMore"] = str(w["more_than_one"])
+        # The claim the enlarged audit refutes: "exactly once in EVERY trial
+        # that returns anything" held at n=12 and does not at n=48. If a rerun
+        # ever makes it true again, this guard fires and the sentence in the
+        # paper has to be revisited rather than silently left weaker.
+        if w["more_than_one"] == 0:
+            raise SystemExit(
+                "judge audit: Whisper now collapses to exactly one in every "
+                "usable trial; the main text was weakened on the evidence that "
+                "it did not, and must be restated.")
+        if c["median_ratio"] < 1.0:
+            raise SystemExit(
+                "judge audit: the CTC judge no longer scores 1.00 on ground "
+                "truth; the instrument choice needs restating, not a macro.")
+
     # ---- shape of the deficit: horizon or proportional? -------------------
     hs_path = Path("data/results/horizon_shape.json")
     if hs_path.exists():

@@ -4769,6 +4769,60 @@ evidence is in the rate across hundreds of generations and in the contrast with
 the control, not in any single transcript. The released audio sample (\S3) is
 there so that a reader can form their own view of a few of them.
 
+\subsection{The instrument audit, enlarged from one donor system to six}
+
+Reviewers in four rounds made the same objection: the decision to discard Whisper
+and adopt a CTC recogniser -- a decision every headline number in this paper
+depends on -- rested on an audit of $n{=}12$ and $n{=}24$. The paper stated both
+numbers; the objection was that they are small for the weight they carry, and it
+was fair.
+
+That $n$ was not a sampling cap. Six \texttt{word\_rep} items exist at $k{=}1$,
+and the audit drew its atoms from one source model. But the construction --- take
+a $k{=}1$ utterance containing exactly one occurrence of the target, concatenate
+it $N$ times --- is indifferent to which system produced the utterance, so every
+checkpoint in the panel can donate. Running all six multiplies the donor pool and
+stops the audit being a statement about one system's audio.
+
+\textbf{The gate, and why the result is worthless without it.} The original
+construction assumed each $k{=}1$ rendering contains its target word once. Two
+checkpoints do not: Llasa-1B renders \emph{very} as \textsc{ter} and \emph{blue}
+as \textsc{bare}, and Llasa-8B loses four of six targets outright. Concatenating
+those atoms asks a judge to count a word that was never spoken, and scores its
+correct answer of zero as an instrument failure. Ungated, the CTC judge appears
+to collapse to a median ratio of $0.0$ on exactly those two donors --- a
+finding that would have been entirely an artefact of our own ground truth.
+
+Atoms are therefore gated on \emph{presence}: the CTC recogniser must find the
+target exactly once in the unconcatenated clip. That is a transcription question,
+not a counting one, so the gate does not use the behaviour under test to license
+its own ground truth. 27 of 36 atoms
+pass, the rejections falling on Llasa-1B (4), Llasa-8B (4) and Llasa-3B (1),
+which is the same ordering as those checkpoints' standing elsewhere in this
+paper.
+
+\textbf{The result.} On the gated pool, at $k\ge4$, mirroring the cell the paper
+reports: the CTC judge scores a median ratio of 1.00 over
+108 trials, and does so on \emph{every one} of the six donor
+checkpoints. Whisper scores 0.25, returning no usable
+transcript at all on 60 of 108
+trials.
+
+\textbf{What the larger $n$ took away.} At $n{=}12$ the paper could say Whisper
+transcribes the repeated word exactly once in \emph{every} trial that returns
+anything. At 48 usable trials that is false:
+39 collapse to exactly one and
+9 do not. The main text now reports the fraction
+rather than the universal, and \texttt{make\_numbers.py} raises if a rerun ever
+makes the universal true again, so the weaker sentence cannot quietly drift back
+to the stronger one.
+
+The direction is unchanged and better supported than before: the instrument we
+rejected mismeasures periodic audio by a factor of four where it measures it at
+all, and the instrument we adopted is exact on ground truth for every donor
+system in the panel. The interpretation of each outcome was fixed in
+\texttt{analysis/PRECOMMIT\_judge\_audit\_scale.md} and committed before the run.
+
 \subsection{Four independent judges, the full replication}
 \label{sec:s14-judges}
 

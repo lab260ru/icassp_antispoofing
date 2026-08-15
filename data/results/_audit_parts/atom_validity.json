@@ -1,0 +1,266 @@
+{
+  "llasa1b": [
+    {
+      "item": "wr_very_t1_k01",
+      "unit": "very",
+      "counted": 0,
+      "valid": false,
+      "text": "THE DOL WAS TERE DEAD AND IT RAN ACROSS THE FED"
+    },
+    {
+      "item": "wr_no_t2_k01",
+      "unit": "no",
+      "counted": 0,
+      "valid": false,
+      "text": "D SENDNOW TO THE ELPON AND TEN MOT THEO"
+    },
+    {
+      "item": "wr_far_t3_k01",
+      "unit": "far",
+      "counted": 1,
+      "valid": true,
+      "text": "HE WALKED FAR INTO THE FOREST TEFOT TUNING ADACK"
+    },
+    {
+      "item": "wr_blue_t4_k01",
+      "unit": "blue",
+      "counted": 0,
+      "valid": false,
+      "text": "THE NIGHT WAS BARE BEFORE THE STONE"
+    },
+    {
+      "item": "wr_quick_t5_k01",
+      "unit": "quick",
+      "counted": 1,
+      "valid": true,
+      "text": "THE RUNNER MOVED QUICK ALONG THE NARROW PATH"
+    },
+    {
+      "item": "wr_really_t6_k01",
+      "unit": "really",
+      "counted": 0,
+      "valid": false,
+      "text": "TIRED AFTER TE TA"
+    }
+  ],
+  "llasa3b": [
+    {
+      "item": "wr_very_t1_k01",
+      "unit": "very",
+      "counted": 1,
+      "valid": true,
+      "text": "THE DOG WAS VERY BIG AND IT RAN ACROSS THE FIELD"
+    },
+    {
+      "item": "wr_no_t2_k01",
+      "unit": "no",
+      "counted": 1,
+      "valid": true,
+      "text": "SHE SAID NO TO THE ALFA AND ARAT EON"
+    },
+    {
+      "item": "wr_far_t3_k01",
+      "unit": "far",
+      "counted": 1,
+      "valid": true,
+      "text": "HE WALKED FAR INTO THE FACE WIT THE ERR DET"
+    },
+    {
+      "item": "wr_blue_t4_k01",
+      "unit": "blue",
+      "counted": 0,
+      "valid": false,
+      "text": "THE LIGHT WAS BLU"
+    },
+    {
+      "item": "wr_quick_t5_k01",
+      "unit": "quick",
+      "counted": 1,
+      "valid": true,
+      "text": "THE RUNNER MOVED QUICK ALONG THE NARROW PATH"
+    },
+    {
+      "item": "wr_really_t6_k01",
+      "unit": "really",
+      "counted": 1,
+      "valid": true,
+      "text": "THEY WERE REALLY TIRED AFTER THE LONG JORNEY"
+    }
+  ],
+  "llasa8b": [
+    {
+      "item": "wr_very_t1_k01",
+      "unit": "very",
+      "counted": 0,
+      "valid": false,
+      "text": "DOR WASAIAS"
+    },
+    {
+      "item": "wr_no_t2_k01",
+      "unit": "no",
+      "counted": 1,
+      "valid": true,
+      "text": "SHE SAID NO TO THE OFFER AND THEN LEFT THE NONE"
+    },
+    {
+      "item": "wr_far_t3_k01",
+      "unit": "far",
+      "counted": 1,
+      "valid": true,
+      "text": "HE WALKED FAR INTO THE FOREST BEFORE TURNING BACK"
+    },
+    {
+      "item": "wr_blue_t4_k01",
+      "unit": "blue",
+      "counted": 0,
+      "valid": false,
+      "text": "THE LIGHT WAS BURNING BEFORE THE STARIVED"
+    },
+    {
+      "item": "wr_quick_t5_k01",
+      "unit": "quick",
+      "counted": 0,
+      "valid": false,
+      "text": "THE RIDE MOVED PIKE ON THE NARROW PATH"
+    },
+    {
+      "item": "wr_really_t6_k01",
+      "unit": "really",
+      "counted": 0,
+      "valid": false,
+      "text": "THEY AR LATER TIRED AFTER AN GAN"
+    }
+  ],
+  "qwen06b": [
+    {
+      "item": "wr_very_t1_k01",
+      "unit": "very",
+      "counted": 1,
+      "valid": true,
+      "text": "THE DOG WAS VERY BIG AND IT RAN ACROSS THE FIELD"
+    },
+    {
+      "item": "wr_no_t2_k01",
+      "unit": "no",
+      "counted": 1,
+      "valid": true,
+      "text": "SHE SAID NO TO THE OFFER AND THEN LEFT THE ROOM"
+    },
+    {
+      "item": "wr_far_t3_k01",
+      "unit": "far",
+      "counted": 1,
+      "valid": true,
+      "text": "HE WALKED FAR INTO THE FOREST BEFORE TURNING BACK"
+    },
+    {
+      "item": "wr_blue_t4_k01",
+      "unit": "blue",
+      "counted": 1,
+      "valid": true,
+      "text": "THE LIGHT WAS BLUE BEFORE THE STORM ARRIVED"
+    },
+    {
+      "item": "wr_quick_t5_k01",
+      "unit": "quick",
+      "counted": 1,
+      "valid": true,
+      "text": "THE RUNNER MOVED QUICK ALONG THE NARROW PATH"
+    },
+    {
+      "item": "wr_really_t6_k01",
+      "unit": "really",
+      "counted": 1,
+      "valid": true,
+      "text": "THEY WERE REALLY TIRED AFTER THE LONG JOURNEY"
+    }
+  ],
+  "qwen17b": [
+    {
+      "item": "wr_very_t1_k01",
+      "unit": "very",
+      "counted": 1,
+      "valid": true,
+      "text": "THE DOG WAS VERY BIG AND IT RAN ACROSS THE FIELD"
+    },
+    {
+      "item": "wr_no_t2_k01",
+      "unit": "no",
+      "counted": 1,
+      "valid": true,
+      "text": "SHE SAID NO TO THE OFFER AND THEN LEFT THE ROOM"
+    },
+    {
+      "item": "wr_far_t3_k01",
+      "unit": "far",
+      "counted": 1,
+      "valid": true,
+      "text": "HE WALKED FAR INTO THE FOREST BEFORE TURNING BACK"
+    },
+    {
+      "item": "wr_blue_t4_k01",
+      "unit": "blue",
+      "counted": 1,
+      "valid": true,
+      "text": "THE LIGHT WAS BLUE BEFORE THE STORM ARRIVED"
+    },
+    {
+      "item": "wr_quick_t5_k01",
+      "unit": "quick",
+      "counted": 1,
+      "valid": true,
+      "text": "THE RUNNER MOVED QUICK ALONG THE NARROW PATH"
+    },
+    {
+      "item": "wr_really_t6_k01",
+      "unit": "really",
+      "counted": 1,
+      "valid": true,
+      "text": "THEY WERE REALLY TIRED AFTER THE LONG JOURNEY"
+    }
+  ],
+  "xtts2": [
+    {
+      "item": "wr_very_t1_k01",
+      "unit": "very",
+      "counted": 1,
+      "valid": true,
+      "text": "THE DOG WAS VERY BIG AND IT RAN ACROSS THE FIELD"
+    },
+    {
+      "item": "wr_no_t2_k01",
+      "unit": "no",
+      "counted": 1,
+      "valid": true,
+      "text": "SHE SAID NO TO THE OFFER AND THEN LEFT THE ROOM"
+    },
+    {
+      "item": "wr_far_t3_k01",
+      "unit": "far",
+      "counted": 1,
+      "valid": true,
+      "text": "HE WALKED FAR INTO THE FOREST BEFORE TURNING BACK"
+    },
+    {
+      "item": "wr_blue_t4_k01",
+      "unit": "blue",
+      "counted": 1,
+      "valid": true,
+      "text": "THE LIGHT WAS BLUE BEFORE THE STORM ARRIVED"
+    },
+    {
+      "item": "wr_quick_t5_k01",
+      "unit": "quick",
+      "counted": 1,
+      "valid": true,
+      "text": "THE RUNNER MOVED QUICK ALONG THE NARROW PATH"
+    },
+    {
+      "item": "wr_really_t6_k01",
+      "unit": "really",
+      "counted": 1,
+      "valid": true,
+      "text": "THEY WERE REALLY TIRED AFTER THE LONG JOURNEY"
+    }
+  ]
+}
