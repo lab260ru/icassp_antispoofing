@@ -3,6 +3,7 @@
 \usepackage[margin=1in]{geometry}
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{booktabs}
+\usepackage{longtable}
 \usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage{listings}
@@ -5028,11 +5029,19 @@ from our recollection --- each row corresponds to a commit, timestamped, in a
 public log. We report it as a chronology rather than claim a pre-registration we
 do not have.
 
-\begin{center}
-\begin{tabular}{llp{4.6cm}}
+% This table overran page 77 by 173pt and its last six rows -- including a
+% pre-committed launch and the adverse result it produced -- were rendered
+% below the bottom of the page, invisible to a reader. longtable breaks it
+% across pages and repeats the header, which a fixed tabular cannot do.
+\begin{longtable}{llp{4.6cm}}
 \toprule
 when & status & decision \\
 \midrule
+\endfirsthead
+\toprule
+when & status & decision \\
+\midrule
+\endhead
 before data & \emph{pre-specified} & $k$ ladder to $32$; matched length controls;
   CTC-vs-AR judge comparison planned \\
 \midrule
@@ -5068,8 +5077,7 @@ before data & \emph{pre-specified} & $k$ ladder to $32$; matched length controls
 15:08 d2 & \emph{failure} & it came out against the theorem too; the split is
   now 1 of 3 \\
 \bottomrule
-\end{tabular}
-\end{center}
+\end{longtable}
 
 Three observations a reader should weigh.
 

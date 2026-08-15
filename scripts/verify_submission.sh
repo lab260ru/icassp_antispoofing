@@ -92,6 +92,9 @@ note "Supplement builds"
 SPAGES=$(python3 -c "import pypdf;print(len(pypdf.PdfReader('paper/supplementary/build/supp.pdf').pages))" 2>/dev/null || echo "?")
 if [ "$SPAGES" != "?" ]; then ok "supp.pdf is $SPAGES pages"; else bad "supp.pdf did not build"; fi
 
+note "No page prints text past the bottom"
+python3 scripts/check_no_overrun.py || FAIL=1
+
 note "No unresolved citations in either document"
 python3 scripts/check_citations_resolve.py || FAIL=1
 
