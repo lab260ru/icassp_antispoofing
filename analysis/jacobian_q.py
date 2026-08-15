@@ -1168,6 +1168,16 @@ def rendered_counts(model: str) -> dict:
         return {}
     d = pd.read_csv(p)
     d = d[d.model == model]
+    # `count_final` reconciles the two evidence streams as max(A, B) when they
+    # disagree, which is meaningless on a row with no transcript: 37 s of
+    # near-silence returns 29 "rendered" repetitions from duration alone. Those
+    # rows are excluded from every behavioural number, and the docstring below
+    # claimed this loader matched that population -- it filtered by checkpoint
+    # only. 48 word_rep rows carrying counts as high as 118 were reachable by
+    # the tau_rendered lag because of it. No reported number reads that lag
+    # (headline q is the tau cell, the least-favourable sweep is two_tau), so
+    # this changes nothing published; it makes the loader do what it said.
+    d = d[~d.outcome.isin(("empty", "degenerate"))]
     return {(r.item_id, int(r.seed)): float(r.count_final) for r in d.itertuples()}
 
 

@@ -5714,8 +5714,10 @@ empty      & Llasa-1B & 8 & 0 & 29 & 3.66 & 0.0003 & (empty) \\
 \end{center}
 
 \noindent $c_A$ is the CTC transcript count, $c_B$ the duration-based estimate;
-\texttt{classify} reads $c_A$ and the duration ratio, and the two estimators are
-never merged into a count. Four of these rows are worth reading closely.
+\texttt{classify} reads $c_A$ and the duration ratio, and no \emph{reported}
+number merges the two into a count. One stored column does, and writing this
+table is what found it --- see the disclosure below. Four of these rows are
+worth reading closely.
 
 The \textbf{loop} row is the case the conjunctive rule was built for. Its
 transcript count is $6$ against a requested $6$ --- a transcript-only judge
@@ -5728,6 +5730,25 @@ $0.0003$: silence. A duration-only estimator reads $c_B{=}29$ off it, which
 would have entered the table as an enormous overcount rather than as a
 generation that produced no speech. Degeneracy is therefore checked \emph{before}
 either count, and this row is why.
+
+\textbf{A stored column, and a leak it was in.} The pipeline also writes
+\texttt{count\_final}, which reconciles the two streams as $\max(c_A,c_B)$ when
+they disagree. On the \texttt{empty} row that is $\max(0,29){=}29$: twenty-nine
+repetitions of something never said, reconciled out of silence. No behavioural
+number in this paper reads that column --- correctness is a label throughout,
+and the conjunctive rule certifies counts in the passing cases rather than
+estimating them in the failing ones --- but it has exactly one consumer, the
+\texttt{tau\_rendered} lag of the Jacobian sweep (\S\ref{sec:s5-jacobian}), and
+that loader filtered by checkpoint and not by outcome. So $48$ \texttt{word\_rep}
+rows of the kind above, carrying reconciled counts as high as $118$, were
+reachable by that lag, against a docstring asserting the loader matched the
+reportable population. Nothing reported is affected: the headline $q$ is the
+\texttt{tau} cell and the least-favourable sweep is \texttt{two\_tau}, and
+neither reads a rendered count. The loader now drops those rows; the artifact
+was not regenerated, because no reported cell would change. The reason this is
+recorded rather than quietly patched is that it is the same lesson as the row it
+came from --- a number can be well-formed, stored, and meaningless, and the only
+protection is checking which consumers read it.
 
 The \textbf{undercount} row is an ASR error, not a model error, and it is on a
 \emph{control} item: ``LIGT'' for \emph{light}, one filler word lost. It is
