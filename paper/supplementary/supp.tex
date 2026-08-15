@@ -7148,8 +7148,9 @@ reach into enrolled-speech codes where Qwen's talker cannot. The rule is applied
 at every talker step on codebook~0, the analogue of their autoregressive stage,
 leaving the sub-talker untouched as their non-autoregressive stage is.
 
-\textbf{What weakens it.} One checkpoint. Two of the nine $\text{top-}p$ values
-their sweep covers. Our implementation of a description rather than their code.
+\textbf{What weakens it.} One checkpoint. Two $\text{top-}p$ settings --- the
+checkpoint's shipped nucleus and $v{=}0$ --- against the nine their sweep covers,
+and only the second of ours falls inside their $0.0$--$0.8$ range. Our implementation of a description rather than their code.
 And the $k{=}0$ ambiguity above, which moves the fire rate by half but not the
 verdict.
 
