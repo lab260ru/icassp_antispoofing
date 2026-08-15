@@ -3346,6 +3346,14 @@ Whisper large-v3 & repeated sentence (control) & 0.25 & no transcript at $k{=}16
 \end{tabular}
 \end{table}
 
+\noindent These are the original audit: \emph{six} donor utterances from one
+source model, the $n{=}12$ and $n{=}24$ reviewers objected to. The main text now
+quotes the enlarged replacement --- 27 donors across all six checkpoints, where
+Whisper scores $0.25$ and the CTC judge $1.00$ on $108$ trials --- so the
+$0.19$ above and the $0.25$ there are two audits, not two answers. The
+enlargement, the gate it needed, and the claim it cost us are in
+\S\ref{sec:s14-enlarged}.
+
 The CTC recogniser's \emph{median} ratio is $1.00$ at every $k$ from $2$ to
 $32$, on both arms, but the median is not every trial: of the 24
 $k\ge4$ periodic trials, 2 fall short (ratio $0.938$ at one $k{=}16$ donor,
@@ -4770,6 +4778,7 @@ the control, not in any single transcript. The released audio sample (\S3) is
 there so that a reader can form their own view of a few of them.
 
 \subsection{The instrument audit, enlarged from one donor system to six}
+\label{sec:s14-enlarged}
 
 Reviewers in four rounds made the same objection: the decision to discard Whisper
 and adopt a CTC recogniser -- a decision every headline number in this paper
