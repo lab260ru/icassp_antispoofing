@@ -1,0 +1,146 @@
+% ============================================================
+\section{State instrumentation}
+\label{sec:instrumentation}
+
+The panel is the main text's six checkpoints; per-layer hidden states
+were captured for every generation the state-space sections analyse, at
+a per-checkpoint probe density of every layer to every fourth
+($P=9$--$16$ probed layers). States were captured by
+one teacher-forced forward pass over the realised token sequence
+(Llasa, XTTS-v2) or read out inside the generation loop itself
+(Qwen3-TTS), position $t$ carrying, by causality, the exact state that
+produced token~$t$. Instrumented generation was validated equivalent to
+normal generation before any measurement was interpreted: sampling is
+byte-for-byte identical, and captured inputs reproduce incremental
+generation. A seventh registry entry, XTTS-v2 with repetition penalty
+disabled, is an ablation of that row (Section~\ref{sec:penalty}),
+excluded by construction from every panel-pooled statistic.
+
+\noindent\textbf{The count probe.} Ridge regression predicts $\log_2 k$
+from mean-pooled hidden states under leave-one-template-out
+cross-validation, penalty $\alpha=1.0$ at every layer, item family and
+checkpoint, never swept or tuned. No layer is fixed in advance: per
+checkpoint, item family and window (\emph{early}: mean state over the
+trajectory's first third; \emph{late}: final third), the probe is fit
+at all $P$ probed layers and the argmax of cross-validated $R^2$
+reported. Selected-layer leave-one-template-out $R^2$ spans
+$0.18$--$0.71$ across the $24$ checkpoint--family--window cells
+($n{=}54$ items each); these fits are the ones behind
+Section~\ref{sec:alternatives}'s retention ratios.
+
+% ============================================================
+\section{The contraction premise, measured}
+\label{sec:contraction}
+
+This section expands the main text's negative result. The candidate
+mechanism held that softmax attention over $k$ near-identical copies
+flattens toward uniformity, so the decoder meets the same conditioning at
+every repetition boundary and the boundary-to-boundary state map is
+effectively autonomous; were that map a contraction (largest singular
+value $q<1$), states would converge geometrically and no Lipschitz
+readout, the stop head included, could separate counts past an explicit
+horizon (the implication itself is machine-verified in the release). The hypothesis is quantitative: measure $q$. Here it is measured on
+five checkpoints, three Llasa~\cite{ye2025llasa} and two
+Qwen3-TTS~\cite{hu2026qwen3tts}, and rejected.
+
+\noindent\textbf{Two estimators failed first.} The boundary-distance
+estimator fit $\log d_m = a + m\log q$ to boundary-state distances
+located by a text-attention centroid; its one assumption, monotone
+centroid motion, is false (${\approx}51\%$ of steps advance, a random
+walk), and it returned $\hat q\approx1.00$ $[0.99,1.02]$ everywhere it
+ran. Its boundary-free replacement, windowed dispersion converted to a
+per-repetition rate, put $\hat q$ below $1$ on the identical
+trajectories: it measures typical spread, not the worst-direction
+Lipschitz constant the horizon requires.
+
+\noindent\textbf{The estimator behind the reported $q$.}
+Teacher-forcing the generated tokens makes the window-to-window map a
+deterministic, differentiable endomorphism; $q$ is its largest singular
+value under a per-layer root-mean-square metric, required to survive a
+sweep over four lags and sub-stacks. Teacher-forcing deletes the token
+channel, biasing $q$ \emph{toward} the premise; independent cache
+perturbation biases against. Four pre-committed validation gates passed
+on all five checkpoints (synthetic positive control, relative error
+$3.7\times10^{-4}$; exactly zero backward map; Jacobian-vector products
+against finite differences, ${\le}1.5\times10^{-3}$; Qwen replay
+cosine ${\ge}0.99920$).
+
+\noindent\textbf{The five-checkpoint panel.}
+Table~\ref{tab:qpanel} reports the headline setting (lag $\tau$, whole
+stack): $346$ items (repeated plus length-matched control), $15{,}243$
+attempted measurements, $14{,}796$ valid; the $447$ excluded are accounted for
+below, not silently dropped. $q < 1$ occurs in $0$ of
+$346$ items on either arm; the recorded fraction below $1$ is exactly
+$0.0$, both arms, every checkpoint. Pooled, $q$ runs $21.0$--$347.7$,
+the main text's quoted range; the most favourable cell anywhere
+(smallest bootstrap lower bound over all lags, sub-stacks and arms) is
+Qwen3-TTS-0.6B's $3.35$, a panel-wide floor of $3.3$. Contraction was
+never a live description of these decoders.
+
+\begin{table}[htbp]
+\centering
+\caption{Largest singular value $q$ of the per-repetition map at the
+headline setting (lag $\tau$, whole stack), per arm, with the paired
+repeated-versus-control test. Checkpoints as in
+the main text's panel table.}
+\label{tab:qpanel}
+\small
+\begin{tabular}{@{}lrrp{2.8cm}p{2.8cm}r@{}}
+\toprule
+checkpoint & layers & $n$ pairs & $q$ repeated [95\% CI] & $q$ control [95\% CI] & paired $p$ \\
+\midrule
+Llasa-1B & 16 & 29 & 38.1 [32.9, 51.4] & 31.8 [27.3, 39.8] & 0.017 \\
+Llasa-3B & 28 & 26 & 118.8 [101.9, 156.5] & 86.4 [77.2, 137.3] & 0.269 \\
+Llasa-8B & 32 & 29 & 347.7 [258.1, 393.5] & 185.4 [142.1, 236.5] & 0.256 \\
+Qwen3-TTS-0.6B & 28 & 44 & 21.0 [19.7, 24.2] & 21.9 [20.6, 23.2] & 0.931 \\
+Qwen3-TTS-1.7B & 28 & 45 & 24.7 [23.1, 25.7] & 23.6 [21.4, 25.1] & 0.177 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent\textbf{Both arms expansive, in all sixteen cells.} In all
+sixteen (lag $\times$ sub-stack) cells, on every checkpoint, on
+\emph{both} arms, the bootstrap CI for $q$ lies entirely at or above
+$1$ and the fraction of items with $q < 1$ is $0.0$
+(Table~\ref{tab:qcells}). The one significant paired contrast points the \emph{wrong} way
+(Llasa-1B: repetition \emph{more} expansive than its control); the rest
+are null (Table~\ref{tab:qpanel}). The premise fails on both arms:
+contraction was never there for periodicity to break.
+
+\begin{table}[htbp]
+\centering
+\caption{Range of $q$ over all sixteen (lag $\times$ sub-stack) cells,
+per arm. Checkpoints as in the main text's panel table.}
+\label{tab:qcells}
+\small
+\begin{tabular}{@{}lp{3.6cm}p{3.6cm}@{}}
+\toprule
+checkpoint & repeated: range over 16 cells & control: range over 16 cells \\
+\midrule
+Llasa-1B & [3.90, 78.10] & [3.50, 46.61] \\
+Llasa-3B & [9.33, 182.80] & [7.60, 148.28] \\
+Llasa-8B & [11.43, 499.13] & [12.28, 329.33] \\
+Qwen3-TTS-0.6B & [3.35, 29.47] & [3.41, 28.23] \\
+Qwen3-TTS-1.7B & [3.45, 37.83] & [3.35, 31.18] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent\textbf{Two facts sharpen the refutation past replication.}
+First, $q$ grows with scale inside Llasa: one family, same estimator,
+same headline cell, $38.1 \to 118.8 \to 347.7$ from 1B through 8B, so a
+``contraction mechanism specific to the larger checkpoints'' is
+excluded in the rescuing direction. Second, Qwen3-TTS-1.7B, the one
+checkpoint with zero median count error, is exactly as expansive as the
+rest ($q = 24.7$ $[23.1, 25.7]$): whatever separates counting from
+miscounting here, it is not $q$.
+
+\noindent\textbf{Skip accounting.} Llasa-8B skipped $21.8\%$ of its
+$1677$ attempted measurements ($236$ exceeding its $700$-token read
+window, $129$ out of memory, reported distinctly); Llasa-3B skipped
+$3.1\%$ ($70$ of $2286$, all window), Llasa-1B $0.4\%$, and both Qwen
+checkpoints none. Every skipped anchor is recorded with its reason;
+truncation is exact on a causal model (a shorter read window changes
+which anchors form, not the values returned).
+
+% ============================================================

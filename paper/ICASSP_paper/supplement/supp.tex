@@ -1,0 +1,70 @@
+% ============================================================
+% Supplementary material -- rewritten (rewrite workspace).
+% Assembled from parts/p01..p09; the pre-rewrite snapshot is
+% supp_v22_snapshot.tex. Build: bash build.sh
+% Conventions: no code, no file paths, no engineering detail;
+% mathematics in standard notation (machine-verification noted);
+% every measured number and table of the snapshot carried over.
+% ============================================================
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{array}
+
+\tolerance=9999
+\emergencystretch=3em
+\hbadness=10000
+\raggedbottom
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{assumption}{Assumption}
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+
+\newcommand{\qhat}{\ensuremath{\hat q}}
+
+\title{Supplementary Material for:\\[2pt]
+\large Repetition, Not Length: Isolating the Counting\\
+Failure in Neural Text-to-Speech}
+\author{Anonymous ICASSP submission}
+\date{}
+
+\begin{document}
+\maketitle
+
+\vspace{-2.5em}
+\begin{center}
+\emph{This document accompanies the 4-page ICASSP submission: the test
+set, scoring and judge (Secs.~\ref{sec:testset}--\ref{sec:judge});
+the statistical treatment and every robustness check
+(Secs.~\ref{sec:inference}--\ref{sec:decoding}); the period ladder and the
+baselines (Secs.~\ref{sec:period}--\ref{sec:nonar}); and the state-space
+measurements and negative mechanistic results
+(Secs.~\ref{sec:instrumentation}--\ref{sec:causal}).}
+\end{center}
+
+% ---- Part II: test set and measurement -----------------------
+\input{parts/p02_testset}
+\input{parts/p03_judge}
+
+% ---- Part III: inference and robustness ----------------------
+\input{parts/p04_inference}
+\input{parts/p05_alternatives}
+
+% ---- Part IV: periodicity, baselines, cross-lingual ----------
+\input{parts/p06_period}
+
+% ---- Part V: state and mechanism -----------------------------
+\input{parts/p07_state}
+\input{parts/p08_probes}
+
+\bibliographystyle{IEEEbib}
+\bibliography{refs}
+
+\end{document}
