@@ -1,0 +1,155 @@
+\section{Dilution at the item level, and probing past the ladder}
+\label{sec:dilution}
+
+Within each (model, $k$) cell, the flattest-attention items are counted
+\emph{best}: the item-level reading of Lemma~1 fails with the sign
+reversed. Flattening that destroys the ability to tell occurrences
+apart predicts a \emph{negative} within-cell correlation between
+attention flatness and count error (undercounting makes count error
+negative). Measured over three flatness measures fixed in advance,
+signed so higher is flatter and pooled by Fisher $z$ weighted by cell
+size, all three run positive on repeated items with intervals excluding
+zero, and controls sit at zero on all three (nothing to dilute):
+\begin{table*}[tp]\centering
+\begin{tabular}{lrr}
+\toprule
+flatness measure & repeated & control \\
+\midrule
+largest single share   & +0.59 [+0.35, +0.75] & +0.01 [-0.34, +0.37] \\
+block entropy          & +0.43 [+0.16, +0.65] & +0.17 [-0.20, +0.49] \\
+deviation from uniform & +0.55 [+0.30, +0.72] & +0.05 [-0.31, +0.39] \\
+\bottomrule
+\end{tabular}
+\end{table*}
+Only the item-level reading falls: Lemma~1 still holds in aggregate
+(near-uniform attention over repeated spans, entropy growing as
+$\log k$), but dilution does not pick which generations fail. Reverse
+causation stays open, a stalled decoder yielding exactly this peaked
+profile; only intervening on attention could separate consequence from
+cause.
+
+\noindent\textbf{Probing past the horizon.} The contraction hypothesis
+forbade a Lipschitz readout from separating counts past $N^\ast$,
+saying nothing below (Section~\ref{sec:contraction}); every probe so
+far was fitted on the main ladder, $k\le32$, where it permits success.
+The $k=48\ldots128$ items were regenerated with hidden-state capture on
+five checkpoints, three Llasa~\cite{ye2025llasa} and two
+Qwen3-TTS~\cite{hu2026qwen3tts} (XTTS-v2's token ceiling censors every
+$k\ge48$ item), with the same ridge probe and folds; twelve aperiodic
+control items matched on $k$ and template give each checkpoint its own
+control arm. Because $k=48\ldots128$ spans a third of the main ladder's
+$\log_2$ range, low $R^2$ alone proves nothing; the constant predictor
+is the yardstick:
+\begin{table*}[tp]\centering
+\begin{tabular}{llrrr}
+\toprule
+checkpoint & arm & probe MAE & constant MAE & $R^2$ \\
+\midrule
+Llasa-1B       & repeated $k=2\ldots32$    & 0.63 & 1.12 & $+0.62$ \\
+Llasa-3B       & repeated $k=2\ldots32$    & 0.86 & 1.12 & $+0.41$ \\
+Llasa-8B       & repeated $k=2\ldots32$    & 0.75 & 1.12 & $+0.52$ \\
+Qwen3-TTS-0.6B & repeated $k=2\ldots32$    & 0.79 & 1.12 & $+0.47$ \\
+Qwen3-TTS-1.7B & repeated $k=2\ldots32$    & 0.79 & 1.12 & $+0.47$ \\
+\midrule
+Llasa-1B       & repeated $k=48\ldots128$  & 0.50 & 0.50 & $-0.02$ \\
+Llasa-3B       & repeated $k=48\ldots128$  & 0.49 & 0.50 & $-0.02$ \\
+Llasa-8B       & repeated $k=48\ldots128$  & 0.43 & 0.50 & $+0.19$ \\
+Qwen3-TTS-0.6B & repeated $k=48\ldots128$  & 0.37 & 0.50 & $+0.34$ \\
+Qwen3-TTS-1.7B & repeated $k=48\ldots128$  & 0.45 & 0.50 & $+0.15$ \\
+\midrule
+Llasa-1B       & control $k=48\ldots128$   & 0.43 & 0.50 & $+0.26$ \\
+Llasa-3B       & control $k=48\ldots128$   & 0.41 & 0.50 & $+0.33$ \\
+Llasa-8B       & control $k=48\ldots128$   & 0.29 & 0.50 & $+0.56$ \\
+Qwen3-TTS-0.6B & control $k=48\ldots128$   & 0.47 & 0.50 & $+0.10$ \\
+Qwen3-TTS-1.7B & control $k=48\ldots128$   & 0.44 & 0.50 & $+0.20$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
+All five decode the count below the horizon. Past it, the probe-MAE
+ratio against the constant predictor decides, ratios within $\pm0.02$
+of $1$ called indistinguishable rather than rounded either way:
+\begin{table*}[tp]\centering
+\begin{tabular}{lrlrrr}
+\toprule
+ & \multicolumn{3}{c}{MAE ratio vs.\ constant} & \multicolumn{2}{c}{MAE, repeated arm} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-6}
+checkpoint & rep. & reading & ctl. & length-only & state probe \\
+\midrule
+Llasa-1B       & 1.01 & indistinguishable & 0.86 & 0.61 & 0.51 \\
+Llasa-3B       & 0.99 & indistinguishable & 0.83 & 0.56 & 0.49 \\
+Llasa-8B       & 0.86 & recovers the count & 0.59 & 0.45 & 0.43 \\
+Qwen3-TTS-0.6B & 0.74 & recovers the count & 0.95 & 0.30 & 0.37 \\
+Qwen3-TTS-1.7B & 0.90 & recovers the count & 0.89 & 0.36 & 0.45 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+Every control arm sits below $1$, none in the tie band: where the count
+is lost, narrowness of the target range is ruled out on that
+checkpoint's own data. Under the strict threshold the contraction
+account's prediction holds in 1 of 5; by effect size, 2 of 5 show
+nothing recoverable past the horizon and 3 clearly do. We quote 1 of 5,
+the less favourable reading. And the last two columns void the Qwen
+recoveries: a predictor given only log trajectory length, no hidden
+states, beats the state probe on both Qwen checkpoints and loses on all
+three Llasa (repeated arm, $k=48\ldots128$, same folds).
+Budget-truncated trajectories are far commoner on the repeated arm
+(1--6 of 12 items per checkpoint, against 0--1 on the matched control;
+worst, 6 of Qwen3-TTS-0.6B's 12), and truncated length is not
+independent of $k$: babble length alone carries $k$, no count read from
+state. The two Qwen recoveries are voided; the three Llasa probes beat
+the baseline, and their representational reading stands.
+
+\section{Causal interventions on the count}
+\label{sec:causal}
+
+No causal conclusion stands: the intervention instrument fails its own
+positive control. Full-residual activation patching, overwriting the
+residual stream at 128 consecutive positions with a donor's states, is
+too disruptive to interpret: states from an \emph{unrelated} item move
+the rendered count $1.34\times$ as much as a donor that actually
+differs in $k$, and even a length-matched same-$k$ control donor drives
+$44.4\%$ of its runs into the token budget. The rank-1 replacement,
+transferring only the probe's count coordinate, removes the damage and
+returns equivalence bounds (Table~\ref{tab:causal-bounds}); but its
+positive control, the identical write applied to a carrier direction
+Qwen3-TTS-1.7B decodes perfectly (leave-one-template-out sign accuracy
+$1.00$), moves the output by at most $1.3\%$ of a full carrier transfer
+at the published magnitude, and on every readout tested the informative
+write is statistically indistinguishable from a pure sampler re-roll
+($p \ge 0.38$). A null from an intervention transferring nothing along
+\emph{any} direction says nothing about the count direction.
+
+\begin{table}[htbp]
+\centering
+\caption{Rank-1 count-coordinate patching on four checkpoints in two
+families~\cite{ye2025llasa,hu2026qwen3tts}, $2{,}178$ scored runs,
+thresholds pre-committed before any audio. P1 ratio:
+unrelated-to-informative disruption. Worst cell: largest median shift
+across donor kinds as a fraction of a full donor-to-receiver transfer
+(noise-floor bar: below $25\%$). Bound: $90\%$ TOST equivalence bound
+on the informative cross-$k$ cell in the same units, the smallest
+excludable effect.}
+\label{tab:causal-bounds}
+\small
+\begin{tabular}{@{}lrrrl@{}}
+\toprule
+checkpoint & P1 ratio & worst cell & bound & verdict \\
+\midrule
+Qwen3-TTS-0.6B & 1.38 & $14\%$ & $9\%$  & readable null \\
+Qwen3-TTS-1.7B & 1.12 & $9\%$  & $6\%$  & readable null \\
+Llasa-1B       & 0.57 & $25\%$ & $20\%$ & readable null \\
+Llasa-8B       & 0.90 & $42\%$ & ---    & cannot tell \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Llasa-8B fails decisively: worst cell $42\%$ of full transfer, a
+same-$k$ donor carrying exactly the receiver's count disrupting as much
+as a cross-$k$ one ($0.246$ against $0.217$ median absolute shift),
+unchanged at doubled seeds; an arm where the right answer disrupts like
+the wrong one measures foreign state, not different count. The verdict,
+\emph{cannot tell}, is not \emph{no}, and the main text says so. What
+survives is methodological: rank-1 probe-direction patching at this
+magnitude is no working instrument on these decoders, and a causal null
+from this family is only as good as its positive and disruption
+controls; ours initially lacked both.

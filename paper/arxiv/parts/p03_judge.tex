@@ -1,0 +1,99 @@
+% ============================================================
+\section{The judge is part of the experiment}\label{sec:judge}
+On ground truth known by construction, the natural instrument, Whisper large-v3, scores $0.25$ of the true
+repetition count; the CTC recogniser that replaced it scores $1.00$. Whisper's decoder is autoregressive with a
+language-model prior: it discounts a further verbatim repeat and closes the sentence on repeated audio, the failure
+mode under study, in the instrument that must certify it. Every earlier Whisper-judged number is flagged where it
+recurs.
+
+\paragraph{Head-to-head on synthetic ground truth.}
+Six verified $k{=}1$ atoms per arm, a target word rendered exactly once and a matched control utterance with no
+internal repetition, each concatenated $k\in\{2,4,8,16,32\}$ times with $0.25\,$s silences: the true count is exact
+by construction, and both recognisers score identical audio. The replacement, a wav2vec2 recogniser (large, LV-60
+self-trained) under connectionist temporal classification (CTC), has no autoregressive decoder and no internal
+language model: per-frame character distributions, purely local, so errors cannot correlate with repetition.
+\begin{table*}[p]
+\centering
+\caption{Head-to-head validation on identical synthetic ground truth. Median counted/true ratio, $k\ge4$
+pooled. The repeated-sentence arm is periodic at the sentence grain, not an aperiodic control.}
+\label{tab:ctcval}
+\small
+\begin{tabular}{@{}llrl@{}}
+\toprule
+Recogniser & Material & $k\ge4$ ratio & Notes \\
+\midrule
+CTC & periodic (repeated word) & 1.00 & 22/24 exact; 2 off by 1 ($k{=}16,32$) \\
+CTC & repeated sentence (control) & 1.00 & 23/24 exact; 1 off by 1 ($k{=}32$) \\
+Whisper large-v3 & periodic (repeated word) & 0.19 & no transcript at $k{=}16,32$ \\
+Whisper large-v3 & repeated sentence (control) & 0.25 & no transcript at $k{=}16,32$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\noindent Whisper's $k\ge4$ ratios pool $k{=}4$ and $k{=}8$ only: every $k{=}16$ and $k{=}32$ call returned no
+transcript, a missing measurement, not a low ratio.
+
+\paragraph{The audit enlarged from one donor system to six.}
+Table~\ref{tab:ctcval} is the original audit, six donor utterances from one source model. The enlarged audit takes
+donor atoms from all six checkpoints, gated on presence (the CTC recogniser finds the target exactly once in the
+unconcatenated clip): $27$ of $36$ atoms pass, giving $108$ trials at $k\ge4$. There the CTC judge's median ratio is
+$1.00$ on every one of the six donors; Whisper scores $0.25$ on the $48$ trials that return a transcript and nothing
+on the other $60$ of $108$. The main text quotes this audit, so the $0.19$ above and its $0.25$ are two audits, not
+two answers.
+
+\subsection{Four independent judges on the full population}\label{sec:judgefloor}
+The remaining objection is that CTC's blank/repeat collapse is exactly the confound that would produce the headline
+dissociation were the judge doing the counting. The same generated audio was therefore re-scored, under the paper's
+own scoring and population rules, by four judges: the primary (wav2vec2 large, LV-60 self-trained), HuBERT large
+LS-960 (same output structure, different pretraining), wav2vec2 robust-ft, and Whisper large-v3, autoregressive with
+no blank-collapse rule at all.
+\begin{table*}[tp]
+\centering
+\caption{Four judges on the full panel population: exact rates and repeated-versus-control gap in points
+($k\ge6$, paired panel), then the gap by checkpoint and by family.}
+\label{tab:fourjudges}
+\small
+\begin{tabular}{lrrrr}
+\toprule
+ & primary & HuBERT & robust-ft & Whisper \\
+\midrule
+control exact (\%) & 94.3 & 89.5 & 82.1 & 92.9 \\
+repeated exact (\%) & 18.2 & 17.9 & 17.5 & 17.1 \\
+gap (points) & $+76.7$ & $+72.3$ & $+65.1$ & $+75.5$ \\
+\midrule
+Llasa-1B & 78.1 & 78.6 & 65.2 & 69.9 \\
+Llasa-3B & 77.2 & 74.8 & 65.9 & 76.0 \\
+Llasa-8B & 81.4 & 80.3 & 69.7 & 71.7 \\
+Qwen3-TTS-0.6B & 92.2 & 87.8 & 82.2 & 92.2 \\
+Qwen3-TTS-1.7B & 60.0 & 57.8 & 50.0 & 71.1 \\
+XTTS-v2 & 71.1 & \textbf{54.4} & 57.8 & 72.2 \\
+\midrule
+family: Llasa & 78.9 & 77.9 & 66.9 & 72.5 \\
+family: Qwen3-TTS & 76.1 & 72.8 & 66.1 & 81.7 \\
+family: XTTS & 71.1 & \textbf{54.4} & 57.8 & 72.2 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\noindent Every judge's gap is positive in $6$ of $6$ checkpoints and $3$ of $3$
+families, clearing the pre-committed $+50$-point floor
+(Table~\ref{tab:fourjudges}); the weakest judge keeps $85\%$ of the
+published gap. Decisive is which arm moves: across the four judges the
+repeated arm's exact rate spans $1.0$ point and the control arm's $12.2$
+(top rows of the table); changing the scorer moves the arm the models get
+right and pins the arm they get wrong, the reverse of a judge-side
+collapse. The disagreement asymmetry agrees ($+0.27$ counts where the
+confound requires $-1.0$ or lower), and the one CTC-specific confound runs
+in our disfavour: blank-collapse merges back-to-back identical words
+(``VERYVERY VERRYYVERYVERY'' for twelve requested copies of \emph{very}),
+depressing same-word runs and never distinct-word controls, so it can
+inflate the gap but not manufacture it.
+
+\paragraph{A cross-lingual check.}\label{sec:spanish}
+The audit replicates in Spanish (same XTTS-v2 weights): on Spanish ground
+truth built the same way, the CTC judge scores $1.00$ of the true count
+where Whisper large-v3 scores $0.19$ and returns nothing at the two
+highest $k$. The Spanish counting arm itself failed its pre-registered
+rendering-quality gate (control exact rate $20.4\%$ against a $50\%$
+floor), so the cross-lingual dissociation is reported as untested rather
+than replicated.

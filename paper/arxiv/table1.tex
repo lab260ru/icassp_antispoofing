@@ -1,0 +1,23 @@
+% Merged systems table: the six generated panel rows (values produced by the
+% numbers pipeline at v2.2) plus macro-driven rows for the pooled panel and
+% every system tested outside it. Non-panel count errors live in the
+% supplementary material.
+\begin{tabular}{llrrrr}
+\toprule
+Model & size/type & \multicolumn{2}{c}{count err.\ (\%)} & \multicolumn{2}{c}{exactly right (\%)} \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}
+ & & rep. & ctl. & rep. & ctl. \\
+\midrule
+Llasa-1B~\cite{ye2025llasa} & 1B & $-12.5$ & 0.0 & 13.3 & 91.5 \\
+Llasa-3B~\cite{ye2025llasa} & 3B & $-8.3$ & 0.0 & 16.9 & 94.1 \\
+Llasa-8B~\cite{ye2025llasa} & 8B & $-16.7$ & 0.0 & 11.8 & 93.2 \\
+XTTS-v2~\cite{casanova2024xtts} & 0.4B & $-12.5$ & 0.0 & 16.7 & 87.8 \\
+Qwen3-TTS-0.6B~\cite{hu2026qwen3tts} & 0.6B & $-12.5$ & 0.0 & 7.9 & 100.0 \\
+Qwen3-TTS-1.7B~\cite{hu2026qwen3tts} & 1.7B & 0.0 & 0.0 & 38.9 & 98.9 \\
+\midrule
+Panel, pooled & 6 ckpts. & $\ErrRep{}$ & \ErrCtl{} & \ARPoolRep{} & \ARPoolCtl{} \\
+CosyVoice~2~\cite{du2024cosyvoice2} & held-out AR & --- & --- & \CosyRep{} & \CosyCtl{} \\
+F5-TTS~\cite{chen2024f5tts} & non-AR, flow & --- & --- & \FivettsRep{} & \FivettsCtl{} \\
+VITS~\cite{kim2021vits} & non-AR, dur./token & --- & --- & \VitsRep{} & \VitsCtl{} \\
+\bottomrule
+\end{tabular}
