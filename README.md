@@ -1,210 +1,163 @@
-# Counting Collapse in Autoregressive TTS
+# Repetition, Not Length: Isolating the Counting Failure in Neural TTS
 
-ICASSP 2026 submission. Autoregressive TTS models loop, truncate, and lose count
-on text that repeats a phrase many times. We prove a theorem saying that a
-contracting decoder *must*, machine-check it in Lean 4, and measure what six real
-checkpoints actually do.
-
-**Start here if you are a new agent:** read `findings.md` (what we know),
-then `research-state.yaml` (where we are), then this file (how to run things).
-
-> ### Read this before writing any mechanistic claim
->
-> **The phenomenon is solid; the mechanism is not established.** Six rival
-> explanations have been excluded with data (length, the control's own
-> periodicity, the repetition penalty, the ASR judge, architecture, and
-> improbability/acoustics — see `rivals_excluded` in `research-state.yaml`).
->
-> But *nothing* directly supports the causal story. Two independent attempts to
-> measure the contraction factor `q` failed. The dilution lemma's dose-response
-> prediction came out **sign-reversed**. The linear probe we once cited as
-> evidence was **retracted** — it does not discriminate our account from the
-> rival in which the count survives and only the output policy fails.
->
-> The paper's title says exactly this: *"a horizon it does not yet explain."*
-> Do not restore a stronger framing without new evidence.
-
----
+Code and data for the paper *"Repetition, Not Length: Isolating the Counting
+Failure in Neural Text-to-Speech"* (Borodin, Kudryavtsev, Mkrtchian;
+submitted to ICASSP 2027). This branch is the released artifact the paper
+cites: the generation code, the test set, the scored results and the analysis
+code. The paper sources live on the `arxiv` branch.
 
 ## The claim in one paragraph
 
-Under text that repeats a phrase `k` times, softmax attention cannot tell one
-copy from another (each gets weight `Θ(1/k)`; Lemma B), so the decoder receives
-approximately the same conditioning at every repetition boundary and the map
-carrying it from one boundary to the next is approximately autonomous. If that
-map contracts, boundary states converge to a fixed point geometrically, and past
-a horizon `N* ≤ log(margin/2LC)/log q` **no Lipschitz readout — including the
-model's own stop head — can tell how many repetitions have been produced**
-(Theorem A). Looping or truncation is then the only behaviour available.
+Ask a TTS model to repeat a word a dozen times and it stops early, runs on,
+or locks into a loop. Such reports confound two variables: repeating a phrase
+`k` times makes the text both longer and repetitive. Our test set breaks the
+confound. Every repeated item is paired with a length-matched control of the
+same carrier and word count in which the `k` copies become non-adjacent
+distinct fillers. If long text were the problem, the two curves would
+coincide. They do not: six checkpoints from three architectures render the
+controls at 94.3% exactly right at `k>=6` while the repeated twins fall to
+18.2%, a 76.7-point gap per checkpoint (95% interval [68.4, 84.4]).
 
-The prediction that distinguishes this from "long text is hard" is that the
-failure tracks *periodicity*, not length. It does.
+The gap survives greedy decoding, repetition-penalty sweeps and
+repetition-aware sampling, four independent speech recognisers, and 420
+analysis specifications without once reversing sign (range 34.4 to 86.4
+points). A held-out fourth architecture, CosyVoice 2, lands within a point of
+its pre-registered prediction (64.4 observed, 65.3 predicted). One of two
+non-autoregressive baselines fails the same way: F5-TTS, which predicts one
+total duration, shows a 60-point gap; VITS, which predicts a duration per
+token, shows none. The deficit is graded in the period of the text: half of
+it survives when no word is adjacent to itself.
 
----
+What breaks is not storage of the count. The requested count stays decodable
+from hidden states while the rendering fails, and repeated text grows
+distinguishable states at 0.46 of the control's rate: a slowing, not a halt.
+The contraction account of decoder hallucination fails its own measurement
+here (the contraction factor `q` never drops below 1). Why the readout fails
+is the open question the paper ends on.
 
 ## Repository map
 
 ```
-lean/SpectralTTS/          the formal artifact (mathlib; zero sorry)
-  SpectralTTS/CountingCollapse.lean    Theorem A (i)-(iv)
-  SpectralTTS/AttentionDilution.lean   Lemma B
-data/stimuli/make_stimuli.py           the repetition-ladder benchmark
-src/common/                            measurement library (see below)
-src/models/{llasa,xtts,qwen}_gen.py    per-family generation + instrumentation
-src/models/xcodec2_decode.py           offline vocoding for Llasa token ids
-src/models/vits_gen.py                 the non-autoregressive baseline
-src/common/gpus.py                     GPUs 2 and 3 only -- enforced, not advised
-src/common/population.py               THE definition of which rows may be reported
-analysis/                              the analyses that produce the paper
-data/audio_sample/                     165 clips + manifest, to check the judge by ear
-paper/                                 main.tex + generated numbers/tables/figs
-scripts/                               setup, pipeline driver, verification gates
-literature/                            survey.md, gaps.md (40 verified refs)
+data/stimuli/            the test set: deterministic generators + items (jsonl)
+data/results/            scored behavioural results (CSV/JSON), one file per run
+data/audio_sample/       165 clips + manifest, to check the judge by ear
+src/common/              measurement library (judge, scoring, populations)
+src/models/              per-family generation: llasa, qwen, xtts, vits, f5,
+                         cosyvoice; xcodec2_decode.py vocodes Llasa token ids
+analysis/                every analysis in the paper, one script per claim
+scripts/                 pipeline drivers (run_*.sh, score_*.sh), model download
+env/setup_envs.sh        the four conda environments, with every pin explained
 ```
 
-Heavy artifacts live off-repo at `/home/kirill/mnt/hdd_6tb_1/icassp_tts/`
-(`audio/`, `tokens/`, `activations/`, `asr/`, `hf_cache/`), symlinked as
-`data/generated` and gitignored.
-
----
+Heavy artifacts (audio, tokens, activations, ASR caches) are not in the repo;
+generators write them under `data/generated`, which is gitignored.
 
 ## Reproducing
 
-### 0. Environments (once)
+Environments and checkpoints, once:
 
 ```bash
-bash env/setup_envs.sh all      # base, qwen, coqui, xcodec2
-bash scripts/setup_lean.sh      # elan + mathlib cache (CPU, ~15 min)
-bash scripts/download_models.sh # 8 checkpoints, ~74 GB
+bash env/setup_envs.sh all       # base, qwen, coqui, xcodec2
+bash scripts/download_models.sh  # 8 checkpoints, ~74 GB
 ```
 
-Four conda envs are required because the dependency constraints are mutually
-unsatisfiable; `env/setup_envs.sh` documents each pin and why it exists.
+Four conda environments are required because the dependency constraints are
+mutually unsatisfiable; `env/setup_envs.sh` documents each pin and why.
+GPU allocation is enforced in `src/common/gpus.py`; edit it for your machine.
 
-### 1. Verify the formal artifact
-
-```bash
-bash scripts/check_lean.sh
-```
-
-### 1b. Two constraints that will bite you
-
-**GPUs 2 and 3 only.** Cards 0 and 1 belong to someone else. `src/common/gpus.py`
-holds the allocation and every entry point refuses 0 or 1 with an explanation.
-
-**The paper is at its page limit.** `main.tex` ends with `\vfill\pagebreak`, so a
-single spilled body line pushes the references onto a sixth page and breaks
-compliance. Every addition must be paid for by a cut; `paper/build.sh` reports
-the count and `scripts/check_numbers.py` fails the build on a hand-typed
-experimental number.
-
-Builds the project, scans for `sorry`, and prints `#print axioms` for all eleven
-exported theorems. Passing means every theorem depends only on `propext`,
-`Classical.choice`, `Quot.sound`.
-
-### 2. Generate
-
-One model per GPU. All generators are resumable — they skip `(item_id, seed)`
-pairs already in their metadata file, so re-running after a crash is safe.
+Generate. One model per GPU; generators are resumable and skip
+`(item_id, seed)` pairs already in their metadata:
 
 ```bash
 python src/models/llasa_gen.py --model llasa1b --gpu 0 --seeds 0 1 2
-# xtts2 needs the `coqui` env and COQUI_TOS_AGREED=1
-# qwen06b/qwen17b need the `qwen` env
+# xtts2 needs the coqui env and COQUI_TOS_AGREED=1
+# qwen06b / qwen17b need the qwen env
 ```
 
-### 3. Vocode, transcribe, score
+Vocode, transcribe and score (idempotent, safe to re-run while generation
+fills in):
 
 ```bash
 bash scripts/run_pipeline.sh <asr_gpu> llasa1b xtts2 ...
 ```
 
-Llasa emits token ids (vocoded separately in the `xcodec2` env); every other
-family writes wavs directly. Each stage is idempotent, so this can be run
-repeatedly while generation is still filling in.
+The period ladder, aperiodic controls, extension ladder, penalty sweeps and
+repetition-aware sampling each have their own `scripts/run_*.sh` and
+`scripts/score_*.sh` driver pair.
 
-### 4. Analyse and build the paper
-
-```bash
-python analysis/state_dynamics.py --models <models> --out data/results/state.csv
-python analysis/capacity.py                       # the central measurement
-python analysis/horizon_fit.py                    # behavioural collapse points
-python analysis/figures.py
-bash paper/build.sh                               # regenerates numbers, compiles
-```
-
-The robustness checks, each answering one reviewer objection with data rather
-than prose. Every one of them can come back the wrong way, and two did:
+Analyse. `analysis/` holds one script per claim in the paper; the ones behind
+the headline numbers:
 
 ```bash
-python analysis/exclusion_sensitivity.py   # do our own exclusions make the gap?
-python analysis/horizon_forms.py           # is the ratio a property of the curve?
-python analysis/probe_past_horizon.py      # the theorem's own prediction, 1 of 3
-python analysis/vits_config.py             # is VITS immune, or its defaults?
-python analysis/greedy_decoding.py         # does the deficit survive argmax?
+python analysis/count_error.py            # the behavioural measurement
+python analysis/checkpoint_level.py       # headline estimates, Table 2
+python analysis/exclusion_sensitivity.py  # do our own exclusions make the gap?
+python analysis/period_ladder.py          # the deficit graded in the period
+python analysis/greedy_decoding.py        # survives argmax?
+python analysis/independent_judge.py      # survives other recognisers?
+python analysis/state_dynamics.py         # state growth, 0.46 of control
+python analysis/jacobian_q.py             # the contraction factor; q >= 1
+python analysis/make_numbers.py           # regenerates every number macro
 ```
 
-Two of these weakened published claims and the paper says so: `horizon_forms.py`
-showed the 3.5-fold ratio is form-dependent (2.7--4.3 across three saturating
-families, though no family flips a checkpoint), and neither of the two further
-checkpoints run through `probe_past_horizon.py` replicated the paper's one
-positive result. It stands at **1 of 3** (MAE ratios against the constant
-predictor: Llasa-1B 1.01, Llasa-3B 0.99, Llasa-8B 0.86; only Llasa-1B loses the
-count). Llasa-3B beat the threshold by 0.006 MAE over twelve items, so the script
-applies a `TIE = 0.02` band and calls Llasa-1B and Llasa-3B *indistinguishable*
-from a constant predictor: by effect size 2 of 3 show nothing recoverable and
-only Llasa-8B clearly keeps the count. We quote 1 of 3, the stricter reading.
-Anything in this repo still saying "1 of 2" predates the Llasa-3B run. If you
-rerun them and get a different answer, the scripts pick their own verdict strings
-from the measured numbers, so read the stdout rather than assuming the paper's
-wording still applies.
+`make_numbers.py` writes `paper/numbers.tex` for the paper build on the
+`arxiv` branch, so a number in the PDF cannot drift from the data it came
+from. Never hand-edit a number in a `.tex` file; add a macro instead.
 
-`paper/build.sh` regenerates `numbers.tex` from the CSVs before every compile, so
-a number in the PDF cannot drift from the data it came from. **Never hand-edit a
-number in the `.tex` files** — add a macro in `analysis/make_numbers.py`.
+## The judge
 
----
+The transcript count comes from a CTC model (`wav2vec2-large-960h-lv60-self`,
+greedy best-path, no language model), in `src/common/asr_ctc.py`. The natural
+choice, Whisper, is unsuitable for exactly the audio under study: its decoder
+is autoregressive with a language-model prior, and on concatenated utterances
+whose true count is known it recovers a median 0.25 of the count where the
+CTC judge recovers 1.00. Whisper large-v3 (`src/common/asr_transcribe.py`)
+remains as one of the four independent cross-checking recognisers.
+Correctness is decided conjunctively (exact transcript count and consistent
+duration); see `score_counts.classify`. Exclusion rules are blind to the
+count; `scripts/check_exclusions_blind.py` verifies that.
 
-## The measurement library (`src/common/`)
+## The measurement library (src/common/)
 
 | module | what it is for |
 |---|---|
 | `registry.py` | the model panel; single source of truth for keys, paths, probe layers |
-| `offset_tok.py` | one tokenizer interface with character offsets across all families (note: **not** named `tokenizers.py` — that shadows the real package) |
-| `dispersion.py` | **the primary state measurement**; boundary-free |
-| `boundaries.py` | superseded boundary-based estimator, kept for the negative result |
-| `asr_transcribe.py` | Whisper large-v3 with word timestamps + audio degeneracy flags |
+| `asr_ctc.py` | the CTC judge, the paper's primary transcriber |
+| `asr_transcribe.py` | Whisper large-v3 with word timestamps + degeneracy flags |
 | `score_counts.py` | repetition counting and outcome classification |
-
----
+| `population.py` | THE definition of which rows may be reported |
+| `offset_tok.py` | one tokenizer interface with character offsets across families |
+| `dispersion.py` | state measurement behind Sec. 3.5 |
+| `boundaries.py` | superseded estimator, kept for the negative result |
+| `ras.py` | repetition-aware sampling for the decoding ablations |
 
 ## Things that will bite you
 
 - **`src/common/tokenizers.py` must not exist.** Running a script from inside
-  `src/common/` puts that directory on `sys.path[0]`, so such a file shadows the
-  real `tokenizers` package and breaks `transformers` with a confusing
+  `src/common/` puts that directory on `sys.path[0]`, so such a file shadows
+  the real `tokenizers` package and breaks `transformers` with a confusing
   `ImportError`. The module is called `offset_tok.py` for this reason.
-- **`xcodec2==0.1.5` pins torch 2.5** and leaves `transformers`/`torchao`
-  unpinned, both of which have since moved past it. The working combination is
-  `transformers==4.46.3`, `torchao==0.6.1`; anything newer fails at import.
+- **`xcodec2==0.1.5` pins torch 2.5** and leaves `transformers` and `torchao`
+  unpinned. The working combination is `transformers==4.46.3`,
+  `torchao==0.6.1`; anything newer fails at import.
 - **The HF `automatic-speech-recognition` pipeline routes audio through
   torchcodec**, which does not load against the installed FFmpeg. Drive
   `WhisperProcessor` + `WhisperForConditionalGeneration` directly instead.
-- **`coqui-tts` breaks on `transformers` 5.x** (`isin_mps_friendly` was removed);
-  the `coqui` env stays on 4.57.x.
+- **`coqui-tts` breaks on `transformers` 5.x** (`isin_mps_friendly` was
+  removed); the `coqui` env stays on 4.57.x.
 - **XTTS replaces spaces with `[SPACE]` tokens** and lowercases before
-  tokenizing, so text-column indices must be computed on the transformed string
-  (`offset_tok._xtts_prepare`), not the raw one.
-- **Llasa with eager attention is ~5× slower to sample.** `llasa_gen.py` switches
-  to SDPA for generation and back to eager only for the instrumented pass.
-- **Whisper de-duplicates repeated speech**, so an ASR transcript count alone
-  understates loops. Correctness is decided conjunctively (exact transcript count
-  *and* consistent duration); see `score_counts.classify`.
-
----
+  tokenizing, so text-column indices must be computed on the transformed
+  string (`offset_tok._xtts_prepare`), not the raw one.
+- **Llasa with eager attention is ~5x slower to sample.** `llasa_gen.py`
+  switches to SDPA for generation and back to eager only for the
+  instrumented pass.
+- **ASR de-duplicates repeated speech**, so a transcript count alone can
+  understate loops; that is why correctness also requires consistent
+  duration, and why the judge is validated on audio with a known count.
 
 ## Discipline
 
-Protocol commits precede result commits — the git history is the
-pre-registration. Negative results are reported, not dropped: the paper contains
-a subsection on the boundary estimator that did not work and why.
+Protocol commits precede result commits; the git history is the
+pre-registration. Negative results are reported, not dropped: the paper's
+discussion opens with the mechanism we tried and rejected, and the analyses
+that weakened our own earlier claims are in the history of this repository.
