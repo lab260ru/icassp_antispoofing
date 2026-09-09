@@ -14,7 +14,7 @@ leave the repeated item less probable in most of the 54 pairs. \textbf{Test:} pe
 cross-entropy, same 54 pairs, three scorers in the roles Table~\ref{tab:naturalness} names; the
 template-bootstrap gap intervals exclude zero for both independent scorers.
 
-\begin{table*}[p]
+\begin{table*}[tp]
 \centering
 \caption{Naturalness check, three scorers, 54 matched pairs. ``Ctl.\ higher'': fraction of pairs in
 which the control has the higher (less probable) per-token cross-entropy.}
@@ -43,7 +43,7 @@ costlier in tokens per repetition, collapsing at much smaller $k$; the contracti
 predicts comparable $k^\ast$ across units. \textbf{Test} (Table~\ref{tab:unitinv}): per model,
 $k^\ast$, the largest $k$ with accuracy above 0.5, for both units.
 
-\begin{table*}[p]
+\begin{table*}[tp]
 \centering
 \caption{Unit invariance, as committed. Token counts are medians at the reported $k^\ast$; n/a where no
 $k$ cleared the $0.5$ threshold.}
@@ -80,7 +80,7 @@ $\mathcal{N}_{\mathrm{eff}}$ regressed on $\log k$ with three diversity covariat
 emitted token sequence, held only for Llasa, so the other adjusted cells are inestimable, not
 zero; and refitted on items labelled correct (Section~\ref{sec:scoring}).
 
-\begin{table*}[p]
+\begin{table*}[tp]
 \centering
 \caption{Capacity-confound ratios (repeated/control slope of $\mathcal{N}_{\mathrm{eff}}$ against
 $\log k$). $n$ pairs are repeated-side/control-side rows entering each regression; --- marks an
@@ -121,7 +121,7 @@ best-layer late-window over early-window $R^2$, cancels probe capacity and item 
 the matched control decoding the same quantity from non-repetitive text of equal length.
 Best-layer $R^2$ stays modest, far from the text-LM near-perfect case.
 
-\begin{table*}[p]
+\begin{table*}[tp]
 \centering
 \caption{Ridge-probe retention (late-window best-layer $R^2$ / early-window best-layer $R^2$). All
 entries $n{=}54$ items.}
@@ -217,9 +217,12 @@ useful contrast.
 Greedy decoding leaves the gap within three points of sampled: the dissociation lives in the
 conditioning, not the draw. The contraction account bounds a readout with no reference to the
 sampler, yet every panel generation was sampled; stochastic token choice is exactly the
-perturbation breaking the posited time-invariant map, and greedy removes it.
+perturbation breaking the posited time-invariant map, and greedy removes it. Table~\ref{tab:greedy}
+compares the arms.
 
-\begin{center}
+\par\medskip\noindent\begin{minipage}{\columnwidth}
+\inlinecaption{Greedy against sampled decoding on Qwen3-TTS-0.6B, $k\ge6$.}\label{tab:greedy}
+\centering
 \begin{tabular}{@{}lrrrr@{}}
 \toprule
 Arm & $n$ & Exact rep.\ & Exact ctl.\ & Gap \\
@@ -229,7 +232,8 @@ sampled, seed 0      &  72 & 5.6\%  & 83.3\% & 77.8 \\
 greedy               &  72 & 11.1\% & 83.3\% & 72.2 \\
 \bottomrule
 \end{tabular}
-\end{center}
+\end{minipage}\par\medskip
+
 
 \noindent Qwen3-TTS-0.6B, $k\ge6$; greedy is deterministic, one seed being the whole arm, and
 the greedy-sampled pair is the one the main text's variations table quotes. \textbf{The
@@ -258,9 +262,11 @@ it fires on 48.8\% of repeated-item decode steps against 10.8\% on controls; and
 arm holds 100.0\% exact, so the gap does not survive by the mitigation breaking the controls.
 
 \noindent\textbf{Result: the deficit survives.} Exact-rate gaps, $k\ge6$, CTC judge, panel
-exclusions:
+exclusions (Table~\ref{tab:ras}).
 
-\begin{center}
+\par\medskip\noindent\begin{minipage}{\columnwidth}
+\inlinecaption{Repetition-aware sampling on Qwen3-TTS-0.6B: exact-rate gaps against the pre-committed band.}\label{tab:ras}
+\centering
 \begin{tabular}{@{}lrrl@{}}
 \toprule
 Arm & Rep.\ exact & Gap & 95\% CI \\
@@ -270,7 +276,8 @@ RAS, paper defaults      & 5.7\%  & $+94.3$ & $[+89.7, +98.9]$ \\
 RAS, $\text{top-}p{=}0$  & 12.4\% & $+87.6$ & $[+80.9, +94.4]$ \\
 \bottomrule
 \end{tabular}
-\end{center}
+\end{minipage}\par\medskip
+
 
 \noindent The band was pre-committed from this checkpoint's sweeps: \textsc{survives} at
 $\ge +66.7$ points, the floor across penalty and greedy arms, \textsc{mitigates} at

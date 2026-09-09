@@ -12,7 +12,7 @@ internal repetition, each concatenated $k\in\{2,4,8,16,32\}$ times with $0.25\,$
 by construction, and both recognisers score identical audio. The replacement, a wav2vec2 recogniser (large, LV-60
 self-trained) under connectionist temporal classification (CTC), has no autoregressive decoder and no internal
 language model: per-frame character distributions, purely local, so errors cannot correlate with repetition.
-\begin{table*}[p]
+\begin{table*}[tp]
 \centering
 \caption{Head-to-head validation on identical synthetic ground truth. Median counted/true ratio, $k\ge4$
 pooled. The repeated-sentence arm is periodic at the sentence grain, not an aperiodic control.}

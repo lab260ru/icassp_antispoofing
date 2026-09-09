@@ -638,6 +638,27 @@ financial interests.
 \setcounter{table}{0}
 \renewcommand{\thetable}{S\arabic{table}}
 
+% The supplement is mostly tables: let pages carry more floats and fuller
+% float pages, and pack float pages from the top instead of spreading the
+% tables out with rubber space.
+\setcounter{topnumber}{4}
+\setcounter{dbltopnumber}{4}
+\setcounter{totalnumber}{8}
+\renewcommand{\topfraction}{.95}
+\renewcommand{\dbltopfraction}{.95}
+\renewcommand{\textfraction}{.03}
+\renewcommand{\floatpagefraction}{.75}
+\renewcommand{\dblfloatpagefraction}{.75}
+\makeatletter
+\setlength{\@fptop}{0pt}
+\setlength{\@fpbot}{0pt plus 1fil}
+\setlength{\@dblfptop}{0pt}
+\setlength{\@dblfpbot}{0pt plus 1fil}
+% A caption for a table set inline (not floated): same typography as the
+% float captions, stepping the same S-counter.
+\newcommand{\inlinecaption}[1]{\refstepcounter{table}\@makecaption{\fnum@table}{#1}\vskip\belowcaptionskip}
+\makeatother
+
 \input{parts/p02_testset}
 \input{parts/p03_judge}
 \input{parts/p04_inference}

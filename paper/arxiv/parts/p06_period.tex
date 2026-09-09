@@ -77,9 +77,11 @@ strict conjunction, not the ordered scan, so the across-rule range is
 the honest companion to the scan estimate.
 
 \paragraph{$p{=}2$ by rotation.} Exact rate of the decisive cell over
-the pool's four rotations:
+the pool's four rotations (Table~\ref{tab:rotation}).
 
-\begin{center}
+\par\medskip\noindent\begin{minipage}{\columnwidth}
+\inlinecaption{The decisive $p{=}2$ cell over the pool's four rotations: exactly-right rate by rotation, and its range.}\label{tab:rotation}
+\centering
 \begin{tabular}{@{}lrrrrr@{}}
 \toprule
 checkpoint & rot.\ 0 & rot.\ 1 & rot.\ 2 & rot.\ 3 & range \\
@@ -89,7 +91,8 @@ Qwen3-TTS-0.6B   & 24.4 & 48.9 & 38.6 & 53.3 & 28.9 \\
 XTTS-v2          & 57.8 & 55.6 & 53.3 & 40.0 & 17.8 \\
 \bottomrule
 \end{tabular}
-\end{center}
+\end{minipage}\par\medskip
+
 
 \noindent A single-rotation $p{=}2$ arm could have read roughly $25\%$
 to $70\%$ exact; rotation balancing is what makes the cell readable.
@@ -251,9 +254,12 @@ XTTS-v2 & 16.7 & 87.8 & +71.1 \\
 
 \noindent\textbf{The two disagree.} VITS shows no dissociation;
 F5-TTS shows one close to the panel's, and neither has a
-generation-step recurrence. Per $k$ band, in points:
+generation-step recurrence. Table~\ref{tab:kband} gives the gap per $k$ band,
+in points.
 
-\begin{center}
+\par\medskip\noindent\begin{minipage}{\columnwidth}
+\inlinecaption{The gap per $k$ band, in points: the two non-autoregressive baselines against the autoregressive panel.}\label{tab:kband}
+\centering
 \begin{tabular}{lrrr}
 \toprule
  & VITS & F5-TTS & AR panel \\
@@ -264,7 +270,8 @@ $k=12$--$16$ & -13.3 & +56.7 & +85.7 \\
 $k=24$--$32$ & +3.3 & +80.0 & +83.4 \\
 \bottomrule
 \end{tabular}
-\end{center}
+\end{minipage}\par\medskip
+
 
 F5-TTS's gap grows with $k$ like the panel's, its durations scale with
 $k$ (median $2.6$\,s at $k{=}1$, $11.6$\,s at $k{=}32$), so it renders
