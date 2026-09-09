@@ -23,9 +23,12 @@ Qwen3-TTS-0.6B, XTTS-v2), standard exclusions: $n=1134$ of $1395$
 rows.
 
 \paragraph{The full ladder.} Exact rate ($=k$ requested units delivered, in
-order, the main text's statistic), headline ordered-scan rule:
+order, the main text's statistic), headline ordered-scan rule, in
+Table~\ref{tab:fullladder}.
 
 \begin{table*}[tp]\centering
+\caption{The full period ladder: exactly-right rate (\%) by period at $k\in\{16,24,32\}$ under the ordered-scan rule, with cell sizes.}
+\label{tab:fullladder}
 \begin{tabular}{@{}lrrrrrl@{}}
 \toprule
 checkpoint & $p{=}1$ & $p{=}2$ & $p{=}4$ & $p{=}8$ & $p{=}k$ & $n$ ($1,2,4,8,k$) \\
@@ -45,9 +48,12 @@ vocabulary caveat predicts, outside the monotonicity claim.
 
 \paragraph{Five scoring rules.} $D(p)=E(8)-E(p)$ under five rules,
 pre-committed calls $D(2)/D(1)\ge0.50$ PERIODICITY, $\le0.25$ VERBATIM
-TOKEN IDENTITY, between GRADED; ratio pooled over checkpoints:
+TOKEN IDENTITY, between GRADED; ratio pooled over checkpoints
+(Table~\ref{tab:fiverules}).
 
 \begin{table*}[tp]\centering
+\caption{The period-2 recovery under five scoring rules: deficits $D(p)=E(8)-E(p)$ in points, the decisive ratio $D(2)/D(1)$, and the pre-committed verdict.}
+\label{tab:fiverules}
 \begin{tabular}{@{}lrrrrl@{}}
 \toprule
 rule & $D(1)$ & $D(2)$ & $D(4)$ & $D(2)/D(1)$ & verdict \\
@@ -100,9 +106,12 @@ exclusions. Pre-committed: recovered fraction
 $R=(E(\text{dis})-E(\text{bare}))/(E(8)-E(\text{bare}))$ against each
 checkpoint's own $E(8)$ ceiling, $R\ge0.50$ supported, $R\le0.15$
 falsified. Exact rate by variant ($k\in\{16,24,32\}$; Qwen3 $=$
-Qwen3-TTS-0.6B, XTTS $=$ XTTS-v2), with per-variant confound means:
+Qwen3-TTS-0.6B, XTTS $=$ XTTS-v2), with per-variant confound means
+(Table~\ref{tab:disambig}).
 
 \begin{table*}[tp]\centering
+\caption{The disambiguation arm at period 1: exactly-right rate and recovered fraction $R$ by boundary variant, with per-variant confound means.}
+\label{tab:disambig}
 \begin{tabular}{@{}lrrrrrrr@{}}
 \toprule
  & \multicolumn{2}{c}{exact rate} & \multicolumn{2}{c}{recovered $R$} & \multicolumn{3}{c}{confound means} \\
@@ -177,9 +186,11 @@ $17.7$-point deficit, $R(4)=+0.006$, the pre-committed confirmation
 band excluded ($P[\bar R \ge 0.50]=0.010$), written outcome
 \textsc{intermediate}. But the pooled figure is arithmetic, not
 consensus: three of four per-checkpoint intervals exclude zero, in
-opposite directions.
+opposite directions (Table~\ref{tab:shuffled}).
 
 \begin{table*}[tp]\centering
+\caption{Shuffled order at fixed composition: exactly-right rate on periodic and shuffled $p{=}4$ items per checkpoint, with the bootstrap 95\% interval on the difference.}
+\label{tab:shuffled}
 \begin{tabular}{@{}lrrrl@{}}
 \toprule
 checkpoint & $E$ periodic & $E$ shuffled & $\Delta$ & 95\% CI \\
@@ -216,9 +227,11 @@ so autoregression is not the cause: the architectural reading of the
 deficit does not survive. The main text's scope claim is about
 autoregressive decoders, and no non-autoregressive system had been
 measured; two such baselines therefore run the published repeated and
-control arms, beside the panel:
+control arms, beside the panel (Table~\ref{tab:nonar}).
 
 \begin{table*}[tp]\centering
+\caption{The published arms on the two non-autoregressive baselines, beside the panel: exactly-right rates and the gap in points.}
+\label{tab:nonar}
 \begin{tabular}{lrrr}
 \toprule
 model & repeated exact (\%) & control exact (\%) & gap (pts) \\
@@ -263,9 +276,11 @@ VITS renders repeated $76.7\%$ and control $66.7\%$ exact: far off the
 floor, ordered the opposite way. Nor is it the stock configuration:
 the stock duration predictor would have to carry the count (output
 length is the sum of predicted phoneme durations), so it was perturbed
-at two settings chosen to degrade it:
+at two settings chosen to degrade it (Table~\ref{tab:vitscfg}).
 
 \begin{table*}[tp]\centering
+\caption{VITS under perturbed duration settings; the gap is control minus repeated, negative in every arm.}
+\label{tab:vitscfg}
 \begin{tabular}{llrrr}
 \toprule
 arm & setting & exact rep & exact ctl & gap \\
@@ -299,9 +314,12 @@ the correct total duration repairs the deficit below $k=12$ and does
 nothing at all above: the paper's one intervention on the proposed
 mechanism. The supplied value is the median of F5-TTS's own control
 renderings at the same $k$ plus the measured reference-clip length,
-never a function of the repeated item's output.
+never a function of the repeated item's output. Table~\ref{tab:f5oracle}
+gives the split by $k$.
 
 \begin{table*}[tp]\centering
+\caption{F5-TTS handed the oracle total duration: exactly-right rate and median relative error, free against given, by $k$.}
+\label{tab:f5oracle}
 \begin{tabular}{rrrrr}
 \toprule
 $k$ & free exact (\%) & given exact (\%) & free median & given median \\

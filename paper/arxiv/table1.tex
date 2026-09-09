@@ -4,7 +4,7 @@
 % supplementary material.
 \begin{tabular}{llrrrr}
 \toprule
-Model & size/type & \multicolumn{2}{c}{count err.\ (\%)} & \multicolumn{2}{c}{exactly right (\%)} \\
+Model & size & \multicolumn{2}{c}{count err.} & \multicolumn{2}{c}{exact (\%)} \\
 \cmidrule(lr){3-4}\cmidrule(lr){5-6}
  & & rep. & ctl. & rep. & ctl. \\
 \midrule
@@ -16,8 +16,8 @@ Qwen3-TTS-0.6B~\cite{hu2026qwen3tts} & 0.6B & $-12.5$ & 0.0 & 7.9 & 100.0 \\
 Qwen3-TTS-1.7B~\cite{hu2026qwen3tts} & 1.7B & 0.0 & 0.0 & 38.9 & 98.9 \\
 \midrule
 Panel, pooled & 6 ckpts. & $\ErrRep{}$ & \ErrCtl{} & \ARPoolRep{} & \ARPoolCtl{} \\
-CosyVoice~2~\cite{du2024cosyvoice2} & held-out AR & --- & --- & \CosyRep{} & \CosyCtl{} \\
-F5-TTS~\cite{chen2024f5tts} & non-AR, flow & --- & --- & \FivettsRep{} & \FivettsCtl{} \\
-VITS~\cite{kim2021vits} & non-AR, dur./token & --- & --- & \VitsRep{} & \VitsCtl{} \\
+CosyVoice~2~\cite{du2024cosyvoice2} & held-out & --- & --- & \CosyRep{} & \CosyCtl{} \\
+F5-TTS~\cite{chen2024f5tts} & non-AR & --- & --- & \FivettsRep{} & \FivettsCtl{} \\
+VITS~\cite{kim2021vits} & non-AR & --- & --- & \VitsRep{} & \VitsCtl{} \\
 \bottomrule
 \end{tabular}

@@ -9,8 +9,11 @@ attention flatness and count error (undercounting makes count error
 negative). Measured over three flatness measures fixed in advance,
 signed so higher is flatter and pooled by Fisher $z$ weighted by cell
 size, all three run positive on repeated items with intervals excluding
-zero, and controls sit at zero on all three (nothing to dilute):
+zero, and controls sit at zero on all three (nothing to dilute;
+Table~\ref{tab:flatness}).
 \begin{table*}[tp]\centering
+\caption{Within-cell correlation between attention flatness and count error, pooled by Fisher $z$; positive means flatter items are counted better.}
+\label{tab:flatness}
 \begin{tabular}{lrr}
 \toprule
 flatness measure & repeated & control \\
@@ -39,8 +42,10 @@ $k\ge48$ item), with the same ridge probe and folds; twelve aperiodic
 control items matched on $k$ and template give each checkpoint its own
 control arm. Because $k=48\ldots128$ spans a third of the main ladder's
 $\log_2$ range, low $R^2$ alone proves nothing; the constant predictor
-is the yardstick:
+is the yardstick (Table~\ref{tab:probeladders}).
 \begin{table*}[tp]\centering
+\caption{Ridge-probe decoding of the requested count against the constant predictor, below the horizon ($k\le32$) and past it ($k=48\ldots128$).}
+\label{tab:probeladders}
 \begin{tabular}{llrrr}
 \toprule
 checkpoint & arm & probe MAE & constant MAE & $R^2$ \\
@@ -67,8 +72,11 @@ Qwen3-TTS-1.7B & control $k=48\ldots128$   & 0.44 & 0.50 & $+0.20$ \\
 \end{table*}
 All five decode the count below the horizon. Past it, the probe-MAE
 ratio against the constant predictor decides, ratios within $\pm0.02$
-of $1$ called indistinguishable rather than rounded either way:
+of $1$ called indistinguishable rather than rounded either way
+(Table~\ref{tab:probeverdicts}).
 \begin{table*}[tp]\centering
+\caption{Past-horizon verdicts: probe-to-constant MAE ratios with the $\pm0.02$ tie band, and the length-only control on the repeated arm.}
+\label{tab:probeverdicts}
 \begin{tabular}{lrlrrr}
 \toprule
  & \multicolumn{3}{c}{MAE ratio vs.\ constant} & \multicolumn{2}{c}{MAE, repeated arm} \\

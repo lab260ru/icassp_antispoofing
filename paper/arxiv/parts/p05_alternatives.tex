@@ -111,7 +111,7 @@ decisively; its Whisper-judged label (Section~\ref{sec:judge}) only removes item
 repeated correct pool, leaving cells under-powered, not inflated.
 
 \paragraph{Count survival in the representation.} Repeated retention falls below its control in
-six of six checkpoints (Table~\ref{tab:probe}). \textbf{Objection:} in text-only autoregressive
+six of six checkpoints (Table~\ref{tab:proberet}). \textbf{Objection:} in text-only autoregressive
 LMs a linear probe, exactly the Lipschitz readout the contraction account constrains, decodes
 the true count near-perfectly at every layer: unused, not
 erased~\cite{venkatesh2026repeated}; degradation predicts the opposite. \textbf{Test:} ridge
@@ -125,7 +125,7 @@ Best-layer $R^2$ stays modest, far from the text-LM near-perfect case.
 \centering
 \caption{Ridge-probe retention (late-window best-layer $R^2$ / early-window best-layer $R^2$). All
 entries $n{=}54$ items.}
-\label{tab:probe}
+\label{tab:proberet}
 \small
 \begin{tabular}{@{}lrr@{}}
 \toprule
@@ -180,9 +180,12 @@ The strongest decoding-level rival, and the emptiest: three checkpoints never ha
 penalty and show a 78.9-point gap. The families ship penalties an order of magnitude apart
 (XTTS-v2 5.0, Qwen3-TTS 1.05, Llasa none), and a penalty by construction suppresses repeated
 tokens; had it produced the periodicity-specific deficit, the contraction account would explain what the
-sampler already explains.
+sampler already explains. Table~\ref{tab:penaltysweep} sweeps it an order of
+magnitude in both directions.
 
 \begin{table*}[tp]\centering
+\caption{The repetition-penalty sweep on the two architectures that ship one; a collapsed control arm says nothing about repetition.}
+\label{tab:penaltysweep}
 \begin{tabular}{@{}lrrrl@{}}
 \toprule
 Architecture & Penalty & Rep.\ exact (\%) & Ctl.\ exact (\%) & Control \\

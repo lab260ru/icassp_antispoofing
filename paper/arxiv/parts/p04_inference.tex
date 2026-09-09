@@ -4,9 +4,13 @@
 
 The exact-rate gap is positive in six of six checkpoints and never below $60$ points. The
 checkpoint is the sampling unit, one repeated-minus-control difference per contrast, positive
-meaning present; the exact-rate column feeds the main text's headline table.
+meaning present; Table~\ref{tab:percheck} gives the per-checkpoint contrasts,
+Table~\ref{tab:paneltests} the panel summary, and the exact-rate column feeds
+the main text's headline table.
 
 \begin{table*}[tp]\centering
+\caption{The three per-checkpoint contrasts, signed so positive means the deficit is present: exact-rate and median-error gaps in percentage points, the capacity gap in distinguishable states per unit $\log k$.}
+\label{tab:percheck}
 \begin{tabular}{lrrr}
 \toprule
 checkpoint & exact-rate (pts) & median-error (pts) & capacity \\
@@ -22,6 +26,8 @@ XTTS-v2~\cite{casanova2024xtts} & +71.1 & +12.5 & +10.7 \\
 \end{table*}
 
 \begin{table*}[tp]\centering
+\caption{Panel-level summary of the three contrasts: mean, bootstrap 95\% CI, two-sided exact sign-test $p$, and the count of positive checkpoints.}
+\label{tab:paneltests}
 \begin{tabular}{lrrrl}
 \toprule
 contrast & mean & 95\% CI & $p$ & positive \\
@@ -211,9 +217,11 @@ contraction hypothesis (Section~\ref{sec:contraction}) would bound the largest s
 repetition count by a constant $N^\ast$, so a decoder driven past that horizon should
 \emph{saturate} whatever the request; median rendered count above $k=6$ is fitted with a
 constant $a$, a proportional $bk$, and the interpolating $N^\ast(1-e^{-k/N^\ast})$, free to put
-a horizon anywhere.
+a horizon anywhere (Table~\ref{tab:satfits}).
 
 \begin{table*}[tp]\centering
+\caption{Constant, proportional and soft-horizon fits to the median rendered count above $k=6$: residual sums of squares, fitted slope $b$, fitted horizon $N^\ast$, and the winning form.}
+\label{tab:satfits}
 \begin{tabular}{lrrrrl}
 \toprule
 model & sat.\ SSE & prop.\ SSE & $b$ & soft $N^\ast$ & best \\
@@ -261,9 +269,12 @@ never cycled. XTTS-v2 is not run: every $k\ge48$ item exceeds its decoder's ceil
 counts by architecture, not horizon.
 
 \paragraph{Do the exclusions fall evenly on the two arms?} The one unbalanced rule removes the
-worst repeated generations, shrinking the reported gap. Panel rates, before any other filter:
+worst repeated generations, shrinking the reported gap. Table~\ref{tab:exclarms} gives panel rates
+before any other filter.
 
 \begin{table*}[tp]\centering
+\caption{Exclusion rates by arm, before any other filter.}
+\label{tab:exclarms}
 \begin{tabular}{lrrr}
 \toprule
 arm & template rule & token budget & degenerate \\
@@ -333,8 +344,11 @@ beside it. This tests the curve choice only: every family saturates by construct
 Our exclusions flatter the gap by about fourteen points and do not create it; the main text
 gives both numbers. About a quarter of panel generations are removed by three rules, each
 defensible alone: three defensible rules can still sum to a selected sample.
+Table~\ref{tab:exclsens} restores each rule in turn.
 
 \begin{table*}[tp]\centering
+\caption{The gap with each exclusion rule lifted in turn, and with nothing excluded at all.}
+\label{tab:exclsens}
 \begin{tabular}{lrrrr}
 \toprule
 population & $n$ & exact rep & exact ctl & gap \\
@@ -358,8 +372,8 @@ truncation hitting both arms; degenerate audio scored zero is the harshest choic
 \label{sec:weakest}
 
 Qwen3-TTS-1.7B~\cite{hu2026qwen3tts}, the one checkpoint that shows no repeated-side saturation
-within $k\le128$ and inverts the horizon ratio, is also last on all three measures in the table
-opening Section~\ref{sec:inference}, and the only checkpoint last on any: the exception sits
+within $k\le128$ and inverts the horizon ratio, is also last on all three measures in
+Table~\ref{tab:percheck}, and the only checkpoint last on any: the exception sits
 where the effect is smallest, where smallest tips into absent. Separating its two candidates, a
 per-repetition map that may not contract (Section~\ref{sec:contraction}) or a horizon past
 $k=128$, needs a longer ladder than its generation budget allows. A weakest checkpoint exists

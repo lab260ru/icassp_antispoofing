@@ -1,8 +1,9 @@
 % ============================================================
 % arXiv version: the ICASSP main paper and its supplementary
-% material concatenated into one document. Sources mirrored from
-% paper/ICASSP_paper/{main,supplement}; edit there and re-copy, or
-% here directly if the two are allowed to diverge.
+% material concatenated into one document. The main part below is
+% the ICASSP source (paper/ICASSP_paper/main/main.tex) verbatim,
+% plus the \paragraph definition the appended parts need and the
+% appendix seam at the end; keep it in sync when the paper changes.
 % Build: bash build.sh
 % ============================================================
 \documentclass{article}
@@ -15,6 +16,36 @@
 % newtx provides a real Times clone (TeX Gyre Termes) with working weights.
 \usepackage{newtxtext,newtxmath}
 \usepackage{balance}
+
+% ICASSP 2027 requires >= 9pt throughout, including captions and
+% footnotes. article/10pt puts \small at 9pt and \footnotesize at 8pt, so
+% \footnotesize is lifted to 9pt and \tabsize is the one knob the tables
+% use -- nothing in this paper may set a size below it.
+\makeatletter
+\renewcommand\footnotesize{\@setfontsize\footnotesize\@ixpt{10.5}}
+\def\@ssect#1#2#3#4#5{%
+  \begingroup\bf\centering
+    {\interlinepenalty\@M \uppercase{#5}\par}%
+  \endgroup
+  \@tempskipa #3\relax
+  \@xsect{\@tempskipa}}
+\makeatother
+\newcommand{\tabsize}{\small}
+
+% spconf's \@makecaption hardcodes "\vskip 10pt" above every caption (which is
+% why \abovecaptionskip had no effect) and inherits the body size. Ten floats
+% pay that twice over. Captions go to 9pt -- still on ICASSP's floor, and the
+% usual IEEE setting -- and the skip becomes the one \abovecaptionskip above.
+\makeatletter
+\long\def\@makecaption#1#2{%
+  \vskip\abovecaptionskip
+  \begingroup\tabsize
+  \setbox\@tempboxa\hbox{#1. #2}%
+  \ifdim \wd\@tempboxa >\hsize #1. #2\par \else
+    \hbox to\hsize{\hfil\box\@tempboxa\hfil}%
+  \fi\endgroup}
+\makeatother
+
 % spconf strips \paragraph; the appended supplementary parts use it as a
 % run-in bold heading, so define a plain one.
 \providecommand\paragraph{}
@@ -36,27 +67,33 @@
 \title{Repetition, Not Length: Isolating the Counting\\
        Failure in Neural Text-to-Speech}
 
-\name{Kirill Borodin$^{1}$, Vasilii Kudryavtsev$^{1}$, Grach Mkrtchian$^{1}$}
-\address{$^{1}$BitmanagerAI, Dubai, UAE}
+\name{Kirill Borodin$^{1}$, Vasilii Kudryavtsev$^{1}$, Grach Mkrtchian$^{2,3}$}
+\address{$^{1}$BitmanagerAI, Dubai, UAE \quad
+         $^{2}$lab260, Moscow, Russia \quad
+         $^{3}$MTUCI, Moscow, Russia}
 
 \begin{document}
 \maketitle
+% The kit asks for 2.75-3.2 lines/cm (7-8 lines/inch); article's 10/12
+% leading gives 6.1, looser than the stated range. .95 is the same stretch
+% spconf's own \ninept uses, and it keeps the type at the template's 10pt
+% while moving line density toward what the kit asks for. Applied after
+% \maketitle so the title block keeps the template's exact geometry.
+\def\baselinestretch{.95}\normalsize
 
 \begin{abstract}
 Text-to-speech models loop, truncate and lose count on text that repeats a
 phrase many times. We show that repetition itself is what breaks them, not
 the length that comes with it. Every repeated sentence in our test set is
-paired with a control that keeps the surrounding sentence and word count
-but replaces the $k$ repeated copies with fillers in which no word ever
-repeats back-to-back. Six models from three architectures render the
+paired with a control of matched sentence and word count in which no word
+ever repeats back-to-back. Six models from three architectures render the
 controls almost perfectly and fail the repeated twins: \ExactCtl{}\%
-against \ExactRep{}\% exactly right at $k\ge6$.
-The failure survives greedy decoding, repetition-penalty sweeps,
-\IndNJudges{} independent speech recognisers and \SpecN{} analysis
-specifications without once reversing sign; a held-out fourth
-architecture lands within a point of the gap predicted for it, and one of
-two non-autoregressive baselines shows the same failure. Varying the
-period of the text in steps shows the failure grows smoothly with
+against \ExactRep{}\% exactly right at $k\ge6$. The gap survives greedy
+decoding, repetition-penalty sweeps, \IndNJudges{} independent speech
+recognisers and \SpecN{} analysis specifications without once reversing
+sign; a held-out fourth architecture lands within a point of its predicted
+gap, and one of two non-autoregressive baselines shows the same failure.
+Varying the period of the text shows the failure grows smoothly with
 periodicity, half of it surviving when no word is adjacent to itself.
 \end{abstract}
 
@@ -116,7 +153,7 @@ controls period-8; a never-cycled variant quantifies the difference
 (Sec.~\ref{sec:results}). Nor are the items improbable
 strings (Table~\ref{tab:nll}): under two independent language models the
 \emph{control} is the less probable text in most pairs, so the repeated
-items are, if anything, the more natural ones.
+items are, if anything, the more natural ones. The generation script, test set, transcripts and analysis code are released.\footnote{\url{https://github.com/lab260ru/icassp_antispoofing}}
 
 \begin{table}[t]
 \centering
@@ -125,7 +162,7 @@ mean NLL per token (lower = more probable) and the share of
 \NllIndPairs{} pairs whose control is less probable. A panel-internal
 scorer agrees (supplementary material).}
 \label{tab:nll}
-{\scriptsize\setlength{\tabcolsep}{4pt}
+{\tabsize\setlength{\tabcolsep}{4pt}
 \begin{tabular}{lrrr}
 \toprule
 Scorer & \multicolumn{2}{c}{NLL/token} & ctl.\ less probable \\
@@ -265,7 +302,7 @@ aperiodic controls, the rates are \ApMidRep{}\% against \ApMidCtl{}\%
 (the count-error row: points of median relative error). The last two rows
 are the pre-registered out-of-panel prediction and its test.}
 \label{tab:ci}
-{\scriptsize\setlength{\tabcolsep}{3.5pt}
+{\tabsize\setlength{\tabcolsep}{3.5pt}
 \begin{tabular}{lrr}
 \toprule
 Quantity & est. & 95\% interval \\
@@ -289,7 +326,7 @@ and exactly-right rate, repeated (rep.) against control (ctl.). Systems in
 the lower block are outside the panel; their count errors are in the
 supplementary material.}
 \label{tab:models}
-{\scriptsize\setlength{\tabcolsep}{3pt}\input{table1}}
+{\tabsize\setlength{\tabcolsep}{2.5pt}\input{table1}}
 \end{table}
 
 \textbf{Extension to $k\le128$ (exploratory).}
@@ -310,7 +347,7 @@ other way), so this cannot tell a hard limit from ordinary saturation.
 \emph{rendered} count against the requested count. Repeated renderings
 regress while controls advance.}
 \label{tab:ext}
-{\scriptsize\setlength{\tabcolsep}{6pt}
+{\tabsize\setlength{\tabcolsep}{6pt}
 \begin{tabular}{lrr}
 \toprule
 Requested count & repeated & control \\
@@ -332,7 +369,7 @@ of the text at fixed carrier, word count and requested count, pooled over
 the \PerNCk{} checkpoints measured. The second row re-measures at
 $k{=}\OddK{}$ with the odd and non-power steps~added.}
 \label{tab:period}
-{\scriptsize\setlength{\tabcolsep}{4.5pt}
+{\tabsize\setlength{\tabcolsep}{4.5pt}
 \begin{tabular}{lrrrrrr}
 \toprule
  & $p{=}1$ & $p{=}2$ & $p{=}3$ & $p{=}4$ & $p{=}6$ & $p{=}8$ \\
@@ -374,7 +411,7 @@ repetition rather than periodicity.
 \caption{The gap under decoding and analysis variations. RAS is
 repetition-aware sampling~\cite{chen2024valle2}.}
 \label{tab:vary}
-{\scriptsize\setlength{\tabcolsep}{3pt}
+{\tabsize\setlength{\tabcolsep}{3pt}
 \begin{tabular}{lr}
 \toprule
  & gap (pts) \\
@@ -429,7 +466,7 @@ repetitions inside it.
 \caption{F5-TTS handed the oracle total duration: exactly-right
 rate~(\%).}
 \label{tab:dur}
-{\scriptsize\setlength{\tabcolsep}{5pt}
+{\tabsize\setlength{\tabcolsep}{5pt}
 \begin{tabular}{lrr}
 \toprule
  & free & oracle duration \\
@@ -465,19 +502,19 @@ states per unit $\log k$; by family, \FamCap{} $[\FamCapLo{},\FamCapHi{}]$. The 
 $dN_{\mathrm{eff}}/d\log k$ with 95\% intervals, and the saturating-fit
 ceiling of $N_{\mathrm{eff}}$, repeated against control.}
 \label{tab:cap}
-{\scriptsize\setlength{\tabcolsep}{2.6pt}
+{\tabsize\setlength{\tabcolsep}{1.4pt}
 \begin{tabular}{lrrrr}
 \toprule
 Model & \multicolumn{2}{c}{capacity gain} & \multicolumn{2}{c}{ceiling} \\
 \cmidrule(lr){2-3}\cmidrule(lr){4-5}
  & rep. & ctl. & rep. & ctl. \\
 \midrule
-Llasa-1B~\cite{ye2025llasa} & \GainRepLlasaOneB{} $[\GainRepLoLlasaOneB{},\GainRepHiLlasaOneB{}]$ & \GainCtlLlasaOneB{} $[\GainCtlLoLlasaOneB{},\GainCtlHiLlasaOneB{}]$ & \SatRepLlasaOneB{} & \SatCtlLlasaOneB{} \\
-Llasa-3B~\cite{ye2025llasa} & \GainRepLlasaThreeB{} $[\GainRepLoLlasaThreeB{},\GainRepHiLlasaThreeB{}]$ & \GainCtlLlasaThreeB{} $[\GainCtlLoLlasaThreeB{},\GainCtlHiLlasaThreeB{}]$ & \SatRepLlasaThreeB{} & \SatCtlLlasaThreeB{} \\
-Llasa-8B~\cite{ye2025llasa} & \GainRepLlasaEightB{} $[\GainRepLoLlasaEightB{},\GainRepHiLlasaEightB{}]$ & \GainCtlLlasaEightB{} $[\GainCtlLoLlasaEightB{},\GainCtlHiLlasaEightB{}]$ & \SatRepLlasaEightB{} & \SatCtlLlasaEightB{} \\
-XTTS-v2~\cite{casanova2024xtts} & \GainRepXttsTwo{} $[\GainRepLoXttsTwo{},\GainRepHiXttsTwo{}]$ & \GainCtlXttsTwo{} $[\GainCtlLoXttsTwo{},\GainCtlHiXttsTwo{}]$ & \SatRepXttsTwo{} & \SatCtlXttsTwo{} \\
-Qwen3-TTS-0.6B~\cite{hu2026qwen3tts} & \GainRepQwenZeroSixB{} $[\GainRepLoQwenZeroSixB{},\GainRepHiQwenZeroSixB{}]$ & \GainCtlQwenZeroSixB{} $[\GainCtlLoQwenZeroSixB{},\GainCtlHiQwenZeroSixB{}]$ & \SatRepQwenZeroSixB{} & \SatCtlQwenZeroSixB{} \\
-Qwen3-TTS-1.7B~\cite{hu2026qwen3tts} & \GainRepQwenOneSevenB{} $[\GainRepLoQwenOneSevenB{},\GainRepHiQwenOneSevenB{}]$ & \GainCtlQwenOneSevenB{} $[\GainCtlLoQwenOneSevenB{},\GainCtlHiQwenOneSevenB{}]$ & \SatRepQwenOneSevenB{} & \SatCtlQwenOneSevenB{} \\
+Llasa-1B~\cite{ye2025llasa} & \GainRepLlasaOneB{} $[\GainRepLoLlasaOneB{}{,}\GainRepHiLlasaOneB{}]$ & \GainCtlLlasaOneB{} $[\GainCtlLoLlasaOneB{}{,}\GainCtlHiLlasaOneB{}]$ & \SatRepLlasaOneB{} & \SatCtlLlasaOneB{} \\
+Llasa-3B~\cite{ye2025llasa} & \GainRepLlasaThreeB{} $[\GainRepLoLlasaThreeB{}{,}\GainRepHiLlasaThreeB{}]$ & \GainCtlLlasaThreeB{} $[\GainCtlLoLlasaThreeB{}{,}\GainCtlHiLlasaThreeB{}]$ & \SatRepLlasaThreeB{} & \SatCtlLlasaThreeB{} \\
+Llasa-8B~\cite{ye2025llasa} & \GainRepLlasaEightB{} $[\GainRepLoLlasaEightB{}{,}\GainRepHiLlasaEightB{}]$ & \GainCtlLlasaEightB{} $[\GainCtlLoLlasaEightB{}{,}\GainCtlHiLlasaEightB{}]$ & \SatRepLlasaEightB{} & \SatCtlLlasaEightB{} \\
+XTTS-v2~\cite{casanova2024xtts} & \GainRepXttsTwo{} $[\GainRepLoXttsTwo{}{,}\GainRepHiXttsTwo{}]$ & \GainCtlXttsTwo{} $[\GainCtlLoXttsTwo{}{,}\GainCtlHiXttsTwo{}]$ & \SatRepXttsTwo{} & \SatCtlXttsTwo{} \\
+Qwen3-TTS-0.6B~\cite{hu2026qwen3tts} & \GainRepQwenZeroSixB{} $[\GainRepLoQwenZeroSixB{}{,}\GainRepHiQwenZeroSixB{}]$ & \GainCtlQwenZeroSixB{} $[\GainCtlLoQwenZeroSixB{}{,}\GainCtlHiQwenZeroSixB{}]$ & \SatRepQwenZeroSixB{} & \SatCtlQwenZeroSixB{} \\
+Qwen3-TTS-1.7B~\cite{hu2026qwen3tts} & \GainRepQwenOneSevenB{} $[\GainRepLoQwenOneSevenB{}{,}\GainRepHiQwenOneSevenB{}]$ & \GainCtlQwenOneSevenB{} $[\GainCtlLoQwenOneSevenB{}{,}\GainCtlHiQwenOneSevenB{}]$ & \SatRepQwenOneSevenB{} & \SatCtlQwenOneSevenB{} \\
 \bottomrule
 \end{tabular}}
 \end{table}
@@ -519,7 +556,7 @@ question stays open.
 constant predictor's; below 1 the count is still decodable. The control
 column runs the same probe on control items.}
 \label{tab:probe}
-{\scriptsize\setlength{\tabcolsep}{6pt}
+{\tabsize\setlength{\tabcolsep}{6pt}
 \begin{tabular}{lrr}
 \toprule
 Checkpoint & repeated & control \\
@@ -566,19 +603,40 @@ autoregression itself. Repeated text grows distinguishable states at
 own measurement ($q$ never below~1). Why the readout fails is the
 open question.
 
+\section*{Compliance with Ethical Standards}
+This is a computational study of publicly released text-to-speech
+checkpoints, evaluated on synthetic text written by the authors. It
+involved no human subjects, no animal subjects and no personal data, and
+no ethical approval was required. The authors declare no competing
+financial interests.
+
+
 \let\oldthebibliography\thebibliography
 \renewcommand{\thebibliography}[1]{%
   \oldthebibliography{#1}%
   \setlength{\itemsep}{0pt}%
   \setlength{\parsep}{0pt}%
   \setlength{\parskip}{0pt}}
+\balance   % even columns on the reference page
+% References at 9pt: still on ICASSP's floor, standard IEEE practice, and it
+% is what keeps the 10pt body (the official template's default) inside five
+% pages without cutting a table.
+{\tabsize
 \bibliographystyle{IEEEbib}
-\bibliography{refs}
+\bibliography{refs}}
 
 \clearpage
+% \balance (used on the references page above) leaves balance.sty's output
+% routine active, which silently drops single-column floats in the two-column
+% supplement; switch it off before the appendix.
+\nobalance
 \onecolumn
 \twocolumn[{\centering\LARGE\bfseries Supplementary Material\par\bigskip}]
 \appendix
+% Supplement tables are numbered S1, S2, ... so a float that lands a page
+% away from its prose can still be found from the reference.
+\setcounter{table}{0}
+\renewcommand{\thetable}{S\arabic{table}}
 
 \input{parts/p02_testset}
 \input{parts/p03_judge}
@@ -589,3 +647,4 @@ open question.
 \input{parts/p08_probes}
 
 \end{document}
+
