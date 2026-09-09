@@ -2,8 +2,9 @@
 % arXiv version: the ICASSP main paper and its supplementary
 % material concatenated into one document. The main part below is
 % the ICASSP source (paper/ICASSP_paper/main/main.tex) verbatim,
-% plus the \paragraph definition the appended parts need and the
-% appendix seam at the end; keep it in sync when the paper changes.
+% plus the \paragraph definition the appended parts need, the IEEE
+% preprint-notice cover page, and the appendix seam at the end; keep
+% it in sync when the paper changes.
 % Build: bash build.sh
 % ============================================================
 \documentclass{article}
@@ -50,6 +51,24 @@
 % run-in bold heading, so define a plain one.
 \providecommand\paragraph{}
 \renewcommand\paragraph[1]{\par\medskip\noindent\textbf{#1}\hspace{0.6em}\ignorespaces}
+
+% arXiv only: a cover page carrying the IEEE preprint notice, ahead of the
+% paper's own first page -- IEEE wants it on the first screen a reader sees.
+% To be replaced by the IEEE copyright notice upon acceptance.
+\AtBeginDocument{%
+  \onecolumn
+  \thispagestyle{empty}%
+  \vspace*{\fill}
+  \begin{center}
+    \parbox{0.75\textwidth}{\centering\large\itshape
+      This work has been submitted to the IEEE for possible publication.
+      Copyright may be transferred without notice, after which this version
+      may no longer be accessible.}
+  \end{center}
+  \vspace*{\fill}
+  \clearpage
+  \twocolumn
+}
 
 \setlength{\abovedisplayskip}{4pt}
 \setlength{\belowdisplayskip}{4pt}
